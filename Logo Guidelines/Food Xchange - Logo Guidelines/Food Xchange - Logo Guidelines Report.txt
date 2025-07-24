@@ -1,0 +1,73 @@
+Package Report
+
+-----------------------------------------------------------------------------
+Document:
+Name: Food Xchange - Logo Guidelines.ai
+Color Mode: RGB color
+Color Profile: none
+Ruler Units: pixels
+Artboard Dimensions: 1920 px x 1080 px
+Show Images in Outline Mode: OFF
+Highlight Substituted Fonts: OFF
+Highlight Substituted Glyphs: OFF
+Preserve Text Editability
+Simulate Colored Paper: OFF
+
+-----------------------------------------------------------------------------
+Spot Color Objects:
+
+-----------------------------------------------------------------------------
+Missing Fonts:NONE
+
+-----------------------------------------------------------------------------
+Protected Fonts that were not packaged:NONE
+
+-----------------------------------------------------------------------------
+Fonts:
+Myriad Pro (OTF)
+Causten Regular (OTF)
+Causten Medium (OTF)
+Causten Semi Bold (OTF)
+Causten Bold (OTF)
+Causten Extra Bold (OTF)
+Causten Black (OTF)
+DavidLibre-Regular (TrueType)
+Roboto Serif SemiBold (TrueType)
+Roboto Serif Regular (TrueType)
+
+-----------------------------------------------------------------------------
+Embedded Fonts:
+NONE
+
+-----------------------------------------------------------------------------
+Missing Links:
+NONE
+
+-----------------------------------------------------------------------------
+Linked Images:
+
+/Users/sarine.batouzian/Documents/ARMAD Creative Solutions/Foodz-Exchange/Logo Guidelines/Corn.jpg
+Type: RGB
+Bits per Pixel: 24
+Channels: 3
+Size: 7765K, 1996 by 1328 pixels
+Dimensions: 596.359 by 396.776 points 
+Resolution: 240.982 by 240.982 pixels per inch
+
+
+/Users/sarine.batouzian/Documents/ARMAD Creative Solutions/Foodz-Exchange/Logo Guidelines/flat-lay-rice-composition.jpg
+Type: RGB
+Bits per Pixel: 24
+Channels: 3
+Size: 43741K, 5152 by 2898 pixels
+Dimensions: 634.516 by 356.915 points 
+Resolution: 584.61 by 584.61 pixels per inch
+
+
+/Users/sarine.batouzian/Documents/ARMAD Creative Solutions/Foodz-Exchange/Logo Guidelines/raw-spiral-pasta-glass-bottle.jpg
+Type: RGB
+Bits per Pixel: 24
+Channels: 3
+Size: 70347K, 6000 by 4002 pixels
+Dimensions: 530.757 by 354.015 points 
+Resolution: 813.932 by 813.932 pixels per inch

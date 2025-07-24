@@ -1,0 +1,1357 @@
+﻿Title,Open Comments,Knowledge - english,Knowledge - heb.,Files and Images
+Company Procedures summery,0,"# Work Procedures - Foods.X Company
+
+## 1. Priorities and General Procedures
+
+### 1.1 Order of Priority in Handling Orders
+1. Transfer income documents to the accountant at the beginning of each month
+2. Issue and file receipts
+3. Issue, send, and file invoices
+
+### 1.2 General Company Procedures
+1. Handle urgent, unexpected tasks and present reports as requested
+2. Record tasks received from sales personnel/managers
+3. Handle minor unexpected tasks or record them
+4. Work according to the task list
+5. Until 17:00 - handle opportunities, from 17:00 - handle shipments and finances
+6. Fill in Salesforce at the end of the day
+7. Work using the FIFO method (First In, First Out)
+
+### 1.3 Employee Responsibility and Task Execution
+1. Execute tasks and TASKS
+2. Perform and summarize as many tasks as possible
+3. Focus on tasks within the employee's authority
+4. Obtain necessary information independently
+5. Refrain from criticism
+6. Project action order - from large to small
+
+### 1.4 Employee Roles in the Company
+1. Project Manager: Request resources from other entities in the company to advance the project
+
+## 2. Managing Business Opportunities
+
+### 2.1 Definition of a Business Opportunity
+- An opportunity for a deal, including presenting products and their characteristics to the customer
+- Ensuring full compliance with the customer's request
+
+### 2.2 Essential Details for an Opportunity
+1. Requested or offered products
+2. Accurate description of products: image, weight, presentation method, logistical data
+3. Unique product details: kosher, organic, gluten-free, etc.
+4. Contact persons for the selling and buying sides
+5. Tasks to be performed within a reasonable time (up to 4 months)
+
+### 2.3 Types of Opportunities
+1. Active opportunity: Clear transaction details, including estimated completion date
+2. Inactive opportunity: Unclear details or no activity for over 4 months
+3. Recurring opportunity: Reviving a previously closed opportunity
+
+### 2.4 Opportunity Management
+1. Work using the FIFO method
+2. Complete opportunity details in Salesforce
+3. Create time-bound tasks to advance the opportunity
+
+## 3. Product Management
+
+### 3.1 Product Definition
+- A collection of characteristics describing a physical product
+
+### 3.2 Product Identification
+1. Automatic catalog number in Salesforce
+2. Additional identifiers: customer barcode, supplier SKU, product name
+
+### 3.3 Product Characteristics
+1. Identifiers and names
+2. Physical characteristics: weight, verbal description
+3. Price per unit
+4. Logistical data: units per box/multipack
+
+### 3.4 Product Prices
+1. Purchase price catalog: net cost, customs tariff code, terms of sale
+2. Sales price catalog: including additional costs and profit
+
+### 3.5 Product Association
+1. Association with supplier
+2. Association with customer
+3. Association with opportunity or order
+
+### 3.6 General Products
+- Opening a general product in case of missing details
+- Updating to full details within 15 days
+
+## 4. Product Classification
+
+### 4.1 Classification Requirement
+- Every product must be classified according to categories
+
+### 4.2 Main Categories
+1. Fruits and vegetables
+2. Dairy products and eggs
+3. Meat, poultry, and fish
+4. Beverages, wine, and alcohol
+5. Chilled and frozen food
+6. Cooking, baking, and preserves
+7. Snacks, chocolate, sweets, and cereals
+8. Pharma and baby products
+9. Cleaning products and disposable utensils
+10. Organic and health products
+11. Pet products
+
+### 4.3 Subcategories
+- Detailed subcategories for each main category
+
+## 5. Task Management
+
+### 5.1 Types of Tasks
+1. Daily tasks: recorded according to employee's choice (notebook, Word, Excel)
+2. Salesforce tasks: related to specific objects (orders, opportunities, etc.)
+3. Future tasks (NEXT STEP): for advancing projects/opportunities/orders
+
+### 5.2 Task Management and Execution
+1. Systematic recording and execution of tasks
+2. Closing/deleting completed tasks and recording new future tasks
+3. Moving to projects with available tasks for execution
+
+### 5.3 Employee Performance Evaluation
+1. Good employee: completes tasks and projects quickly and efficiently
+2. Poor employee: fails to complete tasks within a reasonable time
+
+## 6. Project Management
+
+### 6.1 Project Manager's Role
+1. Delegating authority and distributing tasks
+2. Managing rather than directly executing all tasks
+
+### 6.2 Project Action Execution Order
+1. Executing macro processes (general processes)
+2. Working on the project body and identifying problems
+3. Focusing on micro processes for direction and correction
+
+### 6.3 Delegation of Authority
+1. Collaboration between company managers
+2. Delegating complex tasks to appropriate entities
+
+## 7. Communication and Information Management
+
+### 7.1 Information Transfer Between Company Employees
+1. Routine information: the information transferrer is responsible for ensuring understanding
+2. Project information: to be transferred in a meeting with a prepared information sheet
+3. Other important information: must be recorded, documented, and translated into tasks
+
+### 7.2 Meeting Management
+1. Preparing an information sheet before the meeting
+2. Recording meeting summary
+3. Defining tasks and responsibilities for each party
+4. Prohibition of criticism
+5. Personal responsibility for transferred information
+
+### 7.3 Information Transfer to Customers and Suppliers
+1. Prohibition of transferring incorrect information without approval from a senior official
+2. Possibility of a ""sales act"" with senior approval
+
+## 8. Self-Import Procedures
+
+### 8.1 Definition of Self-Import
+- Buying goods and selling them to the customer for profit
+
+### 8.2 Self-Import Process
+1. Preparing import pricing
+2. Preparing a quote for the customer
+3. Ordering from the supplier
+4. Handling the shipment
+5. Releasing the shipment in the country
+6. Coordinating with the customer
+7. Issuing an invoice to the customer
+
+### 8.3 Import Pricing
+1. Calculating currency rates
+2. Calculating purchase, shipping, customs, and transportation costs
+3. Adding profit margin
+
+## 9. Daily Work Procedures
+
+### 9.1 Morning Meeting
+- First 20 minutes of the day
+- Presenting daily tasks and tasks completed yesterday
+
+### 9.2 End of Workday
+- Last 20 minutes of the day
+- Preparing a presentation for the next morning's meeting
+
+### 9.3 Sundays
+- Reviewing company procedures in the last quarter of the day
+
+### 9.4 Tuesdays
+- Presenting company procedures and relevant examples in the morning meeting
+
+### 9.5 Presenting Tasks and Goals
+- Numerical presentation of tasks, goals, and procedure execution
+
+## 10. Financial and Payment Management
+
+### 10.1 Invoices to Shufersal for Supplier Advance
+1. Using the rate from Bank Leumi: representative rates, transfers and checks, selling
+2. Adding bank import fee and foreign currency transfer fee (0.4% of products after VAT + $12)
+
+## 11. Handling Non-Compliance with Procedures
+
+### 11.1 Process for Handling Task Non-Compliance
+1. Checking the reason for non-compliance
+2. In case of a justified reason: transferring responsibility to the manager or the next in line
+3. In case of an unjustified reason: recording in the employee's file, possibility of dismissal or role change
+
+### 11.2 Definition of a Justified Reason
+- Reasons stemming from inability, lack of control, or lack of knowledge not resulting from willful ignorance
+
+### 11.3 Reporting Non-Execution
+- The manager is responsible for creating and managing the reporting format from the employee","# נהלי עבודה - חברת Foods.X
+
+## 1. סדרי עדיפויות ונהלים כלליים
+
+### 1.1 סדר עדיפויות בטיפול בהזמנות
+1. העברת מסמכי הכנסה לרואה החשבון בתחילת כל חודש
+2. הוצאת קבלות ותיעודן
+3. הוצאת חשבוניות, שליחתן ותיעודן
+
+### 1.2 נהלים כלליים בחברה
+1. טיפול בבלת""מים דחופים והצגת דוחות לפי דרישה
+2. רישום משימות שהתקבלו מאנשי המכירות/מנהלים
+3. טיפול בבלת""מים קלים או רישומם
+4. עבודה לפי רשימת משימות
+5. עד השעה 17:00 - טיפול בהזדמנויות, מהשעה 17:00 - טיפול במשלוחים ובכספים
+6. מילוי Salesforce בסוף היום
+7. עבודה בשיטת FIFO (First In, First Out)
+
+### 1.3 אחריות העובד וביצוע משימות
+1. ביצוע משימות ו-TASKS
+2. ביצוע ותיעוד כמה שיותר משימות
+3. התמקדות במשימות בסמכות העובד
+4. השגת מידע נדרש באופן עצמאי
+5. הימנעות מביקורת
+6. סדר פעולות בפרויקט - מהגדול לקטן
+
+### 1.4 תפקידי העובדים בחברה
+1. מנהל פרויקט: לבקש משאבים מיתר הגורמים בחברה לקידום הפרויקט
+
+## 2. ניהול הזדמנויות עסקיות
+
+### 2.1 הגדרת הזדמנות עסקית
+- הזדמנות לעסקה, כולל הצגת מוצרים ומאפייניהם ללקוח
+- ווידוא התאמה מלאה לבקשת הלקוח
+
+### 2.2 פרטים חיוניים להזדמנות
+1. מוצרים מבוקשים או מוצרים מוצעים
+2. תיאור מדויק של המוצרים: תמונה, משקל, אופן הצגת המוצר, נתונים לוגיסטיים
+3. פרטים יחודיים למוצר: כשרות, אורגני, ללא גלוטן, וכו'
+4. אנשי קשר של הצד המוכר והקונה
+5. משימות לביצוע בזמן סביר (עד 4 חודשים)
+
+### 2.3 סוגי הזדמנויות
+1. הזדמנות פעילה: פרטי העסקה ברורים, כולל תאריך סיום משוער
+2. הזדמנות לא פעילה: פרטים לא ברורים או אין פעילות מעל 4 חודשים
+3. הזדמנות חוזרת: החייאת הזדמנות שנסגרה בעבר
+
+### 2.4 ניהול הזדמנויות
+1. עבודה בשיטת FIFO
+2. השלמת פרטי הזדמנות בסיילספורס
+3. יצירת משימות מוגדרות בזמן לקידום ההזדמנות
+
+## 3. ניהול מוצרים
+
+### 3.1 הגדרת מוצר
+- אוסף מאפיינים שמתארים מוצר פיזי
+
+### 3.2 זיהוי מוצר
+1. מספר קטלוג אוטומטי בסיילספורס
+2. מזהים נוספים: ברקוד לקוח, מק""ט ספק, שם מוצר
+
+### 3.3 מאפייני מוצר
+1. מזהים ושמות
+2. מאפיינים פיזיים: משקל, תיאור מילולי
+3. מחיר ליחידה
+4. נתונים לוגיסטיים: יחידות בקופסה/במאגדת
+
+### 3.4 מחירי מוצרים
+1. קטלוג מחירי קנייה: עלות נטו, קוד מכס, תנאי מכירה
+2. קטלוג מחירי מכירה: כולל עלויות נוספות ורווח
+
+### 3.5 שיוך מוצרים
+1. שיוך לספק
+2. שיוך ללקוח
+3. שיוך להזדמנות או הזמנה
+
+### 3.6 מוצרים כלליים
+- פתיחת מוצר כללי במקרה של חסר בפרטים
+- עדכון לפרטים מלאים תוך 15 יום
+
+## 4. סיווג מוצרים
+
+### 4.1 דרישת סיווג
+- כל מוצר חייב להיות מסווג לפי קטגוריות
+
+### 4.2 קטגוריות ראשיות
+1. פירות וירקות
+2. מוצרי חלב וביצים
+3. בשר, עוף ודגים
+4. משקאות, יין ואלכוהול
+5. מזון מצונן וקפוא
+6. בישול, אפייה ושימורים
+7. חטיפים, שוקולד, מתוקים ודגני בוקר
+8. מוצרי פארם ותינוקות
+9. מוצרי ניקיון וכלים חד פעמיים
+10. מוצרים אורגניים ובריאות
+11. מוצרים לבעלי חיים
+
+### 4.3 קטגוריות משנה
+- קטגוריות משנה מפורטות עבור כל קטגוריה ראשית
+
+## 5. ניהול משימות
+
+### 5.1 סוגי משימות
+1. משימות יומיות: מתועדות לפי בחירת העובד (מחברת, Word, Excel)
+2. משימות בסיילספורס: מקושרות לאובייקטים ספציפיים (הזמנות, הזדמנויות וכו')
+3. משימות עתידיות (NEXT STEP): לקידום פרויקטים/הזדמנויות/הזמנות
+
+### 5.2 ניהול וביצוע משימות
+1. תיעוד וביצוע משימות בצורה שיטתית
+2. סגירה/מחיקה של משימות שהושלמו ורישום משימות עתידיות חדשות
+3. מעבר לפרויקטים עם משימות לביצוע
+
+### 5.3 הערכת ביצועי העובד
+1. עובד טוב: משלים משימות ופרויקטים במהירות וביעילות
+2. עובד לא טוב: אינו משלים משימות בזמן סביר
+
+## 6. ניהול פרויקטים
+
+### 6.1 תפקיד מנהל הפרויקט
+1. האצלת סמכויות והפצת משימות
+2. ניהול ולא ביצוע ישיר של כל המשימות
+
+### 6.2 סדר ביצוע פעולות בפרויקט
+1. ביצוע תהליכים כלליים (תהליכי מקרו)
+2. עבודה על גוף הפרויקט וזיהוי בעיות
+3. התמקדות בתהליכים פרטניים לכיוון ותיקון
+
+### 6.3 האצלת סמכויות
+1. שיתוף פעולה בין מנהלי החברה
+2. האצלת משימות מורכבות לגורמים המתאימים
+
+## 7. ניהול תקשורת ומידע
+
+### 7.1 העברת מידע בין עובדי החברה
+1. מידע שוטף: האחריות על מעביר המידע לוודא הבנה
+2. מידע פרויקטלי: יועבר בפגישה עם דף מידע מוכן
+3. מידע חשוב אחר: חייב להיות מתועד, מתועד ותרגם למשימות
+
+### 7.2 ניהול פגישות
+1. הכנת דף מידע לפני הפגישה
+2. תיעוד סיכום פגישה
+3. הגדרת משימות ואחריות לכל צד
+4. איסור על ביקורת
+5. אחריות אישית על מידע שהועבר
+
+### 7.3 העברת מידע ללקוחות וספקים
+1. איסור על העברת מידע שגוי ללא אישור מגורם בכיר
+2. אפשרות ל""אקט מכירתי"" באישור בכיר
+
+## 8. נהלי יבוא עצמי
+
+### 8.1 הגדרת יבוא עצמי
+- קנייה של סחורה ומכירתה ללקוח תמורת רווח
+
+### 8.2 תהליך יבוא עצמי
+1. הכנת תמחיר יבוא
+2. הכנת הצעת מחיר ללקוח
+3. הזמנה מהספק
+4. טיפול במשלוח
+5. שחרור המשלוח בארץ
+6. תיאום עם הלקוח
+7. הוצאת חשבונית ללקוח
+
+### 8.3 תמחיר יבוא
+1. חישוב שערי מטבע
+2. חישוב עלויות קנייה, משלוח, מכס והובלה
+3. הוספת מרווח רווח
+
+## 9. נהלי עבודה יומיים
+
+### 9.1 פגישת בוקר
+- 20 הדקות הראשונות של היום
+- הצגת המשימות היומיות והמשימות שהושלמו אתמול
+
+### 9.2 סיום יום העבודה
+- 20 הדקות האחרונות של היום
+- הכנת מצגת לפגישת הבוקר הבאה
+
+### 9.3 ימי ראשון
+- סקירת נהלי החברה ברבע האחרון של היום
+
+### 9.4 ימי שלישי
+- הצגת נהלי החברה ודוגמאות רלוונטיות בפגישת הבוקר
+
+### 9.5 הצגת משימות ומטרות
+- הצגה מספרית של משימות, מטרות וביצוע נהלים
+
+## 10. ניהול כספים ותשלומים
+
+### 10.1 חשבוניות לשופרסל עבור מקדמת ספק
+1. שימוש בשער מבנק לאומי: שערים יציגים, העברות והמחאות, מכירה
+2. הוספת עמלת יבוא בנק ועמלת העברת מט""ח (0.4% ממחיר המוצרים לאחר מע""מ + $12)
+
+## 11. טיפול באי עמידה בנהלים
+
+### 11.1 תהליך לטיפול באי עמידה במשימות
+1. בדיקת סיבת אי העמידה
+2. במקרה של סיבה מוצדקת: העברת האחריות למנהל או הבא בתור
+3. במקרה של סיבה לא מוצדקת: רישום בתיק העובד, אפשרות לפיטורים או שינוי תפקיד
+
+### 11.2 הגדרת סיבה מוצדקת
+- סיבות שנובעות מאי יכולת, חוסר שליטה, או חוסר ידע שלא נובע מהתעלמות רצונית
+
+### 11.3 דיווח על אי ביצוע
+- המנהל אחראי על יצירה וניהול של פורמט דיווח מהעובד",Company policies summery.docx
+Tasks procedures,0,"### Work Procedures – Summary and Structured Documentation of Procedures
+
+**1. Meetings with Company Owners**
+- **Meeting Documentation:** Every meeting with Ohad and Ze'ev will be documented in writing.
+- **Meeting Purpose:** The reason for the meeting.
+- **Meeting Content:** Main points discussed.
+- **Tasks:** List of tasks decided.
+- **Summary Email:** A brief summary (a few lines) to be sent to Ohad.
+
+**2. Company Workflow**
+- **Tasks and Meetings:** Prioritize tasks and meetings that come from the sales staff and CEO, Ohad.
+- **Rest of the Day:** After the meetings, continue with the day's schedule as planned by the employee or as initially determined.
+
+**3. Organizational Workflow**
+- **Easy Tasks:** Finish quick and easy tasks first.
+- **Difficult Tasks:** In the morning, after completing the minor tasks, handle the difficult tasks.
+- **FIFO Order:** Tasks will be performed in FIFO order and will appear only in Salesforce.
+
+**4. Main Tasks for Employees**
+- **Daily Presentation:** Present progress, tasks, projects, and opportunities in a daily status report.
+
+**5. Personal Activity Reports**
+- **Report Submission:** Reports will be presented when requested by the company owners. Time will not be allotted for report editing without a scheduled meeting.
+- **Extension:** Extensions will not be given beyond a few hours for report submission.
+
+**6. Report Content**
+- **Excel and Salesforce:** The employee will present reports in Excel extracted from Salesforce only. There will be no direct work on the Excel file unless it helps specifically. Reports presented to company management will be Salesforce Excel outputs only.
+
+**7. Filling Salesforce**
+- **Daily Filling:** Salesforce should be filled at the end of each day.
+- **Filling During the Day:** It can be filled during the day unless it requires significant time and focused attention.
+
+**8. Unplanned Incoming Tasks (Ad-Hoc Tasks) **
+- **Ad-Hoc Tasks:** Incoming or outgoing emails, phone calls, inquiries about projects not recently addressed, power outages, etc..
+
+**9. Handling and Working with Ad-Hoc Tasks**
+- **Handling Ad-Hoc Tasks:** Ad-hoc tasks are an integral part of the work and should be handled as needed but not excessively, provided they do not delay urgent or very urgent activities.
+- **Ad-Hoc Task Recording:** The employee should record the ad-hoc task as a task or update and return to the standard workflow after the event.
+- **Handling According to Proper Workflow:** According to sections three and 9a, if the ad-hoc task is urgent, it should be handled immediately.
+
+**10. Handling Minor Ad-Hoc Tasks**
+- **Short Ad-Hoc Tasks:** If the ad-hoc task is minor, it should be done immediately and then return to the existing projects.","### נהלי עבודה – סיכום וכתיבת נהלים מסודרת
+
+**1. פגישות עם בעלי החברה**
+- **תיעוד הפגישה:** כל פגישה עם אוהד וזאב תתועד בכתב.
+- **מהות הפגישה:** הסיבה לקיום הפגישה.
+- **תוכן הפגישה:** נקודות עיקריות שנאמרו.
+- **משימות:** רשימת משימות שנקבעו.
+- **אמייל סיכום:** סיכום קצר (כמה שורות) שיישלח לאוהד.
+
+**2. סדר עבודה בחברה**
+- **משימות ופגישות:** קודם כל, מתפנים למשימות ופגישות שמגיעות מאנשי המכירות ומנכ""ל החברה אוהד.
+- **המשך היום:** לאחר הפגישות, ממשיכים בסדר היום כפי שנקבע לעובד או כפי שקבע העובד מתחילה.
+
+**3. סדר עבודה בארגון**
+- **משימות קלות:** קודם כל מסיימים משימות קלות ומהירות.
+- **משימות קשות:** בבוקר, לאחר סיום המשימות השוליות, מבצעים את המשימות הקשות.
+- **סדר FIFO:** המשימות יבוצעו לפי סדר FIFO ויופיעו בסיילספורס בלבד.
+
+**4. משימות עיקריות לעובדים**
+- **הצגה יומית:** הצגת התקדמות, משימות, פרויקטים והזדמנויות בדוח סטטוס יומי.
+
+**5. דוחות אישיים על פעילות העובדים**
+- **הגשת דוחות:** דוחות יוצגו בזמן שבו יתבקשו מבעלי החברה. לא ינתן זמן לעריכת דוחות ללא פגישה מסודרת.
+- **ארכה:** לא תינתן ארכה מעבר לכמה שעות לטובת הוצאת דוחות.
+
+**6. תוכן הדוחות**
+- **Excel ו-Salesforce:** העובד יציג דוחות ב-EXCEL לאחר שהוצאו מהסיילספורס בלבד. לא תהיה עבודה ישירות על קובץ EXCEL אלא אם כן הוא עוזר נקודתית. דוחות שיוצגו להנהלת החברה יהיו פלט EXCEL של סיילספורס בלבד.
+
+**7. מילוי הסיילספורס**
+- **מילוי יומי:** מילוי הסיילספורס יבוצע כל יום בסיום היום.
+- **מילוי במהלך היום:** אפשר למלא במהלך היום אלא אם הדבר דורש זמן רב ותשומת לב פרטנית.
+
+**8. משימות נכנסות בלתי מתוכננות (בלת""מ)**
+- **משימות בלת""מ:** אמיילים נכנסים או יוצאים, שיחות טלפון, שאילתות על פרויקטים שלא עסקו בהם לאחרונה, הפסקות חשמל וכו'.
+
+**9. התנהלות ועבודה עם בלת""מים**
+- **טיפול בבלת""מים:** בלת""מים הם חלק בלתי נפרד מהעבודה ויש לטפל בהם בזמן הנדרש אך לא מעבר לכך, בתנאי שלא מעכבים פעילות דחופה או דחופה מאוד.
+- **רישום בלת""מ:** על העובד לרשום את הבלת""מ כמשימה או עדכון ולחזור למהלך העבודה התקין לאחר סיום האירוע.
+- **טיפול לפי סדר עבודה תקין:** לפי סעיף 3 ו-9א, אם הבלת""מ דחוף יש לטפל בו באופן מיידי.
+
+**10. טיפול בבלת""מים קלים**
+- **בלת""מ קצר:** אם הבלת""מ קל, נעשה אותו באופן מיידי ונחזור לפרויקטים הקיימים.",נוהל טיפול במשימות.docx
+Import procedure,0,"## Work Procedure: Meetings
+
+### 1. What is a Meeting?
+Meetings are integral to the employee's work routine and should be conducted and initiated according to company procedures. They are scheduled and coordinated in advance in the calendar (send an invitation) either by the employee to the manager or the manager to the employee. Occasionally, unscheduled meetings may occur for urgent and unforeseen matters only.
+
+### 2. Types of Meetings:
+
+#### A. Employee to Manager Update Meeting
+- **Frequency:** Daily, at the beginning of the workday.
+- **Purpose:** To detail the daily schedule and tasks of the employee.
+- **Duration:** Up to 15 minutes.
+
+#### B. Procedure Update and Review Meeting
+- **Frequency:** As needed, can be initiated by either the employee or the manager (including surprise meetings).
+- **Duration:** Up to 20 minutes.
+
+#### C. Meeting with Supplier/Client
+- **Frequency:** As needed, scheduled well in advance.
+- **Purpose:** To prepare written lists presented to company managers and ensure the meeting's content, timing, and the message to be conveyed are clear.
+- **Guidelines:** Prepare all necessary materials in advance for the meeting.
+
+#### D. Work Update Meeting
+- **Frequency:** Daily, at the end of each workday, about an hour before the end of the day.
+- **Purpose:** To update the manager on the employee's performance and whether the daily task goals were met.
+- **Duration:** 20 minutes.
+- **Guidelines:** The manager listens and responds as necessary.
+
+### 3. Meeting Documentation
+
+#### A. Documenting the Meeting
+- Every meeting must be documented in writing.
+- During the meeting, the employee will document what is said to advance the discussed points.
+
+#### B. Translating the Discussion into Tasks
+- What is discussed in the meeting will be translated into tasks for the employee/manager/supplier/client as agreed upon in the meeting.
+- Tasks will be documented according to the company's task management procedure:
+- Start time and estimated completion time of the task.
+- Name of the task performer and their contact details (if it's a supplier or client).
+- Task details should be clear and easy to understand.
+
+### 4. Integrating Tasks into the Work Routine
+- Tasks from the meetings will be incorporated into the daily routine of the employee/manager/supplier/client and recorded in the CRM system.
+- Tasks should be monitored, and their status checked at any given moment according to the times written in the meeting summary.
+
+### 5. Questions in the Meeting
+- At least three questions should be noted for discussion during the meeting to reach their resolution.
+- Include the questions in the meeting summary and ensure they are addressed.","## נוהל עבודה: יבוא עצמי
+
+### מהו יבוא עצמי?
+יבוא שבו אנו קונים את הסחורה ומוכרים ללקוח תמורת רווח. בדרך כלל חברתנו עובדת על עמלות (אחוזים) מעסקאות קנייה של לקוחות ועסקאות מכירה של ספקים.
+
+### תפקיד העובד ביבוא עצמי
+
+#### 1. תמחיר יבוא
+- **משימה:** להכין תמחיר עלויות לפי הסעיפים הבאים בקובץ אקסל ולתייק בתיקיה של הפרויקט, כולל תאריך חישוב. יש לעשות חישוב נפרד לכל מוצר.
+- **צעדים:**
+- שער יורו/דולר לפי שער המחאות מכירה של בנק הפועלים.
+- שער ספנות הוא שער יורו/דולר מהסעיף הקודם + 2.5%.
+- לחשב את עלות הקנייה מהספק על סך היחידות של המוצר שנכנסות במכולה (20 רגל/40 רגל/מקוררת 20/מקוררת 40) ולהמיר לשקלים לפי שער יורו/דולר.
+- להשיג מחירים מחברות שילוח בינלאומי מנמל היעד ולהוסיף לתמחיר. יש להמיר לפי שער ספנות. גם לבקש עלות משלוח יבשתי בישראל עד הלקוח.
+- עלות מכס - יש לבקש מהמשלח סיווג מכס למוצר. אם העלות באחוזים, יש לקחת ערך CIF (עלות בשקלים של המוצרים + עלות הובלה עד לארץ).
+- לחשב את העלות הכוללת למכולה למוצר + הובלה + מכס, לחלק לסך המוצרים במכולה לקבלת העלות למוצר.
+- להוסיף מרווח 30% על העלות שלנו למוצר לקבלת המחיר למכירה ללקוח.
+
+#### 2. הצעת מחיר ללקוח
+- **משימה:** להפיק ממערכת ה-SAP הצעת מחיר ללקוח.
+- **צעדים:**
+- לכלול בהצעה את המוצרים, מחיר, כמות ותנאי תשלום.
+- לקבל אישור מהלקוח להצעת המחיר לפני המשך התהליך.
+- לוודא את פרטי החברה של הלקוח (לעיתים חברה אחרת/חברת בת עושה את הקנייה).
+- להוציא חשבונית על הסכום המלא של המשלוח אם הלקוח מבקש.
+- לתייק את ההצעה והאישור של הלקוח בתיקיה של ההזמנה.
+
+#### 3. הזמנה לספק
+- **משימה:** לאחר קבלת אישור הלקוח ותשלום מקדמה אם נדרש.
+- **צעדים:**
+- להוציא מה-SAP הזמנת רכש ולשלוח לספק.
+- לתייק את ההזמנה בתיקיה של ההזמנה.
+- לעדכן את הנהלת החברה בצורך להעביר תשלום לספק אם נדרש.
+- לבצע מעקב הזמנה רגיל כמו בהזמנות שאנו רק סוכנים שלהן.
+
+#### 4. טיפול במשלוח
+- **משימה:** לתאם את יציאת המשלוח עם המשלח.
+- **צעדים:**
+- לבקש מהמשלח את מספר המשלוח ולרשום בסיילספורס/גוגל דרייב.
+- לבקש פרטי סוכן נמל במדינת הספק כדי לארגן בוקינג למכולה ולהעביר לספק.
+- לקבל את כל הניירת מהספק ולתייק.
+- להעביר את הניירת למשלח ולבדוק את תקינותה.
+
+#### 5. שחרור משלוח בארץ
+- **משימה:** לטפל בשחרור המשלוח.
+- **צעדים:**
+- לשלם למשלח כדי לשחרר את המשלוח.
+- לוודא שבקשת התשלום מהמשלח אינה גבוהה מהנדרש.
+
+#### 6. תיאום עם הלקוח
+- **משימה:** לתאם את כניסת המשלוח למחסן הלקוח.
+- **צעדים:**
+- לעדכן את הלקוח ולתאם כניסה למחסן שלו.
+- לתאם עם המוביל היבשתי את הכניסה למחסן.
+- להוציא תעודת משלוח מ-SAP ולהעביר למוביל או לאיש הקשר במחסן.
+- לוודא קבלת בול מהמחסן (תעודת אישור כניסה) או החתמת תעודת המשלוח שלנו.
+
+#### 7. הפקת חשבונית ללקוח
+- **משימה:** להפיק חשבונית ללקוח אם לא הופקה עדיין.
+- **צעדים:**
+- להפיק את החשבונית עם כניסת המשלוח למחסן.
+- לגבות תשלום מהלקוח לפי תנאי התשלום.",נוהל יבוא עצמי.docx
+Meeting procedure,0,"## Work Procedure: Meetings
+
+### 1. What is a Meeting?
+Meetings are integral to the employee's work routine and should be conducted and initiated according to company procedures. They are scheduled and coordinated in advance in the calendar (send an invitation) either by the employee to the manager or the manager to the employee. Occasionally, unscheduled meetings may occur for urgent and unforeseen matters only.
+
+### 2. Types of Meetings:
+
+#### A. Employee to Manager Update Meeting
+- **Frequency:** Daily, at the beginning of the workday.
+- **Purpose:** To detail the daily schedule and tasks of the employee.
+- **Duration:** Up to 15 minutes.
+
+#### B. Procedure Update and Review Meeting
+- **Frequency:** As needed, can be initiated by either the employee or the manager (including surprise meetings).
+- **Duration:** Up to 20 minutes.
+
+#### C. Meeting with Supplier/Client
+- **Frequency:** As needed, scheduled well in advance.
+- **Purpose:** To prepare written lists presented to company managers and ensure the meeting's content, timing, and the message to be conveyed are clear.
+- **Guidelines:** Prepare all necessary materials in advance for the meeting.
+
+#### D. Work Update Meeting
+- **Frequency:** Daily, at the end of each workday, about an hour before the end of the day.
+- **Purpose:** To update the manager on the employee's performance and whether the daily task goals were met.
+- **Duration:** 20 minutes.
+- **Guidelines:** The manager listens and responds as necessary.
+
+### 3. Meeting Documentation
+
+#### A. Documenting the Meeting
+- Every meeting must be documented in writing.
+- During the meeting, the employee will document what is said to advance the discussed points.
+
+#### B. Translating the Discussion into Tasks
+- What is discussed in the meeting will be translated into tasks for the employee/manager/supplier/client as agreed upon in the meeting.
+- Tasks will be documented according to the company's task management procedure:
+- Start time and estimated completion time of the task.
+- Name of the task performer and their contact details (if it's a supplier or client).
+- Task details should be clear and easy to understand.
+
+### 4. Integrating Tasks into the Work Routine
+- Tasks from the meetings will be incorporated into the daily routine of the employee/manager/supplier/client and recorded in the CRM system.
+- Tasks should be monitored, and their status checked at any given moment according to the times written in the meeting summary.
+
+### 5. Questions in the Meeting
+- At least three questions should be noted for discussion during the meeting to reach their resolution.
+- Include the questions in the meeting summary and ensure they are addressed.","נוהל עבודה: פגישות
+
+### 1. מהי פגישה?
+פגישות הן חלק אינטגרלי משגרת עבודתו של העובד וצריכות להיות מבוצעות ויזומות בהתאם לנהלי החברה. הן נקבעות ומתואמות מראש ביומן (לשלוח זימון) מצד העובד למנהל או מצד המנהל לעובד. לעיתים, פגישות לא תואמו מראש על נושאים דחופים ובלת""מים בלבד.
+
+### 2. סוגי פגישות:
+
+#### א. פגישת עדכון מצד העובד למנהל
+- **תדירות:** יומית, בתחילת יום העבודה.
+- **מטרה:** לפרט את לוח הזמנים היומי והמשימות היומיות של העובד.
+- **משך:** עד רבע שעה.
+
+#### ב. פגישה מסוג עדכון נהלים ומעבר על ביצועם
+- **תדירות:** לפי הצורך, יכולה להיות יזומה על ידי העובד או על ידי המנהל (כולל פגישות פתע).
+- **משך:** עד 20 דקות.
+
+#### ג. פגישה עם ספק/לקוח
+- **תדירות:** לפי הצורך, מתואמת זמן ממושך מראש.
+- **מטרה:** להכין רשימות כתובות המוצגות למנהלי החברה ולוודא שתוכן הפגישה, מועדה והמסר שצריך להיות מועבר ברורים.
+- **הנחיות:** יש להכין מראש את כל החומרים הנדרשים לפגישה.
+
+#### ד. פגישת עבודה מסוג עדכונים שוטפים
+- **תדירות:** יומית, בסיום כל יום עבודה כשעה לפני סיום יום העבודה.
+- **מטרה:** לעדכן את המנהל בביצועי העובד והאם הגיע ליעד המשימות היומיות שהוקצבו.
+- **משך:** 20 דקות.
+- **הנחיות:** המנהל מקשיב ומגיב במידת הצורך.
+
+### 3. תיעוד פגישות
+
+#### א. תיעוד הפגישה
+- כל פגישה חייבת להיות מתועדת בכתב.
+- במהלך הפגישה, העובד יתעד את הנאמר כדי לקדם את הנקודות שנאמרו.
+
+#### ב. תרגום הנאמר למשימות
+- מה שנאמר בפגישה יתורגם למשימות שעל העובד/המנהל/הספק/הלקוח לבצע כפי שסוכם בפגישה.
+- המשימות יתועדו לפי נוהל טיפול במשימות הקיים בחברה:
+- זמן התחלה וזמן משוער להשלמת המשימה.
+- שם מבצע המשימה ופרטי הקשר שלו (אם מדובר בספק או לקוח).
+- פרטי המשימה יהיו ברורים ופשוטים להבנה.
+
+### 4. שילוב המשימות בשגרת העבודה
+- המשימות מהפגישות יועברו לשגרת יומו של העובד/מנהל/ספק/לקוח ויתועדו במערכת ה-CRM.
+- יש לעקוב אחר המשימות ולבדוק את הסטטוס שלהן בכל רגע נתון בהתאם לזמנים שנכתבו בסיכום הפגישה.
+
+### 5. שאלות בפגישה
+- במהלך הפגישה, יש לרשום לפחות שלוש שאלות שיידונו במהלך הפגישה במטרה להגיע לפתרונן.
+- יש לכלול את השאלות בסיכום הפגישה ולהבטיח שהן יקבלו מענה.
+Connected",נוהל סיכום פגישה.docx
+Exchange rate coversions,0,"Work Procedure: Invoices and Exchange Rate Conversions
+
+### 1. Currency Exchange Rate for Advance Invoice
+- **Source of Exchange Rate:** For the invoice issued to Shufersal for the supplier's advance payment, use the exchange rate from Bank Leumi, representative rates, transfers, and checks, selling price.
+
+### 2. Additional Fees
+- **Import Fee:** Add the bank's import fee to the invoice.
+- **Foreign Currency Transfer Fee:** Add a foreign currency transfer fee of 0.4% of the product price after VAT + $12.
+
+### Example Invoice Calculation
+1. **Calculation of Product Amount After VAT:**
+- If the product price is $10,000
+- VAT (assuming 17%) = $10,000 * 0.17 = $1,700
+- Amount after VAT = $10,000 + $1,700 = $11,700
+
+2. **Calculation of Foreign Currency Transfer Fee:**
+- 0.4% of $11,700 = $11,700 * 0.004 = $46.8
+- Additional bank fee = $12
+- Total foreign currency transfer fee = $46.8 + $12 = $58.8
+
+3. **Final Invoice Amount:**
+- Amount after VAT + foreign currency transfer fee = $11,700 + $58.8 = $11,758.8
+
+### Work Process
+1. **Exchange Rate Check:** Check the currency exchange rate on Bank Leumi's website according to representative rates, transfers, and checks, selling price.
+2. **Cost Calculation:** Calculate the product amount after VAT and add the foreign currency transfer fee.
+3. **Invoice Issuance:** Issue an invoice that includes the product price, VAT, and additional fees according to the above calculation.
+4. **Approval:** Ensure the invoice is approved by all relevant parties before sending it to Shufersal.","## נוהל עבודה: חשבוניות והמרות שערים
+
+### 1. שער המטבע לחשבונית מקדמה
+- **מקור השער:** בחשבונית שמוציאים לשופרסל על המקדמה מהספק יש להשתמש בשער מבנק לאומי, שערים יציגים, העברות והמחאות, מחירה.
+
+### 2. עמלות נוספות
+- **עמלת יבוא:** יש להוסיף לחשבונית עמלת יבוא של הבנק.
+- **עמלת העברת מט""ח:** יש להוסיף עמלת העברת מט""ח בשיעור של 0.4% ממחיר המוצרים אחרי מע""מ + $12.
+
+### דוגמה לחישוב חשבונית
+1. **חישוב סכום המוצרים אחרי מע""מ:**
+- אם מחיר המוצרים הוא $10,000
+- מע""מ (נניח 17%) = $10,000 * 0.17 = $1,700
+- סכום אחרי מע""מ = $10,000 + $1,700 = $11,700
+
+2. **חישוב עמלת העברת מט""ח:**
+- 0.4% מ-$11,700 = $11,700 * 0.004 = $46.8
+- עמלת הבנק הנוספת = $12
+- סה""כ עמלת העברת מט""ח = $46.8 + $12 = $58.8
+
+3. **סכום סופי לחשבונית:**
+- סכום אחרי מע""מ + עמלת העברת מט""ח = $11,700 + $58.8 = $11,758.8
+
+### תהליך עבודה
+1. **בדיקת שערים:** יש לבדוק את שער המטבע באתר בנק לאומי לפי שערים יציגים, העברות והמחאות, מחירה.
+2. **חישוב עלויות:** חישוב סכום המוצרים אחרי מע""מ והוספת עמלת העברת מט""ח.
+3. **הפקת חשבונית:** הפקת חשבונית הכוללת את מחיר המוצרים, המע""מ ועמלות נוספות לפי החישוב הנ""ל.
+4. **אישור:** יש לוודא שהחשבונית מאושרת על ידי כל הגורמים הרלוונטיים לפני שליחתה לשופרסל.",
+Task Execution Guidelines,0,"### Task Execution Guidelines
+
+#### 1. Daily Task Execution
+Tasks should be recorded as the employee decides – in a notebook, Word document, or Excel. The employee is responsible for implementing the daily tasks as part of their role. The managers' role is not to detail or supervise the execution of the daily tasks. Daily tasks are tasks received during the day, such as a phone call that needs to be made, task recording, and status updates for projects, opportunities, or orders.
+
+#### 2. Task Execution in Salesforce
+Tasks in Salesforce (TASKS) should be recorded in the object related to the task's execution. For example, tasks related to orders should be recorded in the order object. Tasks in Salesforce are intended to advance the execution of the project, opportunity, or order. Therefore, they should be identical or similar in wording to the daily tasks and may be a collection of daily tasks or other wording determined by the employee for the progress of the project, opportunity, or order.
+
+#### 3. Future Tasks in Salesforce (NEXT STEP)
+Tasks to be performed in the future with the aim of advancing the project, opportunity, or order. After completing a task, it should be closed or deleted, and another future task should be recorded.
+
+#### 4. Collection of Tasks
+Future tasks and completed tasks show the project and its progress rate. An employee who notices they have no tasks in a specific project should always prefer to move to a project with tasks to be performed or where future tasks can be easily recorded. For example, in a project where the employee has no knowledge, tasks cannot be recorded, and the project's pace will be slow if at all. Therefore, the employee should move to a project where it is easier to record and execute tasks, thus quickly completing the collection of tasks, which is essentially the project, opportunity, or order.
+
+#### 5. What is a Good Employee?
+An employee who manages to complete the project, opportunity, or order as quickly as possible. Therefore, systematic recording and execution of tasks will determine the quality of the employee, their salary, status in the company, and the general attitude towards them.
+
+#### 6. What is a Bad Employee?
+An employee who fails to complete the collection of tasks that create the project, opportunity, or order within a reasonable time.
+
+#### 7. Employee Status in the Company
+According to Sections 5 and 6, it can be seen that the employee is measured by their personal ability to handle a collection of tasks that will never end. Therefore, the employee should implement the instructions in Sections 1-4 to prioritize their work and advance personally in the company.
+
+#### 7a. Project Progress
+Progress in project execution should be made only through discussion and presentation of the employee's activity reports to their direct managers. Without presenting activity reports, the employee cannot be seen as an effective factor advancing the company's activities. Failure to report and present progress in tasks and statuses of projects in which the employee is active means that the employee has not progressed in an orderly manner as expected by the company's managers.
+
+#### 8. Tasks Related to the Employee's Indirect Responsibilities
+Office activities that do not advance the employee's projects are important but should not come at the expense of the direct activities for which the employee is responsible. For example, an employee responsible for executing projects and not showing progress because they claim to have been distracted by various work-related or non-work-related factors will not be able to explain the lack of project progress by blaming these factors. Therefore, the employee should primarily work according to the task order and FIFO task order as stated in the company procedures to complete their tasks as soon as possible.
+
+#### 9. Employee Definition
+A company employee is not defined as a technocrat. There is no need for the employee to perform complex actions beyond what is expected of them and to learn a more efficient work order independently (unless they really want to – high motivation is always desired). Therefore, the attitude towards the employee is as a person and not based on past or present abilities, since progress in the company and learning depends on the person and is not limited. The employee is expected to behave as they would in their private life outside of work and not assume that the work environment separates them from being a rational, talented, and judicious person. For example, an urgent task in private life and work will postpone a non-essential urge: if it is urgent to send an email and the employee is hungry, they are expected to wait a reasonable time to send the email and then go to eat.
+
+#### 10. Completing Information
+The employee will independently complete missing information needed to perform their tasks through proactive activity – asking questions to managers in the organizations they work with. Questions should be asked by phone, email, and in-person meetings.
+
+#### 11. Tasks and Projects – Execution Path
+In most cases, projects and tasks are performed by the employee well to very well. However, executing new projects can raise questions and doubts that are not real but can be interpreted or heard as negative. The efficient and correct approach for the employee is not to convey negative criticism of a project or task. With project execution, the employee will develop the project's macro and micro environment and not criticize the project in front of other company employees or subcontractors working with the company (suppliers/customers).
+
+#### 12. Criticizing a Task or Project
+Criticism should not be without supported documentation or issues that can be noted. For example: ""I did a similar project, and the following details did not work:...""
+
+#### 13. Order of Actions in a Project
+1. Execute macro processes (general processes that create the project's body).
+2. Work on the project's body (macro processes) and identify problems in the project's body.
+3. Focus on micro processes that may fine-tune the project's activity and correct the macro framework initially worked on.
+
+The idea of working on macro processes first and not micro-processes is because macro processes outline the micro actions of a project. In many cases, it is impossible to create a project without performing micro-actions, even though the focus is on the macro body of the project.","### נהלי ביצוע משימות
+
+#### 1. ביצוע משימות יומיות
+המשימות יירשמו על פי בחירת העובד – במחברת, וורד, או אקסל. העובד אחראי ליישם את המשימות היומיות כחלק מתפקידו. תפקיד המנהלים אינו לפקח על ביצוע המשימות היומיות של העובד. משימות יומיות הן משימות שמתקבלות במהלך היום, כגון שיחת טלפון שצריכה להתבצע, רישום משימות ועדכון סטטוס לפרויקטים, הזדמנויות, והזמנות.
+
+#### 2. ביצוע משימות בסיילספורס
+משימות בסיילספורס (TASKS) יירשמו באובייקט הקשור לביצוע המשימה. כלומר, משימות שקשורות להזמנות יירשמו באובייקט הזמנות. משימות בסיילספורס נועדו לקדם את ביצוע הפרויקט, ההזדמנות, או ההזמנה. לכן, הן יהיו זהות או דומות בניסוחן למשימות היומיות, וייתכן שיהיו אוסף של משימות יומיות או בניסוח אחר שנקבע על ידי העובד למען התקדמות ביצוע הפרויקט.
+
+#### 3. משימות עתידיות בסיילספורס (NEXT STEP)
+משימות שיבוצעו בעתיד ומטרתן קידום הפרויקט, ההזדמנות, או ההזמנה. לאחר ביצוע המשימה, יש לסגור או למחוק אותה ולרשום משימה עתידית נוספת.
+
+#### 4. אוסף משימות
+משימות עתידיות ומשימות שבוצעו מציגות את הפרויקט ואת קצב ההתקדמות בו. עובד שיבחין שאין לו משימות בפרויקט מסוים, יעדיף לעבור לפרויקט שיש בו משימות לביצוע או שניתן בקלות לרשום משימות עתידיות. לדוגמה, בפרויקט שאין לעובד ידע לגביו, לא ניתן יהיה לרשום משימות לביצוע ולכן קצב הפרויקט יהיה איטי אם בכלל. לכן, העובד יצטרך לעבור לפרויקט שבו יהיה קל יותר לרשום משימות ולבצען, וכך להגיע מהר יותר לביצוע אוסף המשימות שהן למעשה הפרויקט, ההזדמנות, או ההזמנה.
+
+#### 5. מהו עובד טוב?
+עובד שמצליח לסיים כמה שיותר מהר את הפרויקט, ההזדמנות, או ההזמנה. רישום וביצוע המשימות באופן שיטתי הם אלה שיקבעו את טיב העובד, שכרו, מעמדו בחברה והיחס הכללי אליו.
+
+#### 6. מהו עובד לא טוב?
+עובד שאינו מצליח לסיים בזמן סביר את אוסף המשימות שיוצרות את הפרויקט, ההזדמנות, או ההזמנה.
+
+#### 7. מעמד העובד בחברה
+בהתאם לסעיפים 5 ו-6, ניתן להבחין שהעובד נמדד ביכולתו האישית להתמודד עם אוסף משימות שלעולם לא יסתיימו. לכן, על העובד ליישם את הכתוב בסעיפים 1-4 על מנת לתעדף את עבודתו ולהתקדם באופן אישי בחברה.
+
+#### 7א. התקדמות בביצוע פרויקט
+התקדמות בביצוע פרויקט תבוצע אך ורק תוך דיון והצגת דוחות פעילות של העובד למנהלים הישירים שלו. ללא הצגת דוחות פעילות, לא ניתן יהיה לראות בעובד כגורם יעיל המקדם את פעילות החברה. אי דיווח והצגת התקדמות במשימות ובסטטוסים של פרויקטים שהעובד פעיל בהם משמעותם שהעובד לא התקדם באופן מסודר וכמשתמע ממנהלי החברה.
+
+#### 8. משימות קשורות שאינן בסמכויותיו הישירות של העובד
+פעילות משרדית שאינה מקדמת את הפרויקטים של העובד היא פעילות חשובה אך אינה באה על חשבון הפעילות הישירה שעליה אחראי העובד. לדוגמה, עובד שאחראי על ביצוע פרויקטים ולא מציג התקדמות בגלל שטוען שהיה מוסח על ידי גורמים שונים, לא יוכל להסביר את אי ההתקדמות בפרויקט ולהתלות בגורמים אלה. לכן, כדאי לעובד לעבוד בסדר משימות FIFO, על מנת לסיים את משימותיו בהקדם האפשרי.
+
+#### 9. הגדרת העובד
+עובד החברה אינו מוגדר כטכנוקראט. אין צורך לעובד החברה ליישם פעולות מורכבות מעבר למצופה ממנו וללמוד בעצמו סדר עבודה יעיל יותר בעיניו (אלא אם הוא ממש רוצה – מוטיבציה גבוהה תמיד רצויה). לכן, ההתייחסות לעובד היא לאדם שהוא ולא ליכולות העבר או ההווה שהוא מציג, מכיוון שההתקדמות בחברה ובלמידה תלויה באדם עצמו ואינה מוגבלת. מצופה מהעובד לנהוג כפי שהיה נוהג בחייו הפרטיים מחוץ למסגרת העבודה ולא להניח שמסגרת העבודה מנתקת את העובד מהיותו אדם רציונלי, כשרוני ובעל שיקול דעת. לדוגמה, משימה דחופה בחיים הפרטיים ובעבודה תדחה דחף שאינו חיוני: אם ממש דחוף להוציא אימייל והעובד רעב, מצופה ממנו לחכות זמן סביר ולשלוח את האימייל ולאחר מכן לצאת לאכול.
+
+#### 10. השלמת מידע
+העובד ישלים באופן עצמאי מידע החסר לו לביצוע משימותיו על ידי פעילות יזומה מצדו – שאילת שאלות למנהלים בארגונים שאיתם הוא עובד. שאילת השאלות תבוצע בטלפון, באימייל ובפגישות אישיות.
+
+#### 11. משימות ופרויקטים – הדרך לביצוע
+במרבית המקרים, פרויקטים ומשימות מבוצעים על ידי העובד בצורה טובה עד טובה מאוד. אבל ביצוע פרויקטים חדשים יכול לעורר שאלות ותהיות שאינן אמיתיות אך יכולות להתפרש כשליליות. הגישה היעילה והנכונה עבור העובד היא שלא להעביר ביקורת שלילית על פרויקט או משימה. עם ביצוע הפרויקט העובד יפתח את סביבת המקרו והמיקרו של הפרויקט ולא יעביר ביקורת על הפרויקט בפני עובדים אחרים של החברה או בפני קבלני משנה שעובדים עם החברה (ספקים או לקוחות).
+
+#### 12. העברת ביקורת על משימה או פרויקט
+לא תהיה ללא אסמכתאות מגובות או מקרים שניתן להעיר לגביהם. לדוגמה: ""עשיתי פרויקט זהה והפרטים הבאים לא עבדו:...""
+
+#### 13. סדר ביצוע פעולות בפרויקט
+1. ביצוע תהליכי מקרו (תהליכים כלליים שמייצרים את גוף הפרויקט).
+2. עבודה על גוף הפרויקט (תהליכי המקרו) ואיתור בעיות בגוף הפרויקט.
+3. התמקדות בתהליכי מיקרו שעשויים לכוונן את פעילות הפרויקט ולתקן את שלד המקרו שעליו עבדנו מלכתחילה.
+
+העבודה על תהליכי מקרו ולא מיקרו כשלב ראשון בפרויקט או משימה היא משום שתהליכי המקרו מתווים פעולות מיקרו של פרויקט. כלומר, בהרבה מהמקרים לא ניתן ליצור פרויקט ללא ביצוע פעולות מיקרו, אף שהתמקדנו בגוף הפרויקט המקרו.",
+Business Opportunity Management,0,"### Business Opportunity Management at Foodz.Exchange
+
+#### 1. What is a Business Opportunity (Opportunity Object in Salesforce) at Foodz.Exchange?
+A business opportunity refers to a potential transaction.
+
+#### 2. Definition of a Transaction:
+A transaction involves presenting products and their characteristics to a customer, and then verifying details with the customer to ensure the opportunity matches their request 100%. This leads to a successful transaction.
+
+#### 3. Essential Details for an Opportunity:
+Essential details include products requested by the customer or products we initiate to offer to the customer. The initiator of the offer can be the sales representative or any company employee. Essential details include:
+- Accurate description of the products offered to the customer: product image, product weight, product presentation (display carton/bundle/counter product).
+- Logistical data for the products: quantity per carton, cartons per pallet, cartons per container.
+- Unique product details (features): kosher certification, organic, gluten-free, etc.
+
+#### 4. Contacts:
+The opportunity must include contact persons from both the seller and the buyer.
+
+#### 5. Tasks (TASKS):
+The opportunity must include tasks to be completed within a reasonable time frame (no more than 4 months).
+
+#### 6. What is an Active Opportunity?
+An active opportunity is one where the employee can clearly understand the nature of the transaction, the contacts involved, who the buyer and seller are, prices, and product details, including product images. Additionally, the employee should be able to estimate when the opportunity will convert into an order or, alternatively, the opportunity will be archived for future use if it does not convert into an order.
+
+#### 7. What is an Inactive Opportunity?
+An inactive opportunity is one where the employee cannot clearly understand the nature of the transaction and its details (see Section 6). Typically, time is the determining factor for whether the opportunity is active or not (subject to Section 5 – 4 months without activity). Opportunities that do not convert into orders will be closed.
+
+#### 8. Opportunity Products in Salesforce:
+Products requested by the customer or proposed by the sales representative. Opportunity products are those that have a price quote submitted to the customer in PDF and Excel format. The opportunity products and the price quote will remain active for the duration of the opportunity (4 months).
+
+#### 9. Work Order for Opportunities – FIFO:
+An older opportunity takes precedence over a new opportunity in terms of handling. Old opportunities should be completed or closed if there is no progress.
+
+#### 10. Project Features (kosher, organic, gluten-free, etc.):
+Features can be very important to the transaction and are required by the customer. If this is the case, the opportunity will be closed without the features (unless the data is received within a reasonable time and filed in the database as part of the opportunity and product description offered to the customer). Progress on the opportunity does not require unique product features unless requested by the customer. For example, if the customer did not explicitly request an organic product but mentioned it would be nice if the products were also organic, we will proceed with the opportunity as started and later offer organic products to the customer as a separate and new opportunity.
+
+#### 11. Recurring Opportunity:
+An opportunity that has been closed can be revived. This occurs when a supplier or customer is willing to offer or accept offers (customer) for products that were previously discussed but the opportunity was closed due to inactivity (subject to Section 7). The recurring opportunity will be treated as a new opportunity with all essential details, contacts, and tasks as per Sections 3-5.
+
+#### 12. Completing Opportunity Details:
+The employee is required to complete the opportunity details so they match the fields in Salesforce. The completion of details will be done by the employee through communication, email, and questioning the company's managers. It is not possible to inform the employee of all opportunity details without their asking questions. Failure to execute projects due to lack of information in Salesforce will be considered the employee's fault, not the managers' or related parties'.
+
+#### 13. Advancing an Opportunity:
+To advance an opportunity, review what has been done and what has not yet been done, see what needs to be done to move it forward, and create a task for it. Tasks should be time-bound.","ניהול הזדמנויות עסקיות בחברת פודז.אקס
+
+#### 1. מהי הזדמנות עסקית (אובייקט בסיילספורס) בחברת פודז.אקס?
+הזדמנות לעסקה.
+
+#### 2. מהי עסקה?
+עסקה היא הצגת מוצרים ומאפייניהם ללקוח, ולאחר מכן, וידוא פרטים מול הלקוח כך שההזדמנות תתאים לבקשת הלקוח ב-100%. זה מוביל להוצאה לפועל של העסקה.
+
+#### 3. פרטים מהותיים לאופורטוניטי:
+הפרטים המהותיים כוללים את המוצרים שהלקוח ביקש או מוצרים שאנחנו יוזמים להציע ללקוח. היוזם להצעה יכול להיות איש המכירות או כל אחד מעובדי החברה. הפרטים המהותיים כוללים:
+- תיאור מדויק של המוצרים המוצעים ללקוח: תמונת המוצר, משקל המוצר, אופן הצגת המוצר (קרטון דיספלי/מאגדת/מוצר קופה).
+- נתונים לוגיסטיים למוצרים: כמות בקרטון, קרטונים במשטח, קרטונים במכולה.
+- פרטים ייחודיים למוצר (פיצ'רים): כשרות למוצר, אורגני, ללא גלוטן, ללת""ס, וכו'.
+
+#### 4. אנשי קשר:
+ההזדמנות חייבת לכלול אנשי קשר של הצד המוכר ושל הצד הקונה.
+
+#### 5. משימות (TASKS):
+ההזדמנות חייבת לכלול משימות לביצוע תוך זמן סביר (זמן שלא יעלה על 4 חודשים).
+
+#### 6. מהי הזדמנות פעילה?
+הזדמנות שבה העובד יכול להסיק באופן ברור על מהות העסקה, אנשי הקשר, מי הקונה ומי המוכר, מחירים ונתונים על המוצר, כולל תמונות המוצרים. בנוסף, העובד יוכל לשער מתי תסתיים ההזדמנות ותעבור להזמנה, או שהיא תועבר למאגר המידע כנתונים לשימוש עתידי.
+
+#### 7. מהי הזדמנות לא פעילה?
+הזדמנות שבה העובד לא יכול להסיק באופן ברור על מהות העסקה ופרטיה. לרוב, גורם הזמן הוא זה שיקבע האם ההזדמנות פעילה או לא (בכפוף לסעיף 5 – 4 חודשים ללא פעילות). הזדמנויות שלא הופכות להזמנה תסגרנה.
+
+#### 8. מוצרי ההזדמנות בסיילספורס (opportunity products):
+מוצרים שהלקוח ביקש או שאיש המכירות מציע ללקוח. מוצרי הזדמנות הם מוצרים שיש להם הצעת מחיר שמוגשת ללקוח בפורמט PDF ואקסל. מוצרי ההזדמנות והצעת המחיר יהיו פעילים למשך זמן פעילות ההזדמנות (4 חודשים).
+
+#### 9. סדר עבודה על הזדמנויות FIFO:
+הזדמנות קודמת מקבלת עדיפות על הזדמנות חדשה מבחינת הטיפול בה. יש לסיים הזדמנויות ישנות או לסגור אותן אם אין בהן התקדמות.
+
+#### 10. פיצ'רים לפרויקט (כשרות, אורגני, ללא גלוטן, ללת""ס):
+פיצ'רים יכולים להיות מהותיים לעסקה ונדרשים על ידי הלקוח. אם כך הדבר, ללא הפיצ'רים ההזדמנות תיסגר (אלא אם הנתונים יתקבלו תוך זמן סביר ויתויקו במאגר המידע כחלק מההזדמנות ותיאור המוצרים המוצעים ללקוח). ההתקדמות בהזדמנות אינה מחייבת פיצ'רים ייחודיים למוצר אם לא נדרשו על ידי הלקוח. לדוגמה, אם הלקוח לא ביקש מוצר אורגני באופן מפורש אלא אמר שיהיה נחמד שהמוצרים יגיעו גם כאורגניים, נתקדם עם ההזדמנות כפי שהחלה ובהמשך נציע גם מוצרים אורגניים ללקוח כהזדמנות נפרדת וחדשה.
+
+#### 11. הזדמנות חוזרת:
+ניתן לחזור ולהחיות הזדמנות שנסגרה. זה קורה כשספק או לקוח מוכנים להציע או לקבל הצעות למוצרים שכבר דובר עליהם בעבר, אבל בגלל חוסר פעילות ההזדמנות נסגרה (בכפוף לסעיף 7). ההזדמנות החוזרת תהיה כהזדמנות חדשה עם כל הפרטים המהותיים, אנשי הקשר והמשימות, בהתאם לסעיפים 3-5.
+
+#### 12. השלמת פרטי ההזדמנות:
+העובד מחויב כחלק מעבודתו להשלים את פרטי ההזדמנות כך שיותאמו לשדות בסיילספורס. השלמות הפרטים תבוצע על ידי העובד בהתקשרות, באימייל ובתשאול מנהלי החברה. אי ביצוע פרויקטים בעקבות חוסר מידע בסיילספורס ייחשב כאשמת העובד ולא כאשמת מנהליו או הגורמים הקשורים לפרויקט.
+
+#### 13. קידום הזדמנות:
+כדי לקדם הזדמנות, יש לבדוק מה נעשה ומה לא נעשה עדיין, לראות מה עוד יש לעשות כדי לקדמה וליצור משימה על כך. יש לתחום את המשימות בזמן.",קובץ נהלים OPPORTUNITIES.docx
+Employee Roles,0,"### Project Management and Employee Roles
+
+#### 1. Project Management
+As the name implies, the project manager is a manager. This means they should delegate as many tasks as possible to others, clearly defining what is needed to advance the project and ease their own workload. A manager is responsible for more areas than a regular employee and thus must work harder. A project manager who performs tasks themselves is not effective and can harm the organization. They should follow these guidelines and trust their team.
+
+#### 2. Employee Roles in the Company
+The first employees in the company in a unique field (whether there was no one before them or they are still the first in the role) are considered managers in their field. They should act as managers and lead in their domain.
+
+#### 3. Delegation of Authority in the Company
+Delegating tasks in a different field from the manager's specialty is essentially cooperation between the company's managers, which is highly desirable. Each manager in the company is expected to delegate challenging tasks that cannot be solved optimally for the benefit of the company. For example:
+- A field sales manager, who is in direct contact with customers and suppliers, should ask questions to promote the transfer of information to and from them.
+- The IT specialist, a manager who works with a computer most of the day, will receive tasks from the sales manager related to their field and to projects they manage on the organization's information systems.
+
+---
+
+**Procedure Update Date:** (Please specify the last update date)
+
+**Manager's Signature:** (Please specify the manager's approving signature)
+
+**Employees' Signatures:** (Please specify the signatures of the employees who have read and understood the procedure)","### ניהול פרויקטים ותפקידי עובדים
+
+#### 1. ניהול פרויקטים
+מנהל הפרויקט, כפי שמשתמע משמו, הוא מנהל. כלומר, עליו להאציל סמכויות כמה שיותר לאחרים, להגדיר בבירור מה נדרש להתקדמות הפרויקט ולהקל את העבודה על עצמו. מנהל אחראי על תחומים רבים יותר מאשר עובד פשוט, ולכן עליו לעבוד קשה יותר. מנהל פרויקט שבוחר לבצע משימות בעצמו אינו מנהל פרויקט טוב ועלול להזיק לארגון. עליו לפעול בהתאם להנחיות אלה ולסמוך על צוותו.
+
+#### 2. תפקידי העובדים בחברה
+העובדים הראשונים בחברה בתחום ייחודי עבורם (בין אם לא היה מישהו לפניהם או שהם עדיין הראשונים בתפקיד) נחשבים למנהלים בתחומם. עליהם לנהוג כמנהלים ולהוביל בתחומם.
+
+#### 3. האצלת סמכויות בחברה
+האצלת סמכויות לביצוע משימות בתחום שונה מתחום עיסוקו של המנהל היא למעשה שיתוף פעולה בין מנהלי החברה, דבר חיוני ורצוי. כל מנהל בחברה מצופה להאציל סמכויות קשות לביצוע שלא ניתן לפתור אותן בצורה מיטבית ואופטימלית לטובת החברה. לדוגמה:
+- מנהל מכירות שטח, הנמצא בקשר ישיר עם הלקוחות והספקים, צריך לבצע שאלות על מנת לקדם את העברת המידע מהם ואליהם.
+- איש המחשבים, מנהל שעובד עם מחשב רוב שעות היום, יקבל משימות מאיש המכירות הקשורות לתחום עיסוקו ולפרויקטים שהוא מנהל על גבי מערכות המידע של הארגון.
+
+---
+
+**תאריך עדכון הנוהל:** (יש לציין תאריך עדכון אחרון)
+
+**חתימת מנהל:** (יש לציין חתימת מנהל המאשר את הנוהל)
+
+**חתימת העובדים:** (יש לציין חתימות העובדים שקראו והבינו את הנוהל)",תפקידי עובדים בחברה.docx
+Managing Price Lists,0,"### Procedure for Receiving and Managing Price Lists
+
+#### 1. Receiving Prices from Suppliers
+- **Product Price**: Obtained as a result of sending an RFP (Request for Proposal) to the supplier. The price is specific for a particular product (barcode – unique manufacturer SKU).
+
+#### 2. Price Registration
+- **Product Price Registration**: The price will be recorded as the price for products linked to suppliers. Based on the price, a supplier price catalog will be created, including single or multiple products from each supplier.
+
+#### 3. Price Bases
+- **Price Base Characteristics**: The base is a significant component of product pricing in international trade. The bases include:
+- **EXW** (Ex Works): Price from the factory door. The factory address and country must be provided.
+- **FOB** (Free on Board): Price from the supplier's country's port after loading onto the ship.
+- **CFR** (Cost and Freight): Price includes costs up to the destination port, including shipping and land transport insurance to the port of origin.
+- **CIF** (Cost, Insurance, and Freight): Price includes costs up to the destination port and the insurance cost.
+- **DAP** (Delivered at Place): Price includes costs up to the customer's warehouse but does not include customs costs in the destination country.
+
+#### 4. Price Characteristics
+- **Price Components**:
+- **Price Base**: As detailed in the previous section.
+- **Product Currency**: The currency in which the product is sold or offered for sale by the supplier.
+
+#### 5. Additional Costs on the Price (Overheads)
+- **Kosher Certification**: Cost of kosher certification and the kosher process if required. If the supplier already has kosher certification, this cost is not necessary.
+- **Product Quality Assurance**: Including Israeli health approval. This cost will be added to the product price and the kosher certification cost.
+**Transport, Brokerage, and International Shipping Costs**: These are determined by professionals (usually subcontractors working with the organization or our company) and will be added to the product price.
+- **Additional Costs**: These include the costs of label production, printing, graphics, sticking, and distribution. Unplanned extra costs will be added as needed.
+
+#### 6. Customer Price Quote
+- The quote will include all the components detailed above: product price, kosher certification, quality assurance, transport and brokerage, and additional costs as required.
+
+#### 7. Registration and Tracking
+- Every received price will be systematically recorded in the price list management system and continuously updated in the suppliers' price catalog.
+
+#### 8. Procedure Maintenance
+- The procedure will be updated periodically according to process changes and market requirements.","### נוהל קבלת וניהול מחירונים
+
+#### 1. קבלת מחיר מספקים
+- **מחיר מוצר**: מתקבל כתוצאה משליחת RFP (בקשה להצעת מחיר) לספק. המחיר הוא ספציפי עבור מוצר ספציפי (ברקוד – מק""ט יצרן ייחודי).
+
+#### 2. רישום מחיר
+- **רישום מחיר המוצר**: המחיר ירשם כמחיר למוצרים המקושרים לספקים. על בסיס המחיר יבנה קטלוג מחירי ספק, שיכלול מוצרים בודדים או מרובים מכל ספק.
+
+#### 3. בסיסי מחיר
+- **מאפייני בסיסי מחיר**: הבסיס מהווה מרכיב משמעותי במחיר מוצר בסחר בינלאומי. הבסיסים כוללים:
+- **EXW** (Ex Works): המחיר מדלת המפעל. יש לספק כתובת המפעל והמדינה.
+- **FOB** (Free on Board): המחיר מנמל המוצא במדינת הספק לאחר הטענה על האוניה.
+- **CFR** (Cost and Freight): המחיר כולל את העלויות עד לנמל היעד, כולל משלוח וביטוח הובלה יבשתית לנמל המוצא.
+- **CIF** (Cost, Insurance, and Freight): המחיר כולל את העלויות עד לנמל היעד ואת עלות הביטוח.
+- **DAP** (Delivered at Place): המחיר כולל את העלויות עד למחסן הלקוח, אך אינו כולל את עלויות המכס במדינת היעד.
+
+#### 4. מאפייני המחיר
+- **מרכיבי המחיר**:
+- **בסיס המחיר**: כפי שפורט בסעיף הקודם.
+- **מטבע המוצר**: המטבע שבו נמכר או מוצע למכירה מהספק.
+
+#### 5. עלויות נוספות על המחיר (תקורות)
+- **כשרות**: עלות הכשרות ותהליך הכשרות אם נדרש. במקרה והספק כבר בעל כשרות, אין צורך בתוספת עלות זו.
+- **אבטחת איכות למוצר**: כולל אישור בריאות ישראלי. עלות זו תתווסף למחיר המוצר ועלות הכשרות.
+- **עלויות הובלה, עמילות ושילוח בינלאומי**: ייקבעו על ידי אנשי המקצוע (בדרך כלל קבלני משנה העובדים עם הארגון או עם חברתנו). עלויות אלו יתווספו למחיר המוצר.
+- **עלויות נוספות**: עלויות הפקת תוויות, הדפסה, גרפיקה, הדבקה, והפצה. עלויות אקסטרה לא מתוכננות יתווספו בהתאם לצורך.
+
+#### 6. הצעת מחיר ללקוח
+- ההצעה תכלול את כל המרכיבים המפורטים לעיל: מחיר המוצר, הכשרות, אבטחת איכות, הובלה ועמילות, ועלויות נוספות בהתאם לצורך.
+
+#### 7. רישום ומעקב
+- כל מחיר שיתקבל יירשם בצורה מסודרת במערכת ניהול המחירונים ויותאם באופן שוטף לקטלוג המחירים של הספקים.
+
+#### 8. תחזוקת הנוהל
+- הנוהל יעודכן באופן תקופתי בהתאם לשינויים בתהליכים ובדרישות השוק.",מחירונים.docx
+Employee-Employer Relations,0,"### Employee-Employer Relations Procedure
+
+**Purpose of the Procedure:**
+To ensure mutual respect and appreciation between employees and managers, as well as among employees themselves, to create a positive and supportive work environment.
+
+**1. Respectful Behavior:**
+Every employee and manager shall treat other team members respectfully, regardless of their role or status within the company.
+
+**2. Fundamental Respect:**
+Respect between individuals is based on recognizing them as human beings, not their abilities, experiences, or opinions.
+- **Example 1:** An employee or manager who regularly shouts will be respected as a person, regardless of their shouting.
+- **Example 2:** An employee who is consistently late will be respected irrespective of delay.
+
+**3. Principles of Mutual Respect:**
+If the company employs an employee or manager, they are part of its team and will receive mutual respect.
+
+**4. Subjective Disrespect:**
+Subjective disrespect may arise when an employee or manager feels disrespected. In such cases, they should approach another manager or self-reflect to understand how to overcome the subjective feeling.
+
+**5. Objective Disrespect:**
+Objective disrespect, manifested as apparent humiliation or insult, will be addressed according to the company's procedures for preventing harassment and workplace bullying.","### נוהל יחס עובד-מעביד
+
+**מטרת הנוהל:**
+להבטיח יחסי כבוד והערכה בין העובדים לבין המנהלים ובין העובדים לבין עצמם, על מנת ליצור סביבה עבודה חיובית ותומכת.
+
+**1. יחס של כבוד:**
+כל עובד ומנהל יתייחס בכבוד לשאר חברי הצוות, ללא קשר לתפקידם או מעמדם בחברה.
+
+**2. יחסי כבוד בסיסיים:**
+כבוד בין אנשים מבוסס על ההכרה בהם כבני אדם ולא על פי יכולתם, ניסיונם או דעותיהם.
+- **דוגמה 1:** עובד או מנהל שצועק באופן קבוע, יזכה לכבוד בהתאם להיותו אדם, ללא קשר לצעקותיו.
+- **דוגמה 2:** עובד שמאחר באופן קבוע, יזכה לכבוד ללא קשר לאיחוריו.
+
+**3. עקרונות כבוד הדדי:**
+כל עוד העובד או המנהל מועסקים בחברה, הם מהווים חלק מצוות החברה ויזכו לכבוד הדדי.
+
+**4. חוסר כבוד סובייקטיבי:**
+חוסר כבוד סובייקטיבי יכול להיווצר כאשר עובד או מנהל חשים חוסר כבוד. במקרים אלו יש לפנות למנהל אחר בארגון או להתבונן פנימית ולהבין כיצד להתגבר על ההרגשה הסובייקטיבית.
+
+**5. חוסר כבוד אובייקטיבי:**
+חוסר כבוד אובייקטיבי, המתבטא כהשפלה או העלבה ברורה, יטופל על פי נהלי החברה למניעת הטרדות והתעמרות בעבודה.",יחס עובד מעביד.docx
+Proposal Process Specification,0,"### Work Process Specification
+
+**1. Request for Proposal (RFP/RFQ):**
+1.1. A request for a quote will be sent from our supplier database in the system.
+1.2. The request will be sent via email and formatted similarly to the final quote that will be sent to the customer. The request will include all essential transaction details:
+- Product prices (subject to Section 3)
+- Supplier details (subject to Section 2)
+- Product descriptions: kosher certification, logistical data, quality documents, etc. (subject to Sections 5 and 3).
+
+1.3. Supplier quotes will be documented in reverse chronological order, meaning the quote history will be recorded, and reports or activity history with the supplier can be retrieved.
+
+**2. Definition of a Supplier:**
+A supplier is a company with a website and contact details for an export manager, such as address, phone numbers, emails, and activity description (optional).
+
+**3. Our Company's Products:**
+Since we are a connecting platform and do not buy/sell, we need to capture product details as listed in the supplier's system:
+- Product details
+- Logistical data
+- Product description
+- Product image
+- Quality and kosher certificates
+- Product price + pricing basis (EXW, FOB, CIF, etc.)
+- Price archive of the product.
+
+**4. Linking Supplier Products to the Supplier:**
+Products will be linked to the supplier in the system.
+
+**5. Supplier Product List:**
+Products entered into our Salesforce system will be described according to Sections 3 and 4. Reports can be generated to display product lists by supplier names or by product attributes, such as product name, weight, kosher certification, organic certificates, etc.
+
+**6. Linking Products to Opportunities:**
+Products selected as suitable will be moved to a sales opportunity in Salesforce. These products will be offered to the customer and must include all information as specified in Sections 3 and 4.
+
+**7. Linking Suppliers to Opportunities:**
+Suppliers and agents will also be linked to the sales opportunity and to the associated products.
+
+**8. Customer Quote (QUOTE object in Salesforce):**
+The quote will be based on the opportunity and the included products. The products in the opportunity will be priced at our company's selling price, or in the case of commissions, a section specifying the commission for the opportunity will be added (first order).
+
+**9. Customer Quote:**
+The customer quote is essentially a copy of the proposed opportunity presented to the customer in a detailed quote/report format that includes all transaction conditions:
+- Labels, printing, and graphic costs
+- Kosher and quality assurance costs (food consultant)
+- International shipping and distribution costs
+The quote will be sent to the customer in EXCEL format and will include all required fields, in addition to fields in the Shufersal FORCAST file. If possible, the quote will include images in the file, and if not, in a separate file.
+
+**10. Tracking Quotes:**
+Quotes are rarely accepted by the customer automatically and usually require negotiation for a discount. Often, the second quote will also be rejected, and modifications will be needed until the final accepted quote generates a transaction. Quote documentation will include dates and reasons for customer rejection (what needed improvement in the quote from the customer's perspective).","### אפיון תהליך עבודה
+
+**1. בקשה להצעת מחיר (RFP/RFQ):**
+1.1. בקשה להצעת מחיר תישלח מהמאגר הספקים במערכת שלנו.
+1.2. הבקשה תישלח באימייל ותהיה בפורמט דומה לפורמט הצעת המחיר שתישלח בסופו של דבר ללקוח. הבקשה תכלול את כל הפרטים המהותיים לעסקה:
+- מחירים למוצרים (בהתאם לסעיף 3)
+- פרטי הספק (בהתאם לסעיף 2)
+- תיאור המוצרים: כשרות, נתונים לוגיסטיים, מסמכי איכות וכו' (בהתאם לסעיפים 5 ו-3).
+
+1.3. הצעות המחיר מהספקים יתועדו בצורה כרונולוגית הפוכה, כלומר, היסטוריית הצעות המחיר תתועד וניתן יהיה לשלוף דוח או להציג היסטוריית פעילות מול הספק.
+
+**2. הגדרת ספק:**
+ספק הוא חברה שיש לה אתר אינטרנט ופרטי קשר למנהל ייצוא, כגון כתובת, טלפונים, אימיילים ותיאור פעילות (אפשרי).
+
+**3. מוצרי החברה שלנו:**
+מכיוון שאנו פלטפורמה מקשרת ולא קונים/מוכרים, יש לקלוט את פרטי המוצרים כפי שהם רשומים במחשבי הספק:
+- פרטי המוצר
+- נתונים לוגיסטיים
+- תיאור המוצר
+- תמונה של המוצר
+- תעודות איכות וכשרות של המוצר
+- מחיר המוצר + בסיס המחיר (EXW, FOB, CIF וכו')
+- ארכיון מחירים של המוצר.
+
+**4. קישור בין מוצרי הספק לספק עצמו:**
+המוצרים יהיו מקושרים לספק במערכת.
+
+**5. רשימת מוצרים מספקים:**
+המוצרים שיוכנסו למערכת סיילספורס ייתוארו בהתאם לסעיפים 3 ו-4. ניתן יהיה להפיק דוחות המציגים את רשימות המוצרים בהתאם לשמות הספקים או לפי תכונות המוצרים, כגון: שם מוצר, משקל, כשרות, תעודות אורגניות וכו'.
+
+**6. קישור מוצרים להזדמנות:**
+מוצרים שייבחרו כמתאימים יועברו להזדמנות מכירה (אופרטוניטי בסיילספורס). המוצרים האלו יוצאו ללקוח ויכללו את כל המידע הנדרש לגביהם, כפי שמצוין בסעיפים 3 ו-4.
+
+**7. קישור ספקים להזדמנות:**
+ספקים וסוכנים יקושרו להזדמנות המכירה ולמוצרים המשויכים אליהם.
+
+**8. הצעת המחיר ללקוח (QUOTE אובייקט בסיילספורס):**
+הצעת המחיר תהיה בהתאם לאופרטוניטי ולמוצרים הכלולים בו. מוצרי האופרטוניטי יהיו מתומחרים במחיר המכירה ללקוח של חברתנו, או שבמקרה של עמלות יוסף סעיף שיפרט את העמלה עבור ההזדמנות (הזמנה ראשונה).
+
+**9. הצעת המחיר ללקוח:**
+הצעת המחיר היא למעשה העתק של האופרטוניטי המוצע ללקוח על גבי דוח/הצעת מחיר מפורטת הכוללת את כל התנאים לעסקה:
+- תוויות, עלויות הדפסה וגרפיקה
+- עלויות כשרות ואבטחת איכות (יועץ מזון)
+- עלויות שילוח בינלאומי והפצה
+הצעת המחיר תשלח בפורמט EXCEL ותכלול את כל השדות הנדרשים בנוסף לשדות שבקובץ FORCAST של שופרסל. במידת האפשר, הצעת המחיר תכלול תמונות בקובץ ואם לא, אז בקובץ נפרד.
+
+**10. מעקב אחרי הצעות המחיר:**
+הצעות מחיר לא תמיד יתקבלו אצל הלקוח באופן אוטומטי ולעיתים יידרש מו""מ לצורך הנחה. תיעוד הצעות המחיר יכלול תאריכים וסיבה לסירוב הלקוח (מה היה צריך לשפר בהצעה מבחינת הלקוח).",אפיון תהליך QUOTE.docx
+for Working with Products in Salesforce,0,"## Procedures for Working with Products in Salesforce
+
+### 1. Defining a Product in Salesforce
+- **Product in Salesforce:** A collection of attributes describing a physical product.
+
+### 2. Catalog Number of a Product in Salesforce
+- **Catalog Number:** A number automatically generated by the system when a product is created. This unique identifier does not match the supplier's or customer's product identifiers (our catalog number is different from the supplier's catalog number or the customer's barcode).
+
+### 3. Identifying Products in Salesforce
+- **Identification by Catalog Number:** The system will identify products by the catalog number.
+- **Additional Identifiers:** Customer's barcode, supplier's catalog number, product name in Hebrew or English.
+
+### 4. Product Attributes
+- **Physical Attributes:** Product weight, detailed description, unit price, products per carton/aggregate, units per sales package.
+
+### 5. Product Pricing
+- **Setting Price:** The price will be based on the unit sales price adjusted for the product's weight and attributes.
+
+### 6. Purchase Price Catalog
+- **Purchase Prices:** The product prices will be composed of purchase prices, customs tariff code (tax rate on the purchase), and COST PRICE.
+- **Terms of Sale:** The terms agreed with the seller in international trade, such as the base price of the product (EXW, FOB, CIF, etc.), port of origin, sales terms (product graphics, quantities, unique attributes).
+
+### 7. Sales Price Catalog
+- **Sales Prices:** The prices for customers will be composed of purchase costs, commission, overhead costs (transportation, taxes, quality assurance, kosher certification), and profit for our company according to market prices.
+
+### 8. Supplier-Linked Products
+- **Product and Price List:** Each supplier will have a list of products and prices linked to them.
+
+### 9. Customer-Linked Products
+- **Product List for Customer:** Each customer will have a list of products they work with.
+
+### 10. General Product
+- **Defining a General Product:** If details about the product are not known, a general product will be created in the system. Full product details must be updated within 15 days.
+
+### 11. Products Linked to Sales Opportunities
+- **Sales Opportunities:** There will be no sales opportunity without products linked to it. General products can be added until the products are updated in the opportunity.
+
+### 12. Products Linked to Quotations
+- **Quotations:** The products in the quotations will be the same as those in the sales opportunity.
+
+### 13. Products Linked to Orders
+- **Regular Orders:** Each order must include the products linked to it and all the details in the quotation that became an order.","## נהלי עבודה עם מוצרים בסיילספורס
+
+### 1. הגדרת מוצר בסיילספורס
+- **מוצר בסיילספורס:** אוסף של מאפיינים המתארים מוצר פיזי.
+
+### 2. מספר קטלוגי של מוצר בסיילספורס
+- **מספר קטלוגי:** מספר שהמערכת מייצרת אוטומטית בעת פתיחת מוצר. מזהה ייחודי שאינו תואם את מזההי המוצרים של הספק או הלקוח (מק""ט שלנו שונה ממק""ט הספק או הברקוד של הלקוח).
+
+### 3. זיהוי מוצרים בסיילספורס
+- **זיהוי לפי מספר קטלוגי:** המערכת תזהה את המוצרים לפי המספר הקטלוגי.
+- **מזהים נוספים:** מזהה ברקוד של הלקוח, מק""ט הספק, שם מוצר בעברית או באנגלית.
+
+### 4. מאפייני מוצר
+- **מאפיינים פיזיים:** משקל המוצר, תיאור מילולי מדויק, מחיר המוצר ליחידה, מוצרים בקרטון/מאגדת, יחידות באריזת מכירה.
+
+### 5. מחיר המוצר
+- **קביעת מחיר:** המחיר יורכב ממחיר ליחידת מכירה מותאמת למשקל ולאפיון המוצר.
+
+### 6. קטלוג מחירי קנייה
+- **מחירי קנייה:** מחירי המוצרים יורכבו ממחירי קנייה, קוד תעריף המכס (אחוז המס שישולם על קניית המוצר), COST PRICE.
+- **תנאי מכר:** הנתונים שסוכמו מול המוכר במסחר בינלאומי, כגון בסיס המחיר של המוצר (EXW, FOB, CIF וכו'), נמל המוצא, תנאי מכר (גרפיקת מוצר, כמויות, מאפיינים ייחודיים).
+
+### 7. קטלוג מחירי מכירה
+- **מחירי מכירה:** מחירי מוצרים ללקוח יורכבו מעלויות קנייה, עמלה, העמסת עלויות (הובלה, מיסים, אבטחת איכות, כשרות), ורווח לחברתנו בהתאם למחירי השוק.
+
+### 8. מוצרים משויכי ספק
+- **רשימת מוצרים ומחירים:** לכל ספק תהיה רשימת מוצרים ומחירים המשויכת לו.
+
+### 9. מוצרים משויכים ללקוח
+- **רשימת מוצרים ללקוח:** לכל לקוח תהיה רשימת מוצרים שאיתם הוא עובד.
+
+### 10. מוצר כללי
+- **הגדרת מוצר כללי:** במידה ולא ידועים פרטים לגבי המוצר, נפתח מוצר כללי במערכת. יש לעדכן את פרטי המוצר המלאים תוך 15 יום.
+
+### 11. מוצרים המשויכים להזדמנות מכירה
+- **הזדמנות מכירה:** לא תהיה הזדמנות מכירה ללא מוצרים המשויכים לה. ניתן להכניס מוצרים כלליים עד לעדכון המוצרים בהזדמנות.
+
+### 12. מוצרים המשויכים להצעת מחיר
+- **הצעת מחיר:** המוצרים בהצעות המחיר יהיו המוצרים שהופיעו בהזדמנות המכירה.
+
+### 13. מוצרים המשויכים להזמנות
+- **הזמנות שוטפות:** כל הזמנה חייבת לכלול את המוצרים המשויכים לה ואת כל הנתונים הכלולים בהצעת המחיר שהפכה להזמנה.",דף נהלים PRODUCT.docx
+Non-Compliance with Procedures,0,"### Procedure for Non-Compliance with Procedures
+
+**Purpose of the Procedure:**
+To define the process for handling cases of non-compliance with procedures and to ensure that all involved parties understand their duties and responsibilities.
+
+#### 1. Failure to Complete a Task
+1.1. If an employee fails to complete an assigned task, the following steps should be taken:
+
+#### 2. Justified Reasons for Non-Compliance
+2.1. If the reason for non-compliance is justified, the manager will handle the issue or pass it on to the appropriate party.
+
+#### 3. Unjustified Reasons for Non-Compliance
+3.1. If the reason for non-compliance is unjustified, it will be recorded in the employee's file and may serve as grounds for termination, reassignment, or demotion.
+
+#### 4. What Constitutes a Justified Reason?
+4.1. A justified reason is one stemming from inability, lack of control, or lack of knowledge not due to negligence, as opposed to unwillingness. Examples of justified reasons include:
+- Instructions from a higher-ranking individual in the company that contradict procedures.
+- Excessive workload preventing the completion of all tasks.
+- Assignment of a task for which the employee has not received the necessary tools or training.
+
+#### 5. Reporting Non-Compliance
+5.1. It is the employee's responsibility to complete tasks, and the manager's responsibility to monitor their completion. The manager will create and manage the reporting format that the employee is required to fill out.
+
+#### 6. Transferring Responsibility to the Manager
+6.1. If the responsibility for non-compliance is transferred to the manager, the steps in this document should be repeated as if the manager failed to comply with the procedures.
+
+---
+
+**Procedure Update Date:** (Please specify the last update date)
+
+**Manager's Signature:** (Please specify the manager's approving signature)
+
+**Employees' Signatures:** (Please specify the signatures of the employees who have read and understood the procedure)","### נוהל אי עמידה בנהלים
+
+**מטרת הנוהל:**
+להגדיר את התהליך לטיפול במקרים של אי עמידה בנהלים ולוודא שכל הצדדים המעורבים מבינים את חובותיהם ואחריותם.
+
+#### 1. אי עמידה במשימה
+1.1. במידה והעובד לא עמד במשימה שהוטלה עליו, יש לפעול לפי הצעדים הבאים:
+
+#### 2. סיבות מוצדקות לאי עמידה
+2.1. אם הסיבה לאי עמידה מוצדקת, המנהל יטפל בנושא או יעביר אותו לגורם המתאים.
+
+#### 3. סיבות לא מוצדקות לאי עמידה
+3.1. אם הסיבה לאי עמידה לא מוצדקת, היא תירשם בתיק העובד ועשויה להוות עילה לפיטורים, שינוי תפקיד או הורדה בדרגה.
+
+#### 4. מהי סיבה מוצדקת?
+4.1. סיבה מוצדקת היא סיבה הנובעת מאי יכולת, חוסר שליטה או חוסר ידיעה שלא נובע מעצימת עיניים, בשונה מחוסר רצון. דוגמאות לסיבות מוצדקות כוללות:
+- הוראות מאדם בכיר יותר בחברה אשר נוגדות את הנהלים.
+- עומס עבודה כבד המונע את ביצוע כל המשימות.
+- דרישה לביצוע משימה שלעובד לא ניתנו הכלים או ההדרכה הנדרשים לביצועה.
+
+#### 5. דיווח על אי ביצוע
+5.1. תפקיד העובד הוא לבצע משימות, ותפקיד המנהל הוא לעקוב אחר ביצוען. המנהל ייצור וינהל את פורמט הדיווח שהעובד נדרש למלא.
+
+#### 6. העברת אחריות למנהל
+6.1. במקרה בו האחריות על אי עמידה בנהלים עוברת למנהל, יש לחזור על הצעדים בנוהל זה כאילו המנהל הוא שלא עמד בנהלים.
+
+---
+
+**תאריך עדכון הנוהל:** (יש לציין תאריך עדכון אחרון)
+
+**חתימת מנהל:** (יש לציין חתימת מנהל המאשר את הנוהל)
+
+**חתימת העובדים:** (יש לציין חתימות העובדים שקראו והבינו את הנוהל)",אי עמידה בנהלים.docx
+### Priority Order for Handling Orders,0,"### Priority Order for Handling Orders
+
+#### 1. Transferring Income Documents:
+At the beginning of each month, all income documents are transferred to the accountant for processing and reporting.
+
+#### 2. Issuing Receipts:
+Issue receipts for every payment received, file them systematically, and ensure they are available for review.
+
+#### 3. Issuing Invoices:
+Issue invoices for all orders and shipments, send them to customers, and file copies for future reference.
+
+---
+
+**Procedure Update Date:** (Please specify the last update date)
+
+**Manager's Signature:** (Please specify the manager's approving signature)
+
+**Employees' Signatures:** (Please specify the signatures of the employees who have read and understood the procedure)","### סדר עדיפות בעבודה על הזמנות
+
+#### 1. העברת מסמכי הכנסות:
+בכל תחילת חודש יש להעביר את כל מסמכי ההכנסות למנהל החשבונות לצורך עיבוד ודיווח.
+
+#### 2. הוצאת קבלות:
+הוציאו קבלות עבור כל תשלום שהתקבל, תייקו אותן בצורה מסודרת ותוודאו שהן זמינות לביקורת.
+
+#### 3. הוצאת חשבוניות:
+הוציאו חשבוניות לכל ההזמנות והמשלוחים, שלחו אותן ללקוחות ותייקו עותקים למעקב עתידי.
+
+---
+
+**תאריך עדכון הנוהל:** (יש לציין תאריך עדכון אחרון)
+
+**חתימת מנהל:** (יש לציין חתימת מנהל המאשר את הנוהל)
+
+**חתימת העובדים:** (יש לציין חתימות העובדים שקראו והבינו את הנוהל)",orders.docx
