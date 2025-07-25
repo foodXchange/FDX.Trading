@@ -133,8 +133,9 @@ async def projects_list(request: Request):
     return templates.TemplateResponse("projects.html", {"request": request, "projects": projects, "current_user": get_current_user_context()})
 
 # Include auth routes
-from app.routes.auth_routes import include_auth_routes
-include_auth_routes(app)
+# TODO: Uncomment when auth_routes.py is created
+# from app.routes.auth_routes import include_auth_routes
+# include_auth_routes(app)
 
 # Include agent routes
 from app.routes.agent_routes import router as agent_router
