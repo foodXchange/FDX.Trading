@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Orders - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Orders</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="location.href='/orders/new'">Create Order</button>
+    </div>
+</div>
+
+<div class="orders-grid">
+    <div class="order-card">
+        <div class="order-header">
+            <h3>Order #ORD-2024-001</h3>
+            <span class="badge badge-success">Delivered</span>
+        </div>
+        <div class="order-details">
+            <p><strong>Supplier:</strong> Mediterranean Delights</p>
+            <p><strong>Total:</strong> $12,500</p>
+            <p><strong>Date:</strong> June 1, 2024</p>
+        </div>
+        <div class="order-actions">
+            <a href="/orders/ORD-2024-001" class="btn btn-sm btn-outline">View Details</a>
+        </div>
+    </div>
+    
+    <div class="order-card">
+        <div class="order-header">
+            <h3>Order #ORD-2024-002</h3>
+            <span class="badge badge-warning">In Transit</span>
+        </div>
+        <div class="order-details">
+            <p><strong>Supplier:</strong> Italian Fine Foods</p>
+            <p><strong>Total:</strong> $8,750</p>
+            <p><strong>Date:</strong> June 5, 2024</p>
+        </div>
+        <div class="order-actions">
+            <a href="/orders/ORD-2024-002" class="btn btn-sm btn-outline">Track Order</a>
+        </div>
+    </div>
+    
+    <div class="order-card">
+        <div class="order-header">
+            <h3>Order #ORD-2024-003</h3>
+            <span class="badge badge-info">Processing</span>
+        </div>
+        <div class="order-details">
+            <p><strong>Supplier:</strong> Spanish Imports Co</p>
+            <p><strong>Total:</strong> $15,200</p>
+            <p><strong>Date:</strong> June 10, 2024</p>
+        </div>
+        <div class="order-actions">
+            <a href="/orders/ORD-2024-003" class="btn btn-sm btn-outline">View Details</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.order-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.order-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.order-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.order-actions {
+    margin-top: 15px;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.btn-outline {
+    background: white;
+    border: 1px solid #007bff;
+    color: #007bff;
+}
+
+.btn-outline:hover {
+    background: #007bff;
+    color: white;
+}
+</style>
+{% endblock %}
