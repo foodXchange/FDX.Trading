@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Numeric, Text, func
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship
 import datetime
 
-Base = declarative_base()
+from app.models.base import Base
 
 class RFQ(Base):
     """RFQ (Request for Quotation) model."""

@@ -205,6 +205,14 @@ include_orchestrator_routes(app)
 from app.routes.scraper_routes import include_scraper_routes
 include_scraper_routes(app)
 
+# Include RFQ routes
+from app.routes.rfq_routes import include_rfq_routes
+include_rfq_routes(app)
+
+# Include quote routes
+from app.routes.quote_routes import include_quote_routes
+include_quote_routes(app)
+
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
 async def agent_dashboard(request: Request, db: Session = Depends(get_db)):
