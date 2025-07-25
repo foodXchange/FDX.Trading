@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Tex
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from app.database import Base
+from app.models.base import Base
 
 
 class Product(Base):
@@ -75,8 +75,12 @@ class Product(Base):
     last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_scraped = Column(DateTime)  # When this was last scraped/updated
     
+    # Company association
+    company_id = Column(Integer, ForeignKey("companies.id"))
+    
     # Relationships
     supplier = relationship("Supplier", back_populates="products_catalog")
+    company = relationship("Company", back_populates="products")
     
     def __repr__(self):
         return f"<Product {self.name} from {self.supplier_id}>"

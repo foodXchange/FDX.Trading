@@ -23,5 +23,13 @@ class RFQ(Base):
     created_at: datetime.datetime = Column(DateTime, default=func.now())
     updated_at: datetime.datetime = Column(DateTime, default=func.now(), onupdate=func.now())
 
+    # Add company association
+    company_id = Column(Integer, ForeignKey("companies.id"))
+    assigned_contact_id = Column(Integer, ForeignKey("contacts.id"))
+    
+    # Relationships
     user = relationship("User")
-    quotes = relationship("Quote", back_populates="rfq") 
+    quotes = relationship("Quote", back_populates="rfq")
+    company = relationship("Company", back_populates="rfqs")
+    assigned_contact = relationship("Contact", back_populates="assigned_rfqs")
+    orders = relationship("Order", back_populates="rfq") 

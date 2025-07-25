@@ -22,4 +22,5 @@ class Quote(Base):
     unit_price = Column(Numeric(10,2))  # Alias for price_per_unit
 
     rfq = relationship("RFQ", back_populates="quotes")
-    supplier = relationship("Supplier") 
+    supplier = relationship("Supplier")
+    orders = relationship("Order", back_populates="quote") 

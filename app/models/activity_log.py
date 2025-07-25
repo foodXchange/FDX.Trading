@@ -33,8 +33,12 @@ class ActivityLog(Base):
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     
+    # Company association
+    company_id = Column(Integer, ForeignKey("companies.id"))
+    
     # Relationships
-    user = relationship("User", backref="activity_logs")
+    user = relationship("User", back_populates="activity_logs")
+    company = relationship("Company", back_populates="activity_logs")
     
     def __repr__(self):
         return f"<ActivityLog {self.action} by user {self.user_id}>"

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Numeric, JSON, func, ARRAY, Float, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Numeric, JSON, func, ARRAY, Float, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import Base
 import datetime
@@ -41,5 +41,9 @@ class Supplier(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     
+    # Company association
+    company_id = Column(Integer, ForeignKey("companies.id"))
+    
     # Relationships
-    products_catalog = relationship("Product", back_populates="supplier") 
+    products_catalog = relationship("Product", back_populates="supplier")
+    company = relationship("Company", back_populates="supplier_profile") 

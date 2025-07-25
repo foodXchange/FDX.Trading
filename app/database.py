@@ -4,6 +4,9 @@ from sqlalchemy.exc import OperationalError
 import time
 import os
 
+# Import Base from models to re-export it
+from app.models.base import Base
+
 # Default to SQLite for development if no DATABASE_URL is set
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db")
 

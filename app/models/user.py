@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, ForeignKey
+from sqlalchemy.orm import relationship
 from .base import Base
 import datetime
 
@@ -15,4 +16,12 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()) 
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # New: Company association
+    company_id = Column(Integer, ForeignKey("companies.id"))
+    
+    # Relationships
+    company_rel = relationship("Company", back_populates="users")
+    notifications = relationship("Notification", back_populates="user")
+    activity_logs = relationship("ActivityLog", back_populates="user") 
