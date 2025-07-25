@@ -1,36 +1,50 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import OperationalError
-from app.config import get_settings
 import time
+import os
 
-settings = get_settings()
+# Default to SQLite for development if no DATABASE_URL is set
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db")
 
-DATABASE_URL = settings.database_url
-
-# Engine with connection pooling
-engine = create_engine(
-    DATABASE_URL,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
-)
+# Configure engine based on database type
+if DATABASE_URL.startswith("sqlite"):
+    # SQLite specific configuration
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False}  # Needed for SQLite
+    )
+else:
+    # PostgreSQL/MySQL configuration with pooling
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_size=10,
+        max_overflow=20,
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Retry logic for DB connection
-for i in range(5):
-    try:
-        with engine.connect() as conn:
-            conn.execute("SELECT 1")
-        break
-    except OperationalError:
-        print(f"DB connection failed, retrying ({i+1}/5)...")
-        time.sleep(2)
-else:
-    raise RuntimeError("Could not connect to the database after 5 attempts.")
+def verify_database_connection():
+    """Verify database connection with retry logic"""
+    for i in range(5):
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            print("Database connection successful")
+            return True
+        except OperationalError as e:
+            print(f"DB connection failed, retrying ({i+1}/5)... Error: {e}")
+            time.sleep(2)
+    return False
+
+# Verify connection on module load
+if not verify_database_connection():
+    print("WARNING: Could not connect to the database. Will retry on first request.")
 
 def get_db():
+    """Dependency to get database session"""
     db = SessionLocal()
     try:
         yield db

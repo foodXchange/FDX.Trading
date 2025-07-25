@@ -1,9 +1,16 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 import os
-from fastapi.responses import HTMLResponse
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="FoodXchange API")
 
@@ -33,6 +40,11 @@ def get_current_user_context():
 async def landing(request: Request):
     return templates.TemplateResponse("landing.html", {"request": request, "current_user": get_current_user_context()})
 
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    error = request.query_params.get("error")
+    return templates.TemplateResponse("login.html", {"request": request, "error": error})
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -45,7 +57,7 @@ async def dashboard(request: Request):
         "quotes": 0,
         "emails": 0
     }
-    return templates.TemplateResponse("dashboard.html", {"request": request, "stats": stats, "current_user": get_current_user_context()})
+    return templates.TemplateResponse("simple_dashboard.html", {"request": request, "stats": stats, "current_user": get_current_user_context()})
 
 @app.get("/suppliers", response_class=HTMLResponse, name="suppliers_list")
 async def suppliers_list(request: Request):
@@ -77,6 +89,14 @@ async def create_rfq(request: Request, product: str = Form(...), quantity: int =
     # Placeholder: Save RFQ to database
     # Redirect to dashboard or show confirmation
     return templates.TemplateResponse("dashboard.html", {"request": request, "stats": {"suppliers": 0, "rfqs": 1, "quotes": 0, "emails": 0}, "message": "RFQ created!", "current_user": get_current_user_context()})
+
+@app.get("/orders", response_class=HTMLResponse, name="orders_list")
+async def orders_list(request: Request):
+    return templates.TemplateResponse("orders.html", {"request": request, "current_user": get_current_user_context()})
+
+@app.get("/products", response_class=HTMLResponse, name="products_list")
+async def products_list(request: Request):
+    return templates.TemplateResponse("products.html", {"request": request, "current_user": get_current_user_context()})
 
 @app.get("/analytics", response_class=HTMLResponse, name="analytics")
 async def analytics(request: Request):
@@ -112,6 +132,10 @@ async def projects_list(request: Request):
     ]
     return templates.TemplateResponse("projects.html", {"request": request, "projects": projects, "current_user": get_current_user_context()})
 
+# Include auth routes
+from app.routes.auth_routes import include_auth_routes
+include_auth_routes(app)
+
 # Include agent routes
 from app.routes.agent_routes import router as agent_router
 app.include_router(agent_router)
@@ -126,8 +150,58 @@ async def agent_dashboard(request: Request):
 async def operator_dashboard(request: Request):
     return templates.TemplateResponse("operator_dashboard.html", {"request": request, "current_user": get_current_user_context()})
 
-# Other routers will be included here
-# from .api import auth, rfq, suppliers, quotes, emails, analytics
-# app.include_router(auth.router)
-# app.include_router(rfq.router)
-# ... 
+# Error handlers
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Handle HTTP exceptions with custom error pages"""
+    if request.url.path.startswith("/api/"):
+        # Return JSON for API endpoints
+        return {"detail": exc.detail, "status_code": exc.status_code}
+    
+    # Return HTML error page for web routes
+    return templates.TemplateResponse(
+        "error.html",
+        {
+            "request": request,
+            "status_code": exc.status_code,
+            "detail": exc.detail,
+            "current_user": None
+        },
+        status_code=exc.status_code
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle validation errors"""
+    logger.error(f"Validation error: {exc}")
+    if request.url.path.startswith("/api/"):
+        return {"detail": "Invalid request data", "errors": exc.errors()}
+    
+    return templates.TemplateResponse(
+        "error.html",
+        {
+            "request": request,
+            "status_code": 400,
+            "detail": "Invalid request data",
+            "current_user": None
+        },
+        status_code=400
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle all other exceptions"""
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    if request.url.path.startswith("/api/"):
+        return {"detail": "Internal server error", "status_code": 500}
+    
+    return templates.TemplateResponse(
+        "error.html",
+        {
+            "request": request,
+            "status_code": 500,
+            "detail": "An unexpected error occurred",
+            "current_user": None
+        },
+        status_code=500
+    ) 

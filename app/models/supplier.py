@@ -1,53 +1,35 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Numeric, JSON, func, ARRAY, Float, Text
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship
+from .base import Base
 import datetime
-
-Base = declarative_base()
 
 class Supplier(Base):
     """Supplier model for FoodXchange platform."""
     __tablename__ = "suppliers"
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     
-    # Company information - updated field names to match usage
-    name: str = Column(String(255), nullable=False)  # Changed from company_name
-    company_name: str = Column(String(255))  # Keep for compatibility
-    email: str = Column(String(255))
-    phone: str = Column(String(50))
-    website: str = Column(String(500))  # Added website field
+    # Company information
+    company_name = Column(String(255), nullable=False)
+    email = Column(String(255))
+    phone = Column(String(50))
+    website = Column(String(500))
     
     # Location
-    country: str = Column(String(100))
-    location: str = Column(String(255))  # Added location field
-    address: str = Column(Text)
+    address = Column(Text)
+    city = Column(String(100))
+    country = Column(String(100))
     
     # Business details
-    categories = Column(ARRAY(String))
-    products: str = Column(Text)  # Comma-separated list of main products
-    certifications = Column(ARRAY(String))
-    delivery_days: int = Column(Integer)  # Added delivery capability
-    moq: float = Column(Float)  # Minimum order quantity
+    categories = Column(JSON)  # Store as JSON for SQLite compatibility
+    status = Column(String(50), default="pending")
     
-    # Ratings and verification
-    rating = Column(Numeric(3,2))
-    is_verified: bool = Column(Boolean, default=False)
-    is_active: bool = Column(Boolean, default=True)  # Added active status
-    
-    # AI enrichment
-    ai_enriched: bool = Column(Boolean, default=False)
-    enrichment_data = Column(JSON)
-    
-    # Additional data
-    notes: str = Column(Text)  # Added for agent updates
-    tags = Column(JSON)  # Additional tags/keywords
-    
-    # Scraping metadata
-    last_scraped: datetime.datetime = Column(DateTime)  # When website was last scraped
+    # Ratings and metrics
+    rating = Column(Float)
+    response_rate = Column(Float)
+    average_response_time = Column(Float)
+    is_verified = Column(Boolean, default=False)
     
     # Timestamps
-    created_at: datetime.datetime = Column(DateTime, default=func.now())
-    updated_at: datetime.datetime = Column(DateTime, default=func.now(), onupdate=func.now())
-    
-    # Relationships
-    products_catalog = relationship("Product", back_populates="supplier", cascade="all, delete-orphan") 
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()) 

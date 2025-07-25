@@ -25,12 +25,17 @@ class AIService:
         self.endpoint = settings.azure_openai_endpoint
         self.deployment_name = settings.azure_openai_deployment_name
         self.api_version = "2023-05-15"
+        self.is_configured = bool(self.api_key and self.endpoint and self.deployment_name)
         
     async def analyze_supplier_email(self, email_content: Dict[str, Any]) -> Dict[str, Any]:
         """
         Analyze supplier email using Azure OpenAI
         Returns intent, extracted data, and confidence score
         """
+        if not self.is_configured:
+            logger.warning("Azure OpenAI not configured, returning default analysis")
+            return self._get_default_analysis()
+            
         try:
             prompt = self._create_email_analysis_prompt(email_content)
             

@@ -13,13 +13,13 @@ import os
 import sys
 import asyncio
 from pathlib import Path
+import getpass
 
 # Add the app directory to the Python path
 sys.path.append(str(Path(__file__).parent))
 
 from app.database import engine, get_db
 from app.models import User, Supplier, RFQ, Quote, Email
-from app.config import get_settings
 from sqlalchemy import text
 import bcrypt
 from datetime import datetime, timedelta
@@ -27,75 +27,96 @@ import random
 
 def create_database():
     """Create the database if it doesn't exist"""
-    settings = get_settings()
+    database_url = os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db")
     
-    # Extract database name from URL
-    db_name = settings.database_url.split('/')[-1]
-    base_url = '/'.join(settings.database_url.split('/')[:-1])
+    if database_url.startswith("sqlite"):
+        # SQLite database is created automatically
+        print(f"✅ Using SQLite database: {database_url}")
+        return
     
-    # Connect to postgres database to create our database
-    engine_postgres = engine_from_config(
-        {"sqlalchemy.url": f"{base_url}/postgres"},
-        prefix="sqlalchemy."
-    )
-    
-    with engine_postgres.connect() as conn:
-        # Check if database exists
-        result = conn.execute(text(f"SELECT 1 FROM pg_database WHERE datname = '{db_name}'"))
-        if not result.fetchone():
-            conn.execute(text(f"CREATE DATABASE {db_name}"))
-            print(f"✅ Created database: {db_name}")
-        else:
-            print(f"✅ Database already exists: {db_name}")
-    
-    engine_postgres.dispose()
+    # For PostgreSQL, create database if needed
+    if database_url.startswith("postgresql"):
+        from sqlalchemy import create_engine
+        
+        # Extract database name from URL
+        db_name = database_url.split('/')[-1]
+        base_url = '/'.join(database_url.split('/')[:-1])
+        
+        # Connect to postgres database to create our database
+        try:
+            engine_postgres = create_engine(f"{base_url}/postgres")
+            
+            with engine_postgres.connect() as conn:
+                # Check if database exists
+                result = conn.execute(text(f"SELECT 1 FROM pg_database WHERE datname = '{db_name}'"))
+                if not result.fetchone():
+                    conn.execute(text(f"CREATE DATABASE {db_name}"))
+                    print(f"✅ Created database: {db_name}")
+                else:
+                    print(f"✅ Database already exists: {db_name}")
+            
+            engine_postgres.dispose()
+        except Exception as e:
+            print(f"⚠️  Could not create PostgreSQL database: {e}")
+            print("   Make sure the database exists or use SQLite for development")
 
 def run_migrations():
-    """Run Alembic migrations"""
+    """Create tables using SQLAlchemy"""
     try:
-        import subprocess
-        result = subprocess.run(
-            ["alembic", "upgrade", "head"],
-            capture_output=True,
-            text=True,
-            cwd=Path(__file__).parent
-        )
-        if result.returncode == 0:
-            print("✅ Migrations completed successfully")
-        else:
-            print(f"❌ Migration failed: {result.stderr}")
-            return False
+        # Import all models to ensure they are registered
+        from app.models import Base
+        
+        # Create all tables
+        Base.metadata.create_all(bind=engine)
+        print("✅ Database tables created successfully")
+        return True
     except Exception as e:
-        print(f"❌ Error running migrations: {e}")
+        print(f"❌ Error creating tables: {e}")
         return False
-    return True
 
 def create_admin_user():
     """Create initial admin user"""
-    settings = get_settings()
+    # Check if admin user already exists
+    with next(get_db()) as db:
+        existing_admin = db.query(User).filter(User.email == "admin@foodxchange.com").first()
+        if existing_admin:
+            print("✅ Admin user already exists")
+            return
+    
+    # Prompt for admin password
+    print("\n📝 Create admin user")
+    print("Default email: admin@foodxchange.com")
+    
+    while True:
+        password = getpass.getpass("Enter admin password (min 8 characters): ")
+        if len(password) < 8:
+            print("❌ Password must be at least 8 characters long")
+            continue
+        
+        confirm_password = getpass.getpass("Confirm password: ")
+        if password != confirm_password:
+            print("❌ Passwords do not match")
+            continue
+        
+        break
     
     # Hash password
-    password = "admin123"  # Change this in production
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     admin_user = User(
+        name="System Administrator",
         email="admin@foodxchange.com",
         hashed_password=hashed_password,
-        full_name="System Administrator",
-        role="admin",
-        department="IT",
-        is_active=True
+        company="FoodXchange",
+        is_active=True,
+        is_admin=True,
+        role="admin"
     )
     
     with next(get_db()) as db:
-        # Check if admin user already exists
-        existing_user = db.query(User).filter(User.email == admin_user.email).first()
-        if not existing_user:
-            db.add(admin_user)
-            db.commit()
-            print("✅ Created admin user: admin@foodxchange.com / admin123")
-        else:
-            print("✅ Admin user already exists")
+        db.add(admin_user)
+        db.commit()
+        print("✅ Created admin user: admin@foodxchange.com")
 
 def seed_sample_data():
     """Seed database with sample data"""
@@ -233,8 +254,8 @@ def main():
     print("\n📋 Next steps:")
     print("1. Update your .env file with the correct database credentials")
     print("2. Start your FastAPI application: uvicorn app.main:app --reload")
-    print("3. Access the admin panel at: http://localhost:8000/admin")
-    print("4. Login with: admin@foodxchange.com / admin123")
+    print("3. Access the application at: http://localhost:8000")
+    print("4. Login with: admin@foodxchange.com / [your password]")
 
 if __name__ == "__main__":
     main() 
