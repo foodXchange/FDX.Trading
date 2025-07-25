@@ -125,6 +125,9 @@
                     </div>
                     
                     <div class="grid grid-2 mb-3">
+                        <button class="btn btn-warning" onclick="window.location.href='/orchestrator'">
+                            🤖 Automation Control
+                        </button>
                         <button class="btn btn-primary" onclick="FX.modal.show('<h3>Create New Order</h3><form data-validate><div class=form-group><label class=form-label>Customer</label><input class=form-control required></div><div class=form-group><label class=form-label>Product</label><select class=form-control required><option value=\"\">Select...</option><option>Tomatoes</option><option>Lettuce</option></select></div></form>', {title: 'New Order', footer: '<button class=\"btn btn-primary\" onclick=\"FX.toast(\'Order created!\', \'success\'); FX.modal.hide();\">Create</button>'})">
                             📦 New Order
                         </button>
@@ -136,6 +139,12 @@
                         </button>
                         <button class="btn btn-outline" onclick="window.location.href='/suppliers/add'">
                             ➕ Add Supplier
+                        </button>
+                        <button class="btn btn-info" onclick="window.location.href='/operator'">
+                            🎛️ Operator Panel
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.location.href='/agent-dashboard'">
+                            📡 Agent Monitor
                         </button>
                     </div>
                     

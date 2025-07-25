@@ -197,6 +197,10 @@ include_auth_routes(app)
 from app.routes.agent_routes import router as agent_router
 app.include_router(agent_router)
 
+# Include orchestrator routes
+from app.routes.orchestrator_routes import include_orchestrator_routes
+include_orchestrator_routes(app)
+
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
 async def agent_dashboard(request: Request, db: Session = Depends(get_db)):
@@ -214,6 +218,15 @@ async def operator_dashboard(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/login", status_code=302)
     
     return templates.TemplateResponse("operator_dashboard.html", {"request": request, "current_user": user})
+
+# Orchestrator dashboard route - automation control
+@app.get("/orchestrator", response_class=HTMLResponse, name="orchestrator_dashboard")
+async def orchestrator_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("orchestrator_dashboard.html", {"request": request, "current_user": user})
 
 # Error handlers
 @app.exception_handler(StarletteHTTPException)
