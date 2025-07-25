@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodXchange - System Operator Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <style>
+        /* One-Person Operator Dashboard Styles */
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+        }
+        
+        .operator-layout {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            height: 100vh;
+        }
+        
+        /* Compact Sidebar for Quick Access */
+        .operator-sidebar {
+            background: #1a1a2e;
+            color: white;
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .sidebar-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .sidebar-icon:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-icon.active {
+            background: #667eea;
+        }
+        
+        .sidebar-icon .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 10px;
+        }
+        
+        /* Main Content Area */
+        .operator-main {
+            display: grid;
+            grid-template-rows: 60px 1fr;
+            overflow: hidden;
+        }
+        
+        /* Top Status Bar */
+        .status-bar {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+        }
+        
+        .status-indicator.warning {
+            background: #ff9800;
+        }
+        
+        .status-indicator.error {
+            background: #f44336;
+        }
+        
+        /* Command Bar - Quick Actions */
+        .command-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .command-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            width: 300px;
+            font-size: 14px;
+        }
+        
+        .command-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 1.5rem;
+        }
+        
+        /* Priority Panel - What Needs Attention */
+        .priority-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .priority-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .priority-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .priority-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .priority-item.urgent {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .priority-item.warning {
+            border-left-color: #ff9800;
+            background: #fff3e0;
+        }
+        
+        /* Agent Overview Grid */
+        .agents-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .agent-overview-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .agent-overview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .agent-info {
+            flex: 1;
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .agent-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .agent-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Activity Timeline */
+        .activity-timeline {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* Quick Actions Floating Menu */
+        .quick-actions-menu {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+        
+        .quick-action-trigger {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .quick-action-trigger:hover {
+            transform: scale(1.1);
+        }
+        
+        .quick-actions-list {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 0.5rem;
+            display: none;
+            min-width: 200px;
+        }
+        
+        .quick-actions-list.show {
+            display: block;
+        }
+        
+        .quick-action {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quick-action:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Notification Overlay */
+        .notification-overlay {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+            transition: right 0.3s;
+            z-index: 200;
+            overflow-y: auto;
+        }
+        
+        .notification-overlay.show {
+            right: 0;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .operator-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .operator-sidebar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                flex-direction: row;
+                height: 60px;
+                padding: 0 1rem;
+                justify-content: space-around;
+                z-index: 100;
+            }
+            
+            .dashboard-content {
+                grid-template-columns: 1fr;
+                padding-bottom: 80px;
+            }
+            
+            .command-input {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="operator-layout">
+        <!-- Compact Sidebar -->
+        <div class="operator-sidebar">
+            <div class="sidebar-icon active" title="Dashboard" onclick="switchView('dashboard')">
+                <span>📊</span>
+            </div>
+            <div class="sidebar-icon" title="Agents" onclick="switchView('agents')">
+                <span>🤖</span>
+                <span class="badge">2</span>
+            </div>
+            <div class="sidebar-icon" title="Suppliers" onclick="switchView('suppliers')">
+                <span>🏭</span>
+            </div>
+            <div class="sidebar-icon" title="Orders" onclick="switchView('orders')">
+                <span>📦</span>
+                <span class="badge">5</span>
+            </div>
+            <div class="sidebar-icon" title="Analytics" onclick="switchView('analytics')">
+                <span>📈</span>
+            </div>
+            <div class="sidebar-icon" title="Settings" onclick="switchView('settings')">
+                <span>⚙️</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="operator-main">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="system-status">
+                    <div class="status-item">
+                        <span class="status-indicator"></span>
+                        <span>All Systems Operational</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Queue: 23 items</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Last sync: 2 min ago</span>
+                    </div>
+                </div>
+                
+                <div class="command-bar">
+                    <input type="text" class="command-input" placeholder="Quick command... (Ctrl+K)" id="commandInput">
+                    <button onclick="toggleNotifications()" style="position: relative;">
+                        🔔
+                        <span class="badge" style="position: absolute; top: -5px; right: -5px;">3</span>
+                    </button>
+                    <span>👤 {{ current_user.name }}</span>
+                </div>
+            </div>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Main Area -->
+                <div>
+                    <!-- Priority Panel -->
+                    <div class="priority-panel">
+                        <div class="priority-header">
+                            <h2>🎯 Requires Your Attention</h2>
+                            <span style="color: #666; font-size: 14px;">5 items</span>
+                        </div>
+                        <div class="priority-items">
+                            <div class="priority-item urgent">
+                                <div>
+                                    <strong>Urgent Quote Request</strong>
+                                    <p style="margin: 0.25rem 0; font-size: 14px; color: #666;">
+                                        Mediterranean Delights - 500kg Olive Oil needed by Friday
+                                    </p>
+                                </div>
+                                <button onclick="handlePriority('quote', 1)" class="btn btn-primary">Review</button>
+                            </div>
+                            
+                            <div class="priority-item warning">
+                                <div>
+                                    <strong>Email Processing Error</strong>
+                                    <p style="margin: 0.25rem 0; font-size: 14px; color: #666;">
+                                        3 emails failed to process - manual review needed
+                                    </p>
+                                </div>
+                                <button onclick="handlePriority('email', 2)" class="btn btn-secondary">Check</button>
+                            </div>
+                            
+                            <div class="priority-item">
+                                <div>
+                                    <strong>Supplier Verification Pending</strong>
+                                    <p style="margin: 0.25rem 0; font-size: 14px; color: #666;">
+                                        New supplier "Global Foods Co" awaiting approval
+                                    </p>
+                                </div>
+                                <button onclick="handlePriority('supplier', 3)" class="btn btn-secondary">Verify</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Agents Overview -->
+                    <h3 style="margin: 1.5rem 0 1rem;">🤖 Agent Status</h3>
+                    <div class="agents-overview">
+                        <div class="agent-overview-card" onclick="openAgentDetails('email_monitor')">
+                            <div class="agent-info">
+                                <div class="agent-name">Email Monitor</div>
+                                <div class="agent-stats">
+                                    <span>✅ 145 processed</span>
+                                    <span>⏳ 12 pending</span>
+                                    <span>❌ 2 errors</span>
+                                </div>
+                            </div>
+                            <div class="agent-control">
+                                <span style="color: #4caf50;">● Running</span>
+                                <button onclick="event.stopPropagation(); toggleAgent('email_monitor')" class="btn btn-small">⏸</button>
+                            </div>
+                        </div>
+                        
+                        <div class="agent-overview-card" onclick="openAgentDetails('quote_analyzer')">
+                            <div class="agent-info">
+                                <div class="agent-name">Quote Analyzer</div>
+                                <div class="agent-stats">
+                                    <span>✅ 34 analyzed</span>
+                                    <span>⏳ 3 pending</span>
+                                    <span>💰 $45K saved</span>
+                                </div>
+                            </div>
+                            <div class="agent-control">
+                                <span style="color: #ff9800;">● Processing</span>
+                                <button onclick="event.stopPropagation(); toggleAgent('quote_analyzer')" class="btn btn-small">⏸</button>
+                            </div>
+                        </div>
+                        
+                        <div class="agent-overview-card" onclick="openAgentDetails('supplier_enricher')">
+                            <div class="agent-info">
+                                <div class="agent-name">Supplier Enricher</div>
+                                <div class="agent-stats">
+                                    <span>✅ 89 enriched</span>
+                                    <span>⏳ 5 pending</span>
+                                    <span>📊 95% accuracy</span>
+                                </div>
+                            </div>
+                            <div class="agent-control">
+                                <span style="color: #9e9e9e;">● Idle</span>
+                                <button onclick="event.stopPropagation(); toggleAgent('supplier_enricher')" class="btn btn-small">▶</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="activity-timeline">
+                        <h3>📋 Recent Activity</h3>
+                        <div class="timeline-item">
+                            <div class="timeline-icon" style="background: #e3f2fd;">📧</div>
+                            <div class="timeline-content">
+                                <strong>Email from Italian Fine Foods processed</strong>
+                                <p style="margin: 0.25rem 0; color: #666;">Quote for pasta updated - 15% price reduction</p>
+                                <span class="timeline-time">2 minutes ago</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon" style="background: #e8f5e9;">✅</div>
+                            <div class="timeline-content">
+                                <strong>RFQ #1234 completed</strong>
+                                <p style="margin: 0.25rem 0; color: #666;">5 quotes received, best price: $8,500</p>
+                                <span class="timeline-time">15 minutes ago</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-icon" style="background: #fff3e0;">⚠️</div>
+                            <div class="timeline-content">
+                                <strong>Low inventory alert</strong>
+                                <p style="margin: 0.25rem 0; color: #666;">Tomatoes below 20% - RFQ auto-generated</p>
+                                <span class="timeline-time">1 hour ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Side Panel -->
+                <div>
+                    <!-- Quick Stats -->
+                    <div style="background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
+                        <h3 style="margin-top: 0;">📊 Today's Summary</h3>
+                        <div style="display: grid; gap: 1rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Emails Processed</span>
+                                <strong>157</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Quotes Received</span>
+                                <strong>23</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Cost Savings</span>
+                                <strong style="color: #4caf50;">$4,250</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Automation Rate</span>
+                                <strong>87%</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Automation Health -->
+                    <div style="background: white; border-radius: 12px; padding: 1.5rem;">
+                        <h3 style="margin-top: 0;">🤖 Automation Health</h3>
+                        <div style="display: grid; gap: 0.75rem;">
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 14px;">System Load</span>
+                                    <span style="font-size: 14px;">45%</span>
+                                </div>
+                                <div style="background: #e0e0e0; height: 8px; border-radius: 4px;">
+                                    <div style="background: #4caf50; width: 45%; height: 100%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 14px;">Error Rate</span>
+                                    <span style="font-size: 14px;">2.3%</span>
+                                </div>
+                                <div style="background: #e0e0e0; height: 8px; border-radius: 4px;">
+                                    <div style="background: #ff9800; width: 2.3%; height: 100%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 14px;">Queue Depth</span>
+                                    <span style="font-size: 14px;">23 items</span>
+                                </div>
+                                <div style="background: #e0e0e0; height: 8px; border-radius: 4px;">
+                                    <div style="background: #2196f3; width: 23%; height: 100%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="showAutomationSettings()" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">
+                            Configure Automation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions Floating Menu -->
+    <div class="quick-actions-menu">
+        <div class="quick-actions-list" id="quickActionsList">
+            <div class="quick-action" onclick="quickAction('rfq')">
+                <span>📝</span> Create RFQ
+            </div>
+            <div class="quick-action" onclick="quickAction('email')">
+                <span>📧</span> Process Emails
+            </div>
+            <div class="quick-action" onclick="quickAction('agent')">
+                <span>🤖</span> Run All Agents
+            </div>
+            <div class="quick-action" onclick="quickAction('report')">
+                <span>📊</span> Generate Report
+            </div>
+            <div class="quick-action" onclick="quickAction('approve')">
+                <span>✅</span> Approve Pending
+            </div>
+        </div>
+        <div class="quick-action-trigger" onclick="toggleQuickActions()">
+            <span id="quickActionIcon">⚡</span>
+        </div>
+    </div>
+    
+    <!-- Notification Overlay -->
+    <div class="notification-overlay" id="notificationOverlay">
+        <div style="padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>Notifications</h2>
+                <button onclick="toggleNotifications()">✕</button>
+            </div>
+            
+            <div id="notificationList">
+                <!-- Notifications will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+    
+    <script src="{{ url_for('static', path='/js/agent-manager.js') }}"></script>
+    <script>
+        // Initialize operator dashboard
+        let currentView = 'dashboard';
+        let quickActionsOpen = false;
+        
+        // Command palette
+        document.getElementById('commandInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand(e.target.value);
+                e.target.value = '';
+            }
+        });
+        
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('commandInput').focus();
+            }
+            
+            // Quick number shortcuts
+            if (e.altKey && !isNaN(e.key)) {
+                const num = parseInt(e.key);
+                if (num >= 1 && num <= 5) {
+                    quickNumberAction(num);
+                }
+            }
+        });
+        
+        function executeCommand(command) {
+            const cmd = command.toLowerCase();
+            
+            if (cmd.includes('run all')) {
+                agentManager.runAllAgents();
+            } else if (cmd.includes('stop all')) {
+                agentManager.pauseAllAgents();
+            } else if (cmd.includes('email')) {
+                switchView('agents');
+                openAgentDetails('email_monitor');
+            } else if (cmd.includes('quote')) {
+                window.location.href = '/quotes/comparison';
+            } else if (cmd.includes('help')) {
+                showHelp();
+            } else {
+                agentManager.showNotification(`Unknown command: ${command}`, 'warning');
+            }
+        }
+        
+        function toggleQuickActions() {
+            quickActionsOpen = !quickActionsOpen;
+            document.getElementById('quickActionsList').classList.toggle('show', quickActionsOpen);
+            document.getElementById('quickActionIcon').textContent = quickActionsOpen ? '✕' : '⚡';
+        }
+        
+        function quickAction(action) {
+            toggleQuickActions();
+            
+            switch(action) {
+                case 'rfq':
+                    window.location.href = '/rfq/new';
+                    break;
+                case 'email':
+                    agentManager.showNotification('Processing emails...', 'info');
+                    fetch('/api/agents/email-monitor/run-once', { method: 'POST' });
+                    break;
+                case 'agent':
+                    agentManager.runAllAgents();
+                    break;
+                case 'report':
+                    generateDailyReport();
+                    break;
+                case 'approve':
+                    approveAllPending();
+                    break;
+            }
+        }
+        
+        function handlePriority(type, id) {
+            switch(type) {
+                case 'quote':
+                    window.location.href = `/quotes/${id}`;
+                    break;
+                case 'email':
+                    window.location.href = '/emails?filter=errors';
+                    break;
+                case 'supplier':
+                    window.location.href = `/suppliers/${id}/verify`;
+                    break;
+            }
+        }
+        
+        function toggleNotifications() {
+            document.getElementById('notificationOverlay').classList.toggle('show');
+        }
+        
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.sidebar-icon').forEach(icon => {
+                icon.classList.remove('active');
+            });
+            event.target.closest('.sidebar-icon').classList.add('active');
+            
+            // Load view content
+            loadViewContent(view);
+        }
+        
+        function loadViewContent(view) {
+            // This would load different dashboard views
+            console.log('Loading view:', view);
+        }
+        
+        // Auto-refresh dashboard
+        setInterval(() => {
+            if (currentView === 'dashboard') {
+                refreshDashboardData();
+            }
+        }, 30000); // Every 30 seconds
+        
+        function refreshDashboardData() {
+            // Refresh priority items
+            // Refresh agent status
+            // Refresh activity timeline
+            console.log('Refreshing dashboard...');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            agentManager.setupMobileInterface();
+            refreshDashboardData();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<div class="container" style="text-align:center;">
+    <h1>Welcome to FoodXchange</h1>
+    <p style="font-size:1.3rem; max-width:600px; margin:1.5rem auto;">Streamline your food sourcing with AI-powered supplier matching, automated RFQs, and intelligent analytics. Built for solo founders and lean teams.</p>
+    <div style="margin:2rem 0;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="margin-right:1rem;">Go to Dashboard</a>
+        <a href="{{ url_for('new_rfq') }}" class="btn btn-primary">Create New RFQ</a>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Quote Comparison{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Quote Comparison</h1>
+    <div class="card">
+        <table style="width:100%; margin-top:1rem;">
+            <thead>
+                <tr>
+                    <th>Supplier</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Lead Time</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quote in quotes %}
+                <tr>
+                    <td>{{ quote.supplier }}</td>
+                    <td>{{ quote.product }}</td>
+                    <td>${{ quote.price }}</td>
+                    <td>{{ quote.lead_time }} days</td>
+                    <td>{{ quote.notes }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5">No quotes found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

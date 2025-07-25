@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Projects</h1>
+    <div class="card">
+        <a href="#" class="btn btn-primary" style="float:right;">Add Project</a>
+        <table style="width:100%; margin-top:1rem;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.status }}</td>
+                    <td>{{ project.start_date }}</td>
+                    <td>{{ project.end_date }}</td>
+                    <td>
+                        <a href="#">View</a> |
+                        <a href="#">Edit</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5">No projects found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodXchange AutoPilot - One-Person Enterprise Operations</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <style>
+        /* One-Person Enterprise Operations Dashboard */
+        :root {
+            --primary: #2563eb;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        /* AutoPilot Header - Always Visible Status */
+        .autopilot-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .autopilot-status {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #e0f2fe;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Quick Command Bar */
+        .command-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .quick-command {
+            position: relative;
+        }
+        
+        .quick-command input {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            width: 300px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .quick-command input:focus {
+            outline: none;
+            border-color: var(--primary);
+            width: 400px;
+        }
+        
+        .command-hint {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+        
+        /* Main Layout */
+        .autopilot-container {
+            margin-top: 60px;
+            padding: 2rem;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Priority Action Cards - What Needs Your Attention NOW */
+        .priority-section {
+            margin-bottom: 2rem;
+        }
+        
+        .priority-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .priority-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .priority-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1rem;
+        }
+        
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .action-card.urgent {
+            border-left-color: var(--danger);
+            background: #fef2f2;
+        }
+        
+        .action-card.opportunity {
+            border-left-color: var(--success);
+            background: #f0fdf4;
+        }
+        
+        .action-timer {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--danger);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .action-content {
+            margin-bottom: 1rem;
+        }
+        
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .action-details {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-action {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .btn-approve {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #16a34a;
+        }
+        
+        .btn-decline {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+        
+        .btn-negotiate {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .btn-delegate {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Smart Metrics - Enterprise KPIs at a Glance */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), #60a5fa);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .metric-change {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .metric-change.positive {
+            color: var(--success);
+        }
+        
+        .metric-change.negative {
+            color: var(--danger);
+        }
+        
+        /* Enterprise Relationships - Key Account Status */
+        .relationships-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .relationship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .account-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .account-card:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+        
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+        
+        .account-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .account-tier {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .tier-platinum {
+            background: #faf5ff;
+            color: #7c3aed;
+        }
+        
+        .tier-gold {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .tier-silver {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .account-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 13px;
+        }
+        
+        .account-stat {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .account-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-quick {
+            padding: 0.4rem 0.8rem;
+            font-size: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-quick:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Auto-Pilot Controls */
+        .autopilot-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 100;
+        }
+        
+        .autopilot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .autopilot-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .autopilot-toggle.active {
+            background: var(--success);
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Voice Command Indicator */
+        .voice-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .voice-indicator.active {
+            display: flex;
+        }
+        
+        .voice-wave {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .voice-wave span {
+            width: 3px;
+            height: 20px;
+            background: white;
+            border-radius: 3px;
+            animation: wave 1s ease-in-out infinite;
+        }
+        
+        .voice-wave span:nth-child(2) { animation-delay: 0.1s; }
+        .voice-wave span:nth-child(3) { animation-delay: 0.2s; }
+        .voice-wave span:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes wave {
+            0%, 100% { height: 20px; }
+            50% { height: 10px; }
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .autopilot-header {
+                padding: 0 1rem;
+            }
+            
+            .quick-command input {
+                width: 200px;
+            }
+            
+            .quick-command input:focus {
+                width: 250px;
+            }
+            
+            .autopilot-container {
+                padding: 1rem;
+            }
+            
+            .priority-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .autopilot-controls {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+        
+        /* Keyboard Shortcuts Overlay */
+        .shortcuts-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .shortcuts-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .shortcut-keys {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .key {
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body>
+    <!-- AutoPilot Status Header -->
+    <header class="autopilot-header">
+        <div class="autopilot-status">
+            <h1 style="font-size: 1.25rem; font-weight: 700;">🚀 FoodXchange AutoPilot</h1>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>All Systems Operational</span>
+            </div>
+            <div style="font-size: 14px; color: #64748b;">
+                <span id="current-time">08:23 AM PST</span> • 
+                <span id="tasks-handled">147 tasks handled today</span>
+            </div>
+        </div>
+        
+        <div class="command-bar">
+            <div class="quick-command">
+                <input type="text" placeholder="Quick command..." id="commandInput">
+                <span class="command-hint">⌘K</span>
+            </div>
+            <button onclick="toggleVoiceCommand()" style="padding: 0.5rem; background: none; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer;">
+                🎤
+            </button>
+            <button onclick="showShortcuts()" style="padding: 0.5rem; background: none; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer;">
+                ⌨️
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="autopilot-container">
+        <!-- Priority Actions - What Needs Your Attention NOW -->
+        <section class="priority-section">
+            <div class="priority-header">
+                <h2 class="priority-title">
+                    <span>⚡</span>
+                    Priority Actions
+                    <span style="font-size: 14px; color: #64748b; font-weight: 400;">(5 require your decision)</span>
+                </h2>
+                <button onclick="handleAllPriorities()" class="btn-action btn-delegate">
+                    Handle All with AI
+                </button>
+            </div>
+            
+            <div class="priority-grid">
+                <!-- Urgent Quote -->
+                <div class="action-card urgent">
+                    <div class="action-timer">Expires in 2h</div>
+                    <div class="action-content">
+                        <h3 class="action-title">🚨 Walmart - Urgent Quote Request</h3>
+                        <div class="action-details">
+                            <p><strong>Product:</strong> Organic Tomatoes</p>
+                            <p><strong>Quantity:</strong> 50,000 kg</p>
+                            <p><strong>Target Price:</strong> $2.10/kg</p>
+                            <p><strong>Delivery:</strong> Within 48 hours</p>
+                            <p style="margin-top: 0.5rem; color: #059669;">
+                                <strong>AI Recommendation:</strong> Accept - We have inventory, 15% profit margin
+                            </p>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="quickApprove('walmart-quote')" class="btn-action btn-approve">
+                            ✓ Approve ($105,000)
+                        </button>
+                        <button onclick="negotiate('walmart-quote')" class="btn-action btn-negotiate">
+                            💬 Negotiate
+                        </button>
+                        <button onclick="decline('walmart-quote')" class="btn-action btn-decline">
+                            ✗ Decline
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Cost Saving Opportunity -->
+                <div class="action-card opportunity">
+                    <div class="action-content">
+                        <h3 class="action-title">💰 Cost Saving Alert - Olive Oil</h3>
+                        <div class="action-details">
+                            <p><strong>Current Price:</strong> $4.20/L (down 18%)</p>
+                            <p><strong>Your Avg Price:</strong> $5.10/L</p>
+                            <p><strong>Recommended Order:</strong> 5,000L</p>
+                            <p><strong>Potential Savings:</strong> $4,500</p>
+                            <p style="margin-top: 0.5rem; color: #059669;">
+                                <strong>AI Analysis:</strong> Historical low - prices likely to rise next month
+                            </p>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="lockInPrice('olive-oil')" class="btn-action btn-approve">
+                            🔒 Lock Price (30 days)
+                        </button>
+                        <button onclick="buyNow('olive-oil')" class="btn-action btn-delegate">
+                            🛒 Buy Now
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- New Enterprise Account -->
+                <div class="action-card">
+                    <div class="action-content">
+                        <h3 class="action-title">🏢 New Enterprise Account - Kroger</h3>
+                        <div class="action-details">
+                            <p><strong>Potential Volume:</strong> $2.5M/year</p>
+                            <p><strong>First RFQ:</strong> Mixed vegetables, 100,000 kg/month</p>
+                            <p><strong>Requirements:</strong> Organic cert, 99.5% delivery reliability</p>
+                            <p style="margin-top: 0.5rem; color: #2563eb;">
+                                <strong>AI Match:</strong> 94% capability match - Recommended
+                            </p>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="setupAccount('kroger')" class="btn-action btn-delegate">
+                            🤝 Setup Account
+                        </button>
+                        <button onclick="scheduleCall('kroger')" class="btn-action btn-approve">
+                            📞 Schedule Call
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Enterprise KPIs -->
+        <div class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-value">$847K</div>
+                <div class="metric-label">Today's Revenue</div>
+                <span class="metric-change positive">+23%</span>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">98.7%</div>
+                <div class="metric-label">On-Time Delivery</div>
+                <span class="metric-change positive">+0.3%</span>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">42</div>
+                <div class="metric-label">Active RFQs</div>
+                <span class="metric-change negative">-5</span>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">$124K</div>
+                <div class="metric-label">Cost Savings MTD</div>
+                <span class="metric-change positive">+45%</span>
+            </div>
+        </div>
+        
+        <!-- Key Enterprise Relationships -->
+        <section class="relationships-section">
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">
+                🏆 Key Enterprise Accounts
+            </h2>
+            
+            <div class="relationship-grid">
+                <!-- Walmart Account -->
+                <div class="account-card" onclick="openAccount('walmart')">
+                    <div class="account-header">
+                        <div>
+                            <div class="account-name">Walmart</div>
+                            <div style="font-size: 12px; color: #64748b;">Last order: 2 hours ago</div>
+                        </div>
+                        <span class="account-tier tier-platinum">Platinum</span>
+                    </div>
+                    <div class="account-stats">
+                        <div class="account-stat">
+                            <span>Monthly Volume:</span>
+                            <strong>$2.8M</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Payment Terms:</span>
+                            <strong>NET 30</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Open Orders:</span>
+                            <strong>12</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Satisfaction:</span>
+                            <strong style="color: var(--success);">98%</strong>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <button class="btn-quick">📊 View Dashboard</button>
+                        <button class="btn-quick">📧 Send Update</button>
+                        <button class="btn-quick">📞 Call</button>
+                    </div>
+                </div>
+                
+                <!-- Whole Foods Account -->
+                <div class="account-card" onclick="openAccount('wholefoods')">
+                    <div class="account-header">
+                        <div>
+                            <div class="account-name">Whole Foods</div>
+                            <div style="font-size: 12px; color: #64748b;">Next delivery: Tomorrow 6AM</div>
+                        </div>
+                        <span class="account-tier tier-platinum">Platinum</span>
+                    </div>
+                    <div class="account-stats">
+                        <div class="account-stat">
+                            <span>Monthly Volume:</span>
+                            <strong>$1.9M</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Payment Terms:</span>
+                            <strong>NET 15</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Open Orders:</span>
+                            <strong>8</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Compliance:</span>
+                            <strong style="color: var(--success);">100%</strong>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <button class="btn-quick">🚚 Track Shipments</button>
+                        <button class="btn-quick">📋 Compliance Docs</button>
+                        <button class="btn-quick">💬 Chat</button>
+                    </div>
+                </div>
+                
+                <!-- Sysco Account -->
+                <div class="account-card" onclick="openAccount('sysco')">
+                    <div class="account-header">
+                        <div>
+                            <div class="account-name">Sysco</div>
+                            <div style="font-size: 12px; color: var(--warning);">Payment overdue: 5 days</div>
+                        </div>
+                        <span class="account-tier tier-gold">Gold</span>
+                    </div>
+                    <div class="account-stats">
+                        <div class="account-stat">
+                            <span>Monthly Volume:</span>
+                            <strong>$890K</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Payment Terms:</span>
+                            <strong>NET 45</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Outstanding:</span>
+                            <strong style="color: var(--warning);">$125K</strong>
+                        </div>
+                        <div class="account-stat">
+                            <span>Credit Score:</span>
+                            <strong>B+</strong>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <button class="btn-quick">💰 Payment Follow-up</button>
+                        <button class="btn-quick">📄 Statement</button>
+                        <button class="btn-quick">🔔 Set Reminder</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- AutoPilot Controls -->
+    <div class="autopilot-controls">
+        <button class="autopilot-toggle" id="autopilotToggle" onclick="toggleAutoPilot()">
+            ✈️
+        </button>
+    </div>
+    
+    <!-- Voice Command Indicator -->
+    <div class="voice-indicator" id="voiceIndicator">
+        <div class="voice-wave">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <span>Listening...</span>
+    </div>
+    
+    <!-- Keyboard Shortcuts Overlay -->
+    <div class="shortcuts-overlay" id="shortcutsOverlay" onclick="hideShortcuts()">
+        <div class="shortcuts-panel" onclick="event.stopPropagation()">
+            <h3 style="margin-bottom: 1.5rem;">⌨️ Keyboard Shortcuts</h3>
+            
+            <div class="shortcut-item">
+                <span>Open command palette</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">K</span>
+                </div>
+            </div>
+            
+            <div class="shortcut-item">
+                <span>Approve top priority</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">1</span>
+                </div>
+            </div>
+            
+            <div class="shortcut-item">
+                <span>Toggle AutoPilot</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">A</span>
+                </div>
+            </div>
+            
+            <div class="shortcut-item">
+                <span>Voice command</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">.</span>
+                </div>
+            </div>
+            
+            <div class="shortcut-item">
+                <span>Quick approve all</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">⏎</span>
+                </div>
+            </div>
+            
+            <div class="shortcut-item">
+                <span>Search accounts</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">F</span>
+                </div>
+            </div>
+            
+            <div class="shortcut-item">
+                <span>New RFQ</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">N</span>
+                </div>
+            </div>
+            
+            <div class="shortcut-item">
+                <span>Today's summary</span>
+                <div class="shortcut-keys">
+                    <span class="key">⌘</span>
+                    <span class="key">S</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // AutoPilot System
+        let autoPilotActive = false;
+        let voiceRecognition = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeKeyboardShortcuts();
+            initializeVoiceCommands();
+            updateClock();
+            setInterval(updateClock, 60000);
+            
+            // Auto-refresh priority actions every 30 seconds
+            setInterval(refreshPriorityActions, 30000);
+            
+            // Check for urgent items every 5 minutes
+            setInterval(checkUrgentItems, 300000);
+        });
+        
+        // Keyboard Shortcuts
+        function initializeKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Command/Ctrl key combinations
+                if (e.metaKey || e.ctrlKey) {
+                    switch(e.key) {
+                        case 'k':
+                            e.preventDefault();
+                            document.getElementById('commandInput').focus();
+                            break;
+                        case '1':
+                            e.preventDefault();
+                            approveTopPriority();
+                            break;
+                        case 'a':
+                            e.preventDefault();
+                            toggleAutoPilot();
+                            break;
+                        case '.':
+                            e.preventDefault();
+                            toggleVoiceCommand();
+                            break;
+                        case 'Enter':
+                            e.preventDefault();
+                            handleAllPriorities();
+                            break;
+                        case 'f':
+                            e.preventDefault();
+                            searchAccounts();
+                            break;
+                        case 'n':
+                            e.preventDefault();
+                            createNewRFQ();
+                            break;
+                        case 's':
+                            e.preventDefault();
+                            showDailySummary();
+                            break;
+                    }
+                }
+                
+                // Escape key
+                if (e.key === 'Escape') {
+                    hideShortcuts();
+                    document.getElementById('commandInput').blur();
+                }
+            });
+            
+            // Command input handler
+            document.getElementById('commandInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    executeCommand(e.target.value);
+                    e.target.value = '';
+                    e.target.blur();
+                }
+            });
+        }
+        
+        // Voice Commands
+        function initializeVoiceCommands() {
+            if ('webkitSpeechRecognition' in window) {
+                voiceRecognition = new webkitSpeechRecognition();
+                voiceRecognition.continuous = false;
+                voiceRecognition.interimResults = false;
+                voiceRecognition.lang = 'en-US';
+                
+                voiceRecognition.onresult = (event) => {
+                    const command = event.results[0][0].transcript.toLowerCase();
+                    processVoiceCommand(command);
+                };
+                
+                voiceRecognition.onend = () => {
+                    document.getElementById('voiceIndicator').classList.remove('active');
+                };
+            }
+        }
+        
+        function toggleVoiceCommand() {
+            if (!voiceRecognition) {
+                alert('Voice commands not supported in your browser');
+                return;
+            }
+            
+            if (document.getElementById('voiceIndicator').classList.contains('active')) {
+                voiceRecognition.stop();
+            } else {
+                voiceRecognition.start();
+                document.getElementById('voiceIndicator').classList.add('active');
+            }
+        }
+        
+        function processVoiceCommand(command) {
+            console.log('Voice command:', command);
+            
+            // Process natural language commands
+            if (command.includes('approve') && command.includes('walmart')) {
+                quickApprove('walmart-quote');
+                speak('Walmart quote approved for 105 thousand dollars');
+            } else if (command.includes('approve all')) {
+                handleAllPriorities();
+                speak('Handling all priority actions with AI');
+            } else if (command.includes('summary') || command.includes('status')) {
+                showDailySummary();
+                speak('Here is your daily summary');
+            } else if (command.includes('call') && command.includes('kroger')) {
+                scheduleCall('kroger');
+                speak('Scheduling call with Kroger');
+            } else if (command.includes('autopilot on')) {
+                if (!autoPilotActive) toggleAutoPilot();
+                speak('AutoPilot activated');
+            } else if (command.includes('autopilot off')) {
+                if (autoPilotActive) toggleAutoPilot();
+                speak('AutoPilot deactivated');
+            } else {
+                speak('Sorry, I did not understand that command');
+            }
+        }
+        
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // AutoPilot Functions
+        function toggleAutoPilot() {
+            autoPilotActive = !autoPilotActive;
+            const toggle = document.getElementById('autopilotToggle');
+            
+            if (autoPilotActive) {
+                toggle.classList.add('active');
+                showNotification('🚀 AutoPilot Activated', 'AI will handle routine decisions automatically');
+                
+                // Start auto-handling routine tasks
+                setInterval(autoHandleRoutineTasks, 60000); // Every minute
+            } else {
+                toggle.classList.remove('active');
+                showNotification('✈️ AutoPilot Deactivated', 'Manual control resumed');
+            }
+        }
+        
+        function autoHandleRoutineTasks() {
+            if (!autoPilotActive) return;
+            
+            // Auto-approve quotes under $10K with good margins
+            // Auto-accept orders from platinum accounts
+            // Auto-send payment reminders
+            // Auto-update inventory levels
+            
+            console.log('AutoPilot: Checking for routine tasks...');
+        }
+        
+        // Quick Actions
+        function quickApprove(id) {
+            // Simulate approval
+            showNotification('✅ Approved', `Quote ${id} has been approved`);
+            
+            // Remove the card with animation
+            const card = event.target.closest('.action-card');
+            card.style.transform = 'translateX(100%)';
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 300);
+            
+            // Update metrics
+            updateTaskCount();
+        }
+        
+        function negotiate(id) {
+            // Open negotiation interface
+            showNotification('💬 Opening Negotiation', 'AI drafting counter-offer...');
+        }
+        
+        function decline(id) {
+            if (confirm('Are you sure you want to decline this quote?')) {
+                showNotification('❌ Declined', `Quote ${id} has been declined`);
+                const card = event.target.closest('.action-card');
+                card.remove();
+                updateTaskCount();
+            }
+        }
+        
+        function handleAllPriorities() {
+            if (confirm('Let AI handle all 5 priority actions based on your preferences?')) {
+                showNotification('🤖 AI Processing', 'Handling all priority actions...');
+                
+                // Simulate AI processing
+                setTimeout(() => {
+                    document.querySelectorAll('.action-card').forEach(card => {
+                        card.style.opacity = '0.5';
+                        card.querySelector('.action-buttons').innerHTML = '<span style="color: var(--success);">✓ Handled by AI</span>';
+                    });
+                    
+                    showNotification('✅ Complete', 'All priority actions handled successfully');
+                    updateTaskCount();
+                }, 2000);
+            }
+        }
+        
+        // Command Execution
+        function executeCommand(command) {
+            const cmd = command.toLowerCase();
+            
+            if (cmd.includes('approve')) {
+                if (cmd.includes('all')) {
+                    handleAllPriorities();
+                } else if (cmd.includes('walmart')) {
+                    quickApprove('walmart-quote');
+                }
+            } else if (cmd.includes('call')) {
+                const account = cmd.split(' ').pop();
+                scheduleCall(account);
+            } else if (cmd.includes('summary')) {
+                showDailySummary();
+            } else if (cmd.includes('help')) {
+                showShortcuts();
+            } else {
+                showNotification('❓ Unknown Command', `"${command}" not recognized. Type "help" for commands.`);
+            }
+        }
+        
+        // Utility Functions
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true,
+                timeZoneName: 'short'
+            });
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        function updateTaskCount() {
+            const currentCount = parseInt(document.getElementById('tasks-handled').textContent);
+            document.getElementById('tasks-handled').textContent = `${currentCount + 1} tasks handled today`;
+        }
+        
+        function showNotification(title, message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                z-index: 1001;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            
+            toast.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">${title}</div>
+                <div style="font-size: 14px; color: #64748b;">${message}</div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function showShortcuts() {
+            document.getElementById('shortcutsOverlay').style.display = 'flex';
+        }
+        
+        function hideShortcuts() {
+            document.getElementById('shortcutsOverlay').style.display = 'none';
+        }
+        
+        function refreshPriorityActions() {
+            console.log('Refreshing priority actions...');
+            // In production, fetch new priority items from server
+        }
+        
+        function checkUrgentItems() {
+            // Check for items requiring immediate attention
+            // Show browser notification if urgent
+            if (Notification.permission === 'granted') {
+                // new Notification('Urgent: Walmart quote expires in 30 minutes');
+            }
+        }
+        
+        function showDailySummary() {
+            showNotification('📊 Daily Summary', 'Revenue: $847K (+23%), 147 tasks completed, 98.7% on-time delivery');
+        }
+        
+        // Account Management
+        function openAccount(accountId) {
+            window.location.href = `/accounts/${accountId}`;
+        }
+        
+        function scheduleCall(account) {
+            showNotification('📞 Call Scheduled', `Video call with ${account} scheduled for tomorrow 2 PM`);
+        }
+        
+        function setupAccount(account) {
+            showNotification('🤝 Account Setup', `Setting up ${account} account with AI-recommended terms`);
+        }
+        
+        // CSS Animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    </script>
+</body>
+</html>

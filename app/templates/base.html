@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FoodXchange - Streamline your food sourcing with AI-powered supplier matching">
+    <title>{% block title %}{{ title }}{% endblock %} - FoodXchange</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', path='/favicon.png') }}">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <!-- Base Styles -->
+    <style>
+        /* ... (CSS from your base.html above) ... */
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+    <header>
+        <nav>
+            <a href="{{ url_for('dashboard') }}" class="logo">
+                <span class="logo-icon">🔄</span>
+                <span class="logo-text-primary">FOOD</span>
+                <span class="logo-text-secondary">XCHANGE</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{{ url_for('dashboard') }}" class="{% if request.url.path == '/dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="{{ url_for('projects_list') }}" class="{% if request.url.path == '/projects' %}active{% endif %}">Projects</a></li>
+                <li><a href="{{ url_for('suppliers_list') }}" class="{% if request.url.path == '/suppliers' %}active{% endif %}">Suppliers</a></li>
+                <li><a href="{{ url_for('analytics') }}" class="{% if request.url.path == '/analytics' %}active{% endif %}">Analytics</a></li>
+                <li><a href="{{ url_for('email_intelligence') }}" class="{% if request.url.path == '/emails' %}active{% endif %}">Emails</a></li>
+            </ul>
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-avatar">{{ current_user.initials | default('AD') }}</div>
+                    <span>{{ current_user.name | default('Admin') }}</span>
+                </div>
+                <a href="{{ url_for('new_rfq') }}" class="btn btn-primary">
+                    <span>➕ New RFQ</span>
+                </a>
+            </div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                ☰
+            </button>
+        </nav>
+    </header>
+    {% block breadcrumb %}{% endblock %}
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>FoodXchange</h3>
+                <p>Streamlining food sourcing with AI-powered supplier matching and intelligent automation.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('projects_list') }}">Projects</a></li>
+                    <li><a href="{{ url_for('suppliers_list') }}">Suppliers</a></li>
+                    <li><a href="#">Help Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Features</h3>
+                <ul>
+                    <li><a href="#">AI Supplier Matching</a></li>
+                    <li><a href="#">Quote Comparison</a></li>
+                    <li><a href="#">Email Intelligence</a></li>
+                    <li><a href="#">Cost Analytics</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>📧 support@foodxchange.com</p>
+                <p>📱 WhatsApp: +972-XX-XXXXXXX</p>
+                <p>📍 Herzliya, Tel Aviv, Israel</p>
+                <p>🕐 Sun-Thu: 9:00-18:00 IST</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 FoodXchange. All rights reserved. | 
+               <a href="#">Privacy Policy</a> | 
+               <a href="#">Terms of Service</a> | 
+               <a href="#">API Documentation</a>
+            </p>
+        </div>
+    </footer>
+    <div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1000;">
+        <button class="btn btn-primary" style="width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);" onclick="showQuickActions()">
+            +
+        </button>
+    </div>
+    <script>
+        // ... (JS from your base.html above) ...
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

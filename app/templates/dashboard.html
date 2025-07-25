@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Welcome to FoodXchange</h1>
+    <div class="card">
+        <h2>Quick Stats</h2>
+        <ul>
+            <li><strong>Suppliers:</strong> {{ stats.suppliers }}</li>
+            <li><strong>Active RFQs:</strong> {{ stats.rfqs }}</li>
+            <li><strong>Quotes:</strong> {{ stats.quotes }}</li>
+            <li><strong>Emails:</strong> {{ stats.emails }}</li>
+        </ul>
+    </div>
+    <div class="card">
+        <h2>Get Started</h2>
+        <ul>
+            <li><a href="{{ url_for('new_rfq') }}" class="btn btn-primary">Create New RFQ</a></li>
+            <li><a href="{{ url_for('suppliers_list') }}">View Suppliers</a></li>
+            <li><a href="{{ url_for('analytics') }}">View Analytics</a></li>
+            <li><a href="{{ url_for('email_intelligence') }}">Email Intelligence Center</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

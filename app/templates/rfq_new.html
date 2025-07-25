@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}New RFQ{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Create New RFQ</h1>
+    <div class="card">
+        <form method="post" action="/rfq/new">
+            <label for="product">Product</label><br>
+            <input type="text" id="product" name="product" required><br><br>
+            <label for="quantity">Quantity</label><br>
+            <input type="number" id="quantity" name="quantity" required><br><br>
+            <label for="deadline">Deadline</label><br>
+            <input type="date" id="deadline" name="deadline" required><br><br>
+            <label for="notes">Notes</label><br>
+            <textarea id="notes" name="notes"></textarea><br><br>
+            <button type="submit" class="btn btn-primary">Submit RFQ</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

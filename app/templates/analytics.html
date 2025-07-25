@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Analytics Dashboard</h1>
+    <div class="card">
+        <h2>Key Performance Indicators</h2>
+        <ul>
+            <li><strong>Total Spend:</strong> ${{ kpis.total_spend }}</li>
+            <li><strong>Cost Savings:</strong> ${{ kpis.cost_savings }}</li>
+            <li><strong>Suppliers Engaged:</strong> {{ kpis.suppliers_engaged }}</li>
+            <li><strong>RFQs Sent:</strong> {{ kpis.rfqs_sent }}</li>
+        </ul>
+    </div>
+    <div class="card">
+        <h2>Charts</h2>
+        <div id="chart-placeholder" style="height:300px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; color:#888;">[Charts will appear here]</div>
+    </div>
+</div>
+{% endblock %} 

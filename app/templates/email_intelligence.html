@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Email Intelligence{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Email Intelligence Center</h1>
+    <div class="card">
+        <h2>Recent Emails</h2>
+        <table style="width:100%; margin-top:1rem;">
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>AI Insights</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for email in emails %}
+                <tr>
+                    <td>{{ email.sender }}</td>
+                    <td>{{ email.subject }}</td>
+                    <td>{{ email.date }}</td>
+                    <td>{{ email.insight }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4">No emails found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 
