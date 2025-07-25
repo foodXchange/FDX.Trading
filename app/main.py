@@ -1,12 +1,16 @@
-from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi import FastAPI, Request, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from sqlalchemy.orm import Session
 import os
 import logging
+
+from app.database import get_db
+from app.auth import SessionAuth, get_current_user_context as get_user_context
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,113 +33,165 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # Templates
 templates = Jinja2Templates(directory="app/templates")
 
-def get_current_user_context():
-    # In a real app, fetch from session or auth
-    return {
-        "name": "Admin",
-        "initials": "AD"
-    }
+def get_current_user_context(request: Request, db: Session):
+    return get_user_context(request, db)
 
 @app.get("/", response_class=HTMLResponse)
-async def landing(request: Request):
-    return templates.TemplateResponse("landing.html", {"request": request, "current_user": get_current_user_context()})
+async def landing(request: Request, db: Session = Depends(get_db)):
+    return templates.TemplateResponse("landing.html", {"request": request, "current_user": get_current_user_context(request, db)})
 
 @app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
+async def login_page(request: Request, db: Session = Depends(get_db)):
     error = request.query_params.get("error")
-    return templates.TemplateResponse("login.html", {"request": request, "error": error})
+    return templates.TemplateResponse("login.html", {"request": request, "error": error, "current_user": None})
+
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request, db: Session = Depends(get_db)):
+    error = request.query_params.get("error")
+    return templates.TemplateResponse("register.html", {"request": request, "error": error, "current_user": None})
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request):
+async def dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
     stats = {
         "suppliers": 0,
         "rfqs": 0,
         "quotes": 0,
         "emails": 0
     }
-    return templates.TemplateResponse("simple_dashboard.html", {"request": request, "stats": stats, "current_user": get_current_user_context()})
+    return templates.TemplateResponse("simple_dashboard.html", {"request": request, "stats": stats, "current_user": user})
 
 @app.get("/suppliers", response_class=HTMLResponse, name="suppliers_list")
-async def suppliers_list(request: Request):
+async def suppliers_list(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
     suppliers = [
         {"id": 1, "name": "Mediterranean Delights", "location": "Greece", "products": ["Olive Oil", "Feta Cheese"], "status": "active"},
         {"id": 2, "name": "Italian Fine Foods", "location": "Italy", "products": ["Pasta", "Tomatoes"], "status": "active"},
         {"id": 3, "name": "Spanish Imports Co", "location": "Spain", "products": ["Jamón", "Manchego"], "status": "pending"}
     ]
-    return templates.TemplateResponse("suppliers.html", {"request": request, "suppliers": suppliers, "current_user": get_current_user_context()})
+    return templates.TemplateResponse("suppliers.html", {"request": request, "suppliers": suppliers, "current_user": user})
 
 @app.get("/suppliers/add", response_class=HTMLResponse, name="add_supplier")
-async def add_supplier(request: Request):
-    return templates.TemplateResponse("base.html", {"request": request, "title": "Add Supplier", "current_user": get_current_user_context()})
+async def add_supplier(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("base.html", {"request": request, "title": "Add Supplier", "current_user": user})
 
 @app.get("/suppliers/{supplier_id}", response_class=HTMLResponse, name="view_supplier")
-async def view_supplier(request: Request, supplier_id: int):
-    return templates.TemplateResponse("base.html", {"request": request, "title": f"Supplier {supplier_id}", "current_user": get_current_user_context()})
+async def view_supplier(request: Request, supplier_id: int, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("base.html", {"request": request, "title": f"Supplier {supplier_id}", "current_user": user})
 
 @app.get("/suppliers/{supplier_id}/edit", response_class=HTMLResponse, name="edit_supplier")
-async def edit_supplier(request: Request, supplier_id: int):
-    return templates.TemplateResponse("base.html", {"request": request, "title": f"Edit Supplier {supplier_id}", "current_user": get_current_user_context()})
+async def edit_supplier(request: Request, supplier_id: int, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("base.html", {"request": request, "title": f"Edit Supplier {supplier_id}", "current_user": user})
 
 @app.get("/rfq/new", response_class=HTMLResponse, name="new_rfq")
-async def new_rfq(request: Request):
-    return templates.TemplateResponse("rfq_new.html", {"request": request, "current_user": get_current_user_context()})
+async def new_rfq(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("rfq_new.html", {"request": request, "current_user": user})
 
 @app.post("/rfq/new", response_class=HTMLResponse)
-async def create_rfq(request: Request, product: str = Form(...), quantity: int = Form(...), deadline: str = Form(...), notes: str = Form(None)):
+async def create_rfq(request: Request, product: str = Form(...), quantity: int = Form(...), deadline: str = Form(...), notes: str = Form(None), db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
     # Placeholder: Save RFQ to database
     # Redirect to dashboard or show confirmation
-    return templates.TemplateResponse("dashboard.html", {"request": request, "stats": {"suppliers": 0, "rfqs": 1, "quotes": 0, "emails": 0}, "message": "RFQ created!", "current_user": get_current_user_context()})
+    return templates.TemplateResponse("dashboard.html", {"request": request, "stats": {"suppliers": 0, "rfqs": 1, "quotes": 0, "emails": 0}, "message": "RFQ created!", "current_user": user})
 
 @app.get("/orders", response_class=HTMLResponse, name="orders_list")
-async def orders_list(request: Request):
-    return templates.TemplateResponse("orders.html", {"request": request, "current_user": get_current_user_context()})
+async def orders_list(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("orders.html", {"request": request, "current_user": user})
 
 @app.get("/products", response_class=HTMLResponse, name="products_list")
-async def products_list(request: Request):
-    return templates.TemplateResponse("products.html", {"request": request, "current_user": get_current_user_context()})
+async def products_list(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("products.html", {"request": request, "current_user": user})
 
 @app.get("/analytics", response_class=HTMLResponse, name="analytics")
-async def analytics(request: Request):
+async def analytics(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
     kpis = {
         "total_spend": 100000,
         "cost_savings": 15000,
         "suppliers_engaged": 12,
         "rfqs_sent": 34
     }
-    return templates.TemplateResponse("analytics.html", {"request": request, "kpis": kpis, "current_user": get_current_user_context()})
+    return templates.TemplateResponse("analytics.html", {"request": request, "kpis": kpis, "current_user": user})
 
 @app.get("/emails", response_class=HTMLResponse, name="email_intelligence")
-async def email_intelligence(request: Request):
+async def email_intelligence(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
     emails = [
         {"sender": "supplier1@example.com", "subject": "Quote for Olive Oil", "date": "2024-06-01", "insight": "Potential cost savings identified."},
         {"sender": "supplier2@example.com", "subject": "RFQ Response", "date": "2024-06-02", "insight": "Supplier offers volume discount."}
     ]
-    return templates.TemplateResponse("email_intelligence.html", {"request": request, "emails": emails, "current_user": get_current_user_context()})
+    return templates.TemplateResponse("email_intelligence.html", {"request": request, "emails": emails, "current_user": user})
 
 @app.get("/quotes/comparison", response_class=HTMLResponse, name="quote_comparison")
-async def quote_comparison(request: Request):
+async def quote_comparison(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
     quotes = [
         {"supplier": "Mediterranean Delights", "product": "Olive Oil", "price": 1200, "lead_time": 7, "notes": "Includes shipping."},
         {"supplier": "Italian Fine Foods", "product": "Olive Oil", "price": 1250, "lead_time": 10, "notes": "Faster delivery available."}
     ]
-    return templates.TemplateResponse("quote_comparison.html", {"request": request, "quotes": quotes, "current_user": get_current_user_context()})
+    return templates.TemplateResponse("quote_comparison.html", {"request": request, "quotes": quotes, "current_user": user})
 
 @app.get("/projects", response_class=HTMLResponse, name="projects_list")
-async def projects_list(request: Request):
+async def projects_list(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
     projects = [
         {"name": "Summer Sourcing 2024", "status": "Active", "start_date": "2024-05-01", "end_date": "2024-08-31"},
         {"name": "Winter Menu Planning", "status": "Planning", "start_date": "2024-09-01", "end_date": "2024-12-15"}
     ]
-    return templates.TemplateResponse("projects.html", {"request": request, "projects": projects, "current_user": get_current_user_context()})
+    return templates.TemplateResponse("projects.html", {"request": request, "projects": projects, "current_user": user})
 
 # Include auth routes
-# TODO: Uncomment when auth_routes.py is created
-# from app.routes.auth_routes import include_auth_routes
-# include_auth_routes(app)
+from app.routes.auth_routes import include_auth_routes
+include_auth_routes(app)
 
 # Include agent routes
 from app.routes.agent_routes import router as agent_router
@@ -143,13 +199,21 @@ app.include_router(agent_router)
 
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
-async def agent_dashboard(request: Request):
-    return templates.TemplateResponse("agent_dashboard.html", {"request": request, "current_user": get_current_user_context()})
+async def agent_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("agent_dashboard.html", {"request": request, "current_user": user})
 
 # Operator dashboard route - unified control center
 @app.get("/operator", response_class=HTMLResponse, name="operator_dashboard")
-async def operator_dashboard(request: Request):
-    return templates.TemplateResponse("operator_dashboard.html", {"request": request, "current_user": get_current_user_context()})
+async def operator_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("operator_dashboard.html", {"request": request, "current_user": user})
 
 # Error handlers
 @app.exception_handler(StarletteHTTPException)
