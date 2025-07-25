@@ -1,1 +1,1 @@
-gunicorn --bind=0.0.0.0:8000 main:application 
+python azure_startup.py 
