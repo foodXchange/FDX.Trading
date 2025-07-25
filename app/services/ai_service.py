@@ -11,7 +11,19 @@ import asyncio
 import aiohttp
 
 from app.config import get_settings
-from app.agents.email_monitor_agent import EmailIntent
+
+try:
+    from app.agents.email_monitor_agent import EmailIntent
+except ImportError:
+    # Define EmailIntent locally if import fails
+    class EmailIntent(Enum):
+        QUOTE_RESPONSE = "quote_response"
+        PRICE_UPDATE = "price_update"
+        PRODUCT_UPDATE = "product_update"
+        CERTIFICATION_UPDATE = "certification_update"
+        CONTACT_UPDATE = "contact_update"
+        GENERAL_INQUIRY = "general_inquiry"
+        UNKNOWN = "unknown"
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

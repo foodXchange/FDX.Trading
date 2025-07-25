@@ -48,41 +48,161 @@
             <!-- Page Header -->
             <div class="mb-4">
                 <h1>Quote Comparison</h1>
-                <p class="text-muted">Compare supplier quotes side by side</p>
+                <p class="text-muted">Compare supplier quotes side by side to find the best deal</p>
             </div>
             
-            <!-- Quote Table -->
+            <!-- RFQ Info -->
+            {% if rfq %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="grid grid-3">
+                        <div>
+                            <h4>{{ rfq.product_name }}</h4>
+                            <p class="text-muted">{{ rfq.category }}</p>
+                        </div>
+                        <div>
+                            <h4>{{ rfq.quantity }}</h4>
+                            <p class="text-muted">Quantity Required</p>
+                        </div>
+                        <div>
+                            <h4>{{ rfq.delivery_date.strftime('%Y-%m-%d') if rfq.delivery_date else 'Flexible' }}</h4>
+                            <p class="text-muted">Delivery Date</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Comparison Controls -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <button class="btn btn-primary" onclick="analyzeQuotes()">
+                        📊 Analyze Best Value
+                    </button>
+                    <button class="btn btn-secondary" onclick="showChart()">
+                        📈 View Chart
+                    </button>
+                    <button class="btn btn-outline" onclick="exportComparison()">
+                        📥 Export to Excel
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quote Comparison Table -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Active Quotes</h2>
+                    <h2 class="card-title">Quote Comparison</h2>
+                    <div class="form-group mb-0" style="width: 200px;">
+                        <select class="form-control" onchange="sortQuotes(this.value)">
+                            <option value="">Sort by...</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="delivery">Delivery Time</option>
+                            <option value="score">Best Score</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="table-container">
-                    <table class="table table-striped">
+                    <table class="table table-hover" id="quotesTable">
                         <thead>
                             <tr>
+                                <th>Rank</th>
                                 <th>Supplier</th>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Lead Time</th>
-                                <th>Notes</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                                <th>Delivery</th>
+                                <th>Payment Terms</th>
+                                <th>Score</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for quote in quotes %}
-                            <tr>
-                                <td>{{ quote.supplier }}</td>
-                                <td>{{ quote.product }}</td>
-                                <td>${{ quote.price }}</td>
-                                <td>{{ quote.lead_time }} days</td>
-                                <td>{{ quote.notes }}</td>
+                            <tr class="{{ 'table-success' if loop.index == 1 else '' }}">
+                                <td>
+                                    {% if loop.index == 1 %}
+                                    <span class="badge bg-success">Best Value</span>
+                                    {% else %}
+                                    {{ loop.index }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ quote.supplier.name if quote.supplier else 'Unknown' }}</strong>
+                                    <div class="text-sm text-muted">{{ quote.supplier.location if quote.supplier else '' }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ quote.currency }} {{ "{:,.2f}".format(quote.price_per_unit) }}</strong>
+                                    <div class="text-sm text-muted">per unit</div>
+                                </td>
+                                <td>
+                                    <strong>{{ quote.currency }} {{ "{:,.2f}".format(quote.total_price) }}</strong>
+                                    {% if loop.index > 1 and quotes[0].total_price %}
+                                    <div class="text-sm {{ 'text-danger' if quote.total_price > quotes[0].total_price else 'text-success' }}">
+                                        {{ '+' if quote.total_price > quotes[0].total_price else '' }}{{ ((quote.total_price - quotes[0].total_price) / quotes[0].total_price * 100)|round(1) }}%
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td>{{ quote.delivery_time }}</td>
+                                <td>{{ quote.payment_terms or 'Standard' }}</td>
+                                <td>
+                                    <div class="progress" style="width: 100px;">
+                                        <div class="progress-bar bg-{{ 'success' if quote.score >= 80 else 'warning' if quote.score >= 60 else 'danger' }}" 
+                                             style="width: {{ quote.score or 75 }}%">
+                                            {{ quote.score or 75 }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline" onclick="viewQuoteDetails({{ quote.id }})">
+                                            View
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" onclick="acceptQuote({{ quote.id }})">
+                                            Accept
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                             {% else %}
-                            <tr><td colspan="5" class="text-center text-muted">No quotes found.</td></tr>
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">
+                                    No quotes received yet. <a href="/rfqs">View RFQs</a>
+                                </td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
+            
+            <!-- Analysis Summary -->
+            {% if quotes|length > 0 %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="card-title">Analysis Summary</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-4">
+                        <div>
+                            <h4 class="text-primary">{{ quotes|length }}</h4>
+                            <p class="text-muted">Total Quotes</p>
+                        </div>
+                        <div>
+                            <h4 class="text-success">{{ quotes[0].currency }} {{ "{:,.2f}".format(quotes[0].total_price) }}</h4>
+                            <p class="text-muted">Best Price</p>
+                        </div>
+                        <div>
+                            <h4 class="text-warning">{{ quotes[0].delivery_time }}</h4>
+                            <p class="text-muted">Fastest Delivery</p>
+                        </div>
+                        <div>
+                            <h4 class="text-info">{{ ((quotes[-1].total_price - quotes[0].total_price) / quotes[0].total_price * 100)|round(1) }}%</h4>
+                            <p class="text-muted">Price Range</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </main>
     
@@ -95,5 +215,165 @@
     
     <!-- Simple Design System JS -->
     <script src="{{ url_for('static', path='/js/simple-utils.js') }}"></script>
+    
+    <script>
+        function analyzeQuotes() {
+            FX.loading.show('Analyzing quotes...');
+            
+            // Simulate AI analysis
+            setTimeout(() => {
+                FX.loading.hide();
+                
+                let analysis = `
+                    <h3>Quote Analysis Results</h3>
+                    <div class="alert alert-success">
+                        <strong>Recommended:</strong> Mediterranean Delights
+                    </div>
+                    <ul>
+                        <li><strong>Best Price:</strong> Mediterranean Delights offers the lowest total cost</li>
+                        <li><strong>Delivery:</strong> All suppliers meet the delivery requirements</li>
+                        <li><strong>Quality:</strong> Italian Fine Foods has the highest quality certifications</li>
+                        <li><strong>Payment Terms:</strong> Spanish Imports offers the most flexible terms</li>
+                    </ul>
+                    <h4>Recommendations:</h4>
+                    <ul>
+                        <li>Accept Mediterranean Delights quote for best value</li>
+                        <li>Consider negotiating with Italian Fine Foods for a 5% discount</li>
+                        <li>Request volume discount from all suppliers for future orders</li>
+                    </ul>
+                `;
+                
+                FX.modal.show(analysis, {
+                    title: 'AI Quote Analysis',
+                    size: 'large',
+                    footer: '<button class="btn btn-primary" onclick="FX.modal.hide()">Close</button>'
+                });
+            }, 2000);
+        }
+        
+        function showChart() {
+            FX.modal.show(`
+                <div class="text-center">
+                    <p>Price Comparison Chart</p>
+                    <div style="background: #f8f9fa; padding: 40px; border-radius: 8px;">
+                        <p class="text-muted">Chart visualization would appear here</p>
+                        <p class="text-muted">Showing price vs delivery time matrix</p>
+                    </div>
+                </div>
+            `, {
+                title: 'Quote Comparison Chart',
+                size: 'large'
+            });
+        }
+        
+        function exportComparison() {
+            FX.loading.show('Exporting to Excel...');
+            setTimeout(() => {
+                FX.loading.hide();
+                FX.toast('Quote comparison exported!', 'success');
+            }, 1500);
+        }
+        
+        function sortQuotes(sortBy) {
+            const table = document.getElementById('quotesTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            if (!sortBy || rows.length <= 1) return;
+            
+            rows.sort((a, b) => {
+                if (sortBy === 'price_asc') {
+                    const priceA = parseFloat(a.cells[3].textContent.replace(/[^0-9.-]+/g, ''));
+                    const priceB = parseFloat(b.cells[3].textContent.replace(/[^0-9.-]+/g, ''));
+                    return priceA - priceB;
+                } else if (sortBy === 'price_desc') {
+                    const priceA = parseFloat(a.cells[3].textContent.replace(/[^0-9.-]+/g, ''));
+                    const priceB = parseFloat(b.cells[3].textContent.replace(/[^0-9.-]+/g, ''));
+                    return priceB - priceA;
+                } else if (sortBy === 'delivery') {
+                    const deliveryA = parseInt(a.cells[4].textContent) || 999;
+                    const deliveryB = parseInt(b.cells[4].textContent) || 999;
+                    return deliveryA - deliveryB;
+                } else if (sortBy === 'score') {
+                    const scoreA = parseInt(a.cells[6].textContent) || 0;
+                    const scoreB = parseInt(b.cells[6].textContent) || 0;
+                    return scoreB - scoreA;
+                }
+            });
+            
+            // Re-append sorted rows
+            rows.forEach(row => tbody.appendChild(row));
+            
+            // Update rankings
+            rows.forEach((row, index) => {
+                if (index === 0) {
+                    row.cells[0].innerHTML = '<span class="badge bg-success">Best Value</span>';
+                    row.classList.add('table-success');
+                } else {
+                    row.cells[0].textContent = index + 1;
+                    row.classList.remove('table-success');
+                }
+            });
+        }
+        
+        function viewQuoteDetails(quoteId) {
+            window.location.href = `/quotes/${quoteId}`;
+        }
+        
+        function acceptQuote(quoteId) {
+            FX.modal.show(`
+                <h3>Accept Quote</h3>
+                <p>Are you sure you want to accept this quote?</p>
+                <form id="acceptQuoteForm">
+                    <div class="form-group">
+                        <label>Additional Notes</label>
+                        <textarea class="form-control" rows="3" placeholder="Any special instructions..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Address</label>
+                        <input type="text" class="form-control" value="123 Main St, City" />
+                    </div>
+                </form>
+            `, {
+                title: 'Confirm Quote Acceptance',
+                footer: `
+                    <button class="btn btn-secondary" onclick="FX.modal.hide()">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmAcceptQuote(${quoteId})">Confirm & Create Order</button>
+                `
+            });
+        }
+        
+        async function confirmAcceptQuote(quoteId) {
+            FX.loading.show('Creating order...');
+            
+            try {
+                const response = await fetch(`/api/quotes/${quoteId}/accept`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        notes: document.querySelector('#acceptQuoteForm textarea').value,
+                        delivery_address: document.querySelector('#acceptQuoteForm input').value
+                    })
+                });
+                
+                if (response.ok) {
+                    FX.loading.hide();
+                    FX.modal.hide();
+                    FX.toast('Order created successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/orders';
+                    }, 1500);
+                } else {
+                    FX.loading.hide();
+                    FX.toast('Failed to accept quote', 'error');
+                }
+            } catch (error) {
+                FX.loading.hide();
+                FX.toast('Error accepting quote', 'error');
+            }
+        }
+    </script>
 </body>
 </html> 

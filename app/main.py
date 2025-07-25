@@ -153,17 +153,7 @@ async def analytics(request: Request, db: Session = Depends(get_db)):
     }
     return templates.TemplateResponse("analytics.html", {"request": request, "kpis": kpis, "current_user": user})
 
-@app.get("/emails", response_class=HTMLResponse, name="email_intelligence")
-async def email_intelligence(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    emails = [
-        {"sender": "supplier1@example.com", "subject": "Quote for Olive Oil", "date": "2024-06-01", "insight": "Potential cost savings identified."},
-        {"sender": "supplier2@example.com", "subject": "RFQ Response", "date": "2024-06-02", "insight": "Supplier offers volume discount."}
-    ]
-    return templates.TemplateResponse("email_intelligence.html", {"request": request, "emails": emails, "current_user": user})
+# Email intelligence route is now handled by email_routes.py
 
 @app.get("/quotes/comparison", response_class=HTMLResponse, name="quote_comparison")
 async def quote_comparison(request: Request, db: Session = Depends(get_db)):
@@ -171,11 +161,40 @@ async def quote_comparison(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/login", status_code=302)
     
-    quotes = [
-        {"supplier": "Mediterranean Delights", "product": "Olive Oil", "price": 1200, "lead_time": 7, "notes": "Includes shipping."},
-        {"supplier": "Italian Fine Foods", "product": "Olive Oil", "price": 1250, "lead_time": 10, "notes": "Faster delivery available."}
-    ]
-    return templates.TemplateResponse("quote_comparison.html", {"request": request, "quotes": quotes, "current_user": user})
+    from app.models.rfq import RFQ
+    from app.models.quote import Quote
+    
+    # Get RFQ ID from query params
+    rfq_id = request.query_params.get("rfq_id")
+    rfq = None
+    quotes = []
+    
+    if rfq_id:
+        rfq = db.query(RFQ).filter(RFQ.id == int(rfq_id)).first()
+        if rfq:
+            quotes = db.query(Quote).filter(Quote.rfq_id == rfq.id).all()
+            
+            # Calculate scores for quotes
+            for quote in quotes:
+                # Simple scoring algorithm
+                price_score = 100 - ((quote.total_price / 10000) * 20)  # Lower price = higher score
+                delivery_score = 100 - (int(quote.delivery_time.split()[0]) * 5) if quote.delivery_time else 50
+                quote.score = int((price_score + delivery_score) / 2)
+                
+            # Sort by score
+            quotes.sort(key=lambda x: x.score, reverse=True)
+    else:
+        # Get all quotes
+        quotes = db.query(Quote).order_by(Quote.created_at.desc()).limit(10).all()
+        for quote in quotes:
+            quote.score = 75  # Default score
+    
+    return templates.TemplateResponse("quote_comparison.html", {
+        "request": request, 
+        "quotes": quotes, 
+        "rfq": rfq,
+        "current_user": user
+    })
 
 @app.get("/projects", response_class=HTMLResponse, name="projects_list")
 async def projects_list(request: Request, db: Session = Depends(get_db)):
@@ -212,6 +231,14 @@ include_rfq_routes(app)
 # Include quote routes
 from app.routes.quote_routes import include_quote_routes
 include_quote_routes(app)
+
+# Include email routes
+from app.routes.email_routes import include_email_routes
+include_email_routes(app)
+
+# Include planning routes
+from app.routes.planning_routes import include_planning_routes
+include_planning_routes(app)
 
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
