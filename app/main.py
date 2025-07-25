@@ -201,6 +201,10 @@ app.include_router(agent_router)
 from app.routes.orchestrator_routes import include_orchestrator_routes
 include_orchestrator_routes(app)
 
+# Include web scraper routes
+from app.routes.scraper_routes import include_scraper_routes
+include_scraper_routes(app)
+
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
 async def agent_dashboard(request: Request, db: Session = Depends(get_db)):

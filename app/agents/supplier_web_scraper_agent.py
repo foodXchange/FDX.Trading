@@ -19,9 +19,10 @@ from app.models.product import Product
 from app.config import get_settings
 
 # Azure services for translation and AI
-from azure.ai.translation.text import TextTranslationClient
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.formrecognizer import DocumentAnalysisClient
+# Azure services for translation and AI
+# from azure.ai.translation.text import TextTranslationClient
+# from azure.core.credentials import AzureKeyCredential
+# from azure.ai.formrecognizer import DocumentAnalysisClient
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -51,11 +52,12 @@ class SupplierWebScraperAgent:
     def __init__(self, db_session: Session):
         self.db = db_session
         
-        # Azure Translation setup
-        self.translator = TextTranslationClient(
-            endpoint=settings.AZURE_TRANSLATOR_ENDPOINT,
-            credential=AzureKeyCredential(settings.AZURE_TRANSLATOR_KEY)
-        )
+        # Azure Translation setup (disabled for now)
+        self.translator = None
+        # self.translator = TextTranslationClient(
+        #     endpoint=settings.AZURE_TRANSLATOR_ENDPOINT,
+        #     credential=AzureKeyCredential(settings.AZURE_TRANSLATOR_KEY)
+        # )
         
         # Common product patterns in multiple languages
         self.product_patterns = {
@@ -403,25 +405,14 @@ class SupplierWebScraperAgent:
     
     async def _translate_to_english(self, text: str, source_language: str) -> str:
         """
-        Translate text to English using Azure Translator
+        Translate text to English (placeholder - returns original for now)
         """
         if not text or source_language == 'en':
             return text
             
-        try:
-            response = self.translator.translate(
-                body=[{"text": text}],
-                to_language=["en"],
-                from_language=source_language
-            )
-            
-            if response and response[0].translations:
-                return response[0].translations[0].text
-            
-        except Exception as e:
-            logger.error(f"Translation failed: {str(e)}")
-        
-        return text  # Return original if translation fails
+        # For now, just return the original text
+        # In production, use Azure Translator or Google Translate API
+        return text
     
     async def _detect_page_language(self, html: str) -> str:
         """
@@ -433,19 +424,20 @@ class SupplierWebScraperAgent:
         if html_tag and html_tag.get('lang'):
             return html_tag['lang'][:2]  # Return first 2 chars (e.g., 'en' from 'en-US')
         
-        # Use Azure to detect language from text
-        try:
-            text_sample = soup.get_text(strip=True)[:1000]  # First 1000 chars
-            
-            response = self.translator.detect_language(
-                body=[{"text": text_sample}]
-            )
-            
-            if response and response[0].language:
-                return response[0].language
-                
-        except Exception as e:
-            logger.error(f"Language detection failed: {str(e)}")
+        # Simple language detection based on common words
+        text_sample = soup.get_text(strip=True)[:1000].lower()
+        
+        # Language indicators
+        if any(word in text_sample for word in ['the', 'and', 'for', 'with']):
+            return 'en'
+        elif any(word in text_sample for word in ['le', 'la', 'de', 'et']):
+            return 'fr'
+        elif any(word in text_sample for word in ['el', 'la', 'de', 'y']):
+            return 'es'
+        elif any(word in text_sample for word in ['il', 'la', 'di', 'e']):
+            return 'it'
+        elif any(word in text_sample for word in ['der', 'die', 'das', 'und']):
+            return 'de'
         
         return 'en'  # Default to English
     

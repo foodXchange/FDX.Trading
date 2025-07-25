@@ -30,6 +30,16 @@ class Supplier(Base):
     average_response_time = Column(Float)
     is_verified = Column(Boolean, default=False)
     
+    # Additional fields for FoodXchange
+    name = Column(String(255))  # Alias for company_name
+    specialties = Column(JSON)  # List of product specialties
+    certifications = Column(JSON)  # List of certifications
+    is_active = Column(Boolean, default=True)
+    last_scraped = Column(DateTime)  # Last time website was scraped
+    
     # Timestamps
     created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()) 
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # Relationships
+    products_catalog = relationship("Product", back_populates="supplier") 
