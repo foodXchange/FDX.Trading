@@ -1,32 +1,134 @@
-{% extends 'base.html' %}
-{% block title %}Email Intelligence{% endblock %}
-{% block content %}
-<div class="container">
-    <h1>Email Intelligence Center</h1>
-    <div class="card">
-        <h2>Recent Emails</h2>
-        <table style="width:100%; margin-top:1rem;">
-            <thead>
-                <tr>
-                    <th>From</th>
-                    <th>Subject</th>
-                    <th>Date</th>
-                    <th>AI Insights</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for email in emails %}
-                <tr>
-                    <td>{{ email.sender }}</td>
-                    <td>{{ email.subject }}</td>
-                    <td>{{ email.date }}</td>
-                    <td>{{ email.insight }}</td>
-                </tr>
-                {% else %}
-                <tr><td colspan="4">No emails found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endblock %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Intelligence - FoodXchange</title>
+    
+    <!-- Simple Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/simple-design-system.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/favicon.ico') }}">
+</head>
+<body>
+    <!-- Skip to content for accessibility -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+    
+    <!-- Simple Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-container">
+                <a href="/" class="navbar-brand">🍎 FoodXchange</a>
+                
+                <button class="navbar-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <ul class="navbar-menu">
+                    <li><a href="/dashboard" class="navbar-link">Dashboard</a></li>
+                    <li><a href="/suppliers" class="navbar-link">Suppliers</a></li>
+                    <li><a href="/emails" class="navbar-link active">Emails</a></li>
+                    <li><a href="/analytics" class="navbar-link">Analytics</a></li>
+                    {% if current_user %}
+                    <li><a href="/auth/logout" class="navbar-link">Logout</a></li>
+                    {% else %}
+                    <li><a href="/login" class="navbar-link">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main" class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="mb-4">
+                <h1>Email Intelligence</h1>
+                <p class="text-muted">AI-powered email monitoring and insights extraction</p>
+            </div>
+            
+            <!-- Email Stats -->
+            <div class="grid grid-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-primary">{{ emails|length }}</h3>
+                        <p class="text-muted">Processed Today</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-success">{{ emails|selectattr("insight")|list|length }}</h3>
+                        <p class="text-muted">With Insights</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-warning">3</h3>
+                        <p class="text-muted">Action Required</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-info">95%</h3>
+                        <p class="text-muted">Automation Rate</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Email List -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Emails</h2>
+                </div>
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>AI Insights</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for email in emails %}
+                            <tr>
+                                <td>{{ email.sender }}</td>
+                                <td>{{ email.subject }}</td>
+                                <td>{{ email.date }}</td>
+                                <td>
+                                    {% if email.insight %}
+                                    <span class="badge bg-success">{{ email.insight }}</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="4" class="text-center text-muted">No emails found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Simple Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p class="text-muted">© 2024 FoodXchange. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Simple Design System JS -->
+    <script src="{{ url_for('static', path='/js/simple-utils.js') }}"></script>
+</body>
+</html> 

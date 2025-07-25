@@ -1,33 +1,99 @@
-{% extends 'base.html' %}
-{% block title %}Quote Comparison{% endblock %}
-{% block content %}
-<div class="container">
-    <h1>Quote Comparison</h1>
-    <div class="card">
-        <table style="width:100%; margin-top:1rem;">
-            <thead>
-                <tr>
-                    <th>Supplier</th>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Lead Time</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for quote in quotes %}
-                <tr>
-                    <td>{{ quote.supplier }}</td>
-                    <td>{{ quote.product }}</td>
-                    <td>${{ quote.price }}</td>
-                    <td>{{ quote.lead_time }} days</td>
-                    <td>{{ quote.notes }}</td>
-                </tr>
-                {% else %}
-                <tr><td colspan="5">No quotes found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endblock %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Comparison - FoodXchange</title>
+    
+    <!-- Simple Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/simple-design-system.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/favicon.ico') }}">
+</head>
+<body>
+    <!-- Skip to content for accessibility -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+    
+    <!-- Simple Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-container">
+                <a href="/" class="navbar-brand">🍎 FoodXchange</a>
+                
+                <button class="navbar-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <ul class="navbar-menu">
+                    <li><a href="/dashboard" class="navbar-link">Dashboard</a></li>
+                    <li><a href="/suppliers" class="navbar-link">Suppliers</a></li>
+                    <li><a href="/quotes/comparison" class="navbar-link active">Quotes</a></li>
+                    <li><a href="/analytics" class="navbar-link">Analytics</a></li>
+                    {% if current_user %}
+                    <li><a href="/auth/logout" class="navbar-link">Logout</a></li>
+                    {% else %}
+                    <li><a href="/login" class="navbar-link">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main" class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="mb-4">
+                <h1>Quote Comparison</h1>
+                <p class="text-muted">Compare supplier quotes side by side</p>
+            </div>
+            
+            <!-- Quote Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Active Quotes</h2>
+                </div>
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Supplier</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Lead Time</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for quote in quotes %}
+                            <tr>
+                                <td>{{ quote.supplier }}</td>
+                                <td>{{ quote.product }}</td>
+                                <td>${{ quote.price }}</td>
+                                <td>{{ quote.lead_time }} days</td>
+                                <td>{{ quote.notes }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center text-muted">No quotes found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Simple Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p class="text-muted">© 2024 FoodXchange. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Simple Design System JS -->
+    <script src="{{ url_for('static', path='/js/simple-utils.js') }}"></script>
+</body>
+</html> 
