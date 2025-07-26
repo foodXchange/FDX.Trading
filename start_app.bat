@@ -1,0 +1,6 @@
+@echo off
+echo Installing dependencies...
+venv\Scripts\python.exe -m pip install fastapi uvicorn passlib python-jose[cryptography] azure-storage-blob openai
+echo Starting FoodXchange application...
+venv\Scripts\python.exe azure_startup.py
+pause

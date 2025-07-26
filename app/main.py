@@ -240,6 +240,18 @@ include_email_routes(app)
 from app.routes.planning_routes import include_planning_routes
 include_planning_routes(app)
 
+# Include notification routes
+from app.routes.notification_routes import router as notification_router
+app.include_router(notification_router)
+
+# Include order routes
+from app.routes.order_routes import router as order_router
+app.include_router(order_router)
+
+# Include file routes
+from app.routes.file_routes import router as file_router
+app.include_router(file_router)
+
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
 async def agent_dashboard(request: Request, db: Session = Depends(get_db)):

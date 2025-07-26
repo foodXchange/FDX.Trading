@@ -243,7 +243,8 @@ class NotificationService:
                 is_active=True
             ).all()
             
-            # Get supplier company name
+            # Get supplier company name  
+            from app.models.supplier import Supplier
             supplier = db.query(Supplier).filter_by(id=quote.supplier_id).first()
             supplier_name = supplier.company_name if supplier else "Supplier"
             

@@ -1,8 +1,585 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/design-tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='/css/components.css') }}">
+<style>
+/* Dashboard-specific styles */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.quick-action:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-200);
+}
+
+.quick-action-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-2);
+}
+
+.quick-action-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  text-align: center;
+}
+
+.metric-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.metric-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--primary-600);
+  margin-bottom: var(--space-1);
+}
+
+.metric-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.metric-change {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.metric-change.positive {
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+.metric-change.negative {
+  background: var(--critical-light);
+  color: var(--critical-dark);
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.activity-item:hover {
+  background: var(--bg-secondary);
+}
+
+.activity-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+
+.activity-icon.order { background: var(--primary-100); color: var(--primary-700); }
+.activity-icon.quote { background: var(--success-light); color: var(--success-dark); }
+.activity-icon.rfq { background: var(--warning-light); color: var(--warning-dark); }
+.activity-icon.email { background: var(--info-light); color: var(--info-dark); }
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.activity-meta {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.priority-alert {
+  background: linear-gradient(135deg, var(--warning-light), var(--warning));
+  border: 1px solid var(--warning);
+  color: var(--warning-dark);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
+
+.priority-alert-title {
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-2);
+}
+
+.insight-card {
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.insight-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-2);
+}
+
+.insight-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--primary-700);
+  margin-bottom: var(--space-2);
+}
+
+.insight-description {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+@media (max-width: 767px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .metric-value {
+    font-size: var(--text-xl);
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-primary">Welcome back!</h1>
+      <p class="text-secondary mt-1">Here's what's happening with your food sourcing today</p>
+    </div>
+    <div class="flex gap-3">
+      <button class="btn btn-outline btn-sm" onclick="refreshDashboard()">
+        <span>🔄</span> Refresh
+      </button>
+      <button class="btn btn-primary" data-quick-actions>
+        <span>⚡</span> Quick Actions
+      </button>
+    </div>
+  </div>
+
+  <!-- Priority Alerts -->
+  <div id="priority-alerts">
+    <!-- Dynamic priority alerts will be loaded here -->
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card card-md mb-6">
+    <h2 class="card-title mb-4">Quick Actions</h2>
+    <div class="quick-actions">
+      <a href="/rfq/new" class="quick-action">
+        <div class="quick-action-icon">📝</div>
+        <div class="quick-action-label">New RFQ</div>
+      </a>
+      <a href="/orders/new" class="quick-action">
+        <div class="quick-action-icon">📦</div>
+        <div class="quick-action-label">Create Order</div>
+      </a>
+      <a href="/emails" class="quick-action">
+        <div class="quick-action-icon">📧</div>
+        <div class="quick-action-label">Scan Emails</div>
+      </a>
+      <a href="/quotes/comparison" class="quick-action">
+        <div class="quick-action-icon">📊</div>
+        <div class="quick-action-label">Compare Quotes</div>
+      </a>
+      <a href="/suppliers" class="quick-action">
+        <div class="quick-action-icon">🏢</div>
+        <div class="quick-action-label">Suppliers</div>
+      </a>
+      <a href="/analytics" class="quick-action">
+        <div class="quick-action-icon">📈</div>
+        <div class="quick-action-label">Analytics</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Dashboard Grid -->
+  <div class="dashboard-grid">
+    
+    <!-- Left Column: Main Content -->
+    <div class="space-y-6">
+      
+      <!-- Key Metrics -->
+      <div class="card card-md">
+        <h2 class="card-title mb-4">Key Metrics</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="metric-card">
+            <div class="metric-value" id="total-orders">--</div>
+            <div class="metric-label">Active Orders</div>
+            <div class="metric-change positive" id="orders-change">+12%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="pending-quotes">--</div>
+            <div class="metric-label">Pending Quotes</div>
+            <div class="metric-change positive" id="quotes-change">+5</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="cost-savings">--</div>
+            <div class="metric-label">Cost Savings</div>
+            <div class="metric-change positive" id="savings-change">+8.2%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="active-suppliers">--</div>
+            <div class="metric-label">Active Suppliers</div>
+            <div class="metric-change positive" id="suppliers-change">+3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card card-md">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="card-title">Recent Activity</h2>
+          <a href="/activity" class="text-sm text-primary hover:underline">View all</a>
+        </div>
+        <div class="space-y-2" id="recent-activity">
+          <!-- Dynamic activity feed will be loaded here -->
+          <div class="activity-item">
+            <div class="activity-icon order">📦</div>
+            <div class="activity-content">
+              <div class="activity-title">New order #ORD-2024-001 received</div>
+              <div class="activity-meta">from Mediterranean Delights • 2 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon quote">💰</div>
+            <div class="activity-content">
+              <div class="activity-title">Quote submitted for Premium Olive Oil</div>
+              <div class="activity-meta">Italian Fine Foods • 4 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon rfq">📝</div>
+            <div class="activity-content">
+              <div class="activity-title">RFQ #RFQ-2024-045 expired</div>
+              <div class="activity-meta">Organic Tomatoes • 6 hours ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Sidebar Content -->
+    <div class="space-y-6">
+      
+      <!-- Smart Insights -->
+      <div class="insight-card">
+        <div class="insight-icon">🧠</div>
+        <div class="insight-title">Smart Insight</div>
+        <div class="insight-description">
+          You could save 15% on olive oil by switching to Mediterranean Delights for orders over $500.
+        </div>
+        <button class="btn btn-sm btn-primary mt-3">Learn More</button>
+      </div>
+
+      <!-- Pending Tasks -->
+      <div class="card card-md">
+        <h3 class="card-title mb-4">Pending Tasks</h3>
+        <div class="space-y-3" id="pending-tasks">
+          <div class="flex items-center gap-3">
+            <input type="checkbox" class="form-checkbox">
+            <span class="flex-1 text-sm">Review quotes for RFQ #045</span>
+            <span class="badge badge-warning">2h left</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <input type="checkbox" class="form-checkbox">
+            <span class="flex-1 text-sm">Approve order #ORD-001</span>
+            <span class="badge badge-critical">Urgent</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <input type="checkbox" class="form-checkbox">
+            <span class="flex-1 text-sm">Update supplier contact info</span>
+            <span class="badge badge-gray">Low</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Updates -->
+      <div class="card card-md">
+        <h3 class="card-title mb-4">Market Updates</h3>
+        <div class="space-y-3">
+          <div class="text-sm">
+            <div class="font-medium text-success">Olive Oil Prices ↓ 3%</div>
+            <div class="text-tertiary">Mediterranean region</div>
+          </div>
+          <div class="text-sm">
+            <div class="font-medium text-warning">Shipping Delays ⚠️</div>
+            <div class="text-tertiary">Italy → Israel route</div>
+          </div>
+          <div class="text-sm">
+            <div class="font-medium text-primary">New Supplier Available</div>
+            <div class="text-tertiary">Spanish Organic Foods</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Loading State -->
+<div id="dashboard-loading" class="hidden">
+  <div class="flex items-center justify-center py-12">
+    <div class="spinner mr-3"></div>
+    <span class="text-secondary">Loading dashboard...</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/fx-components.js') }}"></script>
+<script>
+// Dashboard functionality
+class UnifiedDashboard {
+  constructor() {
+    this.initializeDashboard();
+  }
+
+  async initializeDashboard() {
+    await this.loadMetrics();
+    await this.loadRecentActivity();
+    await this.loadPriorityAlerts();
+    await this.loadPendingTasks();
+    
+    // Set up auto-refresh
+    setInterval(() => {
+      this.refreshDashboard();
+    }, 60000); // Refresh every minute
+  }
+
+  async loadMetrics() {
+    try {
+      const response = await fetch('/api/dashboard/metrics', {
+        headers: { 'Authorization': `Bearer ${this.getToken()}` }
+      });
+
+      if (response.ok) {
+        const metrics = await response.json();
+        this.updateMetrics(metrics);
+      }
+    } catch (error) {
+      console.error('Error loading metrics:', error);
+    }
+  }
+
+  updateMetrics(metrics) {
+    document.getElementById('total-orders').textContent = metrics.total_orders || 0;
+    document.getElementById('pending-quotes').textContent = metrics.pending_quotes || 0;
+    document.getElementById('cost-savings').textContent = `$${(metrics.cost_savings || 0).toLocaleString()}`;
+    document.getElementById('active-suppliers').textContent = metrics.active_suppliers || 0;
+  }
+
+  async loadRecentActivity() {
+    try {
+      const response = await fetch('/api/dashboard/activity?limit=5', {
+        headers: { 'Authorization': `Bearer ${this.getToken()}` }
+      });
+
+      if (response.ok) {
+        const activities = await response.json();
+        this.updateRecentActivity(activities);
+      }
+    } catch (error) {
+      console.error('Error loading activity:', error);
+    }
+  }
+
+  updateRecentActivity(activities) {
+    const container = document.getElementById('recent-activity');
+    if (!activities || activities.length === 0) return;
+
+    container.innerHTML = activities.map(activity => `
+      <div class="activity-item">
+        <div class="activity-icon ${activity.type}">${this.getActivityIcon(activity.type)}</div>
+        <div class="activity-content">
+          <div class="activity-title">${activity.title}</div>
+          <div class="activity-meta">${activity.description} • ${this.formatTimeAgo(activity.created_at)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async loadPriorityAlerts() {
+    try {
+      const response = await fetch('/api/dashboard/alerts', {
+        headers: { 'Authorization': `Bearer ${this.getToken()}` }
+      });
+
+      if (response.ok) {
+        const alerts = await response.json();
+        this.updatePriorityAlerts(alerts);
+      }
+    } catch (error) {
+      console.error('Error loading alerts:', error);
+    }
+  }
+
+  updatePriorityAlerts(alerts) {
+    const container = document.getElementById('priority-alerts');
+    if (!alerts || alerts.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = alerts.map(alert => `
+      <div class="priority-alert">
+        <div class="priority-alert-title">${alert.title}</div>
+        <div>${alert.message}</div>
+        ${alert.action_url ? `<a href="${alert.action_url}" class="btn btn-sm btn-warning mt-2">${alert.action_text || 'Take Action'}</a>` : ''}
+      </div>
+    `).join('');
+  }
+
+  async loadPendingTasks() {
+    try {
+      const response = await fetch('/api/dashboard/tasks', {
+        headers: { 'Authorization': `Bearer ${this.getToken()}` }
+      });
+
+      if (response.ok) {
+        const tasks = await response.json();
+        this.updatePendingTasks(tasks);
+      }
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+    }
+  }
+
+  updatePendingTasks(tasks) {
+    const container = document.getElementById('pending-tasks');
+    if (!tasks || tasks.length === 0) return;
+
+    container.innerHTML = tasks.map(task => `
+      <div class="flex items-center gap-3">
+        <input type="checkbox" class="form-checkbox" onchange="this.parentElement.style.opacity = this.checked ? '0.5' : '1'">
+        <span class="flex-1 text-sm">${task.title}</span>
+        <span class="badge badge-${task.priority}">${task.urgency}</span>
+      </div>
+    `).join('');
+  }
+
+  getActivityIcon(type) {
+    const icons = {
+      order: '📦',
+      quote: '💰',
+      rfq: '📝',
+      email: '📧',
+      supplier: '🏢'
+    };
+    return icons[type] || '📋';
+  }
+
+  formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  }
+
+  async refreshDashboard() {
+    const button = document.querySelector('[onclick="refreshDashboard()"]');
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner mr-2"></span>Refreshing...';
+    }
+
+    await Promise.all([
+      this.loadMetrics(),
+      this.loadRecentActivity(),
+      this.loadPriorityAlerts(),
+      this.loadPendingTasks()
+    ]);
+
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = '<span>🔄</span> Refresh';
+    }
+
+    FX.toast('Dashboard refreshed', 'success', 2000);
+  }
+
+  getToken() {
+    return localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || '';
+  }
+}
+
+// Global functions for button actions
+function refreshDashboard() {
+  window.dashboard.refreshDashboard();
+}
+
+// Initialize dashboard
+window.dashboard = new UnifiedDashboard();
+</script>
+{% endblock %}
     <title>FoodXchange - Intelligent Operations Center</title>
     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
     <style>
