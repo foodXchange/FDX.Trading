@@ -1,3 +1,7 @@
+import warnings
+# Suppress cryptography warnings about 32-bit Python
+warnings.filterwarnings("ignore", message=".*cryptography.*32-bit.*64-bit.*")
+
 from fastapi import FastAPI, Request, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -241,8 +245,8 @@ from app.routes.planning_routes import include_planning_routes
 include_planning_routes(app)
 
 # Include notification routes
-from app.routes.notification_routes import router as notification_router
-app.include_router(notification_router)
+from app.routes.simple_notification_routes import include_notification_routes
+include_notification_routes(app)
 
 # Include order routes
 from app.routes.order_routes import router as order_router
@@ -251,6 +255,14 @@ app.include_router(order_router)
 # Include file routes
 from app.routes.file_routes import router as file_router
 app.include_router(file_router)
+
+# Include supplier API routes
+from app.routes.supplier_api_routes import include_supplier_api_routes
+include_supplier_api_routes(app)
+
+# Include product routes
+from app.routes.product_routes import include_product_routes
+include_product_routes(app)
 
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")

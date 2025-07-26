@@ -1,6 +1,5 @@
 @echo off
-echo Installing dependencies...
+set CRYPTGRAPHY_DONT_BUILD_RUST=1
 venv\Scripts\python.exe -m pip install fastapi uvicorn passlib python-jose[cryptography] azure-storage-blob openai
-echo Starting FoodXchange application...
-venv\Scripts\python.exe azure_startup.py
+venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 pause
