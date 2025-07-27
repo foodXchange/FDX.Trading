@@ -1,1 +1,1 @@
-python azure_startup_robust.py
+python startup_diagnostic.py
