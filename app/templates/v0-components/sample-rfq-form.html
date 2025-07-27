@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create RFQ - Food Xchange</title>
+    <link rel="stylesheet" href="/static/v0-styles/sample-rfq-form.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/design-tokens.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Food Xchange</a>
+            <div class="nav-menu">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/rfq" class="nav-link">RFQs</a>
+                <a href="/quotes" class="nav-link">Quotes</a>
+                <a href="/profile" class="nav-link">Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="v0-component">
+            <!-- Sample RFQ Form - Replace with v0 generated content -->
+            <div class="rfq-form-container">
+                <h1 class="form-title">Create Request for Quote</h1>
+                <p class="form-subtitle">Fill out the form below to request quotes from food suppliers</p>
+                
+                <form class="rfq-form" id="rfqForm">
+                    <div class="form-group">
+                        <label for="productCategory">Product Category</label>
+                        <select id="productCategory" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="grains">Grains & Cereals</option>
+                            <option value="dairy">Dairy Products</option>
+                            <option value="meat">Meat & Poultry</option>
+                            <option value="produce">Fresh Produce</option>
+                            <option value="seafood">Seafood</option>
+                            <option value="beverages">Beverages</option>
+                            <option value="snacks">Snacks & Confectionery</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantity">Quantity</label>
+                            <input type="number" id="quantity" name="quantity" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="unit">Unit</label>
+                            <select id="unit" name="unit" required>
+                                <option value="kg">Kilograms (kg)</option>
+                                <option value="lbs">Pounds (lbs)</option>
+                                <option value="cases">Cases</option>
+                                <option value="pallets">Pallets</option>
+                                <option value="units">Units</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deliveryDate">Delivery Date</label>
+                        <input type="date" id="deliveryDate" name="deliveryDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budget">Budget Range</label>
+                        <div class="budget-slider">
+                            <input type="range" id="budget" name="budget" min="100" max="50000" step="100" value="5000">
+                            <span class="budget-value">$5,000</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="requirements">Special Requirements</label>
+                        <textarea id="requirements" name="requirements" rows="4" placeholder="Any special requirements, certifications, or specifications..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="history.back()">Cancel</button>
+                        <button type="submit" class="btn-primary" id="submitBtn">
+                            <span class="btn-text">Submit RFQ</span>
+                            <span class="btn-loading" style="display: none;">Submitting...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- FastAPI integration -->
+    <script src="/static/js/v0-components/sample-rfq-form.js"></script>
+    <script>
+    // FastAPI backend integration
+    const API_BASE = '/api';
+    
+    // Example API call function
+    async function callAPI(endpoint, data = null) {
+        try {
+            const options = {
+                method: data ? 'POST' : 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            const response = await fetch(`${API_BASE}${endpoint}`, options);
+            return await response.json();
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw error;
+        }
+    }
+    
+    // Add your component-specific JavaScript here
+    </script>
+</body>
+</html> 

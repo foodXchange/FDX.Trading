@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDX Trading - FullStory Test</title>
+    
+    <!-- FullStory Tracking Code -->
+    <script>
+    window['_fs_host'] = 'fullstory.com';
+    window['_fs_script'] = 'edge.fullstory.com/s/fs.js';
+    window['_fs_org'] = 'o-23KNJV-na1';
+    window['_fs_namespace'] = 'FS';
+    !function(m,n,e,t,l,o,g,y){var s,f,a=function(h){
+    return!(h in m)||(m.console&&m.console.log&&m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].'),!1)}(e)
+    ;function p(b){var h,d=[];function j(){h&&(d.forEach((function(b){var d;try{d=b[h[0]]&&b[h[0]](h[1])}catch(h){return void(b[3]&&b[3](h))}
+    d&&d.then?d.then(b[2],b[3]):b[2]&&b[2](d)})),d.length=0)}function r(b){return function(d){h||(h=[b,d],j())}}return b(r(0),r(1)),{
+    then:function(b,h){return p((function(r,i){d.push([b,h,r,i]),j()}))}}}a&&(g=m[e]=function(){var b=function(b,d,j,r){function i(i,c){
+    h(b,d,j,i,c,r)}r=r||2;var c,u=/Async$/;return u.test(b)?(b=b.replace(u,""),"function"==typeof Promise?new Promise(i):p(i)):h(b,d,j,c,c,r)}
+    ;function h(h,d,j,r,i,c){return b._api?b._api(h,d,j,r,i,c):(b.q&&b.q.push([h,d,j,r,i,c]),null)}return b.q=[],b}(),y=function(b){function h(h){
+    "function"==typeof h[4]&&h[4](new Error(b))}var d=g.q;if(d){for(var j=0;j<d.length;j++)h(d[j]);d.length=0,d.push=h}},function(){
+    (o=n.createElement(t)).async=!0,o.crossOrigin="anonymous",o.src="https://"+l,o.onerror=function(){y("Error loading "+l)}
+    ;var b=n.getElementsByTagName(t)[0];b&&b.parentNode?b.parentNode.insertBefore(o,b):n.head.appendChild(o)}(),function(){function b(){}
+    function h(b,h,d){g(b,h,d,1)}function d(b,d,j){h("setProperties",{type:b,properties:d},j)}function j(b,h){d("user",b,h)}function r(b,h,d){j({
+    uid:b},d),h&&j(h,d)}g.identify=r,g.setUserVars=j,g.identifyAccount=b,g.clearUserCookie=b,g.setVars=d,g.event=function(b,d,j){h("trackEvent",{
+    name:b,properties:d},j)},g.anonymize=function(){r(!1)},g.shutdown=function(){h("shutdown")},g.restart=function(){h("restart")},
+    g.log=function(b,d){h("log",{level:b,msg:d})},g.consent=function(b){h("setIdentity",{consent:!arguments.length||b})}}(),s="fetch",
+    f="XMLHttpRequest",g._w={},g._w[f]=m[f],g._w[s]=m[s],m[s]&&(m[s]=function(){return g._w[s].apply(this,arguments)}),g._v="2.0.0")
+    }(window,document,window._fs_namespace,"script",window._fs_script);
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .status {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        button {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 FDX Trading</h1>
+        <h2>FullStory Integration Test</h2>
+        
+        <div class="status">
+            <h3>✅ FullStory Snippet Installed</h3>
+            <p>Org ID: o-23KNJV-na1</p>
+            <p>Check your FullStory dashboard for sessions!</p>
+        </div>
+        
+        <div class="test-buttons">
+            <button onclick="testEvent()">Test Event</button>
+            <button onclick="testUser()">Test User ID</button>
+            <button onclick="testRFQ()">Test RFQ Event</button>
+            <button onclick="testQuote()">Test Quote Event</button>
+        </div>
+        
+        <div class="status">
+            <p><strong>Instructions:</strong></p>
+            <p>1. Click the test buttons above</p>
+            <p>2. Check your FullStory dashboard</p>
+            <p>3. Look for sessions and events</p>
+        </div>
+    </div>
+
+    <script>
+        // Test functions
+        function testEvent() {
+            if (window.FS) {
+                FS('event', 'Test Button Clicked', {
+                    button: 'test_event',
+                    timestamp: new Date().toISOString()
+                });
+                alert('Event sent to FullStory!');
+            } else {
+                alert('FullStory not loaded yet');
+            }
+        }
+        
+        function testUser() {
+            if (window.FS) {
+                FS('setIdentity', {
+                    uid: 'test_user_123',
+                    properties: {
+                        displayName: 'Test User',
+                        email: 'test@fdx.trading',
+                        userType: 'buyer',
+                        company: 'Test Company'
+                    }
+                });
+                alert('User identified in FullStory!');
+            } else {
+                alert('FullStory not loaded yet');
+            }
+        }
+        
+        function testRFQ() {
+            if (window.FS) {
+                FS('event', 'RFQ Created', {
+                    rfqId: 'RFQ_001',
+                    category: 'Grains',
+                    quantity: '1000kg',
+                    userType: 'buyer'
+                });
+                alert('RFQ event sent to FullStory!');
+            } else {
+                alert('FullStory not loaded yet');
+            }
+        }
+        
+        function testQuote() {
+            if (window.FS) {
+                FS('event', 'Quote Submitted', {
+                    quoteId: 'QUOTE_001',
+                    rfqId: 'RFQ_001',
+                    price: '$5000',
+                    supplier: 'Test Supplier'
+                });
+                alert('Quote event sent to FullStory!');
+            } else {
+                alert('FullStory not loaded yet');
+            }
+        }
+        
+        // Auto-identify as test user when page loads
+        setTimeout(() => {
+            if (window.FS) {
+                FS('setIdentity', {
+                    uid: 'test_visitor_' + Date.now(),
+                    properties: {
+                        displayName: 'Test Visitor',
+                        userType: 'visitor',
+                        source: 'test_page'
+                    }
+                });
+                console.log('Test user auto-identified in FullStory');
+            }
+        }, 2000);
+    </script>
+</body>
+</html> 

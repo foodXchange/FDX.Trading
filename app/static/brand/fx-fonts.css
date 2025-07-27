@@ -1,0 +1,121 @@
+/* Food Xchange Custom Fonts */
+
+/* Causten Font Family - Primary UI Font */
+@font-face {
+    font-family: 'Causten';
+    src: url('/static/brand/fonts/Causten/Causten-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Causten';
+    src: url('/static/brand/fonts/Causten/Causten-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Causten';
+    src: url('/static/brand/fonts/Causten/Causten-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Causten';
+    src: url('/static/brand/fonts/Causten/Causten-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* David Libre Font Family - Headings and Elegant Text */
+@font-face {
+    font-family: 'David Libre';
+    src: url('/static/brand/fonts/David Libre/DavidLibre-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'David Libre';
+    src: url('/static/brand/fonts/David Libre/DavidLibre-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'David Libre';
+    src: url('/static/brand/fonts/David Libre/DavidLibre-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Roboto Serif Font Family - Body Text and Readable Content */
+@font-face {
+    font-family: 'Roboto Serif';
+    src: url('/static/brand/fonts/Roboto Serif/RobotoSerif_28pt-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Roboto Serif';
+    src: url('/static/brand/fonts/Roboto Serif/RobotoSerif_28pt-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Roboto Serif';
+    src: url('/static/brand/fonts/Roboto Serif/RobotoSerif_28pt-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Roboto Serif';
+    src: url('/static/brand/fonts/Roboto Serif/RobotoSerif_28pt-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Font Loading Optimization */
+.font-causten {
+    font-family: 'Causten', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-david-libre {
+    font-family: 'David Libre', Georgia, serif;
+}
+
+.font-roboto-serif {
+    font-family: 'Roboto Serif', Georgia, serif;
+}
+
+/* Font Loading Fallbacks */
+.font-loading {
+    font-display: swap;
+}
+
+/* Preload Critical Fonts */
+@media (preload) {
+    @font-face {
+        font-family: 'Causten';
+        src: url('/static/brand/fonts/Causten/Causten-Regular.otf') format('opentype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+} 

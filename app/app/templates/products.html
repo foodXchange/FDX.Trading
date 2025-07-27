@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Products - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Product Catalog</h1>
+    <div class="page-actions">
+        <input type="search" placeholder="Search products..." class="search-input">
+        <button class="btn btn-primary">Add Product</button>
+    </div>
+</div>
+
+<div class="products-grid">
+    <div class="product-card">
+        <div class="product-image">
+            <div class="placeholder-image">🫒</div>
+        </div>
+        <div class="product-info">
+            <h3>Extra Virgin Olive Oil</h3>
+            <p class="product-supplier">Mediterranean Delights</p>
+            <p class="product-price">$45/L</p>
+            <div class="product-tags">
+                <span class="tag">Organic</span>
+                <span class="tag">Greece</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="product-card">
+        <div class="product-image">
+            <div class="placeholder-image">🧀</div>
+        </div>
+        <div class="product-info">
+            <h3>Feta Cheese</h3>
+            <p class="product-supplier">Mediterranean Delights</p>
+            <p class="product-price">$28/kg</p>
+            <div class="product-tags">
+                <span class="tag">PDO</span>
+                <span class="tag">Greece</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="product-card">
+        <div class="product-image">
+            <div class="placeholder-image">🍝</div>
+        </div>
+        <div class="product-info">
+            <h3>Artisan Pasta</h3>
+            <p class="product-supplier">Italian Fine Foods</p>
+            <p class="product-price">$12/kg</p>
+            <div class="product-tags">
+                <span class="tag">Handmade</span>
+                <span class="tag">Italy</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="product-card">
+        <div class="product-image">
+            <div class="placeholder-image">🍅</div>
+        </div>
+        <div class="product-info">
+            <h3>San Marzano Tomatoes</h3>
+            <p class="product-supplier">Italian Fine Foods</p>
+            <p class="product-price">$35/case</p>
+            <div class="product-tags">
+                <span class="tag">DOP</span>
+                <span class="tag">Italy</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="product-card">
+        <div class="product-image">
+            <div class="placeholder-image">🥓</div>
+        </div>
+        <div class="product-info">
+            <h3>Iberian Ham</h3>
+            <p class="product-supplier">Spanish Imports Co</p>
+            <p class="product-price">$120/kg</p>
+            <div class="product-tags">
+                <span class="tag">Premium</span>
+                <span class="tag">Spain</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="product-card">
+        <div class="product-image">
+            <div class="placeholder-image">🧀</div>
+        </div>
+        <div class="product-info">
+            <h3>Manchego Cheese</h3>
+            <p class="product-supplier">Spanish Imports Co</p>
+            <p class="product-price">$42/kg</p>
+            <div class="product-tags">
+                <span class="tag">Aged</span>
+                <span class="tag">Spain</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.search-input {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 250px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.product-image {
+    width: 100%;
+    height: 150px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-image {
+    font-size: 48px;
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.product-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+}
+
+.product-supplier {
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 8px 0;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 600;
+    color: #28a745;
+    margin: 8px 0;
+}
+
+.product-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.tag {
+    background: #e9ecef;
+    color: #495057;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+</style>
+{% endblock %}

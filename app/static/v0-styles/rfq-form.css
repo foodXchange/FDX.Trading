@@ -1,0 +1,17 @@
+﻿/* rfq-form - v0 Generated Styles */
+
+/* Paste your v0 CSS here */
+
+/* Food Xchange specific overrides */
+.v0-component {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .v0-component {
+        padding: 10px;
+    }
+}

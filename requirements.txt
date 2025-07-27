@@ -13,3 +13,5 @@ python-jose[cryptography]==3.3.0
 passlib==1.7.4
 aiohttp==3.9.0
 wheel
+sentry-sdk[fastapi]==1.40.0
+beautifulsoup4==4.12.2

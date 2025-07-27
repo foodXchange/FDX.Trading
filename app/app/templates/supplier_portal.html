@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Portal - FoodXchange</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #5dade2);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #58d68d);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #f8c471);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open { background-color: var(--success-color); color: white; }
+        .status-pending { background-color: var(--warning-color); color: white; }
+        .status-closed { background-color: var(--danger-color); color: white; }
+        .status-accepted { background-color: var(--success-color); color: white; }
+        .status-rejected { background-color: var(--danger-color); color: white; }
+
+        .rfq-card {
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .rfq-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .quote-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .thead-dark {
+            background: var(--primary-color);
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            .stats-number {
+                font-size: 2rem;
+            }
+            
+            .quote-form {
+                padding: 1rem;
+            }
+        }
+
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand text-white" href="/">
+                <i class="fas fa-utensils"></i> FoodXchange
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#available-rfqs">Available RFQs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#my-quotes">My Quotes</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> <span id="user-name">Supplier</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#profile">Profile</a></li>
+                            <li><a class="dropdown-item" href="#settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Dashboard Section -->
+        <section id="dashboard">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number" id="total-quotes">0</div>
+                        <div>Total Quotes</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        <div class="stats-number" id="accepted-quotes">0</div>
+                        <div>Accepted</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333;">
+                        <div class="stats-number" id="pending-quotes">0</div>
+                        <div>Pending</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                        <div class="stats-number" id="win-rate">0%</div>
+                        <div>Win Rate</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Available RFQs Section -->
+        <section id="available-rfqs">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> Available RFQs</h5>
+                    <button class="btn btn-light btn-sm" onclick="refreshRFQs()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="search-rfqs" placeholder="Search RFQs...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filter-category">
+                                <option value="">All Categories</option>
+                                <option value="fruits">Fruits</option>
+                                <option value="vegetables">Vegetables</option>
+                                <option value="grains">Grains</option>
+                                <option value="dairy">Dairy</option>
+                                <option value="meat">Meat</option>
+                                <option value="seafood">Seafood</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="sort-rfqs">
+                                <option value="newest">Newest First</option>
+                                <option value="deadline">Deadline Soon</option>
+                                <option value="budget">Highest Budget</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="rfqs-container">
+                        <!-- RFQs will be loaded here -->
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading available RFQs...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- My Quotes Section -->
+        <section id="my-quotes">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> My Quotes</h5>
+                    <div>
+                        <select class="form-select form-select-sm" id="quotes-filter" style="display: inline-block; width: auto;">
+                            <option value="all">All Quotes</option>
+                            <option value="pending">Pending</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="quotes-table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>RFQ #</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>My Price</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quotes-tbody">
+                                <!-- Quotes will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Quote Submission Modal -->
+    <div class="modal fade" id="quoteModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submit Quote</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="quote-form">
+                        <input type="hidden" id="rfq-id" name="rfq_id">
+                        <input type="hidden" id="supplier-id" name="supplier_id">
+                        
+                        <!-- RFQ Details -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">RFQ Details</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Product:</strong> <span id="modal-product-name"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Quantity:</strong> <span id="modal-quantity"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Delivery Date:</strong> <span id="modal-delivery-date"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Budget Range:</strong> <span id="modal-budget"></span>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <strong>Requirements:</strong>
+                                    <p id="modal-requirements" class="mb-0 text-muted"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quote Form -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Unit Price <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="unit-price" name="price_per_unit" 
+                                           step="0.01" min="0" required onchange="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Total Price <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="total-price" name="total_price" 
+                                           step="0.01" min="0" required readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Currency</label>
+                                <select class="form-select" id="currency" name="currency">
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Delivery Time <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="delivery-time" name="delivery_time" 
+                                       placeholder="e.g., 5-7 days" required>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label">Payment Terms</label>
+                            <select class="form-select" id="payment-terms" name="payment_terms">
+                                <option value="">Select payment terms</option>
+                                <option value="Net 30">Net 30 days</option>
+                                <option value="Net 15">Net 15 days</option>
+                                <option value="COD">Cash on delivery</option>
+                                <option value="Advance payment">Advance payment required</option>
+                            </select>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                    placeholder="Any additional information about your quote..."></textarea>
+                        </div>
+
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="terms-agreement" required>
+                            <label class="form-check-label" for="terms-agreement">
+                                I agree to the terms and conditions and confirm this quote is valid for 30 days
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitQuote()" id="submit-quote-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Quote
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote Details Modal -->
+    <div class="modal fade" id="quoteDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quote Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="quote-details-content">
+                    <!-- Quote details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning" id="edit-quote-btn" style="display: none;">
+                        <i class="fas fa-edit"></i> Edit Quote
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="notification-toast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toast-message">
+                <!-- Message will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentUser = null;
+        let availableRFQs = [];
+        let myQuotes = [];
+
+        // Initialize the portal
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+            loadDashboard();
+            loadAvailableRFQs();
+            loadMyQuotes();
+        });
+
+        // Load user information
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('user-name').textContent = currentUser.name;
+                    document.getElementById('supplier-id').value = currentUser.company_id || currentUser.id;
+                } else {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                showNotification('Error loading user information', 'error');
+            }
+        }
+
+        // Load dashboard statistics
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/quotes/analytics/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('total-quotes').textContent = data.summary.total_quotes;
+                    document.getElementById('accepted-quotes').textContent = data.summary.accepted_quotes;
+                    document.getElementById('pending-quotes').textContent = data.summary.pending_quotes;
+                    document.getElementById('win-rate').textContent = data.summary.win_rate + '%';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load available RFQs
+        async function loadAvailableRFQs() {
+            try {
+                const response = await fetch('/api/rfqs?status=open', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    availableRFQs = await response.json();
+                    displayRFQs(availableRFQs);
+                } else {
+                    document.getElementById('rfqs-container').innerHTML = 
+                        '<div class="text-center text-muted"><i class="fas fa-inbox fa-3x mb-3"></i><p>No RFQs available at the moment</p></div>';
+                }
+            } catch (error) {
+                console.error('Error loading RFQs:', error);
+                document.getElementById('rfqs-container').innerHTML = 
+                    '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Error loading RFQs</div>';
+            }
+        }
+
+        // Display RFQs
+        function displayRFQs(rfqs) {
+            const container = document.getElementById('rfqs-container');
+            
+            if (rfqs.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted"><i class="fas fa-inbox fa-3x mb-3"></i><p>No RFQs match your criteria</p></div>';
+                return;
+            }
+
+            container.innerHTML = rfqs.map(rfq => `
+                <div class="rfq-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6 class="card-title">${rfq.product_name}</h6>
+                                    <p class="card-text text-muted mb-2">${rfq.requirements || 'No specific requirements'}</p>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <small class="text-muted"><i class="fas fa-box"></i> Quantity: ${rfq.quantity}</small>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-muted"><i class="fas fa-calendar"></i> Deadline: ${formatDate(rfq.delivery_date)}</small>
+                                        </div>
+                                    </div>
+                                    ${rfq.budget_min && rfq.budget_max ? 
+                                        `<div class="mt-2"><small class="text-muted"><i class="fas fa-dollar-sign"></i> Budget: $${rfq.budget_min} - $${rfq.budget_max}</small></div>` : ''}
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <span class="status-badge status-${rfq.status}">${rfq.status}</span>
+                                    <div class="mt-3">
+                                        <button class="btn btn-primary btn-sm" onclick="openQuoteModal(${rfq.id})">
+                                            <i class="fas fa-plus"></i> Submit Quote
+                                        </button>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-muted">RFQ #${rfq.rfq_number}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load my quotes
+        async function loadMyQuotes() {
+            try {
+                const response = await fetch('/api/quotes/', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    myQuotes = await response.json();
+                    displayMyQuotes(myQuotes);
+                }
+            } catch (error) {
+                console.error('Error loading quotes:', error);
+            }
+        }
+
+        // Display my quotes
+        function displayMyQuotes(quotes) {
+            const tbody = document.getElementById('quotes-tbody');
+            
+            if (quotes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No quotes submitted yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = quotes.map(quote => `
+                <tr>
+                    <td><strong>${quote.rfq_number}</strong></td>
+                    <td>${quote.product_name}</td>
+                    <td>${quote.quantity || 'N/A'}</td>
+                    <td>$${quote.total_price ? quote.total_price.toFixed(2) : 'N/A'}</td>
+                    <td><span class="status-badge status-${quote.status}">${quote.status}</span></td>
+                    <td>${formatDate(quote.created_at)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewQuoteDetails(${quote.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Open quote submission modal
+        function openQuoteModal(rfqId) {
+            const rfq = availableRFQs.find(r => r.id === rfqId);
+            if (!rfq) return;
+
+            // Populate RFQ details
+            document.getElementById('rfq-id').value = rfq.id;
+            document.getElementById('modal-product-name').textContent = rfq.product_name;
+            document.getElementById('modal-quantity').textContent = rfq.quantity;
+            document.getElementById('modal-delivery-date').textContent = formatDate(rfq.delivery_date);
+            document.getElementById('modal-budget').textContent = rfq.budget_min && rfq.budget_max ? 
+                `$${rfq.budget_min} - $${rfq.budget_max}` : 'Not specified';
+            document.getElementById('modal-requirements').textContent = rfq.requirements || 'No specific requirements';
+
+            // Reset form
+            document.getElementById('quote-form').reset();
+            document.getElementById('supplier-id').value = currentUser.company_id || currentUser.id;
+
+            // Show modal
+            new bootstrap.Modal(document.getElementById('quoteModal')).show();
+        }
+
+        // Calculate total price
+        function calculateTotal() {
+            const unitPrice = parseFloat(document.getElementById('unit-price').value) || 0;
+            const quantity = parseFloat(document.getElementById('modal-quantity').textContent.replace(/[^\d.]/g, '')) || 1;
+            const total = unitPrice * quantity;
+            document.getElementById('total-price').value = total.toFixed(2);
+        }
+
+        // Submit quote
+        async function submitQuote() {
+            const form = document.getElementById('quote-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-quote-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                
+                const response = await fetch('/api/quotes/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showNotification('Quote submitted successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('quoteModal')).hide();
+                    loadMyQuotes();
+                    loadDashboard();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.detail || 'Error submitting quote', 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting quote:', error);
+                showNotification('Error submitting quote', 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // View quote details
+        async function viewQuoteDetails(quoteId) {
+            try {
+                const response = await fetch(`/api/quotes/${quoteId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const quote = await response.json();
+                    displayQuoteDetails(quote);
+                    new bootstrap.Modal(document.getElementById('quoteDetailsModal')).show();
+                }
+            } catch (error) {
+                console.error('Error loading quote details:', error);
+                showNotification('Error loading quote details', 'error');
+            }
+        }
+
+        // Display quote details
+        function displayQuoteDetails(quote) {
+            const content = document.getElementById('quote-details-content');
+            content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Quote Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>RFQ Number:</strong></td><td>${quote.rfq_number}</td></tr>
+                            <tr><td><strong>Product:</strong></td><td>${quote.product_name}</td></tr>
+                            <tr><td><strong>Unit Price:</strong></td><td>$${quote.price_per_unit ? quote.price_per_unit.toFixed(2) : 'N/A'}</td></tr>
+                            <tr><td><strong>Total Price:</strong></td><td>$${quote.total_price ? quote.total_price.toFixed(2) : 'N/A'}</td></tr>
+                            <tr><td><strong>Currency:</strong></td><td>${quote.currency}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="status-badge status-${quote.status}">${quote.status}</span></td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Terms & Conditions</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Delivery Time:</strong></td><td>${quote.delivery_time || 'Not specified'}</td></tr>
+                            <tr><td><strong>Payment Terms:</strong></td><td>${quote.payment_terms || 'Not specified'}</td></tr>
+                            <tr><td><strong>Submitted:</strong></td><td>${formatDate(quote.created_at)}</td></tr>
+                        </table>
+                        ${quote.notes ? `
+                            <h6>Notes</h6>
+                            <p class="text-muted">${quote.notes}</p>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            // Show edit button if quote is still pending
+            const editBtn = document.getElementById('edit-quote-btn');
+            if (quote.status === 'pending') {
+                editBtn.style.display = 'inline-block';
+                editBtn.onclick = () => editQuote(quote.id);
+            } else {
+                editBtn.style.display = 'none';
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const search = document.getElementById('search-rfqs').value.toLowerCase();
+            const category = document.getElementById('filter-category').value;
+            const sort = document.getElementById('sort-rfqs').value;
+
+            let filtered = availableRFQs.filter(rfq => {
+                const matchesSearch = !search || rfq.product_name.toLowerCase().includes(search) ||
+                                    (rfq.requirements && rfq.requirements.toLowerCase().includes(search));
+                const matchesCategory = !category || rfq.category === category;
+                
+                return matchesSearch && matchesCategory;
+            });
+
+            // Sort
+            switch(sort) {
+                case 'deadline':
+                    filtered.sort((a, b) => new Date(a.delivery_date) - new Date(b.delivery_date));
+                    break;
+                case 'budget':
+                    filtered.sort((a, b) => (b.budget_max || 0) - (a.budget_max || 0));
+                    break;
+                default: // newest
+                    filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+
+            displayRFQs(filtered);
+        }
+
+        // Refresh RFQs
+        function refreshRFQs() {
+            loadAvailableRFQs();
+            showNotification('RFQs refreshed', 'info');
+        }
+
+        // Filter my quotes
+        document.getElementById('quotes-filter').addEventListener('change', function() {
+            const filter = this.value;
+            const filtered = filter === 'all' ? myQuotes : myQuotes.filter(q => q.status === filter);
+            displayMyQuotes(filtered);
+        });
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notification-toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            // Set message and type
+            toastMessage.textContent = message;
+            
+            // Update icon based on type
+            const icon = toast.querySelector('.toast-header i');
+            icon.className = `fas me-2 ${type === 'success' ? 'fa-check-circle text-success' : 
+                                        type === 'error' ? 'fa-exclamation-triangle text-danger' : 
+                                        'fa-info-circle text-primary'}`;
+            
+            // Show toast
+            new bootstrap.Toast(toast).show();
+        }
+
+        // Format date helper
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Search functionality
+        document.getElementById('search-rfqs').addEventListener('input', applyFilters);
+    </script>
+</body>
+</html>

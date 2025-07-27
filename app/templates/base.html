@@ -3,699 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="FoodXchange - Streamline your food sourcing with AI-powered supplier matching">
-    <title>{% block title %}{{ title }}{% endblock %} - FoodXchange</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', path='/favicon.png') }}">
-    <!-- CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
-    <!-- Base Styles -->
-    <style>
-        /* Dropdown styles */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-        
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
-        
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-        
-        .dropdown-content hr {
-            margin: 5px 0;
-            border: 0;
-            border-top: 1px solid #eee;
-        }
-        
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        
-        .user-info {
-            cursor: pointer;
-        }
-
-        /* Workflow-based Navigation */
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .nav-links > li > a {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            text-decoration: none;
-            color: #6b7280;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .nav-links > li > a:hover,
-        .nav-links > li > a.active {
-            color: #1f2937;
-            background-color: #f3f4f6;
-        }
-
-        .nav-group {
-            position: relative;
-        }
-
-        .nav-group-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 0.25rem 0.75rem;
-            cursor: default;
-        }
-
-        .nav-sublinks {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-            z-index: 50;
-            list-style: none;
-            margin: 0;
-            padding: 0.5rem 0;
-            margin-top: 0.5rem;
-        }
-
-        .nav-group:hover .nav-sublinks {
-            display: block;
-        }
-
-        .nav-sublinks li a {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            color: #374151;
-            transition: all 0.2s ease;
-        }
-
-        .nav-sublinks li a:hover,
-        .nav-sublinks li a.active {
-            background-color: #f3f4f6;
-            color: #1f2937;
-        }
-
-        .nav-icon {
-            font-size: 1rem;
-            width: 1.25rem;
-            text-align: center;
-        }
-
-        .nav-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        /* Mobile Navigation */
-        @media (max-width: 768px) {
-            .nav-links {
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                border-top: 1px solid #e5e7eb;
-                padding: 1rem;
-                display: none;
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .nav-group {
-                width: 100%;
-            }
-
-            .nav-sublinks {
-                position: static;
-                display: block;
-                box-shadow: none;
-                border: none;
-                background: #f9fafb;
-                border-radius: 0.375rem;
-                margin-top: 0.5rem;
-                padding: 0.5rem;
-            }
-
-            .nav-group-label {
-                display: block;
-                padding: 0.5rem 0;
-                border-bottom: 1px solid #e5e7eb;
-                margin-bottom: 0.5rem;
-            }
-        }
-        
-        /* Notification Bell Styles */
-        .notification-bell {
-            position: relative;
-            margin-right: 15px;
-        }
-        
-        .bell-icon {
-            cursor: pointer;
-            font-size: 1.4rem;
-            position: relative;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background-color 0.2s ease;
-        }
-        
-        .bell-icon:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-        
-        .notification-count {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: #ff4757;
-            color: white;
-            border-radius: 10px;
-            padding: 2px 6px;
-            font-size: 10px;
-            font-weight: bold;
-            min-width: 16px;
-            text-align: center;
-        }
-        
-        .notification-dropdown {
-            width: 350px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 0;
-        }
-        
-        .notification-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            background: #f8f9fa;
-        }
-        
-        .notification-header h4 {
-            margin: 0;
-            font-size: 16px;
-        }
-        
-        .notification-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .notification-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        
-        .notification-item:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .notification-item.unread {
-            background-color: #e3f2fd;
-            border-left: 3px solid #2196f3;
-        }
-        
-        .notification-title {
-            font-weight: 500;
-            margin-bottom: 4px;
-            font-size: 14px;
-        }
-        
-        .notification-message {
-            color: #666;
-            font-size: 12px;
-            line-height: 1.4;
-            margin-bottom: 4px;
-        }
-        
-        .notification-time {
-            color: #999;
-            font-size: 11px;
-        }
-        
-        .notification-footer {
-            padding: 10px 15px;
-            border-top: 1px solid #eee;
-            text-align: center;
-            background: #f8f9fa;
-        }
-        
-        .btn-text {
-            background: none;
-            border: none;
-            color: #007bff;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-        }
-        
-        .btn-text:hover {
-            text-decoration: underline;
-        }
-        
-        .loading-notifications {
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .empty-notifications {
-            padding: 30px 20px;
-            text-align: center;
-            color: #999;
-        }
-        
-        .empty-notifications-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            opacity: 0.5;
-        }
-    </style>
-    {% block extra_css %}{% endblock %}
-</head>
-<body>
-    <a href="#main-content" class="sr-only">Skip to main content</a>
-    <header>
-        <nav>
-            <a href="{{ url_for('dashboard') }}" class="logo">
-                <span class="logo-icon">🔄</span>
-                <span class="logo-text-primary">FOOD</span>
-                <span class="logo-text-secondary">XCHANGE</span>
-            </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="{{ url_for('dashboard') }}" class="{% if request.url.path == '/dashboard' %}active{% endif %}">
-                    <span class="nav-icon">🏠</span>
-                    <span class="nav-label">Dashboard</span>
-                </a></li>
-                <li class="nav-group">
-                    <span class="nav-group-label">Workflow</span>
-                    <ul class="nav-sublinks">
-                        <li><a href="{{ url_for('new_rfq') }}" class="{% if request.url.path == '/rfq/new' %}active{% endif %}">
-                            <span class="nav-icon">📝</span>
-                            <span class="nav-label">Source (RFQ)</span>
-                        </a></li>
-                        <li><a href="{{ url_for('quote_comparison') }}" class="{% if request.url.path == '/quotes/comparison' %}active{% endif %}">
-                            <span class="nav-icon">📊</span>
-                            <span class="nav-label">Compare</span>
-                        </a></li>
-                        <li><a href="/orders" class="{% if request.url.path == '/orders' %}active{% endif %}">
-                            <span class="nav-icon">📦</span>
-                            <span class="nav-label">Order</span>
-                        </a></li>
-                        <li><a href="/tracking" class="{% if request.url.path == '/tracking' %}active{% endif %}">
-                            <span class="nav-icon">🚚</span>
-                            <span class="nav-label">Track</span>
-                        </a></li>
-                    </ul>
-                </li>
-                <li class="nav-group">
-                    <span class="nav-group-label">Intelligence</span>
-                    <ul class="nav-sublinks">
-                        <li><a href="{{ url_for('email_intelligence') }}" class="{% if request.url.path == '/emails' %}active{% endif %}">
-                            <span class="nav-icon">📧</span>
-                            <span class="nav-label">Email AI</span>
-                        </a></li>
-                        <li><a href="{{ url_for('analytics') }}" class="{% if request.url.path == '/analytics' %}active{% endif %}">
-                            <span class="nav-icon">📈</span>
-                            <span class="nav-label">Analytics</span>
-                        </a></li>
-                        <li><a href="/insights" class="{% if request.url.path == '/insights' %}active{% endif %}">
-                            <span class="nav-icon">🧠</span>
-                            <span class="nav-label">Insights</span>
-                        </a></li>
-                    </ul>
-                </li>
-                <li class="nav-group">
-                    <span class="nav-group-label">Management</span>
-                    <ul class="nav-sublinks">
-                        <li><a href="{{ url_for('suppliers_list') }}" class="{% if request.url.path == '/suppliers' %}active{% endif %}">
-                            <span class="nav-icon">🏢</span>
-                            <span class="nav-label">Suppliers</span>
-                        </a></li>
-                        <li><a href="{{ url_for('projects_list') }}" class="{% if request.url.path == '/projects' %}active{% endif %}">
-                            <span class="nav-icon">📋</span>
-                            <span class="nav-label">Projects</span>
-                        </a></li>
-                        <li><a href="/inventory" class="{% if request.url.path == '/inventory' %}active{% endif %}">
-                            <span class="nav-icon">📦</span>
-                            <span class="nav-label">Inventory</span>
-                        </a></li>
-                    </ul>
-                </li>
-            </ul>
-            <div class="user-menu">
-                {% if current_user %}
-                <!-- Notification Bell -->
-                <div class="notification-bell dropdown">
-                    <div class="bell-icon" onclick="toggleNotifications()">
-                        🔔
-                        <span class="notification-count" id="notification-count" style="display: none;">0</span>
-                    </div>
-                    <div class="dropdown-content notification-dropdown" id="notification-dropdown">
-                        <div class="notification-header">
-                            <h4>Notifications</h4>
-                            <button class="btn-text" onclick="markAllRead()">Mark all read</button>
-                        </div>
-                        <div class="notification-list" id="notification-list">
-                            <div class="loading-notifications">Loading...</div>
-                        </div>
-                        <div class="notification-footer">
-                            <a href="/notifications" class="btn-text">View all notifications</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="user-info dropdown">
-                    <div class="user-avatar">{{ current_user.initials }}</div>
-                    <span>{{ current_user.name }}</span>
-                    <div class="dropdown-content">
-                        <a href="/profile">Profile</a>
-                        <a href="/settings">Settings</a>
-                        <hr>
-                        <a href="/auth/logout">Logout</a>
-                    </div>
-                </div>
-                <a href="{{ url_for('new_rfq') }}" class="btn btn-primary">
-                    <span>➕ New RFQ</span>
-                </a>
-                {% else %}
-                <a href="/login" class="btn btn-primary">Login</a>
-                {% endif %}
-            </div>
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                ☰
-            </button>
-        </nav>
-    </header>
-    {% block breadcrumb %}{% endblock %}
-    <main id="main-content">
-        {% block content %}{% endblock %}
-    </main>
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>FoodXchange</h3>
-                <p>Streamlining food sourcing with AI-powered supplier matching and intelligent automation.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ url_for('projects_list') }}">Projects</a></li>
-                    <li><a href="{{ url_for('suppliers_list') }}">Suppliers</a></li>
-                    <li><a href="#">Help Center</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Features</h3>
-                <ul>
-                    <li><a href="#">AI Supplier Matching</a></li>
-                    <li><a href="#">Quote Comparison</a></li>
-                    <li><a href="#">Email Intelligence</a></li>
-                    <li><a href="#">Cost Analytics</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact</h3>
-                <p>📧 support@foodxchange.com</p>
-                <p>📱 WhatsApp: +972-XX-XXXXXXX</p>
-                <p>📍 Herzliya, Tel Aviv, Israel</p>
-                <p>🕐 Sun-Thu: 9:00-18:00 IST</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 FoodXchange. All rights reserved. | 
-               <a href="#">Privacy Policy</a> | 
-               <a href="#">Terms of Service</a> | 
-               <a href="#">API Documentation</a>
-            </p>
-        </div>
-    </footer>
-    <div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1000;">
-        <button class="btn btn-primary" style="width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);" onclick="showQuickActions()">
-            +
-        </button>
-    </div>
+    <title>{% block title %}{{ title | default('Food Xchange') }}{% endblock %} - Food Xchange</title>
+    
+    <!-- Food Xchange Custom Fonts -->
+    <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+    
+    <!-- Complete Brand System -->
+    <link rel="stylesheet" href="/static/brand/fx-complete.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configure Tailwind with Food Xchange colors and fonts -->
     <script>
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
-        }
-
-        // Quick actions menu
-        function showQuickActions() {
-            alert('Quick actions menu coming soon!');
-        }
-
-        // Notification System
-        let notificationDropdownOpen = false;
-        let notifications = [];
-
-        // Initialize notifications on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadNotifications();
-            // Refresh notifications every 30 seconds
-            setInterval(loadNotifications, 30000);
-        });
-
-        // Toggle notification dropdown
-        function toggleNotifications() {
-            const dropdown = document.getElementById('notification-dropdown');
-            
-            if (notificationDropdownOpen) {
-                dropdown.style.display = 'none';
-                notificationDropdownOpen = false;
-            } else {
-                dropdown.style.display = 'block';
-                notificationDropdownOpen = true;
-                loadNotifications(); // Refresh when opened
-            }
-        }
-
-        // Close notification dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const bell = document.querySelector('.notification-bell');
-            const dropdown = document.getElementById('notification-dropdown');
-            
-            if (!bell.contains(event.target)) {
-                dropdown.style.display = 'none';
-                notificationDropdownOpen = false;
-            }
-        });
-
-        // Load notifications from API
-        async function loadNotifications() {
-            try {
-                const response = await fetch('/api/notifications?limit=10', {
-                    headers: {
-                        'Authorization': `Bearer ${getAccessToken()}`
-                    }
-                });
-                
-                if (response.ok) {
-                    notifications = await response.json();
-                    updateNotificationDisplay();
-                    updateNotificationCount();
-                }
-            } catch (error) {
-                console.error('Error loading notifications:', error);
-            }
-        }
-
-        // Update notification display
-        function updateNotificationDisplay() {
-            const container = document.getElementById('notification-list');
-            
-            if (notifications.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-notifications">
-                        <div class="empty-notifications-icon">🔔</div>
-                        <p>No notifications</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = notifications.map(createNotificationItem).join('');
-        }
-
-        // Create notification item HTML
-        function createNotificationItem(notification) {
-            const isUnread = !notification.is_read ? 'unread' : '';
-            const timeAgo = getTimeAgo(notification.created_at);
-            
-            return `
-                <div class="notification-item ${isUnread}" onclick="markAsRead(${notification.id})">
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${timeAgo}</div>
-                </div>
-            `;
-        }
-
-        // Update notification count
-        function updateNotificationCount() {
-            const countElement = document.getElementById('notification-count');
-            const unreadCount = notifications.filter(n => !n.is_read).length;
-            
-            if (unreadCount > 0) {
-                countElement.textContent = unreadCount > 99 ? '99+' : unreadCount;
-                countElement.style.display = 'block';
-            } else {
-                countElement.style.display = 'none';
-            }
-        }
-
-        // Mark single notification as read
-        async function markAsRead(notificationId) {
-            try {
-                const response = await fetch(`/api/notifications/${notificationId}/read`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${getAccessToken()}`
-                    }
-                });
-                
-                if (response.ok) {
-                    // Update local state
-                    const notification = notifications.find(n => n.id === notificationId);
-                    if (notification) {
-                        notification.is_read = true;
-                        updateNotificationDisplay();
-                        updateNotificationCount();
-                    }
-                    
-                    // Navigate to notification action if available
-                    const notificationObj = notifications.find(n => n.id === notificationId);
-                    if (notificationObj && notificationObj.action_url) {
-                        window.location.href = notificationObj.action_url;
-                    }
-                }
-            } catch (error) {
-                console.error('Error marking notification as read:', error);
-            }
-        }
-
-        // Mark all notifications as read
-        async function markAllRead() {
-            try {
-                const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
-                
-                if (unreadIds.length === 0) return;
-                
-                const response = await fetch('/api/notifications/mark-read', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getAccessToken()}`
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fx-primary': '#4A90E2',
+                        'fx-secondary': '#F97316',
+                        'fx-accent': '#10B981',
                     },
-                    body: JSON.stringify({ notification_ids: unreadIds })
-                });
-                
-                if (response.ok) {
-                    // Update local state
-                    notifications.forEach(n => n.is_read = true);
-                    updateNotificationDisplay();
-                    updateNotificationCount();
+                    fontFamily: {
+                        'causten': ['Causten', 'sans-serif'],
+                        'david-libre': ['David Libre', 'serif'],
+                        'roboto-serif': ['Roboto Serif', 'serif'],
+                    }
                 }
-            } catch (error) {
-                console.error('Error marking all as read:', error);
             }
-        }
-
-        // Get relative time string
-        function getTimeAgo(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const seconds = Math.floor((now - date) / 1000);
-            
-            if (seconds < 60) return 'Just now';
-            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-            
-            return date.toLocaleDateString();
-        }
-
-        // Get access token
-        function getAccessToken() {
-            return localStorage.getItem('access_token') || sessionStorage.getItem('access_token') || '';
-        }
-
-        // Simple toast notification system
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff'};
-                color: white;
-                padding: 12px 20px;
-                border-radius: 4px;
-                z-index: 9999;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            `;
-            
-            document.body.appendChild(toast);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
-            }, 3000);
         }
     </script>
+    
+    <!-- v0 Generated Styles -->
+    {% block extra_css %}{% endblock %}
+    
+    <!-- FullStory Tracking Code -->
+    <script>
+    window['_fs_host'] = 'fullstory.com';
+    window['_fs_script'] = 'edge.fullstory.com/s/fs.js';
+    window['_fs_org'] = 'o-23KNJV-na1';
+    window['_fs_namespace'] = 'FS';
+    !function(m,n,e,t,l,o,g,y){var s,f,a=function(h){
+    return!(h in m)||(m.console&&m.console.log&&m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].'),!1)}(e)
+    ;function p(b){var h,d=[];function j(){h&&(d.forEach((function(b){var d;try{d=b[h[0]]&&b[h[0]](h[1])}catch(h){return void(b[3]&&b[3](h))}
+    d&&d.then?d.then(b[2],b[3]):b[2]&&b[2](d)})),d.length=0)}function r(b){return function(d){h||(h=[b,d],j())}}return b(r(0),r(1)),{
+    then:function(b,h){return p((function(r,i){d.push([b,h,r,i]),j()}))}}}a&&(g=m[e]=function(){var b=function(b,d,j,r){function i(i,c){
+    h(b,d,j,i,c,r)}r=r||2;var c,u=/Async$/;return u.test(b)?(b=b.replace(u,""),"function"==typeof Promise?new Promise(i):p(i)):h(b,d,j,c,c,r)}
+    ;function h(h,d,j,r,i,c){return b._api?b._api(h,d,j,r,i,c):(b.q&&b.q.push([h,d,j,r,i,c]),null)}return b.q=[],b}(),y=function(b){function h(h){
+    "function"==typeof h[4]&&h[4](new Error(b))}var d=g.q;if(d){for(var j=0;j<d.length;j++)h(d[j]);d.length=0,d.push=h}},function(){
+    (o=n.createElement(t)).async=!0,o.crossOrigin="anonymous",o.src="https://"+l,o.onerror=function(){y("Error loading "+l)}
+    ;var b=n.getElementsByTagName(t)[0];b&&b.parentNode?b.parentNode.insertBefore(o,b):n.head.appendChild(o)}(),function(){function b(){}
+    function h(b,h,d){g(b,h,d,1)}function d(b,d,j){h("setProperties",{type:b,properties:d},j)}function j(b,h){d("user",b,h)}function r(b,h,d){j({
+    uid:b},d),h&&j(h,d)}g.identify=r,g.setUserVars=j,g.identifyAccount=b,g.clearUserCookie=b,g.setVars=d,g.event=function(b,d,j){h("trackEvent",{
+    name:b,properties:d},j)},g.anonymize=function(){r(!1)},g.shutdown=function(){h("shutdown")},g.restart=function(){h("restart")},
+    g.log=function(b,d){h("log",{level:b,msg:d})},g.consent=function(b){h("setIdentity",{consent:!arguments.length||b})}}(),s="fetch",
+    f="XMLHttpRequest",g._w={},g._w[f]=m[f],g._w[s]=m[s],m[s]&&(m[s]=function(){return g._w[s].apply(this,arguments)}),g._v="2.0.0")
+    }(window,document,window._fs_namespace,"script",window._fs_script);
+    </script>
+    
+    <!-- Custom styles -->
+    <style>
+        body {
+            font-family: 'Roboto Serif', serif;
+            background-color: var(--fx-background);
+            color: var(--fx-text);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'David Libre', serif;
+            font-weight: 600;
+        }
+        
+        .fx-btn-primary {
+            background: linear-gradient(135deg, var(--fx-primary) 0%, var(--fx-primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--fx-radius-md);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .fx-btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--fx-shadow-lg);
+        }
+        
+        .fx-btn-secondary {
+            background: linear-gradient(135deg, var(--fx-secondary) 0%, var(--fx-secondary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--fx-radius-md);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .fx-btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--fx-shadow-lg);
+        }
+    </style>
+</head>
+<body class="font-roboto-serif bg-white text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="/static/brand/logos/Favicon.png" alt="Food Xchange" class="h-8 w-auto">
+                        <h1 class="text-xl font-david-libre font-semibold text-fx-primary ml-2">Food Xchange</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-fx-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="/rfq-form" class="text-gray-600 hover:text-fx-primary px-3 py-2 rounded-md text-sm font-medium">RFQ</a>
+                    <a href="/suppliers" class="text-gray-600 hover:text-fx-primary px-3 py-2 rounded-md text-sm font-medium">Suppliers</a>
+                </div>
+            </div>
+        </div>
+        </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 Food Xchange. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FDX Trading FullStory User Identification -->
+    <script>
+        // Advanced user identification for FDX Trading
+        function identifyFDXUser(userData) {
+            if (window.FS && userData) {
+                FS('setIdentity', {
+                    uid: userData.id || userData.user_id || 'anonymous_' + Date.now(),
+                    properties: {
+                        displayName: userData.name || userData.display_name || 'Anonymous User',
+                        email: userData.email || '',
+                        userType: userData.user_type || userData.role || 'visitor',
+                        company: userData.company || userData.organization || '',
+                        department: userData.department || '',
+                        location: userData.location || userData.country || '',
+                        registrationDate: userData.created_at || userData.registration_date || '',
+                        lastLogin: userData.last_login || new Date().toISOString(),
+                        subscriptionTier: userData.subscription_tier || userData.plan || 'free',
+                        totalOrders: userData.total_orders || 0,
+                        totalSpent: userData.total_spent || 0,
+                        preferredCategories: userData.preferred_categories || [],
+                        accountStatus: userData.status || 'active',
+                        source: 'fdx_trading_web'
+                    }
+                });
+                console.log('FDX User identified:', userData);
+            }
+        }
+
+        // Specific user type identification
+        function identifyBuyer(buyerData) {
+            if (window.FS && buyerData) {
+                FS('setIdentity', {
+                    uid: buyerData.id || 'buyer_' + Date.now(),
+                    properties: {
+                        displayName: buyerData.name || 'Buyer',
+                        email: buyerData.email || '',
+                        userType: 'buyer',
+                        company: buyerData.company || '',
+                        industry: buyerData.industry || '',
+                        purchaseVolume: buyerData.purchase_volume || 'medium',
+                        preferredSuppliers: buyerData.preferred_suppliers || [],
+                        totalRFQs: buyerData.total_rfqs || 0,
+                        totalOrders: buyerData.total_orders || 0,
+                        averageOrderValue: buyerData.avg_order_value || 0,
+                        lastPurchaseDate: buyerData.last_purchase_date || '',
+                        creditLimit: buyerData.credit_limit || 0,
+                        paymentTerms: buyerData.payment_terms || 'net30'
+                    }
+                });
+            }
+        }
+
+        function identifySupplier(supplierData) {
+            if (window.FS && supplierData) {
+                FS('setIdentity', {
+                    uid: supplierData.id || 'supplier_' + Date.now(),
+                    properties: {
+                        displayName: supplierData.name || 'Supplier',
+                        email: supplierData.email || '',
+                        userType: 'supplier',
+                        company: supplierData.company || '',
+                        industry: supplierData.industry || '',
+                        productCategories: supplierData.product_categories || [],
+                        certifications: supplierData.certifications || [],
+                        totalQuotes: supplierData.total_quotes || 0,
+                        totalOrders: supplierData.total_orders || 0,
+                        averageQuoteValue: supplierData.avg_quote_value || 0,
+                        responseTime: supplierData.avg_response_time || 0,
+                        rating: supplierData.rating || 0,
+                        location: supplierData.location || '',
+                        shippingCapabilities: supplierData.shipping_capabilities || []
+                    }
+                });
+            }
+        }
+
+        function identifyAgent(agentData) {
+            if (window.FS && agentData) {
+                FS('setIdentity', {
+                    uid: agentData.id || 'agent_' + Date.now(),
+                    properties: {
+                        displayName: agentData.name || 'Agent',
+                        email: agentData.email || '',
+                        userType: 'agent',
+                        company: agentData.company || '',
+                        specialization: agentData.specialization || '',
+                        totalDeals: agentData.total_deals || 0,
+                        commissionRate: agentData.commission_rate || 0,
+                        activeClients: agentData.active_clients || 0,
+                        performanceRating: agentData.performance_rating || 0,
+                        territories: agentData.territories || [],
+                        experience: agentData.experience_years || 0
+                    }
+                });
+            }
+        }
+
+        // Event tracking functions
+        function trackRFQCreated(rfqData) {
+            if (window.FS && rfqData) {
+                FS('event', 'RFQ Created', {
+                    rfqId: rfqData.id,
+                    category: rfqData.category,
+                    quantity: rfqData.quantity,
+                    unit: rfqData.unit,
+                    deliveryDate: rfqData.delivery_date,
+                    budget: rfqData.budget,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackQuoteSubmitted(quoteData) {
+            if (window.FS && quoteData) {
+                FS('event', 'Quote Submitted', {
+                    quoteId: quoteData.id,
+                    rfqId: quoteData.rfq_id,
+                    price: quoteData.price,
+                    currency: quoteData.currency,
+                    deliveryTime: quoteData.delivery_time,
+                    supplier: quoteData.supplier_name,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackOrderPlaced(orderData) {
+            if (window.FS && orderData) {
+                FS('event', 'Order Placed', {
+                    orderId: orderData.id,
+                    totalValue: orderData.total_value,
+                    currency: orderData.currency,
+                    items: orderData.items_count,
+                    supplier: orderData.supplier_name,
+                    buyer: orderData.buyer_name,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackUserRegistered(userData) {
+            if (window.FS && userData) {
+                FS('event', 'User Registered', {
+                    userId: userData.id,
+                    userType: userData.user_type,
+                    source: userData.registration_source || 'web',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackFormAbandonment(formData) {
+            if (window.FS && formData) {
+                FS('event', 'Form Abandoned', {
+                    formType: formData.type,
+                    step: formData.step,
+                    fieldsCompleted: formData.fields_completed,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        // Auto-identify user if data is available
+        {% if user %}
+            identifyFDXUser({
+                id: '{{ user.id }}',
+                name: '{{ user.name }}',
+                email: '{{ user.email }}',
+                user_type: '{{ user.user_type }}',
+                company: '{{ user.company }}',
+                created_at: '{{ user.created_at }}',
+                last_login: '{{ user.last_login }}'
+            });
+        {% endif %}
+
+        // Track page views
+        FS('event', 'Page Viewed', {
+            page: '{{ request.path }}',
+            title: document.title,
+            userType: '{{ user.user_type if user else "anonymous" }}',
+            timestamp: new Date().toISOString()
+        });
+    </script>
+
+    <!-- v0 Generated JavaScript -->
     {% block extra_js %}{% endblock %}
 </body>
 </html> 

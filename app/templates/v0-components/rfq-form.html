@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Food Xchange</title>
+    <link rel="stylesheet" href="/static/v0-styles/rfq-form.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/design-tokens.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Food Xchange</a>
+            <div class="nav-menu">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/rfq" class="nav-link">RFQs</a>
+                <a href="/quotes" class="nav-link">Quotes</a>
+                <a href="/profile" class="nav-link">Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Paste v0 HTML here -->
+        <div class="v0-component">
+            <!-- Your v0 generated content goes here -->
+        </div>
+    </main>
+
+    <!-- FastAPI integration -->
+    <script src="/static/js/v0-components/rfq-form.js"></script>
+    <script>
+    // FastAPI backend integration
+    const API_BASE = '/api';
+    
+    // Example API call function
+    async function callAPI(endpoint, data = null) {
+        try {
+            const options = {
+                method: data ? 'POST' : 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            const response = await fetch(\\\\, options);
+            return await response.json();
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw error;
+        }
+    }
+    
+    // Add your component-specific JavaScript here
+    </script>
+</body>
+</html>

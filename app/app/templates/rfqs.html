@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFQs - FoodXchange</title>
+    
+    <!-- Simple Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/simple-design-system.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/favicon.ico') }}">
+</head>
+<body>
+    <!-- Skip to content for accessibility -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+    
+    <!-- Simple Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-container">
+                <a href="/" class="navbar-brand">🍎 FoodXchange</a>
+                
+                <button class="navbar-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <ul class="navbar-menu">
+                    <li><a href="/dashboard" class="navbar-link">Dashboard</a></li>
+                    <li><a href="/rfqs" class="navbar-link active">RFQs</a></li>
+                    <li><a href="/suppliers" class="navbar-link">Suppliers</a></li>
+                    <li><a href="/analytics" class="navbar-link">Analytics</a></li>
+                    {% if current_user %}
+                    <li><a href="/auth/logout" class="navbar-link">Logout</a></li>
+                    {% else %}
+                    <li><a href="/login" class="navbar-link">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main" class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="mb-4">
+                <h1>Request for Quotations (RFQs)</h1>
+                <p class="text-muted">Manage your procurement requests and track supplier responses</p>
+            </div>
+            
+            <!-- RFQ Stats -->
+            <div class="grid grid-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-primary">{{ rfqs|selectattr("status", "equalto", "draft")|list|length }}</h3>
+                        <p class="text-muted">Draft</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-warning">{{ rfqs|selectattr("status", "equalto", "sent")|list|length }}</h3>
+                        <p class="text-muted">Sent</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-success">{{ rfqs|selectattr("status", "equalto", "quoted")|list|length }}</h3>
+                        <p class="text-muted">Quoted</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="text-info">{{ rfqs|length }}</h3>
+                        <p class="text-muted">Total RFQs</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RFQ Actions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <a href="/rfq/new" class="btn btn-primary">
+                        📝 Create New RFQ
+                    </a>
+                    <button class="btn btn-secondary" onclick="bulkSendRFQs()">
+                        📤 Bulk Send RFQs
+                    </button>
+                    <button class="btn btn-outline" onclick="exportRFQs()">
+                        📊 Export RFQs
+                    </button>
+                </div>
+            </div>
+            
+            <!-- RFQ List -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Your RFQs</h2>
+                    <div class="form-group mb-0" style="width: 200px;">
+                        <select class="form-control" onchange="filterRFQs(this.value)">
+                            <option value="">All Status</option>
+                            <option value="draft">Draft</option>
+                            <option value="sent">Sent</option>
+                            <option value="quoted">Quoted</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>RFQ Number</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Delivery Date</th>
+                                <th>Status</th>
+                                <th>Quotes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rfq in rfqs %}
+                            <tr>
+                                <td>
+                                    <strong>{{ rfq.rfq_number }}</strong>
+                                    <div class="text-sm text-muted">{{ rfq.created_at.strftime('%Y-%m-%d') }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ rfq.product_name }}</strong>
+                                    {% if rfq.category %}
+                                    <div class="text-sm text-muted">{{ rfq.category }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>{{ rfq.quantity }}</td>
+                                <td>{{ rfq.delivery_date.strftime('%Y-%m-%d') if rfq.delivery_date else '-' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 
+                                        'secondary' if rfq.status == 'draft' else
+                                        'warning' if rfq.status == 'sent' else
+                                        'success' if rfq.status == 'quoted' else
+                                        'info'
+                                    }}">
+                                        {{ rfq.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if rfq.quotes %}
+                                        <strong>{{ rfq.quotes|length }}</strong> quotes
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline" onclick="viewRFQ({{ rfq.id }})">
+                                            View
+                                        </button>
+                                        {% if rfq.status == 'draft' %}
+                                        <button class="btn btn-sm btn-primary" onclick="sendRFQ({{ rfq.id }})">
+                                            Send
+                                        </button>
+                                        {% elif rfq.quotes|length > 0 %}
+                                        <button class="btn btn-sm btn-success" onclick="compareQuotes({{ rfq.id }})">
+                                            Compare
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    No RFQs found. <a href="/rfq/new">Create your first RFQ</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Simple Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p class="text-muted">© 2024 FoodXchange. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Simple Design System JS -->
+    <script src="{{ url_for('static', path='/js/simple-utils.js') }}"></script>
+    
+    <script>
+        function viewRFQ(id) {
+            window.location.href = `/rfqs/${id}`;
+        }
+        
+        function sendRFQ(id) {
+            FX.modal.show(`
+                <h3>Send RFQ to Suppliers</h3>
+                <p>Select suppliers to send this RFQ to:</p>
+                <form id="sendRFQForm">
+                    <div class="checkbox-group">
+                        <label class="checkbox">
+                            <input type="checkbox" name="supplier" value="1">
+                            <span>Mediterranean Delights</span>
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox" name="supplier" value="2">
+                            <span>Italian Fine Foods</span>
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox" name="supplier" value="3">
+                            <span>Spanish Imports Co</span>
+                        </label>
+                    </div>
+                </form>
+            `, {
+                title: 'Send RFQ',
+                footer: `<button class="btn btn-primary" onclick="confirmSendRFQ(${id})">Send to Selected</button>`
+            });
+        }
+        
+        async function confirmSendRFQ(id) {
+            const form = document.getElementById('sendRFQForm');
+            const checkboxes = form.querySelectorAll('input[name="supplier"]:checked');
+            const supplierIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            if (supplierIds.length === 0) {
+                FX.toast('Please select at least one supplier', 'warning');
+                return;
+            }
+            
+            FX.loading.show('Sending RFQ...');
+            
+            try {
+                const response = await fetch(`/api/rfqs/${id}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ supplier_ids: supplierIds })
+                });
+                
+                if (response.ok) {
+                    FX.loading.hide();
+                    FX.modal.hide();
+                    FX.toast('RFQ sent successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                }
+            } catch (error) {
+                FX.loading.hide();
+                FX.toast('Failed to send RFQ', 'error');
+            }
+        }
+        
+        function compareQuotes(id) {
+            window.location.href = `/quotes/comparison?rfq_id=${id}`;
+        }
+        
+        function filterRFQs(status) {
+            if (status) {
+                window.location.href = `/rfqs?status=${status}`;
+            } else {
+                window.location.href = '/rfqs';
+            }
+        }
+        
+        function bulkSendRFQs() {
+            FX.toast('Bulk send feature coming soon!', 'info');
+        }
+        
+        function exportRFQs() {
+            FX.loading.show('Exporting RFQs...');
+            setTimeout(() => {
+                FX.loading.hide();
+                FX.toast('RFQs exported to Excel!', 'success');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
