@@ -2,10 +2,16 @@
 # Monitors all critical services and provides real-time status
 
 param(
-    [string]$BaseUrl = "https://your-site.azurewebsites.net",
+    [string]$BaseUrl = "http://localhost:8000",
     [switch]$Continuous,
-    [int]$Interval = 30
+    [int]$Interval = 30,
+    [switch]$Production
 )
+
+# Override base URL for production if specified
+if ($Production) {
+    $BaseUrl = "https://your-site.azurewebsites.net"
+}
 
 function Write-StatusHeader {
     param([string]$Title)
@@ -132,14 +138,19 @@ function Monitor-Services {
     $results += $webResult
     
     # Test database
-    $dbResult = Test-Service "Database" "$BaseUrl/health/db"
+    $dbResult = Test-Service "Database" "$BaseUrl/health/detailed"
     $dbResult.ServiceName = "Database"
     $results += $dbResult
     
     # Test API endpoints
-    $apiResult = Test-Service "API Endpoints" "$BaseUrl/api/suppliers"
+    $apiResult = Test-Service "API Endpoints" "$BaseUrl/docs"
     $apiResult.ServiceName = "API Endpoints"
     $results += $apiResult
+    
+    # Test Azure Monitor (if available)
+    $azureResult = Test-Service "Azure Monitor" "$BaseUrl/monitoring/azure"
+    $azureResult.ServiceName = "Azure Monitor"
+    $results += $azureResult
     
     # Test authentication
     $authResult = Test-Service "Authentication" "$BaseUrl/login"
