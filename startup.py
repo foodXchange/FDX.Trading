@@ -48,7 +48,9 @@ except ImportError:
 env_vars = {
     'DATABASE_URL': os.getenv('DATABASE_URL'),
     'AZURE_STORAGE_CONNECTION_STRING': os.getenv('AZURE_STORAGE_CONNECTION_STRING'),
-    'AZURE_OPENAI_API_KEY': os.getenv('AZURE_OPENAI_API_KEY')
+    'AZURE_OPENAI_API_KEY': os.getenv('AZURE_OPENAI_API_KEY'),
+    'SENTRY_DSN': os.getenv('SENTRY_DSN'),
+    'SENTRY_ENVIRONMENT': os.getenv('SENTRY_ENVIRONMENT', 'production')
 }
 
 for var, value in env_vars.items():
