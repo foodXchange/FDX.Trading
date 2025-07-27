@@ -14,3 +14,9 @@ passlib==1.7.4
 aiohttp==3.9.0
 wheel
 sentry-sdk[flask]==1.40.0
+# Azure Monitor dependencies
+opencensus-ext-azure==1.1.12
+opencensus-ext-fastapi==0.1.0
+opencensus-ext-logging==0.1.0
+opencensus-ext-requests==0.1.0
+opencensus-ext-sqlalchemy==0.1.0
