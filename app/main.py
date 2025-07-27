@@ -653,6 +653,10 @@ app.include_router(bootstrap_router)
 from app.routes.ai_test_routes import router as ai_test_router
 app.include_router(ai_test_router)
 
+# Include Email test routes
+from app.routes.email_test_routes import router as email_test_router
+app.include_router(email_test_router)
+
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
 async def agent_dashboard(request: Request, db: Session = Depends(get_db)):

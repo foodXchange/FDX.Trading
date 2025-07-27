@@ -21,7 +21,8 @@ class NotificationService:
     """Service for managing notifications"""
     
     def __init__(self):
-        self.email_service = None  # TODO: Initialize email service
+        from app.services.email_notification_service import email_notification_service
+        self.email_service = email_notification_service
         self.sms_service = None    # TODO: Initialize SMS service
         self.push_service = None   # TODO: Initialize push notification service
     
@@ -406,12 +407,53 @@ class NotificationService:
             if not user or not user.email:
                 return
             
-            # TODO: Implement email sending logic
-            # For now, just mark as sent
-            notification.mark_email_sent()
-            db.commit()
+            # Prepare email data based on notification type
+            email_sent = False
             
-            logger.info(f"Email notification sent to {user.email}: {notification.title}")
+            if notification.type == NotificationType.ORDER_PLACED:
+                order_data = notification.additional_data
+                order_data['order_number'] = order_data.get('order_number', 'N/A')
+                order_data['order_date'] = datetime.utcnow().strftime('%Y-%m-%d')
+                order_data['total_amount'] = order_data.get('total_amount', 0)
+                order_data['tracking_url'] = f"{notification.action_url}"
+                
+                email_sent = await self.email_service.send_order_confirmation(
+                    user.email,
+                    order_data
+                )
+            
+            elif notification.type == NotificationType.NEW_RFQ:
+                rfq_data = notification.additional_data
+                rfq_data['quote_url'] = notification.action_url
+                
+                email_sent = await self.email_service.send_rfq_notification(
+                    user.email,
+                    rfq_data
+                )
+            
+            elif notification.type == NotificationType.NEW_QUOTE:
+                quote_data = notification.additional_data
+                quote_data['comparison_url'] = notification.action_url
+                
+                email_sent = await self.email_service.send_quote_received(
+                    user.email,
+                    quote_data
+                )
+            
+            else:
+                # Generic notification email
+                email_sent = await self.email_service.send_email(
+                    user.email,
+                    notification.title,
+                    notification.message,
+                    self._create_generic_html_email(notification)
+                )
+            
+            if email_sent:
+                notification.mark_email_sent()
+                db.commit()
+                logger.info(f"Email notification sent to {user.email}: {notification.title}")
+            
         except Exception as e:
             logger.error(f"Failed to send email notification: {e}")
     
@@ -438,3 +480,39 @@ class NotificationService:
             logger.info(f"Push notification sent for: {notification.title}")
         except Exception as e:
             logger.error(f"Failed to send push notification: {e}")
+    
+    def _create_generic_html_email(self, notification: Notification) -> str:
+        """Create generic HTML email template"""
+        html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background-color: #2c3e50; color: white; padding: 20px; text-align: center; }}
+        .content {{ background-color: #f9f9f9; padding: 20px; margin-top: 20px; }}
+        .button {{ background-color: #3498db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 20px; }}
+        .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 12px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{notification.title}</h1>
+        </div>
+        
+        <div class="content">
+            <p>{notification.message}</p>
+            
+            {f'<center><a href="{notification.action_url}" class="button">{notification.action_text or "View Details"}</a></center>' if notification.action_url else ''}
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 FoodXchange. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+        return html
