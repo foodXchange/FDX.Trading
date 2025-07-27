@@ -12,9 +12,10 @@ import re
 try:
     from openai import AzureOpenAI
     OPENAI_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     OPENAI_AVAILABLE = False
-    print("Warning: openai package not installed. Run: pip install openai")
+    print(f"Warning: openai package not installed. Error: {e}")
+    print("Run: pip install openai")
 
 from app.config import get_settings
 
@@ -27,6 +28,11 @@ class OpenAIService:
     def __init__(self):
         self.settings = get_settings()
         self.client = None
+        
+        logger.info(f"OpenAI Available: {OPENAI_AVAILABLE}")
+        logger.info(f"API Key: {'***' + self.settings.azure_openai_api_key[-4:] if self.settings.azure_openai_api_key else 'Not set'}")
+        logger.info(f"Endpoint: {self.settings.azure_openai_endpoint}")
+        logger.info(f"Deployment: {self.settings.azure_openai_deployment_name}")
         
         if OPENAI_AVAILABLE and all([
             self.settings.azure_openai_api_key,

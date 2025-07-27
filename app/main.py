@@ -29,9 +29,9 @@ try:
             HttpxIntegration(),
         ],
     )
-    print("✅ Enhanced Sentry initialized successfully")
+    print("Enhanced Sentry initialized successfully")
 except ImportError:
-    print("⚠️ Optimized Sentry configuration not found, using basic setup")
+    print("Warning: Optimized Sentry configuration not found, using basic setup")
     try:
         from sentry_config import SENTRY_DSN, SENTRY_ENVIRONMENT, SENTRY_TRACES_SAMPLE_RATE, SENTRY_PROFILES_SAMPLE_RATE
         
@@ -45,11 +45,11 @@ except ImportError:
                 SqlalchemyIntegration(),
             ],
         )
-        print("✅ Basic Sentry initialized successfully")
+        print("Basic Sentry initialized successfully")
     except Exception as e:
-        print(f"⚠️ Sentry initialization failed: {e}")
+        print(f"Warning: Sentry initialization failed: {e}")
 except Exception as e:
-    print(f"⚠️ Enhanced Sentry initialization failed: {e}")
+    print(f"Warning: Enhanced Sentry initialization failed: {e}")
 
 from fastapi import FastAPI, Request, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -64,6 +64,14 @@ import psutil
 from app.database import get_db
 from app.auth import SessionAuth, get_current_user_context as get_user_context
 
+# Azure Monitor integration
+try:
+    from app.services.azure_monitor_service import azure_monitor
+    print("Azure Monitor service imported")
+except ImportError as e:
+    print(f"Warning: Azure Monitor service not available: {e}")
+    azure_monitor = None
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -76,6 +84,16 @@ try:
     app.add_middleware(SentryUserMiddleware)
 except:
     pass
+
+# Add Azure Monitor middleware if available
+if azure_monitor and azure_monitor.enabled:
+    try:
+        azure_middleware = azure_monitor.get_fastapi_middleware()
+        if azure_middleware:
+            app.add_middleware(azure_middleware)
+            print("Azure Monitor middleware added")
+    except Exception as e:
+        print(f"Warning: Failed to add Azure Monitor middleware: {e}")
 
 # CORS
 app.add_middleware(
@@ -194,7 +212,8 @@ async def health_advanced():
         "system": system_info,
         "monitoring": {
             "sentry": "configured" if os.getenv('SENTRY_DSN') else "not_configured",
-            "uptimerobot": "configured" if os.path.exists('uptimerobot_config.json') else "not_configured"
+            "uptimerobot": "configured" if os.path.exists('uptimerobot_config.json') else "not_configured",
+            "azure_monitor": azure_monitor.get_status() if azure_monitor else {"enabled": False, "error": "not_available"}
         }
     }
     return response
@@ -352,6 +371,74 @@ async def test_sentry():
             "error": str(e),
             "timestamp": datetime.now().isoformat()
         }
+
+@app.get("/monitoring/azure")
+async def azure_monitor_status():
+    """Get Azure Monitor status and configuration"""
+    try:
+        if not azure_monitor:
+            return {
+                "status": "not_available",
+                "message": "Azure Monitor service not available",
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        status = azure_monitor.get_status()
+        
+        # Test Azure Monitor functionality
+        if azure_monitor.enabled:
+            try:
+                azure_monitor.log_event("health_check", {
+                    "endpoint": "/monitoring/azure",
+                    "timestamp": datetime.now().isoformat()
+                })
+                status["test_event_sent"] = True
+            except Exception as e:
+                status["test_event_sent"] = False
+                status["test_event_error"] = str(e)
+        
+        return {
+            "status": "success",
+            "azure_monitor": status,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Failed to get Azure Monitor status: {str(e)}",
+            "timestamp": datetime.now().isoformat()
+        }
+
+@app.get("/monitoring/test")
+async def test_monitoring():
+    """Test all monitoring systems"""
+    results = {}
+    
+    # Test Sentry
+    try:
+        sentry_sdk.capture_message("Monitoring test from FoodXchange", level="info")
+        results["sentry"] = {"status": "success", "message": "Test event sent"}
+    except Exception as e:
+        results["sentry"] = {"status": "error", "message": str(e)}
+    
+    # Test Azure Monitor
+    if azure_monitor and azure_monitor.enabled:
+        try:
+            azure_monitor.log_event("monitoring_test", {
+                "test_type": "comprehensive",
+                "timestamp": datetime.now().isoformat()
+            })
+            results["azure_monitor"] = {"status": "success", "message": "Test event sent"}
+        except Exception as e:
+            results["azure_monitor"] = {"status": "error", "message": str(e)}
+    else:
+        results["azure_monitor"] = {"status": "not_available", "message": "Azure Monitor not configured"}
+    
+    return {
+        "status": "completed",
+        "results": results,
+        "timestamp": datetime.now().isoformat()
+    }
 
 # Application Routes
 @app.get("/dashboard", response_class=HTMLResponse)
@@ -558,6 +645,14 @@ include_supplier_api_routes(app)
 from app.routes.product_routes import include_product_routes
 include_product_routes(app)
 
+# Include Bootstrap routes
+from app.routes.bootstrap_routes import router as bootstrap_router
+app.include_router(bootstrap_router)
+
+# Include AI test routes
+from app.routes.ai_test_routes import router as ai_test_router
+app.include_router(ai_test_router)
+
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
 async def agent_dashboard(request: Request, db: Session = Depends(get_db)):
@@ -584,6 +679,11 @@ async def orchestrator_dashboard(request: Request, db: Session = Depends(get_db)
         return RedirectResponse(url="/login", status_code=302)
     
     return templates.TemplateResponse("orchestrator_dashboard.html", {"request": request, "current_user": user})
+
+@app.get("/system-status", response_class=HTMLResponse, name="system_status")
+async def system_status(request: Request):
+    """System status dashboard - no authentication required for monitoring"""
+    return templates.TemplateResponse("system_status.html", {"request": request})
 
 # Error handlers
 @app.exception_handler(StarletteHTTPException)

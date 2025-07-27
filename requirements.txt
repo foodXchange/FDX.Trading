@@ -15,4 +15,5 @@ aiohttp==3.9.0
 wheel
 sentry-sdk[fastapi]==1.40.0
 httpx==0.25.2
+openai==1.35.7
 beautifulsoup4==4.12.2
