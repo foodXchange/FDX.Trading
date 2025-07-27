@@ -126,4 +126,16 @@ dmypy.json
 .pyre/
 
 # Claude
-.claude/ 
+.claude/
+
+# Sensitive files
+.env.blob
+azure_blob_config.json
+publish_profile.xml
+*.key
+*.pem
+*.cert
+*.pfx
+secrets/
+credentials/
+nul 

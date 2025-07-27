@@ -2,6 +2,14 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 from typing import Optional
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env and .env.blob
+# First load .env, then .env.blob (which will override any duplicate keys)
+if os.path.exists('.env'):
+    load_dotenv('.env', override=False)
+if os.path.exists('.env.blob'):
+    load_dotenv('.env.blob', override=True)
 
 class Settings(BaseSettings):
     # Required settings with defaults for development
@@ -30,10 +38,22 @@ class Settings(BaseSettings):
     
     # Redis (optional)
     redis_url: Optional[str] = os.getenv("REDIS_URL")
+    
+    # Sentry settings (optional)
+    sentry_dsn: Optional[str] = os.getenv("SENTRY_DSN")
+    sentry_environment: Optional[str] = os.getenv("SENTRY_ENVIRONMENT", "development")
+    sentry_traces_sample_rate: Optional[float] = float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.1"))
+    sentry_profiles_sample_rate: Optional[float] = float(os.getenv("SENTRY_PROFILES_SAMPLE_RATE", "0.1"))
+    
+    # Supabase settings (optional)
+    supabase_url: Optional[str] = os.getenv("SUPABASE_URL")
+    supabase_anon_key: Optional[str] = os.getenv("SUPABASE_ANON_KEY")
+    supabase_service_role_key: Optional[str] = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
     class Config:
         env_file = ".env"
         env_file_encoding = 'utf-8'
+        extra = "allow"  # This allows extra fields from environment variables
 
 @lru_cache()
 def get_settings():

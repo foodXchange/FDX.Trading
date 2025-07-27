@@ -15,24 +15,50 @@ from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
+# Azure Communication Services imports
+try:
+    from azure.communication.email import EmailClient
+    from azure.communication.email.models import EmailAddress, EmailContent, EmailMessage, EmailRecipients
+    AZURE_EMAIL_AVAILABLE = True
+except ImportError:
+    AZURE_EMAIL_AVAILABLE = False
+    logger.warning("Azure Communication Services Email not available. Install with: pip install azure-communication-email")
+
 
 class EmailNotificationService:
     """Service for sending notification emails"""
     
     def __init__(self):
         self.settings = get_settings()
+        
+        # Azure Communication Services configuration
+        self.azure_email_connection_string = os.getenv("AZURE_EMAIL_CONNECTION_STRING")
+        self.azure_email_sender = os.getenv("AZURE_EMAIL_SENDER", "DoNotReply@foodxchange.com")
+        self.use_azure = bool(self.azure_email_connection_string) and AZURE_EMAIL_AVAILABLE
+        
+        # SMTP configuration
         self.smtp_host = self.settings.smtp_host or "smtp.gmail.com"
         self.smtp_port = self.settings.smtp_port or 587
         self.smtp_username = self.settings.smtp_username
         self.smtp_password = self.settings.smtp_password
-        self.from_email = self.smtp_username or "noreply@foodxchange.com"
+        self.from_email = self.smtp_username or self.azure_email_sender or "noreply@foodxchange.com"
         self.from_name = "FoodXchange"
         
+        # Initialize Azure Email Client if available
+        self.azure_email_client = None
+        if self.use_azure:
+            try:
+                self.azure_email_client = EmailClient.from_connection_string(self.azure_email_connection_string)
+                logger.info("Azure Communication Services Email client initialized")
+            except Exception as e:
+                logger.error(f"Failed to initialize Azure Email Client: {e}")
+                self.use_azure = False
+        
         # Check if email is configured
-        self.is_configured = bool(self.smtp_username and self.smtp_password)
+        self.is_configured = self.use_azure or bool(self.smtp_username and self.smtp_password)
         
         if not self.is_configured:
-            logger.warning("Email service not configured. Set SMTP_USERNAME and SMTP_PASSWORD in .env")
+            logger.warning("Email service not configured. Set either Azure Communication Services or SMTP credentials in .env")
     
     async def send_email(
         self,
@@ -48,6 +74,75 @@ class EmailNotificationService:
             logger.warning(f"Email not sent (not configured): {subject} to {to_email}")
             return False
         
+        try:
+            # Use Azure Communication Services if available
+            if self.use_azure and self.azure_email_client:
+                return await self._send_azure_email(to_email, subject, body_text, body_html, cc, bcc)
+            else:
+                return await self._send_smtp_email(to_email, subject, body_text, body_html, cc, bcc)
+        except Exception as e:
+            logger.error(f"Failed to send email: {str(e)}")
+            return False
+    
+    async def _send_azure_email(
+        self,
+        to_email: str,
+        subject: str,
+        body_text: str,
+        body_html: Optional[str] = None,
+        cc: Optional[List[str]] = None,
+        bcc: Optional[List[str]] = None
+    ) -> bool:
+        """Send email using Azure Communication Services"""
+        try:
+            # Create email content
+            email_content = EmailContent(
+                subject=subject,
+                plain_text=body_text
+            )
+            
+            if body_html:
+                email_content.html = body_html
+            
+            # Create recipients
+            to_recipients = [EmailAddress(address=to_email)]
+            cc_recipients = [EmailAddress(address=email) for email in (cc or [])]
+            bcc_recipients = [EmailAddress(address=email) for email in (bcc or [])]
+            
+            email_recipients = EmailRecipients(
+                to=to_recipients,
+                cc=cc_recipients if cc_recipients else None,
+                bcc=bcc_recipients if bcc_recipients else None
+            )
+            
+            # Create message
+            message = EmailMessage(
+                sender_address=self.azure_email_sender,
+                recipients=email_recipients,
+                content=email_content
+            )
+            
+            # Send email
+            poller = self.azure_email_client.begin_send(message)
+            result = poller.result()
+            
+            logger.info(f"Azure email sent successfully: {subject} to {to_email}, Message ID: {result.id}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to send Azure email: {str(e)}")
+            return False
+    
+    async def _send_smtp_email(
+        self,
+        to_email: str,
+        subject: str,
+        body_text: str,
+        body_html: Optional[str] = None,
+        cc: Optional[List[str]] = None,
+        bcc: Optional[List[str]] = None
+    ) -> bool:
+        """Send email using SMTP"""
         try:
             # Create message
             msg = MIMEMultipart('alternative')
@@ -81,11 +176,11 @@ class EmailNotificationService:
                 
                 server.send_message(msg, to_addrs=all_recipients)
             
-            logger.info(f"Email sent successfully: {subject} to {to_email}")
+            logger.info(f"SMTP email sent successfully: {subject} to {to_email}")
             return True
             
         except Exception as e:
-            logger.error(f"Failed to send email: {str(e)}")
+            logger.error(f"Failed to send SMTP email: {str(e)}")
             return False
     
     async def send_order_confirmation(

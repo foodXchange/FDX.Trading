@@ -1,0 +1,443 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Help & Support - Food Xchange{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4">Help & Support Center</h1>
+        <p class="lead text-muted">Find answers to common questions and get the help you need</p>
+    </div>
+    
+    <!-- Search Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-6">
+            <div class="input-group">
+                <input type="search" class="form-control" id="helpSearch" placeholder="Search for help articles, FAQs, or topics...">
+                <button class="btn btn-primary" type="button" onclick="searchHelp()">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-question-circle text-primary" style="font-size: 2rem;"></i>
+                    <h5 class="card-title mt-3">FAQs</h5>
+                    <p class="card-text">Find answers to frequently asked questions</p>
+                    <button class="btn btn-outline-primary" onclick="scrollToSection('faq')">Browse FAQs</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-book text-primary" style="font-size: 2rem;"></i>
+                    <h5 class="card-title mt-3">User Guide</h5>
+                    <p class="card-text">Step-by-step instructions and tutorials</p>
+                    <button class="btn btn-outline-primary" onclick="scrollToSection('user-guide')">View Guide</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-chat-dots text-primary" style="font-size: 2rem;"></i>
+                    <h5 class="card-title mt-3">Contact Support</h5>
+                    <p class="card-text">Get in touch with our support team</p>
+                    <button class="btn btn-outline-primary" onclick="scrollToSection('contact')">Contact Us</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-lightbulb text-primary" style="font-size: 2rem;"></i>
+                    <h5 class="card-title mt-3">Tips & Tricks</h5>
+                    <p class="card-text">Learn how to use the platform effectively</p>
+                    <button class="btn btn-outline-primary" onclick="scrollToSection('tips')">View Tips</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="row mb-5" id="faq">
+        <div class="col-12">
+            <h2 class="mb-4">Frequently Asked Questions</h2>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            How do I create a Request for Quote (RFQ)?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>To create an RFQ:</p>
+                            <ol>
+                                <li>Navigate to the RFQ section</li>
+                                <li>Click "Create New RFQ"</li>
+                                <li>Fill in the required information including product category, quantity, and delivery date</li>
+                                <li>Add any special requirements</li>
+                                <li>Submit your RFQ</li>
+                            </ol>
+                            <p>Suppliers will be notified and can submit quotes for your request.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            How do I track my orders?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>You can track your orders in several ways:</p>
+                            <ul>
+                                <li>Go to the Orders section to view all your orders</li>
+                                <li>Use the search and filter options to find specific orders</li>
+                                <li>Click on any order to view detailed information including status updates</li>
+                                <li>Set up notifications to receive updates via email</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            What payment methods are accepted?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>We accept various payment methods:</p>
+                            <ul>
+                                <li>Credit cards (Visa, MasterCard, American Express)</li>
+                                <li>Bank transfers</li>
+                                <li>Wire transfers</li>
+                                <li>Payment terms for approved buyers</li>
+                            </ul>
+                            <p>Payment terms and methods may vary by supplier and order value.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            How do I become a supplier on the platform?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>To become a supplier:</p>
+                            <ol>
+                                <li>Click on "Become a Supplier" in the navigation</li>
+                                <li>Fill out the supplier application form</li>
+                                <li>Provide required documentation (business license, certifications, etc.)</li>
+                                <li>Complete the verification process</li>
+                                <li>Set up your supplier profile and product catalog</li>
+                            </ol>
+                            <p>Our team will review your application and contact you within 2-3 business days.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            How do I cancel an order?
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <p>To cancel an order:</p>
+                            <ol>
+                                <li>Go to the Orders section</li>
+                                <li>Find the order you want to cancel</li>
+                                <li>Click on the order to view details</li>
+                                <li>Click the "Cancel Order" button</li>
+                                <li>Confirm the cancellation</li>
+                            </ol>
+                            <p><strong>Note:</strong> Orders can only be cancelled if they haven't been shipped yet. Cancellation policies may vary by supplier.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Guide Section -->
+    <div class="row mb-5" id="user-guide">
+        <div class="col-12">
+            <h2 class="mb-4">User Guide</h2>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                                Getting Started
+                            </h5>
+                            <p class="card-text">Learn the basics of using the Food Xchange platform, from creating your first RFQ to managing orders.</p>
+                            <a href="#" class="btn btn-primary">Read Guide</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-cart text-primary me-2"></i>
+                                Order Management
+                            </h5>
+                            <p class="card-text">Master order management including tracking, status updates, and communication with suppliers.</p>
+                            <a href="#" class="btn btn-primary">Read Guide</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-graph-up text-primary me-2"></i>
+                                Analytics & Reports
+                            </h5>
+                            <p class="card-text">Understand your business metrics, generate reports, and make data-driven decisions.</p>
+                            <a href="#" class="btn btn-primary">Read Guide</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-gear text-primary me-2"></i>
+                                Account Settings
+                            </h5>
+                            <p class="card-text">Manage your profile, preferences, notifications, and account security settings.</p>
+                            <a href="#" class="btn btn-primary">Read Guide</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tips & Tricks Section -->
+    <div class="row mb-5" id="tips">
+        <div class="col-12">
+            <h2 class="mb-4">Tips & Tricks</h2>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-lightbulb me-2"></i>
+                                RFQ Best Practices
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">✓ Be specific about product requirements</li>
+                                <li class="mb-2">✓ Set realistic delivery timelines</li>
+                                <li class="mb-2">✓ Include quality specifications</li>
+                                <li class="mb-2">✓ Mention any certifications needed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-star me-2"></i>
+                                Supplier Selection
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">✓ Check supplier ratings and reviews</li>
+                                <li class="mb-2">✓ Review their response time</li>
+                                <li class="mb-2">✓ Compare multiple quotes</li>
+                                <li class="mb-2">✓ Verify certifications and compliance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-graph-up me-2"></i>
+                                Cost Optimization
+                            </li>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">✓ Order in larger quantities</li>
+                                <li class="mb-2">✓ Plan deliveries in advance</li>
+                                <li class="mb-2">✓ Build long-term relationships</li>
+                                <li class="mb-2">✓ Monitor market trends</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Support Section -->
+    <div class="row mb-5" id="contact">
+        <div class="col-12">
+            <h2 class="mb-4">Contact Support</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form id="supportForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="supportName" class="form-label">Name *</label>
+                                        <input type="text" class="form-control" id="supportName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="supportEmail" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="supportEmail" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="supportSubject" class="form-label">Subject *</label>
+                                    <select class="form-select" id="supportSubject" required>
+                                        <option value="">Select a subject</option>
+                                        <option value="technical">Technical Issue</option>
+                                        <option value="billing">Billing Question</option>
+                                        <option value="account">Account Issue</option>
+                                        <option value="order">Order Problem</option>
+                                        <option value="general">General Inquiry</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="supportMessage" class="form-label">Message *</label>
+                                    <textarea class="form-control" id="supportMessage" rows="5" required placeholder="Please describe your issue or question in detail..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="supportPriority" class="form-label">Priority</label>
+                                    <select class="form-select" id="supportPriority">
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send me-2"></i>
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Other Ways to Reach Us</h5>
+                            <div class="mb-3">
+                                <h6><i class="bi bi-telephone text-primary me-2"></i>Phone Support</h6>
+                                <p class="mb-1">+1 (555) 123-4567</p>
+                                <small class="text-muted">Mon-Fri 9AM-6PM EST</small>
+                            </div>
+                            <div class="mb-3">
+                                <h6><i class="bi bi-envelope text-primary me-2"></i>Email Support</h6>
+                                <p class="mb-1">support@foodxchange.com</p>
+                                <small class="text-muted">24/7 response within 24 hours</small>
+                            </div>
+                            <div class="mb-3">
+                                <h6><i class="bi bi-chat-dots text-primary me-2"></i>Live Chat</h6>
+                                <p class="mb-1">Available during business hours</p>
+                                <small class="text-muted">Click the chat icon in the bottom right</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Support form submission
+    document.getElementById('supportForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitSupportForm();
+    });
+    
+    // Search functionality
+    document.getElementById('helpSearch').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchHelp();
+        }
+    });
+});
+
+function searchHelp() {
+    const searchTerm = document.getElementById('helpSearch').value.trim();
+    if (searchTerm) {
+        // Implement search functionality
+        showAlert(`Searching for: ${searchTerm}`, 'info');
+        // This would typically search through help articles and FAQs
+    } else {
+        showAlert('Please enter a search term', 'warning');
+    }
+}
+
+function submitSupportForm() {
+    const formData = {
+        name: document.getElementById('supportName').value,
+        email: document.getElementById('supportEmail').value,
+        subject: document.getElementById('supportSubject').value,
+        message: document.getElementById('supportMessage').value,
+        priority: document.getElementById('supportPriority').value
+    };
+    
+    // Validate form
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+        showAlert('Please fill in all required fields', 'warning');
+        return;
+    }
+    
+    // Submit form
+    callAPI('/support/contact', formData)
+        .then(response => {
+            if (response.success) {
+                showAlert('Your message has been sent successfully. We will respond within 24 hours.', 'success');
+                document.getElementById('supportForm').reset();
+            } else {
+                showAlert('Failed to send message. Please try again.', 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('An error occurred. Please try again.', 'danger');
+        });
+}
+
+function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+</script>
+{% endblock %} 

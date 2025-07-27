@@ -8,6 +8,8 @@ psycopg2-binary==2.9.9
 sqlalchemy==2.0.30
 alembic==1.13.1
 pydantic-settings==2.0.3
+pydantic[email]==2.5.0
+email-validator==2.1.0
 bcrypt==4.0.1
 python-jose[cryptography]==3.3.0
 passlib==1.7.4
@@ -17,3 +19,4 @@ sentry-sdk[fastapi]==1.40.0
 httpx==0.25.2
 openai==1.35.7
 beautifulsoup4==4.12.2
+azure-communication-email==1.0.0

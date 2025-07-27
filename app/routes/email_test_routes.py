@@ -22,8 +22,10 @@ async def email_status():
     """Check email service status"""
     return {
         "email_configured": email_notification_service.is_configured,
-        "smtp_host": email_notification_service.smtp_host,
-        "smtp_port": email_notification_service.smtp_port,
+        "email_provider": "Azure Communication Services" if email_notification_service.use_azure else "SMTP",
+        "smtp_host": email_notification_service.smtp_host if not email_notification_service.use_azure else None,
+        "smtp_port": email_notification_service.smtp_port if not email_notification_service.use_azure else None,
+        "azure_configured": email_notification_service.use_azure,
         "from_email": email_notification_service.from_email
     }
 

@@ -18,7 +18,7 @@ try:
     AZURE_MONITOR_AVAILABLE = True
 except ImportError:
     AZURE_MONITOR_AVAILABLE = False
-    print("⚠️ Azure Monitor dependencies not available. Install with: pip install opencensus-ext-azure")
+    print("[WARNING] Azure Monitor dependencies not available. Install with: pip install opencensus-ext-azure")
 
 class AzureMonitorService:
     """Service for Azure Application Insights monitoring"""
@@ -36,7 +36,7 @@ class AzureMonitorService:
     def _initialize(self):
         """Initialize Azure Monitor if configuration is available"""
         if not AZURE_MONITOR_AVAILABLE:
-            print("⚠️ Azure Monitor not available - missing dependencies")
+            print("[WARNING] Azure Monitor not available - missing dependencies")
             return
         
         # Get configuration from environment
@@ -45,11 +45,11 @@ class AzureMonitorService:
         enabled = os.getenv('AZURE_APP_INSIGHTS_ENABLED', 'false').lower() == 'true'
         
         if not enabled:
-            print("ℹ️ Azure Monitor disabled via environment variable")
+            print("[INFO] Azure Monitor disabled via environment variable")
             return
         
         if not self.instrumentation_key and not self.connection_string:
-            print("⚠️ Azure Monitor not configured - missing instrumentation key or connection string")
+            print("[WARNING] Azure Monitor not configured - missing instrumentation key or connection string")
             return
         
         try:
@@ -57,9 +57,9 @@ class AzureMonitorService:
             self._setup_tracing()
             self._setup_metrics()
             self.enabled = True
-            print("✅ Azure Monitor initialized successfully")
+            print("[OK] Azure Monitor initialized successfully")
         except Exception as e:
-            print(f"❌ Failed to initialize Azure Monitor: {e}")
+            print(f"[ERROR] Failed to initialize Azure Monitor: {e}")
     
     def _setup_logging(self):
         """Setup Azure log handler"""
@@ -68,7 +68,7 @@ class AzureMonitorService:
             handler = AzureLogHandler(connection_string=self.connection_string)
             handler.setLevel(logging.INFO)
             self.logger.addHandler(handler)
-            print("✅ Azure logging configured")
+            print("[OK] Azure logging configured")
     
     def _setup_tracing(self):
         """Setup Azure tracing"""
@@ -77,7 +77,7 @@ class AzureMonitorService:
                 exporter=AzureExporter(connection_string=self.connection_string),
                 sampler=ProbabilitySampler(1.0)
             )
-            print("✅ Azure tracing configured")
+            print("[OK] Azure tracing configured")
     
     def _setup_metrics(self):
         """Setup Azure metrics exporter"""
@@ -85,7 +85,7 @@ class AzureMonitorService:
             self.metrics_exporter = AzureMetricsExporter(
                 connection_string=self.connection_string
             )
-            print("✅ Azure metrics configured")
+            print("[OK] Azure metrics configured")
     
     def log_event(self, event_name: str, properties: Optional[Dict[str, Any]] = None):
         """Log a custom event to Application Insights"""
@@ -103,7 +103,7 @@ class AzureMonitorService:
                 'custom_dimensions': properties
             })
         except Exception as e:
-            print(f"⚠️ Failed to log event {event_name}: {e}")
+            print(f"[WARNING] Failed to log event {event_name}: {e}")
     
     def log_exception(self, exception: Exception, context: Optional[Dict[str, Any]] = None):
         """Log an exception to Application Insights"""
@@ -123,7 +123,7 @@ class AzureMonitorService:
                 'custom_dimensions': context
             })
         except Exception as e:
-            print(f"⚠️ Failed to log exception: {e}")
+            print(f"[WARNING] Failed to log exception: {e}")
     
     def log_metric(self, metric_name: str, value: float, properties: Optional[Dict[str, Any]] = None):
         """Log a custom metric to Application Insights"""
@@ -143,7 +143,7 @@ class AzureMonitorService:
                 'custom_dimensions': properties
             })
         except Exception as e:
-            print(f"⚠️ Failed to log metric {metric_name}: {e}")
+            print(f"[WARNING] Failed to log metric {metric_name}: {e}")
     
     def start_span(self, span_name: str):
         """Start a tracing span"""
@@ -153,7 +153,7 @@ class AzureMonitorService:
         try:
             return self.tracer.span(name=span_name)
         except Exception as e:
-            print(f"⚠️ Failed to start span {span_name}: {e}")
+            print(f"[WARNING] Failed to start span {span_name}: {e}")
             return None
     
     def get_fastapi_middleware(self):
@@ -168,7 +168,7 @@ class AzureMonitorService:
                     sampler=ProbabilitySampler(1.0)
                 )
         except Exception as e:
-            print(f"⚠️ Failed to create FastAPI middleware: {e}")
+            print(f"[WARNING] Failed to create FastAPI middleware: {e}")
         
         return None
     

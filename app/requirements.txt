@@ -13,7 +13,11 @@ python-jose[cryptography]==3.3.0
 passlib==1.7.4
 aiohttp==3.9.0
 wheel
-sentry-sdk[flask]==1.40.0
+sentry-sdk[fastapi]==1.40.0
+httpx==0.25.2
+openai==1.35.7
+beautifulsoup4==4.12.2
+azure-communication-email==1.0.0
 # Azure Monitor dependencies
 opencensus-ext-azure==1.1.12
 opencensus-ext-fastapi==0.1.0

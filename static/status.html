@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Food Xchange System Status</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: #f5f5f5;
+        } 
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status-ok { 
+            color: #28a745; 
+            font-weight: bold;
+        } 
+        .status-error { 
+            color: #dc3545; 
+            font-weight: bold;
+        }
+        .status-loading {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .service { 
+            padding: 15px; 
+            margin: 10px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .service h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .refresh-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-btn:hover {
+            background: #0056b3;
+        }
+        .last-updated {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Food Xchange System Status</h1>
+        <button class="refresh-btn" onclick="checkAllServices()">🔄 Refresh Status</button>
+        
+        <div class="service">
+            <h3>Main Website</h3>
+            <span id="main-website" class="status-loading">⏳ Checking...</span>
+        </div>
+        <div class="service">
+            <h3>Database</h3>
+            <span id="database" class="status-loading">⏳ Checking...</span>
+        </div>
+        <div class="service">
+            <h3>API Services</h3>
+            <span id="api-services" class="status-loading">⏳ Checking...</span>
+        </div>
+        <div class="service">
+            <h3>Authentication</h3>
+            <span id="auth" class="status-loading">⏳ Checking...</span>
+        </div>
+        <div class="service">
+            <h3>Azure Monitor</h3>
+            <span id="azure-monitor" class="status-loading">⏳ Checking...</span>
+        </div>
+        
+        <div class="last-updated" id="last-updated">
+            Last updated: Never
+        </div>
+    </div>
+
+    <script>
+        // Get the base URL - adjust this to match your application URL
+        const baseUrl = window.location.origin;
+        
+        async function checkService(endpoint, elementId, serviceName) {
+            try {
+                const response = await fetch(`${baseUrl}${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const element = document.getElementById(elementId);
+                    element.textContent = '✅ Operational';
+                    element.className = 'status-ok';
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                const element = document.getElementById(elementId);
+                element.textContent = `❌ Offline (${error.message})`;
+                element.className = 'status-error';
+                return false;
+            }
+        }
+        
+        async function checkAzureMonitor() {
+            try {
+                const response = await fetch(`${baseUrl}/monitoring/azure`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const element = document.getElementById('azure-monitor');
+                    if (data.azure_monitor && data.azure_monitor.enabled) {
+                        element.textContent = '✅ Configured & Active';
+                        element.className = 'status-ok';
+                    } else {
+                        element.textContent = '⚠️ Not Configured';
+                        element.className = 'status-error';
+                    }
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                const element = document.getElementById('azure-monitor');
+                element.textContent = `❌ Error (${error.message})`;
+                element.className = 'status-error';
+                return false;
+            }
+        }
+        
+        async function checkAllServices() {
+            // Reset all statuses to loading
+            const statusElements = ['main-website', 'database', 'api-services', 'auth', 'azure-monitor'];
+            statusElements.forEach(id => {
+                const element = document.getElementById(id);
+                element.textContent = '⏳ Checking...';
+                element.className = 'status-loading';
+            });
+            
+            // Check all services in parallel
+            const results = await Promise.allSettled([
+                checkService('/health', 'main-website', 'Main Website'),
+                checkService('/health/db', 'database', 'Database'),
+                checkService('/api/suppliers', 'api-services', 'API Services'),
+                checkService('/auth/login', 'auth', 'Authentication'),
+                checkAzureMonitor()
+            ]);
+            
+            // Update last updated time
+            const now = new Date();
+            document.getElementById('last-updated').textContent = 
+                `Last updated: ${now.toLocaleString()}`;
+            
+            // Count operational services
+            const operationalCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
+            const totalCount = results.length;
+            
+            // Update page title with status
+            if (operationalCount === totalCount) {
+                document.title = '🟢 Food Xchange - All Systems Operational';
+            } else if (operationalCount > 0) {
+                document.title = '🟡 Food Xchange - Partial Outage';
+            } else {
+                document.title = '🔴 Food Xchange - System Down';
+            }
+        }
+        
+        // Check services when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAllServices();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(checkAllServices, 30000);
+        });
+    </script>
+</body>
+</html> 

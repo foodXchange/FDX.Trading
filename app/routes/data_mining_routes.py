@@ -21,7 +21,7 @@ router = APIRouter(prefix="/api/data-mining", tags=["data-mining"])
 @router.post("/scrape-supplier-website")
 async def scrape_supplier_website(
     supplier_id: int,
-    background_tasks: BackgroundTasks,
+    background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
@@ -55,7 +55,7 @@ async def scrape_supplier_website(
 
 @router.post("/scrape-all-suppliers")
 async def scrape_all_suppliers(
-    background_tasks: BackgroundTasks,
+    background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
@@ -172,7 +172,7 @@ async def import_excel_file(
 @router.post("/bulk-import")
 async def bulk_import_files(
     files: List[UploadFile] = File(...),
-    background_tasks: BackgroundTasks,
+    background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
@@ -341,7 +341,7 @@ async def get_product_categories(
 async def translate_products(
     supplier_id: int,
     target_language: str = "en",
-    background_tasks: BackgroundTasks,
+    background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:

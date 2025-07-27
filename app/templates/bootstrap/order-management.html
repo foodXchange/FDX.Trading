@@ -1,0 +1,354 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Order Management - Food Xchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Order Management</h1>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary" onclick="exportOrders()">
+                <i class="bi bi-download me-1"></i>Export
+            </button>
+            <button type="button" class="btn btn-primary" onclick="createOrder()">
+                <i class="bi bi-plus me-1"></i>New Order
+            </button>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="dateFilter" class="form-label">Date Range</label>
+                    <input type="date" class="form-control" id="dateFilter">
+                </div>
+                <div class="col-md-4">
+                    <label for="searchOrders" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="searchOrders" placeholder="Search orders, customers, products...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-secondary w-100" onclick="applyFilters()">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Orders Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="ordersTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Products</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Orders will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Orders pagination">
+                <ul class="pagination justify-content-center" id="ordersPagination">
+                    <!-- Pagination will be generated here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="orderDetailsContent">
+                <!-- Order details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printOrder()">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentOrders = [];
+let currentPage = 1;
+const ordersPerPage = 10;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadOrders();
+    
+    // Search functionality
+    document.getElementById('searchOrders').addEventListener('input', debounce(function() {
+        applyFilters();
+    }, 300));
+});
+
+function loadOrders() {
+    // Simulate API call
+    callAPI('/orders')
+        .then(response => {
+            currentOrders = response.orders || [];
+            displayOrders();
+        })
+        .catch(error => {
+            console.error('Failed to load orders:', error);
+            showAlert('Failed to load orders', 'danger');
+        });
+}
+
+function displayOrders() {
+    const tbody = document.getElementById('ordersTableBody');
+    const startIndex = (currentPage - 1) * ordersPerPage;
+    const endIndex = startIndex + ordersPerPage;
+    const pageOrders = currentOrders.slice(startIndex, endIndex);
+    
+    tbody.innerHTML = pageOrders.map(order => `
+        <tr>
+            <td>
+                <input type="checkbox" class="form-check-input order-checkbox" value="${order.id}">
+            </td>
+            <td><strong>#${order.id}</strong></td>
+            <td>${new Date(order.date).toLocaleDateString()}</td>
+            <td>${order.customer}</td>
+            <td>${order.products.length} items</td>
+            <td>$${order.total.toFixed(2)}</td>
+            <td>
+                <span class="badge bg-${getStatusColor(order.status)}">${order.status}</span>
+            </td>
+            <td>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary" onclick="viewOrder(${order.id})">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="editOrder(${order.id})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" onclick="cancelOrder(${order.id})">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    updatePagination();
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'pending': 'warning',
+        'confirmed': 'info',
+        'shipped': 'primary',
+        'delivered': 'success',
+        'cancelled': 'danger'
+    };
+    return colors[status] || 'secondary';
+}
+
+function updatePagination() {
+    const totalPages = Math.ceil(currentOrders.length / ordersPerPage);
+    const pagination = document.getElementById('ordersPagination');
+    
+    let paginationHTML = '';
+    
+    // Previous button
+    paginationHTML += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>
+        </li>
+    `;
+    
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+            </li>
+        `;
+    }
+    
+    // Next button
+    paginationHTML += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+        </li>
+    `;
+    
+    pagination.innerHTML = paginationHTML;
+}
+
+function changePage(page) {
+    if (page >= 1 && page <= Math.ceil(currentOrders.length / ordersPerPage)) {
+        currentPage = page;
+        displayOrders();
+    }
+}
+
+function applyFilters() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const dateFilter = document.getElementById('dateFilter').value;
+    const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
+    
+    // Apply filters to currentOrders
+    // This would typically be done on the server side
+    currentPage = 1;
+    displayOrders();
+}
+
+function viewOrder(orderId) {
+    // Load order details and show modal
+    callAPI(`/orders/${orderId}`)
+        .then(response => {
+            const order = response.order;
+            document.getElementById('orderDetailsContent').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Order Information</h6>
+                        <p><strong>Order ID:</strong> #${order.id}</p>
+                        <p><strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}</p>
+                        <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></p>
+                        <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Customer Information</h6>
+                        <p><strong>Name:</strong> ${order.customer}</p>
+                        <p><strong>Email:</strong> ${order.email}</p>
+                        <p><strong>Phone:</strong> ${order.phone}</p>
+                    </div>
+                </div>
+                <hr>
+                <h6>Products</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.products.map(product => `
+                                <tr>
+                                    <td>${product.name}</td>
+                                    <td>${product.quantity}</td>
+                                    <td>$${product.price.toFixed(2)}</td>
+                                    <td>$${(product.quantity * product.price).toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+            modal.show();
+        })
+        .catch(error => {
+            showAlert('Failed to load order details', 'danger');
+        });
+}
+
+function editOrder(orderId) {
+    // Navigate to order edit page
+    window.location.href = `/orders/${orderId}/edit`;
+}
+
+function cancelOrder(orderId) {
+    if (confirm('Are you sure you want to cancel this order?')) {
+        callAPI(`/orders/${orderId}/cancel`, { action: 'cancel' })
+            .then(response => {
+                if (response.success) {
+                    showAlert('Order cancelled successfully', 'success');
+                    loadOrders();
+                } else {
+                    showAlert('Failed to cancel order', 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('An error occurred', 'danger');
+            });
+    }
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.order-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+function exportOrders() {
+    const selectedOrders = Array.from(document.querySelectorAll('.order-checkbox:checked'))
+        .map(checkbox => checkbox.value);
+    
+    if (selectedOrders.length === 0) {
+        showAlert('Please select orders to export', 'warning');
+        return;
+    }
+    
+    // Export functionality
+    showAlert('Exporting orders...', 'info');
+}
+
+function createOrder() {
+    window.location.href = '/orders/new';
+}
+
+function printOrder() {
+    window.print();
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+</script>
+{% endblock %} 

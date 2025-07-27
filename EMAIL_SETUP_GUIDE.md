@@ -42,22 +42,24 @@ SMTP_USERNAME=apikey
 SMTP_PASSWORD=your-sendgrid-api-key
 ```
 
-### Option 4: Azure Communication Services
+### Option 4: Azure Communication Services (Recommended for Production)
 
-1. **Create Azure Communication Service**:
-```bash
-az communication create --name foodxchange-comm --resource-group foodxchange-rg --data-location "United States"
-```
+Azure Communication Services provides enterprise-grade email delivery with high deliverability and no daily limits.
 
-2. **Get connection string**:
-```bash
-az communication list-key --name foodxchange-comm --resource-group foodxchange-rg
-```
-
-3. **Update .env file**:
+**Quick Setup:**
+1. Follow the detailed guide in `AZURE_EMAIL_SETUP.md`
+2. Update .env file:
 ```env
-AZURE_EMAIL_CONNECTION_STRING=your-connection-string
+AZURE_EMAIL_CONNECTION_STRING=endpoint=https://your-resource.communication.azure.com/;accesskey=your-key
+AZURE_EMAIL_SENDER=DoNotReply@your-domain.azurecomm.net
 ```
+
+**Benefits:**
+- No daily sending limits
+- Better deliverability
+- Built-in analytics
+- Enterprise security
+- Pay-per-use pricing (first 1,000 emails free/month)
 
 ## Testing Email Configuration
 

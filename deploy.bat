@@ -1,47 +1,54 @@
 @echo off
-echo 🚀 Starting Azure deployment for FoodXchange...
+echo === Simple Azure Deployment ===
+echo.
 
-REM Check if logged in
-echo Checking Azure login status...
-az account show >nul 2>&1
+REM Check if Azure CLI is installed
+az version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Not logged in to Azure. Please run 'az login' first.
+    echo Azure CLI not found. Please install it first:
+    echo https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
     pause
     exit /b 1
 )
 
-echo ✅ Logged in to Azure
+REM Check if logged in
+az account show >nul 2>&1
+if errorlevel 1 (
+    echo Not logged in to Azure. Please run 'az login' first
+    pause
+    exit /b 1
+)
 
-REM Configuration
-set RESOURCE_GROUP_NAME=foodxchange-rg
-set LOCATION=East US
-set APP_NAME=foodxchange-app
-set PLAN_NAME=foodxchange-plan
+echo Azure CLI found and logged in!
+echo.
 
-REM Create Resource Group
-echo Creating resource group: %RESOURCE_GROUP_NAME%
-az group create --name %RESOURCE_GROUP_NAME% --location "%LOCATION%"
+REM Get deployment info
+set /p resourceGroup="Enter your Azure resource group name (e.g., foodxchange-rg): "
+set /p appName="Enter your Azure Web App name (e.g., foodxchange-app): "
 
-REM Create App Service Plan
-echo Creating App Service Plan: %PLAN_NAME%
-az appservice plan create --name %PLAN_NAME% --resource-group %RESOURCE_GROUP_NAME% --sku B1 --is-linux
+echo.
+echo === Installing Dependencies ===
+pip install -r requirements.txt
 
-REM Create Web App
-echo Creating Web App: %APP_NAME%
-az webapp create --resource-group %RESOURCE_GROUP_NAME% --plan %PLAN_NAME% --name %APP_NAME% --runtime "PYTHON:3.12"
+echo.
+echo === Deploying to Azure ===
+echo Deploying to %appName%...
 
-REM Configure startup command
-echo Configuring startup command...
-az webapp config set --resource-group %RESOURCE_GROUP_NAME% --name %APP_NAME% --startup-file "gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app"
+REM Deploy using Azure CLI
+az webapp deployment source config-zip --resource-group %resourceGroup% --name %appName% --src .
 
-REM Create deployment package
-echo Creating deployment package...
-powershell -Command "Compress-Archive -Path 'app', 'requirements.txt', 'startup.txt' -DestinationPath 'app.zip' -Force"
+echo.
+echo === Deployment Complete! ===
+echo Your app should be available at: https://%appName%.azurewebsites.net
 
-REM Deploy the app
-echo Deploying application...
-az webapp deployment source config-zip --resource-group %RESOURCE_GROUP_NAME% --name %APP_NAME% --src app.zip
+echo.
+set /p restart="Do you want to restart the app? (y/n): "
+if /i "%restart%"=="y" (
+    echo Restarting app...
+    az webapp restart --name %appName% --resource-group %resourceGroup%
+    echo App restarted!
+)
 
-echo ✅ Deployment completed!
-echo 🌐 Your app is available at: https://%APP_NAME%.azurewebsites.net
+echo.
+echo Deployment complete! 🎉
 pause 

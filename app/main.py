@@ -5,6 +5,9 @@ import logging
 import platform
 from datetime import datetime
 
+# Load all environment variables from .env and .env.blob files
+from app.load_all_env import load_all_env_files
+
 # Suppress cryptography warnings about 32-bit Python
 warnings.filterwarnings("ignore", message=".*cryptography.*32-bit.*64-bit.*")
 
@@ -657,6 +660,14 @@ app.include_router(ai_test_router)
 from app.routes.email_test_routes import router as email_test_router
 app.include_router(email_test_router)
 
+# Include data mining routes
+from app.routes.data_mining_routes import include_data_mining_routes
+include_data_mining_routes(app)
+
+# Include notification routes (full version)
+from app.routes.notification_routes import include_notification_routes as include_full_notification_routes
+include_full_notification_routes(app)
+
 # Agent dashboard route
 @app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
 async def agent_dashboard(request: Request, db: Session = Depends(get_db)):
@@ -665,6 +676,76 @@ async def agent_dashboard(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/login", status_code=302)
     
     return templates.TemplateResponse("agent_dashboard.html", {"request": request, "current_user": user})
+
+# Add missing routes for screens returning 404
+@app.get("/quotes", response_class=HTMLResponse, name="quotes_list")
+async def quotes_list(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    quotes = [
+        {"id": 1, "rfq_id": "RFQ-001", "supplier": "ABC Foods", "amount": 15000, "status": "Pending"},
+        {"id": 2, "rfq_id": "RFQ-002", "supplier": "XYZ Suppliers", "amount": 18000, "status": "Accepted"}
+    ]
+    return templates.TemplateResponse("quotes.html", {"request": request, "quotes": quotes, "current_user": user})
+
+@app.get("/autopilot", response_class=HTMLResponse, name="autopilot_dashboard")
+async def autopilot_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("autopilot_dashboard.html", {"request": request, "current_user": user})
+
+@app.get("/agent", response_class=HTMLResponse, name="agent_dashboard_alt")
+async def agent_dashboard_alt(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("agent_dashboard.html", {"request": request, "current_user": user})
+
+@app.get("/supplier-portal", response_class=HTMLResponse, name="supplier_portal")
+async def supplier_portal(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("supplier_portal.html", {"request": request, "current_user": user})
+
+@app.get("/email-intelligence", response_class=HTMLResponse, name="email_intelligence")
+async def email_intelligence(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("email_intelligence.html", {"request": request, "current_user": user})
+
+@app.get("/quote-comparison", response_class=HTMLResponse, name="quote_comparison_alt")
+async def quote_comparison_alt(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("quote_comparison.html", {"request": request, "current_user": user})
+
+# V0 Component routes
+@app.get("/v0/rfq-form", response_class=HTMLResponse, name="v0_rfq_form")
+async def v0_rfq_form(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("v0-components/sample-rfq-form.html", {"request": request, "current_user": user})
+
+@app.get("/v0/sample-rfq-form", response_class=HTMLResponse, name="v0_sample_rfq_form")
+async def v0_sample_rfq_form(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_context(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("v0-components/sample-rfq-form.html", {"request": request, "current_user": user})
 
 # Operator dashboard route - unified control center
 @app.get("/operator", response_class=HTMLResponse, name="operator_dashboard")
@@ -743,4 +824,8 @@ async def general_exception_handler(request: Request, exc: Exception):
             "current_user": None
         },
         status_code=500
-    ) 
+    )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000) 

@@ -1,5 +1,5 @@
 # Add current IP to Azure PostgreSQL firewall rules
-$currentIP = "85.65.236.169"
+$currentIP = "217.132.154.154"
 $resourceGroup = "FoodXchangeRG"
 $serverName = "foodxchangepgfr"
 $ruleName = "ClientIP_$(Get-Date -Format 'yyyy-MM-dd_HHmmss')"

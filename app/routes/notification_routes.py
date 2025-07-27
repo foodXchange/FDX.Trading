@@ -207,3 +207,8 @@ async def cleanup_expired_notifications(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to cleanup notifications: {str(e)}")
+
+
+def include_notification_routes(app):
+    """Include notification routes in the main app"""
+    app.include_router(router)

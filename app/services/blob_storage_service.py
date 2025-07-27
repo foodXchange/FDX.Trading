@@ -39,7 +39,7 @@ class BlobStorageService:
         "orders": [".pdf", ".doc", ".docx"],
         "products": [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx"],
         "suppliers": [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx"],
-        "emails": [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".zip"]
+        "emails": [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".jpeg", ".png", ".zip", ".txt"]
     }
     
     def __init__(self):
@@ -75,7 +75,7 @@ class BlobStorageService:
             try:
                 container_client = self.blob_service_client.get_container_client(container_name)
                 if not container_client.exists():
-                    container_client.create_container(public_access="None")
+                    container_client.create_container(public_access=None)
                     logger.info(f"Created container: {container_name}")
             except Exception as e:
                 logger.error(f"Error creating container {container_name}: {e}")
