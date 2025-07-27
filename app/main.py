@@ -15,44 +15,45 @@ warnings.filterwarnings("ignore", message=".*cryptography.*32-bit.*64-bit.*")
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.httpx import HttpxIntegration
 
+# Initialize Sentry SDK with the new DSN
+sentry_sdk.init(
+    dsn="https://fdf092923fb6dd5351274f42e8a4dee9@o4509734929104896.ingest.de.sentry.io/4509734959775824",
+    # Add data like request headers and IP for users
+    send_default_pii=True,
+    # Set sample rate for performance monitoring
+    traces_sample_rate=1.0,  # Capture 100% of transactions for performance monitoring
+    # Set the environment
+    environment=os.getenv("SENTRY_ENVIRONMENT", "production"),
+    # Add integrations
+    integrations=[
+        FastApiIntegration(
+            transaction_style="endpoint"  # Use endpoint name as transaction name
+        ),
+        SqlalchemyIntegration(),
+        HttpxIntegration(),
+    ],
+    # Set release tracking
+    release=os.getenv("SENTRY_RELEASE", "foodxchange@1.0.0"),
+    # Enable profiling
+    profiles_sample_rate=1.0,  # Profile 100% of sampled transactions
+    # Attach stack trace to messages
+    attach_stacktrace=True,
+    # Sample rate for error events
+    sample_rate=1.0,
+    # Max breadcrumbs
+    max_breadcrumbs=50,
+)
+
+print("Sentry SDK initialized with new DSN")
+
+# Try to import middleware if available
 try:
-    from sentry_optimized_config import SENTRY_CONFIG
     from sentry_middleware import SentryMiddleware, SentryUserMiddleware, db_monitor
-    
-    # Initialize Sentry with optimized configuration
-    sentry_sdk.init(
-        **SENTRY_CONFIG,
-        integrations=[
-            FastApiIntegration(),
-            SqlalchemyIntegration(),
-            RedisIntegration(),
-            HttpxIntegration(),
-        ],
-    )
-    print("Enhanced Sentry initialized successfully")
+    print("Sentry middleware imported successfully")
 except ImportError:
-    print("Warning: Optimized Sentry configuration not found, using basic setup")
-    try:
-        from sentry_config import SENTRY_DSN, SENTRY_ENVIRONMENT, SENTRY_TRACES_SAMPLE_RATE, SENTRY_PROFILES_SAMPLE_RATE
-        
-        sentry_sdk.init(
-            dsn=SENTRY_DSN,
-            environment=SENTRY_ENVIRONMENT,
-            traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
-            profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
-            integrations=[
-                FastApiIntegration(),
-                SqlalchemyIntegration(),
-            ],
-        )
-        print("Basic Sentry initialized successfully")
-    except Exception as e:
-        print(f"Warning: Sentry initialization failed: {e}")
-except Exception as e:
-    print(f"Warning: Enhanced Sentry initialization failed: {e}")
+    print("Warning: Sentry middleware not found")
 
 from fastapi import FastAPI, Request, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -374,6 +375,11 @@ async def test_sentry():
             "error": str(e),
             "timestamp": datetime.now().isoformat()
         }
+
+@app.get("/sentry-debug")
+async def trigger_error():
+    """Debug endpoint to verify Sentry integration by triggering a division by zero error"""
+    division_by_zero = 1 / 0
 
 @app.get("/monitoring/azure")
 async def azure_monitor_status():
