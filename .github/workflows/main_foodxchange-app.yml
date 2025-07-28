@@ -151,7 +151,7 @@ jobs:
       # Fallback to publish profile if Azure login failed
       - name: Deploy using Publish Profile
         if: steps.azure-login-oidc.outcome == 'failure'
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
