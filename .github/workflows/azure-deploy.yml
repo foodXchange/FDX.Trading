@@ -45,7 +45,7 @@ jobs:
     - name: Test application
       run: |
         # Run basic import test
-        python -c "from app.main import app; print('App imported successfully')"
+        python -c "from app import app; print('Flask app imported successfully')"
       continue-on-error: true
       
     - name: Create deployment package

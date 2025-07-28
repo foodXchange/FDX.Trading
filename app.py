@@ -1,4 +1,4 @@
-﻿from flask import Flask, jsonify
+from flask import Flask, jsonify
 import os
 
 app = Flask(__name__)
@@ -35,6 +35,9 @@ def health_detailed():
 def api_health():
     return jsonify({"status": "healthy", "api": "v1"})
 
+
+# For gunicorn compatibility, expose the app object
+application = app
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

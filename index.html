@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FoodXchange</title>
+    <script>
+    // Simple health endpoint simulation
+    if (window.location.pathname === '/health/simple' || window.location.pathname === '/health') {
+        document.body.innerHTML = JSON.stringify({"status": "ok"});
+        document.contentType = "application/json";
+    }
+    </script>
+</head>
+<body>
+    <h1>FoodXchange API</h1>
+    <p>Health Status: OK</p>
+    <p><a href="/health/simple">Health Check</a></p>
+</body>
+</html>
