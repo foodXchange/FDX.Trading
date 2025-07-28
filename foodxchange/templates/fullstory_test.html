@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}FullStory Test{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">FullStory Tracking Test Page</h1>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">FullStory Status</h2>
+        <div id="fs-status" class="mb-4">
+            <p class="text-gray-600">Checking FullStory...</p>
+        </div>
+        
+        <div class="space-y-4">
+            <button onclick="testFSLoaded()" class="fx-btn-primary">
+                Check if FullStory is Loaded
+            </button>
+            
+            <button onclick="testFSEvent()" class="fx-btn-secondary">
+                Send Test Event to FullStory
+            </button>
+            
+            <button onclick="testFSIdentify()" class="fx-btn-primary">
+                Test User Identification
+            </button>
+            
+            <button onclick="testFSCustomEvent()" class="fx-btn-secondary">
+                Send Custom Purchase Event
+            </button>
+        </div>
+    </div>
+    
+    <div class="bg-gray-50 rounded-lg p-6">
+        <h3 class="text-lg font-semibold mb-2">Console Output:</h3>
+        <pre id="console-output" class="bg-black text-green-400 p-4 rounded font-mono text-sm overflow-auto h-64"></pre>
+    </div>
+</div>
+
+<script>
+    const output = document.getElementById('console-output');
+    const status = document.getElementById('fs-status');
+    
+    function log(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const color = type === 'error' ? 'text-red-500' : type === 'success' ? 'text-green-500' : '';
+        output.innerHTML += `<div class="${color}">[${timestamp}] ${message}</div>`;
+        output.scrollTop = output.scrollHeight;
+        console.log(`[FullStory Test] ${message}`);
+    }
+    
+    // Check FullStory on page load
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            if (typeof FS !== 'undefined' && FS) {
+                status.innerHTML = '<p class="text-green-600 font-semibold">✅ FullStory is loaded and ready!</p>';
+                log('FullStory is loaded successfully', 'success');
+                log(`FullStory version: ${FS._v || 'Unknown'}`, 'info');
+            } else {
+                status.innerHTML = '<p class="text-red-600 font-semibold">❌ FullStory is not loaded</p>';
+                log('FullStory is NOT loaded', 'error');
+            }
+        }, 2000);
+    });
+    
+    function testFSLoaded() {
+        if (typeof FS !== 'undefined' && FS) {
+            log('FullStory object exists', 'success');
+            log('FullStory methods available: ' + Object.keys(FS).join(', '), 'info');
+            alert('✅ FullStory is loaded! Check console for details.');
+        } else {
+            log('FullStory is not defined', 'error');
+            alert('❌ FullStory is not loaded!');
+        }
+    }
+    
+    function testFSEvent() {
+        if (typeof FS !== 'undefined' && FS && FS.event) {
+            const eventName = 'Test Event from FoodXchange';
+            const eventData = {
+                page: 'fullstory_test',
+                timestamp: new Date().toISOString(),
+                test: true,
+                random_value: Math.floor(Math.random() * 1000)
+            };
+            
+            FS.event(eventName, eventData);
+            log(`Sent event: "${eventName}" with data: ${JSON.stringify(eventData)}`, 'success');
+            alert('✅ Test event sent to FullStory!');
+        } else {
+            log('Cannot send event - FullStory not available', 'error');
+            alert('❌ FullStory is not available!');
+        }
+    }
+    
+    function testFSIdentify() {
+        if (typeof FS !== 'undefined' && FS && FS.identify) {
+            const testUser = {
+                uid: 'test_user_' + Date.now(),
+                properties: {
+                    displayName: 'Test User',
+                    email: 'test@foodxchange.com',
+                    userType: 'test',
+                    company: 'Test Company',
+                    plan: 'premium',
+                    test_session: true
+                }
+            };
+            
+            FS.identify(testUser.uid, testUser.properties);
+            log(`Identified user: ${testUser.uid}`, 'success');
+            log(`User properties: ${JSON.stringify(testUser.properties)}`, 'info');
+            alert('✅ Test user identified in FullStory!');
+        } else {
+            log('Cannot identify user - FullStory not available', 'error');
+            alert('❌ FullStory is not available!');
+        }
+    }
+    
+    function testFSCustomEvent() {
+        if (typeof FS !== 'undefined' && FS && FS.event) {
+            const purchaseEvent = {
+                orderId: 'ORD-' + Date.now(),
+                totalValue: 1299.99,
+                currency: 'USD',
+                items: 3,
+                supplier: 'Test Supplier Co.',
+                category: 'Fresh Produce',
+                paymentMethod: 'credit_card'
+            };
+            
+            FS.event('Purchase Completed', purchaseEvent);
+            log(`Sent purchase event: ${JSON.stringify(purchaseEvent)}`, 'success');
+            alert('✅ Purchase event sent to FullStory!');
+        } else {
+            log('Cannot send custom event - FullStory not available', 'error');
+            alert('❌ FullStory is not available!');
+        }
+    }
+    
+    // Log initial page view
+    log('FullStory test page loaded', 'info');
+    log('Waiting for FullStory to initialize...', 'info');
+</script>
+{% endblock %}

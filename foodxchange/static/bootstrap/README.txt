@@ -1,0 +1,1 @@
+This directory will contain Bootstrap CSS, JS, and related static assets for Food Xchange Bootstrap-based screens. 

@@ -1,0 +1,842 @@
+{% extends "base.html" %}
+
+{% block title %}Supplier Portal - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="supplier-portal">
+    <!-- Header Section -->
+    <div class="portal-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="portal-title">Supplier Portal</h1>
+                    <p class="portal-subtitle">Manage your products, quotes, and orders</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button class="btn btn-primary me-2" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="container-fluid mt-4">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="available-rfqs">0</h3>
+                        <p>Available RFQs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="pending-quotes">0</h3>
+                        <p>Pending Quotes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="active-orders">0</h3>
+                        <p>Active Orders</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-info">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="total-products">0</h3>
+                        <p>Total Products</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="container-fluid mt-5">
+        <ul class="nav nav-tabs" id="supplierTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="rfqs-tab" data-bs-toggle="tab" data-bs-target="#rfqs" type="button">
+                    <i class="fas fa-file-alt"></i> Available RFQs
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="quotes-tab" data-bs-toggle="tab" data-bs-target="#quotes" type="button">
+                    <i class="fas fa-file-invoice-dollar"></i> My Quotes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button">
+                    <i class="fas fa-shopping-cart"></i> Orders
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button">
+                    <i class="fas fa-box"></i> Products
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-4" id="supplierTabContent">
+            <!-- Available RFQs Tab -->
+            <div class="tab-pane fade show active" id="rfqs" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-0">Available RFQs</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="rfq-search" placeholder="Search RFQs...">
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="rfqs-table">
+                                <thead>
+                                    <tr>
+                                        <th>RFQ Number</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Delivery Date</th>
+                                        <th>Budget</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- RFQs will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Quotes Tab -->
+            <div class="tab-pane fade" id="quotes" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">My Quotes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="quotes-table">
+                                <thead>
+                                    <tr>
+                                        <th>Quote ID</th>
+                                        <th>RFQ Number</th>
+                                        <th>Product</th>
+                                        <th>Total Price</th>
+                                        <th>Status</th>
+                                        <th>Submitted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Quotes will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="tab-pane fade" id="orders" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Orders</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Number</th>
+                                        <th>Buyer</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                        <th>Delivery Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Orders will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-pane fade" id="products" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-0">Product Catalog</h5>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button class="btn btn-sm btn-primary" onclick="showAddProductModal()">
+                                    <i class="fas fa-plus"></i> Add Product
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showBulkImport()">
+                                    <i class="fas fa-upload"></i> Bulk Import
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="products-table">
+                                <thead>
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quote Performance</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="quote-performance-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Order Trends</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="order-trends-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Top Products</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="top-products-list">
+                                    <!-- Top products will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quote Submission Modal -->
+<div class="modal fade" id="quoteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Submit Quote</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quote-form">
+                    <input type="hidden" id="quote-rfq-id">
+                    <div class="mb-3">
+                        <label class="form-label">Product</label>
+                        <input type="text" class="form-control" id="quote-product" readonly>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Price per Unit</label>
+                                <input type="number" class="form-control" id="quote-price-per-unit" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Total Price</label>
+                                <input type="number" class="form-control" id="quote-total-price" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Delivery Time</label>
+                                <input type="text" class="form-control" id="quote-delivery-time" placeholder="e.g., 5 days" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Payment Terms</label>
+                                <input type="text" class="form-control" id="quote-payment-terms" placeholder="e.g., Net 30" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="quote-notes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitQuote()">Submit Quote</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="product-name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">SKU</label>
+                                <input type="text" class="form-control" id="product-sku">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="product-description" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <select class="form-control" id="product-category" required>
+                                    <option value="">Select Category</option>
+                                    <!-- Categories will be loaded here -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Price</label>
+                                <input type="number" class="form-control" id="product-price" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Unit</label>
+                                <input type="text" class="form-control" id="product-unit" placeholder="e.g., kg, box" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" id="product-stock" step="0.01">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Min Order Quantity</label>
+                                <input type="number" class="form-control" id="product-min-order" step="0.01" value="1">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.supplier-portal {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.portal-header {
+    background-color: white;
+    padding: 2rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.portal-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.portal-subtitle {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-content h3 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.stat-content p {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0066cc;
+    border-bottom: 3px solid #0066cc;
+}
+
+.nav-tabs .nav-link i {
+    margin-right: 0.5rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+</style>
+
+<script>
+// Load supplier dashboard data
+async function loadDashboard() {
+    try {
+        // Load stats
+        const statsResponse = await fetch('/api/supplier/dashboard/stats');
+        const stats = await statsResponse.json();
+        
+        document.getElementById('available-rfqs').textContent = stats.summary.available_rfqs || 0;
+        document.getElementById('pending-quotes').textContent = stats.summary.pending_quotes || 0;
+        document.getElementById('active-orders').textContent = stats.summary.processing_orders || 0;
+        document.getElementById('total-products').textContent = stats.statistics?.total_products || 0;
+        
+        // Load RFQs
+        loadAvailableRFQs();
+        
+        // Load quotes
+        loadMyQuotes();
+        
+        // Load orders
+        loadOrders();
+        
+        // Load products
+        loadProducts();
+        
+        // Load categories
+        loadCategories();
+        
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+async function loadAvailableRFQs() {
+    try {
+        const response = await fetch('/api/supplier/rfqs/available');
+        const data = await response.json();
+        
+        const tbody = document.querySelector('#rfqs-table tbody');
+        tbody.innerHTML = '';
+        
+        data.items.forEach(rfq => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${rfq.rfq_number}</td>
+                <td>${rfq.product_name}</td>
+                <td>${rfq.quantity}</td>
+                <td>${new Date(rfq.delivery_date).toLocaleDateString()}</td>
+                <td>${rfq.budget_range}</td>
+                <td>${rfq.delivery_location || 'Not specified'}</td>
+                <td>
+                    ${rfq.is_urgent ? '<span class="badge bg-danger">Urgent</span>' : ''}
+                    <span class="badge bg-info">${rfq.quote_count} quotes</span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="viewRFQ(${rfq.id})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="showQuoteModal(${rfq.id}, '${rfq.product_name}')">
+                        <i class="fas fa-file-invoice-dollar"></i> Quote
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading RFQs:', error);
+    }
+}
+
+async function loadMyQuotes() {
+    try {
+        const response = await fetch('/api/supplier/quotes');
+        const data = await response.json();
+        
+        const tbody = document.querySelector('#quotes-table tbody');
+        tbody.innerHTML = '';
+        
+        data.items.forEach(quote => {
+            const row = document.createElement('tr');
+            const statusBadge = getQuoteStatusBadge(quote.status);
+            
+            row.innerHTML = `
+                <td>#${quote.id}</td>
+                <td>${quote.rfq_number}</td>
+                <td>${quote.product_name}</td>
+                <td>$${quote.total_price.toFixed(2)}</td>
+                <td>${statusBadge}</td>
+                <td>${new Date(quote.created_at).toLocaleDateString()}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="viewQuote(${quote.id})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading quotes:', error);
+    }
+}
+
+async function loadOrders() {
+    try {
+        const response = await fetch('/api/orders?limit=10');
+        const orders = await response.json();
+        
+        const tbody = document.querySelector('#orders-table tbody');
+        tbody.innerHTML = '';
+        
+        orders.forEach(order => {
+            const row = document.createElement('tr');
+            const statusBadge = getOrderStatusBadge(order.status);
+            
+            row.innerHTML = `
+                <td>${order.order_number}</td>
+                <td>${order.buyer_company_id}</td>
+                <td>$${(order.total_amount / 100).toFixed(2)}</td>
+                <td>${statusBadge}</td>
+                <td>${order.requested_delivery_date ? new Date(order.requested_delivery_date).toLocaleDateString() : 'N/A'}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="viewOrder(${order.id})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    ${order.status === 'pending' ? `
+                        <button class="btn btn-sm btn-success" onclick="confirmOrder(${order.id})">
+                            <i class="fas fa-check"></i> Confirm
+                        </button>
+                    ` : ''}
+                    ${order.status === 'confirmed' ? `
+                        <button class="btn btn-sm btn-primary" onclick="shipOrder(${order.id})">
+                            <i class="fas fa-truck"></i> Ship
+                        </button>
+                    ` : ''}
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading orders:', error);
+    }
+}
+
+async function loadProducts() {
+    try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        
+        const tbody = document.querySelector('#products-table tbody');
+        tbody.innerHTML = '';
+        
+        data.items.forEach(product => {
+            const row = document.createElement('tr');
+            const statusBadge = product.is_active 
+                ? '<span class="badge bg-success">Active</span>' 
+                : '<span class="badge bg-secondary">Inactive</span>';
+            
+            row.innerHTML = `
+                <td>${product.sku}</td>
+                <td>${product.name}</td>
+                <td>${product.category}</td>
+                <td>$${product.price?.toFixed(2) || '0.00'}</td>
+                <td>${product.stock_quantity || 0} ${product.unit}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="editProduct(${product.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning" onclick="updateStock(${product.id})">
+                        <i class="fas fa-boxes"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading products:', error);
+    }
+}
+
+async function loadCategories() {
+    try {
+        const response = await fetch('/api/products/categories');
+        const categories = await response.json();
+        
+        const select = document.getElementById('product-category');
+        select.innerHTML = '<option value="">Select Category</option>';
+        
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.value;
+            option.textContent = `${cat.icon} ${cat.label}`;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading categories:', error);
+    }
+}
+
+function showQuoteModal(rfqId, productName) {
+    document.getElementById('quote-rfq-id').value = rfqId;
+    document.getElementById('quote-product').value = productName;
+    const modal = new bootstrap.Modal(document.getElementById('quoteModal'));
+    modal.show();
+}
+
+async function submitQuote() {
+    const formData = new FormData();
+    formData.append('rfq_id', document.getElementById('quote-rfq-id').value);
+    formData.append('price_per_unit', document.getElementById('quote-price-per-unit').value);
+    formData.append('total_price', document.getElementById('quote-total-price').value);
+    formData.append('delivery_time', document.getElementById('quote-delivery-time').value);
+    formData.append('payment_terms', document.getElementById('quote-payment-terms').value);
+    formData.append('notes', document.getElementById('quote-notes').value);
+    
+    try {
+        const response = await fetch('/api/supplier/quotes/submit', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            alert('Quote submitted successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('quoteModal')).hide();
+            loadAvailableRFQs();
+            loadMyQuotes();
+        } else {
+            const error = await response.json();
+            alert('Error: ' + error.detail);
+        }
+    } catch (error) {
+        alert('Error submitting quote: ' + error.message);
+    }
+}
+
+function showAddProductModal() {
+    document.getElementById('product-form').reset();
+    const modal = new bootstrap.Modal(document.getElementById('productModal'));
+    modal.show();
+}
+
+async function saveProduct() {
+    const formData = new FormData();
+    formData.append('name', document.getElementById('product-name').value);
+    formData.append('sku', document.getElementById('product-sku').value);
+    formData.append('description', document.getElementById('product-description').value);
+    formData.append('category', document.getElementById('product-category').value);
+    formData.append('price', document.getElementById('product-price').value);
+    formData.append('unit', document.getElementById('product-unit').value);
+    formData.append('stock_quantity', document.getElementById('product-stock').value);
+    formData.append('min_order_quantity', document.getElementById('product-min-order').value);
+    
+    try {
+        const response = await fetch('/api/products', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            alert('Product added successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+            loadProducts();
+        } else {
+            const error = await response.json();
+            alert('Error: ' + error.detail);
+        }
+    } catch (error) {
+        alert('Error saving product: ' + error.message);
+    }
+}
+
+function getQuoteStatusBadge(status) {
+    const badges = {
+        'pending': '<span class="badge bg-warning">Pending</span>',
+        'submitted': '<span class="badge bg-info">Submitted</span>',
+        'accepted': '<span class="badge bg-success">Accepted</span>',
+        'rejected': '<span class="badge bg-danger">Rejected</span>'
+    };
+    return badges[status] || `<span class="badge bg-secondary">${status}</span>`;
+}
+
+function getOrderStatusBadge(status) {
+    const badges = {
+        'pending': '<span class="badge bg-warning">Pending</span>',
+        'confirmed': '<span class="badge bg-info">Confirmed</span>',
+        'processing': '<span class="badge bg-primary">Processing</span>',
+        'shipped': '<span class="badge bg-success">Shipped</span>',
+        'delivered': '<span class="badge bg-success">Delivered</span>',
+        'cancelled': '<span class="badge bg-danger">Cancelled</span>'
+    };
+    return badges[status] || `<span class="badge bg-secondary">${status}</span>`;
+}
+
+function refreshDashboard() {
+    loadDashboard();
+}
+
+// Initialize dashboard on page load
+document.addEventListener('DOMContentLoaded', loadDashboard);
+
+// Auto-refresh every 60 seconds
+setInterval(loadDashboard, 60000);
+</script>
+{% endblock %}

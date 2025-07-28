@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title | default('Food Xchange') }}{% endblock %} - Food Xchange</title>
+    
+    <!-- Food Xchange Custom Fonts -->
+    <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+    
+    <!-- Complete Brand System -->
+    <link rel="stylesheet" href="/static/brand/fx-complete.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configure Tailwind with Food Xchange colors and fonts -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fx-primary': '#4A90E2',
+                        'fx-secondary': '#F97316',
+                        'fx-accent': '#10B981',
+                    },
+                    fontFamily: {
+                        'causten': ['Causten', 'sans-serif'],
+                        'david-libre': ['David Libre', 'serif'],
+                        'roboto-serif': ['Roboto Serif', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- v0 Generated Styles -->
+    {% block extra_css %}{% endblock %}
+    
+    <!-- FullStory Tracking Code -->
+    <script>
+    window['_fs_host'] = 'fullstory.com';
+    window['_fs_script'] = 'edge.fullstory.com/s/fs.js';
+    window['_fs_org'] = 'o-23KNJV-na1';
+    window['_fs_namespace'] = 'FS';
+    // Enable debug mode for localhost
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        window['_fs_debug'] = true;
+        window['_fs_run_in_iframe'] = true;
+        console.log('[FullStory] Debug mode enabled for localhost');
+    }
+    !function(m,n,e,t,l,o,g,y){var s,f,a=function(h){
+    return!(h in m)||(m.console&&m.console.log&&m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].'),!1)}(e)
+    ;function p(b){var h,d=[];function j(){h&&(d.forEach((function(b){var d;try{d=b[h[0]]&&b[h[0]](h[1])}catch(h){return void(b[3]&&b[3](h))}
+    d&&d.then?d.then(b[2],b[3]):b[2]&&b[2](d)})),d.length=0)}function r(b){return function(d){h||(h=[b,d],j())}}return b(r(0),r(1)),{
+    then:function(b,h){return p((function(r,i){d.push([b,h,r,i]),j()}))}}}a&&(g=m[e]=function(){var b=function(b,d,j,r){function i(i,c){
+    h(b,d,j,i,c,r)}r=r||2;var c,u=/Async$/;return u.test(b)?(b=b.replace(u,""),"function"==typeof Promise?new Promise(i):p(i)):h(b,d,j,c,c,r)}
+    ;function h(h,d,j,r,i,c){return b._api?b._api(h,d,j,r,i,c):(b.q&&b.q.push([h,d,j,r,i,c]),null)}return b.q=[],b}(),y=function(b){function h(h){
+    "function"==typeof h[4]&&h[4](new Error(b))}var d=g.q;if(d){for(var j=0;j<d.length;j++)h(d[j]);d.length=0,d.push=h}},function(){
+    (o=n.createElement(t)).async=!0,o.crossOrigin="anonymous",o.src="https://"+l,o.onerror=function(){y("Error loading "+l)}
+    ;var b=n.getElementsByTagName(t)[0];b&&b.parentNode?b.parentNode.insertBefore(o,b):n.head.appendChild(o)}(),function(){function b(){}
+    function h(b,h,d){g(b,h,d,1)}function d(b,d,j){h("setProperties",{type:b,properties:d},j)}function j(b,h){d("user",b,h)}function r(b,h,d){j({
+    uid:b},d),h&&j(h,d)}g.identify=r,g.setUserVars=j,g.identifyAccount=b,g.clearUserCookie=b,g.setVars=d,g.event=function(b,d,j){h("trackEvent",{
+    name:b,properties:d},j)},g.anonymize=function(){r(!1)},g.shutdown=function(){h("shutdown")},g.restart=function(){h("restart")},
+    g.log=function(b,d){h("log",{level:b,msg:d})},g.consent=function(b){h("setIdentity",{consent:!arguments.length||b})}}(),s="fetch",
+    f="XMLHttpRequest",g._w={},g._w[f]=m[f],g._w[s]=m[s],m[s]&&(m[s]=function(){return g._w[s].apply(this,arguments)}),g._v="2.0.0")
+    }(window,document,window._fs_namespace,"script",window._fs_script);
+    </script>
+    
+    <!-- Custom styles -->
+    <style>
+        body {
+            font-family: 'Roboto Serif', serif;
+            background-color: var(--fx-background);
+            color: var(--fx-text);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'David Libre', serif;
+            font-weight: 600;
+        }
+        
+        .fx-btn-primary {
+            background: linear-gradient(135deg, var(--fx-primary) 0%, var(--fx-primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--fx-radius-md);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .fx-btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--fx-shadow-lg);
+        }
+        
+        .fx-btn-secondary {
+            background: linear-gradient(135deg, var(--fx-secondary) 0%, var(--fx-secondary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--fx-radius-md);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .fx-btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--fx-shadow-lg);
+        }
+    </style>
+</head>
+<body class="font-roboto-serif bg-white text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="/static/brand/logos/Favicon.png" alt="Food Xchange" class="h-8 w-auto">
+                        <h1 class="text-xl font-david-libre font-semibold text-fx-primary ml-2">Food Xchange</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-fx-primary px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="/rfq-form" class="text-gray-600 hover:text-fx-primary px-3 py-2 rounded-md text-sm font-medium">RFQ</a>
+                    <a href="/suppliers" class="text-gray-600 hover:text-fx-primary px-3 py-2 rounded-md text-sm font-medium">Suppliers</a>
+                </div>
+            </div>
+        </div>
+        </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 Food Xchange. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FDX Trading FullStory User Identification -->
+    <script>
+        // Advanced user identification for FDX Trading
+        function identifyFDXUser(userData) {
+            if (window.FS && userData) {
+                FS('setIdentity', {
+                    uid: userData.id || userData.user_id || 'anonymous_' + Date.now(),
+                    properties: {
+                        displayName: userData.name || userData.display_name || 'Anonymous User',
+                        email: userData.email || '',
+                        userType: userData.user_type || userData.role || 'visitor',
+                        company: userData.company || userData.organization || '',
+                        department: userData.department || '',
+                        location: userData.location || userData.country || '',
+                        registrationDate: userData.created_at || userData.registration_date || '',
+                        lastLogin: userData.last_login || new Date().toISOString(),
+                        subscriptionTier: userData.subscription_tier || userData.plan || 'free',
+                        totalOrders: userData.total_orders || 0,
+                        totalSpent: userData.total_spent || 0,
+                        preferredCategories: userData.preferred_categories || [],
+                        accountStatus: userData.status || 'active',
+                        source: 'fdx_trading_web'
+                    }
+                });
+                console.log('FDX User identified:', userData);
+            }
+        }
+
+        // Specific user type identification
+        function identifyBuyer(buyerData) {
+            if (window.FS && buyerData) {
+                FS('setIdentity', {
+                    uid: buyerData.id || 'buyer_' + Date.now(),
+                    properties: {
+                        displayName: buyerData.name || 'Buyer',
+                        email: buyerData.email || '',
+                        userType: 'buyer',
+                        company: buyerData.company || '',
+                        industry: buyerData.industry || '',
+                        purchaseVolume: buyerData.purchase_volume || 'medium',
+                        preferredSuppliers: buyerData.preferred_suppliers || [],
+                        totalRFQs: buyerData.total_rfqs || 0,
+                        totalOrders: buyerData.total_orders || 0,
+                        averageOrderValue: buyerData.avg_order_value || 0,
+                        lastPurchaseDate: buyerData.last_purchase_date || '',
+                        creditLimit: buyerData.credit_limit || 0,
+                        paymentTerms: buyerData.payment_terms || 'net30'
+                    }
+                });
+            }
+        }
+
+        function identifySupplier(supplierData) {
+            if (window.FS && supplierData) {
+                FS('setIdentity', {
+                    uid: supplierData.id || 'supplier_' + Date.now(),
+                    properties: {
+                        displayName: supplierData.name || 'Supplier',
+                        email: supplierData.email || '',
+                        userType: 'supplier',
+                        company: supplierData.company || '',
+                        industry: supplierData.industry || '',
+                        productCategories: supplierData.product_categories || [],
+                        certifications: supplierData.certifications || [],
+                        totalQuotes: supplierData.total_quotes || 0,
+                        totalOrders: supplierData.total_orders || 0,
+                        averageQuoteValue: supplierData.avg_quote_value || 0,
+                        responseTime: supplierData.avg_response_time || 0,
+                        rating: supplierData.rating || 0,
+                        location: supplierData.location || '',
+                        shippingCapabilities: supplierData.shipping_capabilities || []
+                    }
+                });
+            }
+        }
+
+        function identifyAgent(agentData) {
+            if (window.FS && agentData) {
+                FS('setIdentity', {
+                    uid: agentData.id || 'agent_' + Date.now(),
+                    properties: {
+                        displayName: agentData.name || 'Agent',
+                        email: agentData.email || '',
+                        userType: 'agent',
+                        company: agentData.company || '',
+                        specialization: agentData.specialization || '',
+                        totalDeals: agentData.total_deals || 0,
+                        commissionRate: agentData.commission_rate || 0,
+                        activeClients: agentData.active_clients || 0,
+                        performanceRating: agentData.performance_rating || 0,
+                        territories: agentData.territories || [],
+                        experience: agentData.experience_years || 0
+                    }
+                });
+            }
+        }
+
+        // Event tracking functions
+        function trackRFQCreated(rfqData) {
+            if (window.FS && rfqData) {
+                FS('event', 'RFQ Created', {
+                    rfqId: rfqData.id,
+                    category: rfqData.category,
+                    quantity: rfqData.quantity,
+                    unit: rfqData.unit,
+                    deliveryDate: rfqData.delivery_date,
+                    budget: rfqData.budget,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackQuoteSubmitted(quoteData) {
+            if (window.FS && quoteData) {
+                FS('event', 'Quote Submitted', {
+                    quoteId: quoteData.id,
+                    rfqId: quoteData.rfq_id,
+                    price: quoteData.price,
+                    currency: quoteData.currency,
+                    deliveryTime: quoteData.delivery_time,
+                    supplier: quoteData.supplier_name,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackOrderPlaced(orderData) {
+            if (window.FS && orderData) {
+                FS('event', 'Order Placed', {
+                    orderId: orderData.id,
+                    totalValue: orderData.total_value,
+                    currency: orderData.currency,
+                    items: orderData.items_count,
+                    supplier: orderData.supplier_name,
+                    buyer: orderData.buyer_name,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackUserRegistered(userData) {
+            if (window.FS && userData) {
+                FS('event', 'User Registered', {
+                    userId: userData.id,
+                    userType: userData.user_type,
+                    source: userData.registration_source || 'web',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function trackFormAbandonment(formData) {
+            if (window.FS && formData) {
+                FS('event', 'Form Abandoned', {
+                    formType: formData.type,
+                    step: formData.step,
+                    fieldsCompleted: formData.fields_completed,
+                    userType: '{{ user.user_type if user else "anonymous" }}',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        // Auto-identify user if data is available
+        {% if user %}
+            identifyFDXUser({
+                id: '{{ user.id }}',
+                name: '{{ user.name }}',
+                email: '{{ user.email }}',
+                user_type: '{{ user.user_type }}',
+                company: '{{ user.company }}',
+                created_at: '{{ user.created_at }}',
+                last_login: '{{ user.last_login }}'
+            });
+        {% endif %}
+
+        // Track page views
+        FS('event', 'Page Viewed', {
+            page: '{{ request.path }}',
+            title: document.title,
+            userType: '{{ user.user_type if user else "anonymous" }}',
+            timestamp: new Date().toISOString()
+        });
+    </script>
+
+    <!-- v0 Generated JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

@@ -1,0 +1,422 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Analytics Dashboard - Food Xchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Analytics Dashboard</h1>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary" onclick="exportReport()">
+                <i class="bi bi-download me-1"></i>Export Report
+            </button>
+            <button type="button" class="btn btn-primary" onclick="refreshData()">
+                <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+            </button>
+        </div>
+    </div>
+    
+    <!-- Date Range Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="dateRange" class="form-label">Date Range</label>
+                    <select class="form-select" id="dateRange" onchange="updateDateRange()">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30" selected>Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="365">Last Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="startDate">
+                </div>
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="endDate">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-secondary w-100" onclick="applyDateFilter()">
+                        <i class="bi bi-funnel me-1"></i>Apply Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Revenue
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalRevenue">$45,678</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalOrders">1,234</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Active Suppliers
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="activeSuppliers">89</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending RFQs
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingRFQs">23</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-file-earmark-text fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <!-- Revenue Trends Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Revenue Trends</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
+                            <a class="dropdown-item" href="#" onclick="exportChart('revenue')">Export Chart</a>
+                            <a class="dropdown-item" href="#" onclick="printChart('revenue')">Print Chart</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Products Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Products</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink2" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
+                            <a class="dropdown-item" href="#" onclick="exportChart('products')">Export Chart</a>
+                            <a class="dropdown-item" href="#" onclick="printChart('products')">Print Chart</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie">
+                        <canvas id="productsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Additional Metrics -->
+    <div class="row mb-4">
+        <!-- Order Status Distribution -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Order Status Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderStatusTable">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush" id="recentActivity">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let revenueChart, productsChart;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+    loadAnalyticsData();
+    setDefaultDateRange();
+});
+
+function setDefaultDateRange() {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    
+    document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+    document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+}
+
+function initializeCharts() {
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    revenueChart = new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Revenue',
+                data: [12000, 19000, 15000, 25000, 22000, 30000],
+                borderColor: '#4A90E2',
+                backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Products Chart
+    const productsCtx = document.getElementById('productsChart').getContext('2d');
+    productsChart = new Chart(productsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Grains', 'Dairy', 'Meat', 'Produce', 'Beverages'],
+            datasets: [{
+                data: [30, 25, 20, 15, 10],
+                backgroundColor: [
+                    '#4A90E2',
+                    '#F97316',
+                    '#10B981',
+                    '#8B5CF6',
+                    '#EF4444'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function loadAnalyticsData() {
+    // Load metrics
+    callAPI('/analytics/metrics')
+        .then(response => {
+            updateMetrics(response);
+        })
+        .catch(error => {
+            console.error('Failed to load metrics:', error);
+        });
+    
+    // Load order status data
+    callAPI('/analytics/order-status')
+        .then(response => {
+            updateOrderStatusTable(response);
+        })
+        .catch(error => {
+            console.error('Failed to load order status:', error);
+        });
+    
+    // Load recent activity
+    callAPI('/analytics/recent-activity')
+        .then(response => {
+            updateRecentActivity(response);
+        })
+        .catch(error => {
+            console.error('Failed to load recent activity:', error);
+        });
+}
+
+function updateMetrics(data) {
+    document.getElementById('totalRevenue').textContent = '$' + data.totalRevenue.toLocaleString();
+    document.getElementById('totalOrders').textContent = data.totalOrders.toLocaleString();
+    document.getElementById('activeSuppliers').textContent = data.activeSuppliers.toLocaleString();
+    document.getElementById('pendingRFQs').textContent = data.pendingRFQs.toLocaleString();
+}
+
+function updateOrderStatusTable(data) {
+    const tbody = document.getElementById('orderStatusTable');
+    tbody.innerHTML = data.map(status => `
+        <tr>
+            <td>
+                <span class="badge bg-${getStatusColor(status.status)}">${status.status}</span>
+            </td>
+            <td>${status.count}</td>
+            <td>${status.percentage}%</td>
+        </tr>
+    `).join('');
+}
+
+function updateRecentActivity(data) {
+    const container = document.getElementById('recentActivity');
+    container.innerHTML = data.map(activity => `
+        <div class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">${activity.title}</h6>
+                <small class="text-muted">${activity.time}</small>
+            </div>
+            <p class="mb-1">${activity.description}</p>
+        </div>
+    `).join('');
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'pending': 'warning',
+        'confirmed': 'info',
+        'shipped': 'primary',
+        'delivered': 'success',
+        'cancelled': 'danger'
+    };
+    return colors[status] || 'secondary';
+}
+
+function updateDateRange() {
+    const dateRange = document.getElementById('dateRange').value;
+    const endDate = new Date();
+    const startDate = new Date();
+    
+    if (dateRange === 'custom') {
+        document.getElementById('startDate').disabled = false;
+        document.getElementById('endDate').disabled = false;
+    } else {
+        startDate.setDate(startDate.getDate() - parseInt(dateRange));
+        document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+        document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        document.getElementById('startDate').disabled = true;
+        document.getElementById('endDate').disabled = true;
+    }
+}
+
+function applyDateFilter() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    if (startDate && endDate) {
+        loadAnalyticsData();
+        showAlert('Date filter applied successfully', 'success');
+    } else {
+        showAlert('Please select both start and end dates', 'warning');
+    }
+}
+
+function refreshData() {
+    loadAnalyticsData();
+    showAlert('Data refreshed successfully', 'success');
+}
+
+function exportReport() {
+    showAlert('Exporting report...', 'info');
+    // Implement export functionality
+}
+
+function exportChart(chartType) {
+    showAlert(`Exporting ${chartType} chart...`, 'info');
+    // Implement chart export functionality
+}
+
+function printChart(chartType) {
+    showAlert(`Printing ${chartType} chart...`, 'info');
+    // Implement chart print functionality
+}
+</script>
+{% endblock %} 

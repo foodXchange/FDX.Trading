@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}V0 RFQ Form - Food Xchange{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        V0 Sample RFQ Form
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">This is a sample V0-generated RFQ form for demonstration purposes.</p>
+                    
+                    <form id="v0RfqForm" class="needs-validation" novalidate>
+                        <!-- Product Information -->
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Product Name *</label>
+                            <input type="text" class="form-control" id="productName" required>
+                            <div class="invalid-feedback">
+                                Please enter a product name.
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="quantity" class="form-label">Quantity *</label>
+                                <input type="number" class="form-control" id="quantity" min="1" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid quantity.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="unit" class="form-label">Unit *</label>
+                                <select class="form-select" id="unit" required>
+                                    <option value="">Select unit</option>
+                                    <option value="kg">Kilograms (kg)</option>
+                                    <option value="lbs">Pounds (lbs)</option>
+                                    <option value="cases">Cases</option>
+                                    <option value="pallets">Pallets</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select a unit.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Delivery Information -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="deliveryDate" class="form-label">Delivery Date *</label>
+                                <input type="date" class="form-control" id="deliveryDate" required>
+                                <div class="invalid-feedback">
+                                    Please select a delivery date.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="budget" class="form-label">Budget Range</label>
+                                <input type="range" class="form-range" id="budget" min="100" max="50000" value="1000">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">$100</small>
+                                    <small class="text-muted">$50,000</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Requirements -->
+                        <div class="mb-3">
+                            <label for="requirements" class="form-label">Special Requirements</label>
+                            <textarea class="form-control" id="requirements" rows="3" placeholder="Enter any special requirements or specifications..."></textarea>
+                        </div>
+                        
+                        <!-- Contact Information -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="contactName" class="form-label">Contact Name *</label>
+                                <input type="text" class="form-control" id="contactName" required>
+                                <div class="invalid-feedback">
+                                    Please enter your contact name.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="button" class="btn btn-secondary me-md-2" onclick="resetForm()">Reset</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                Submit RFQ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Budget range display
+    const budgetRange = document.getElementById('budget');
+    budgetRange.addEventListener('input', function() {
+        // Update display if needed
+    });
+    
+    // Form validation
+    const form = document.getElementById('v0RfqForm');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (form.checkValidity()) {
+            submitForm();
+        }
+        form.classList.add('was-validated');
+    });
+    
+    // Set minimum date to today
+    const deliveryDate = document.getElementById('deliveryDate');
+    const today = new Date().toISOString().split('T')[0];
+    deliveryDate.min = today;
+});
+
+function submitForm() {
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    submitBtn.disabled = true;
+    spinner.classList.remove('d-none');
+    
+    // Simulate form submission
+    setTimeout(() => {
+        showAlert('V0 RFQ submitted successfully!', 'success');
+        resetForm();
+        submitBtn.disabled = false;
+        spinner.classList.add('d-none');
+    }, 2000);
+}
+
+function resetForm() {
+    document.getElementById('v0RfqForm').reset();
+    document.getElementById('v0RfqForm').classList.remove('was-validated');
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %} 
