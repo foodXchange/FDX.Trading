@@ -50,13 +50,10 @@ jobs:
         mkdir -p azure_deployment
         
         # Copy necessary files
-        cp -r foodxchange/ azure_deployment/
+        cp minimal_app.py azure_deployment/
         cp requirements.txt azure_deployment/
         cp web.config azure_deployment/
-        cp startup.py azure_deployment/
-        cp -r static/ azure_deployment/ 2>/dev/null || true
-        cp -r templates/ azure_deployment/ 2>/dev/null || true
-        cp -r migrations/ azure_deployment/ 2>/dev/null || true
+        cp startup.sh azure_deployment/
         
         # Create runtime.txt
         echo "python-3.12" > azure_deployment/runtime.txt
@@ -64,14 +61,6 @@ jobs:
         # Create .deployment file
         echo "[config]" > azure_deployment/.deployment
         echo "SCM_DO_BUILD_DURING_DEPLOYMENT=true" >> azure_deployment/.deployment
-        
-        # Create startup script
-        cat > azure_deployment/startup.sh << 'EOF'
-        #!/bin/bash
-        cd /home/site/wwwroot
-        python -m uvicorn foodxchange.main:app --host 0.0.0.0 --port $PORT
-        EOF
-        chmod +x azure_deployment/startup.sh
         
         echo "Deployment package created successfully"
         

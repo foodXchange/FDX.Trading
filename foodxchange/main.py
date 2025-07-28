@@ -2122,20 +2122,20 @@ async def view_supplier(request: Request, supplier_id: int):
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
             
             <script>
-                function editSupplier(supplierId) {
-                    alert(`Editing supplier ${supplierId}...`);
-                }
+                function editSupplier(supplierId) {{
+                    alert(`Editing supplier ${{supplierId}}...`);
+                }}
                 
-                function createRFQ(supplierId) {
-                    alert(`Creating RFQ for supplier ${supplierId}...`);
-                }
+                function createRFQ(supplierId) {{
+                    alert(`Creating RFQ for supplier ${{supplierId}}...`);
+                }}
                 
-                function deleteSupplier(supplierId) {
-                    if (confirm(`Are you sure you want to delete supplier ${supplierId}?`)) {
-                        alert(`Supplier ${supplierId} deleted successfully!`);
+                function deleteSupplier(supplierId) {{
+                    if (confirm(`Are you sure you want to delete supplier ${{supplierId}}?`)) {{
+                        alert(`Supplier ${{supplierId}} deleted successfully!`);
                         window.location.href = '/suppliers';
-                    }
-                }
+                    }}
+                }}
             </script>
         </body>
         </html>
@@ -3152,7 +3152,7 @@ async def view_product(request: Request, product_id: int):
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Price per Unit</label>
-                                                <div class="font-causten fw-bold text-success">${product['price']:.2f}/{product['unit']}</div>
+                                                <div class="font-causten fw-bold text-success">${{product['price']:.2f}}/{{product['unit']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Current Stock</label>
@@ -3234,24 +3234,24 @@ async def view_product(request: Request, product_id: int):
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
             
             <script>
-                function editProduct(productId) {
-                    alert(`Editing product ${productId}...`);
-                }
+                function editProduct(productId) {{
+                    alert(`Editing product ${{productId}}...`);
+                }}
                 
-                function createRFQ(productId) {
-                    alert(`Creating RFQ for product ${productId}...`);
-                }
+                function createRFQ(productId) {{
+                    alert(`Creating RFQ for product ${{productId}}...`);
+                }}
                 
-                function viewHistory(productId) {
-                    alert(`Viewing history for product ${productId}...`);
-                }
+                function viewHistory(productId) {{
+                    alert(`Viewing history for product ${{productId}}...`);
+                }}
                 
-                function deleteProduct(productId) {
-                    if (confirm(`Are you sure you want to delete product ${productId}?`)) {
-                        alert(`Product ${productId} deleted successfully!`);
+                function deleteProduct(productId) {{
+                    if (confirm(`Are you sure you want to delete product ${{productId}}?`)) {{
+                        alert(`Product ${{productId}} deleted successfully!`);
                         window.location.href = '/products';
-                    }
-                }
+                    }}
+                }}
             </script>
         </body>
         </html>
