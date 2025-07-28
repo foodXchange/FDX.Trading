@@ -1,11 +1,3 @@
 [config]
-command = deploy.cmd
-PRE_BUILD_COMMAND = bash prebuild.sh
-POST_BUILD_COMMAND = echo "Build completed"
 SCM_DO_BUILD_DURING_DEPLOYMENT = true
 ENABLE_ORYX_BUILD = true
-SCM_BUILD_ARGS = -p
-PYTHON_ENABLE_GUNICORN_MULTIWORKERS = true
-WEBSITES_ENABLE_APP_SERVICE_STORAGE = true
-PRE_BUILD_COMMAND = bash prebuild.sh
-POST_BUILD_COMMAND = python install_requirements.py

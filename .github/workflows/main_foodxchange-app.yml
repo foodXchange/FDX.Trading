@@ -119,47 +119,8 @@ jobs:
         with:
           name: python-app
 
-      # Try OIDC authentication first
-      - name: Login to Azure (OIDC)
-        id: azure-login-oidc
-        uses: azure/login@v2
-        continue-on-error: true
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # Fallback to service principal if OIDC fails
-      - name: Login to Azure (Service Principal)
-        if: steps.azure-login-oidc.outcome == 'failure'
-        uses: azure/login@v2
-        continue-on-error: true
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      # Deploy using Azure CLI if logged in
-      - name: Deploy using Azure CLI
-        if: steps.azure-login-oidc.outcome == 'success' || steps.azure-login-service-principal.outcome == 'success'
-        run: |
-          az webapp deploy \
-            --resource-group foodxchange-rg \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --src-path deploy.zip \
-            --type zip \
-            --async false
-
-      # Fix startup configuration for Linux
-      - name: Configure startup command
-        if: steps.azure-login-oidc.outcome == 'success' || steps.azure-login-service-principal.outcome == 'success'
-        run: |
-          az webapp config set \
-            --resource-group foodxchange-rg \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --startup-file "startup.sh"
-
-      # Fallback to publish profile if Azure login failed
-      - name: Deploy using Publish Profile
-        if: steps.azure-login-oidc.outcome == 'failure'
+      # Deploy using Publish Profile (most reliable method)
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
