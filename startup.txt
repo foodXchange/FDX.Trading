@@ -1,1 +1,1 @@
-python startup_diagnostic.py
+python startup_robust.py
