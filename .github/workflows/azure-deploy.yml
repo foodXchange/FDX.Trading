@@ -59,7 +59,7 @@ jobs:
         cp web.config deploy/ 2>/dev/null || echo "No web.config found"
         
     - name: Upload artifact for deployment
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: python-app
         path: deploy/
@@ -73,7 +73,7 @@ jobs:
     
     steps:
     - name: Download artifact from build job
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-app
         path: .
