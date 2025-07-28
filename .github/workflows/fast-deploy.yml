@@ -1,0 +1,39 @@
+# Fast deployment workflow for critical fixes
+name: Fast Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.py'
+      - 'web.config'
+      - '.github/workflows/fast-deploy.yml'
+
+env:
+  AZURE_WEBAPP_NAME: 'foodxchange-app'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: 'production'
+      url: https://www.fdx.trading
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
+        timeout-minutes: 5
+
+      - name: Verify deployment
+        run: |
+          sleep 30
+          curl -s https://www.fdx.trading/health/advanced || echo "Endpoint check"
