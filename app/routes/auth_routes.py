@@ -112,6 +112,13 @@ def include_auth_routes(app):
     """Include authentication routes in the main app"""
     app.include_router(router)
     
+    # Add FullStory test route
+    @app.get("/fullstory-test", response_class=HTMLResponse)
+    async def fullstory_test_page(request: Request):
+        """FullStory tracking test page"""
+        from app.templates import templates
+        return templates.TemplateResponse("fullstory_test.html", {"request": request})
+    
     # Override the login POST route
     @app.post("/login")
     async def login_page_post(

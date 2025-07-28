@@ -43,6 +43,12 @@
     window['_fs_script'] = 'edge.fullstory.com/s/fs.js';
     window['_fs_org'] = 'o-23KNJV-na1';
     window['_fs_namespace'] = 'FS';
+    // Enable debug mode for localhost
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        window['_fs_debug'] = true;
+        window['_fs_run_in_iframe'] = true;
+        console.log('[FullStory] Debug mode enabled for localhost');
+    }
     !function(m,n,e,t,l,o,g,y){var s,f,a=function(h){
     return!(h in m)||(m.console&&m.console.log&&m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].'),!1)}(e)
     ;function p(b){var h,d=[];function j(){h&&(d.forEach((function(b){var d;try{d=b[h[0]]&&b[h[0]](h[1])}catch(h){return void(b[3]&&b[3](h))}
