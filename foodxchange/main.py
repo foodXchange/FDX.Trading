@@ -2035,13 +2035,13 @@ async def view_supplier(request: Request, supplier_id: int):
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div>
                                 <h1 class="h3 mb-1 font-causten">Supplier Details</h1>
-                                <p class="text-muted mb-0 font-roboto-serif">#{supplier_id} - {supplier['name']}</p>
+                                <p class="text-muted mb-0 font-roboto-serif">#{{supplier_id}} - {{supplier['name']}}</p>
                             </div>
                             <div class="btn-group">
                                 <a href="/suppliers" class="btn btn-outline-secondary font-causten">
                                     <i class="bi bi-arrow-left me-2"></i>Back to Suppliers
                                 </a>
-                                <button type="button" class="btn btn-primary font-causten" onclick="editSupplier({supplier_id})">
+                                <button type="button" class="btn btn-primary font-causten" onclick="editSupplier({{supplier_id}})">
                                     <i class="bi bi-pencil me-2"></i>Edit Supplier
                                 </button>
                             </div>
@@ -2059,33 +2059,33 @@ async def view_supplier(request: Request, supplier_id: int):
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Company Name</label>
-                                                <div class="font-causten fw-bold">{supplier['name']}</div>
+                                                <div class="font-causten fw-bold">{{supplier['name']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Status</label>
                                                 <div>
-                                                    <span class="badge bg-success font-causten">{supplier['status']}</span>
+                                                    <span class="badge bg-success font-causten">{{supplier['status']}}</span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Contact Person</label>
-                                                <div class="font-causten fw-bold">{supplier['contact_person']}</div>
+                                                <div class="font-causten fw-bold">{{supplier['contact_person']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Email</label>
-                                                <div class="font-causten">{supplier['email']}</div>
+                                                <div class="font-causten">{{supplier['email']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Phone</label>
-                                                <div class="font-causten">{supplier['phone']}</div>
+                                                <div class="font-causten">{{supplier['phone']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Country</label>
-                                                <div class="font-causten">{supplier['country']}</div>
+                                                <div class="font-causten">{{supplier['country']}}</div>
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Address</label>
-                                                <div class="font-roboto-serif">{supplier['address']}</div>
+                                                <div class="font-roboto-serif">{{supplier['address']}}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -2101,13 +2101,13 @@ async def view_supplier(request: Request, supplier_id: int):
                                     </div>
                                     <div class="card-body">
                                         <div class="d-grid gap-2">
-                                            <button type="button" class="btn btn-outline-primary font-causten" onclick="editSupplier({supplier_id})">
+                                            <button type="button" class="btn btn-outline-primary font-causten" onclick="editSupplier({{supplier_id}})">
                                                 <i class="bi bi-pencil me-2"></i>Edit Supplier
                                             </button>
-                                            <button type="button" class="btn btn-outline-success font-causten" onclick="createRFQ({supplier_id})">
+                                            <button type="button" class="btn btn-outline-success font-causten" onclick="createRFQ({{supplier_id}})">
                                                 <i class="bi bi-file-earmark-plus me-2"></i>Create RFQ
                                             </button>
-                                            <button type="button" class="btn btn-outline-danger font-causten" onclick="deleteSupplier({supplier_id})">
+                                            <button type="button" class="btn btn-outline-danger font-causten" onclick="deleteSupplier({{supplier_id}})">
                                                 <i class="bi bi-trash me-2"></i>Delete Supplier
                                             </button>
                                         </div>
@@ -2315,11 +2315,11 @@ async def edit_supplier(request: Request, supplier_id: int):
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
             
             <script>
-                function updateSupplier(event) {
+                function updateSupplier(event) {{
                     event.preventDefault();
                     
-                    const formData = {
-                        id: {supplier_id},
+                    const formData = {{
+                        id: {{supplier_id}},
                         name: document.getElementById('supplierName').value,
                         status: document.getElementById('supplierStatus').value,
                         contact_person: document.getElementById('contactPerson').value,
@@ -2332,17 +2332,17 @@ async def edit_supplier(request: Request, supplier_id: int):
                         zip_code: document.getElementById('supplierZip').value,
                         payment_terms: document.getElementById('paymentTerms').value,
                         delivery_time: document.getElementById('deliveryTime').value
-                    };
+                    }};
                     
                     // Simulate form submission
                     alert('Supplier updated successfully!');
                     console.log('Supplier data:', formData);
                     
                     // Redirect to supplier details
-                    setTimeout(() => {
-                        window.location.href = '/suppliers/{supplier_id}';
-                    }, 1000);
-                }
+                    setTimeout(() => {{
+                        window.location.href = '/suppliers/{{supplier_id}}';
+                    }}, 1000);
+                }}
             </script>
         </body>
         </html>
@@ -3351,7 +3351,7 @@ async def view_order(request: Request, order_id: int):
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Total Amount</label>
-                                                <div class="font-causten fw-bold text-success">${order['total_amount']:,.2f}</div>
+                                                <div class="font-causten fw-bold text-success">${{order['total_amount']:,.2f}}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -3368,19 +3368,19 @@ async def view_order(request: Request, order_id: int):
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Product Name</label>
-                                                <div class="font-causten fw-bold">{order['product_name']}</div>
+                                                <div class="font-causten fw-bold">{{order['product_name']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Category</label>
-                                                <div class="font-causten">{order['category']}</div>
+                                                <div class="font-causten">{{order['category']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Quantity</label>
-                                                <div class="font-causten">{order['quantity']:,} {order['unit']}</div>
+                                                <div class="font-causten">{{order['quantity']:,}} {{order['unit']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Unit Price</label>
-                                                <div class="font-causten">${order['unit_price']:.2f}/{order['unit']}</div>
+                                                <div class="font-causten">${{order['unit_price']:.2f}}/{{order['unit']}}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -3397,19 +3397,19 @@ async def view_order(request: Request, order_id: int):
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Supplier Name</label>
-                                                <div class="font-causten fw-bold">{order['supplier_name']}</div>
+                                                <div class="font-causten fw-bold">{{order['supplier_name']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Contact Person</label>
-                                                <div class="font-causten">{order['contact_person']}</div>
+                                                <div class="font-causten">{{order['contact_person']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Email</label>
-                                                <div class="font-causten">{order['email']}</div>
+                                                <div class="font-causten">{{order['email']}}</div>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label text-muted font-roboto-serif">Phone</label>
-                                                <div class="font-causten">{order['phone']}</div>
+                                                <div class="font-causten">{{order['phone']}}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -3430,7 +3430,7 @@ async def view_order(request: Request, order_id: int):
                                                 <div class="timeline-marker bg-success"></div>
                                                 <div class="timeline-content">
                                                     <h6 class="font-causten">Order Delivered</h6>
-                                                    <small class="text-muted font-roboto-serif">{order['delivery_date']} 02:15 PM</small>
+                                                    <small class="text-muted font-roboto-serif">{{order['delivery_date']}} 02:15 PM</small>
                                                     <p class="mb-0 font-roboto-serif">Order has been successfully delivered to warehouse</p>
                                                 </div>
                                             </div>

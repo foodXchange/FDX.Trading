@@ -54,6 +54,7 @@ jobs:
         cp requirements.txt azure_deployment/
         cp web.config azure_deployment/
         cp startup.sh azure_deployment/
+        cp prebuild.sh azure_deployment/ 2>/dev/null || echo '#!/bin/bash' > azure_deployment/prebuild.sh
         
         # Create runtime.txt
         echo "python-3.12" > azure_deployment/runtime.txt
