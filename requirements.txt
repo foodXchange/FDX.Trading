@@ -1,13 +1,13 @@
 # Core Framework
 flask==3.0.0
 fastapi==0.104.1
-uvicorn[standard]==0.24.0
+uvicorn[standard]==0.35.0
 gunicorn==21.2.0
 
 # Database
 sqlalchemy==2.0.23
 alembic==1.12.1
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.10
 
 # Environment and Config
 python-dotenv==1.0.0
@@ -32,14 +32,14 @@ passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
 
 # Monitoring
-sentry-sdk[fastapi]==1.38.0
+sentry-sdk[fastapi]==2.33.2
 psutil==5.9.6
 
 # HTTP Client
 httpx==0.25.2
 
 # Email
-beautifulsoup4==4.12.2
+beautifulsoup4==4.13.4
 
 # Utilities
 pandas==2.1.3
