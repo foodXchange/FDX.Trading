@@ -39,7 +39,7 @@ psutil==5.9.6
 httpx==0.25.2
 
 # Email
-beautifulsoup4==4.12.2
+beautifulsoup4==4.13.4
 
 # Utilities
 pandas==2.1.3
