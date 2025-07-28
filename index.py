@@ -57,6 +57,48 @@ class HealthHandler(BaseHTTPRequestHandler):
 </body>
 </html>'''
             self.wfile.write(html.encode())
+        elif self.path == '/about':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            html = '''<!DOCTYPE html>
+<html>
+<head>
+    <title>About - FoodXchange</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        .back { display: inline-block; margin-bottom: 20px; color: #1976d2; text-decoration: none; }
+        .section { margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">← Back to Home</a>
+        <h1>About FoodXchange</h1>
+        <div class="section">
+            <h2>Our Mission</h2>
+            <p>FoodXchange connects global food suppliers with buyers, streamlining international trade and ensuring food security worldwide.</p>
+        </div>
+        <div class="section">
+            <h2>What We Do</h2>
+            <ul>
+                <li>Connect verified food suppliers with trusted buyers</li>
+                <li>Facilitate secure international transactions</li>
+                <li>Provide real-time market analytics</li>
+                <li>Ensure compliance and quality standards</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>Contact</h2>
+            <p>Email: info@fdx.trading<br>
+            Platform Status: <a href="/health/advanced">Check System Health</a></p>
+        </div>
+    </div>
+</body>
+</html>'''
+            self.wfile.write(html.encode())
         else:
             self.send_response(404)
             self.end_headers()
