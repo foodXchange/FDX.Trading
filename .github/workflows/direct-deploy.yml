@@ -1,0 +1,23 @@
+name: Direct Deploy (Fast)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.py'
+      - 'web.config'
+      - 'requirements.txt'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: foodxchange-app
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
+        timeout-minutes: 2
