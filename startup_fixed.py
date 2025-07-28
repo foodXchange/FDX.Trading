@@ -64,6 +64,8 @@ except Exception as e:
     import traceback
     traceback.print_exc()
     
+    error_message = str(e)  # Capture error message for use in inner functions
+    
     # Create minimal fallback app
     logger.info("Starting fallback app...")
     from fastapi import FastAPI
@@ -76,7 +78,7 @@ except Exception as e:
         return JSONResponse({
             "status": "fallback",
             "message": "FoodXchange is starting up",
-            "error": str(e)
+            "error": error_message
         })
     
     @app.get("/health")
@@ -84,7 +86,7 @@ except Exception as e:
         return JSONResponse({
             "status": "fallback",
             "healthy": False,
-            "error": str(e)
+            "error": error_message
         })
     
     import uvicorn
