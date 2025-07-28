@@ -1,9 +1,0 @@
-﻿Title,Open Comments,Customs Clearance,Description,Freight Cost per kg (USD),Fuel Surcharge per kg,Handling Fees,Origin Airport,Total Estimated Cost (USD),Total Freight Cost (2000 kg),Total Fuel Surcharge,Auto Number,First Created,Last Updated
-Frankfurt (FRA),0,$100,,$3,$0.30,$150,Frankfurt (FRA),"$6,850","$6,000",$600,#001,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"
-Amsterdam Schiphol (AMS),0,$100,,$3,$0.30,$150,Amsterdam Schiphol (AMS),"$7,050","$6,200",$600,#002,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"
-Charles de Gaulle (CDG),0,$100,,$3,$0.35,$150,Charles de Gaulle (CDG),"$7,350","$6,400",$700,#003,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"
-Heathrow (LHR),0,$100,,$3.50,$0.35,$150,Heathrow (LHR),"$7,950","$7,000",$700,#004,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"
-Brussels (BRU),0,$100,,$3,$0.30,$150,Brussels (BRU),"$6,850","$6,000",$600,#005,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"
-Milan Malpensa (MXP),0,$100,,$3.20,$0.30,$150,Milan Malpensa (MXP),"$7,250","$6,400",$600,#006,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"
-Madrid Barajas (MAD),0,$100,,$3.10,$0.30,$150,Madrid Barajas (MAD),"$7,050","$6,200",$600,#007,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"
-Warsaw Chopin (WAW),0,$100,,$3.00,$0.30,$150,Warsaw Chopin (WAW),"$6,850","$6,000",$600,#008,"By Udi Stryk on 4 Oct, 2024","By Udi Stryk on 4 Oct, 2024"

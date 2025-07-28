@@ -1,3 +1,0 @@
--- FoodXchange Data Export for Supabase
--- Generated on: 2025-07-26T10:57:54.893901
--- This file contains INSERT statements for all tables
