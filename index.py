@@ -51,6 +51,7 @@ class HealthHandler(BaseHTTPRequestHandler):
         <div class="links">
             <a href="/about">About</a>
             <a href="/api">API</a>
+            <a href="/login">Login</a>
             <a href="/health/advanced">Health Status</a>
         </div>
     </div>
@@ -148,6 +149,45 @@ class HealthHandler(BaseHTTPRequestHandler):
         </div>
         
         <p style="margin-top: 30px;"><strong>Authentication:</strong> API key required for protected endpoints (Coming Soon)</p>
+    </div>
+</body>
+</html>'''
+            self.wfile.write(html.encode())
+        elif self.path == '/login':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            html = '''<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - FoodXchange</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        .form-group { margin: 20px 0; }
+        label { display: block; margin-bottom: 5px; color: #666; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #1976d2; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #1565c0; }
+        .back { display: block; text-align: center; margin-top: 20px; color: #1976d2; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login to FoodXchange</h1>
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••">
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <a href="/" class="back">← Back to Home</a>
     </div>
 </body>
 </html>'''
