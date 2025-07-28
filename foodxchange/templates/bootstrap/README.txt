@@ -1,1 +1,0 @@
-This directory will contain Bootstrap-based Jinja2 templates for Food Xchange screens (RFQ, Orders, Analytics, Help Center, etc.). 

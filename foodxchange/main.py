@@ -55,11 +55,11 @@ try:
 except ImportError:
     print("Warning: Sentry middleware not found")
 
-from fastapi import FastAPI, Request, Form, HTTPException, Depends, Body, Query
+from fastapi import FastAPI, Request, Form, HTTPException, Depends, Body, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse, FileResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy.orm import Session
@@ -144,141 +144,909 @@ async def test_page(request: Request):
 
 @app.get("/test-template", response_class=HTMLResponse)
 async def test_template(request: Request):
-    """Test template rendering"""
+    """Test template page - Bootstrap styled"""
     try:
-        return templates.TemplateResponse("dashboard_simple.html", {"request": request})
+        return HTMLResponse(content="""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Test Template - foodXchange</title>
+            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        </head>
+        <body class="bg-light">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h3 mb-1 font-causten">Test Template</h1>
+                                <p class="text-muted mb-0 font-roboto-serif">Testing Bootstrap template rendering</p>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/dashboard" class="btn btn-outline-secondary font-causten">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-check-circle me-2"></i>Template Test Successful
+                                        </h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="mb-4">
+                                            <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                                        </div>
+                                        <h4 class="font-causten mb-3">Bootstrap Template Working!</h4>
+                                        <p class="font-roboto-serif text-muted mb-4">
+                                            This page confirms that Bootstrap templates are rendering correctly without Jinja2.
+                                        </p>
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                            <a href="/dashboard" class="btn btn-primary font-causten">
+                                                <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                                            </a>
+                                            <a href="/test" class="btn btn-outline-primary font-causten">
+                                                <i class="bi bi-gear me-2"></i>Test Page
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+        </html>
+        """)
     except Exception as e:
+        print(f"Test template error: {e}")
         return HTMLResponse(content=f"""
         <html>
-            <head><title>Template Error</title></head>
+            <head><title>Test Template Error</title></head>
             <body>
-                <h1>Template Error</h1>
+                <h1>Test Template Error</h1>
                 <p>Error: {str(e)}</p>
-                <p>Type: {type(e).__name__}</p>
+                <a href="/dashboard">Back to Dashboard</a>
             </body>
         </html>
         """, status_code=500)
 
 @app.get("/test-simple-template", response_class=HTMLResponse)
 async def test_simple_template(request: Request):
-    """Test simple template without inheritance"""
+    """Simple test template page - Bootstrap styled"""
     try:
-        return templates.TemplateResponse("test_simple.html", {"request": request})
+        return HTMLResponse(content="""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Simple Test - foodXchange</title>
+            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        </head>
+        <body class="bg-light">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <h2 class="font-causten mb-3">Simple Test Page</h2>
+                                <p class="font-roboto-serif text-muted">This is a simple Bootstrap template test.</p>
+                                <a href="/dashboard" class="btn btn-primary font-causten">Back to Dashboard</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+        </html>
+        """)
     except Exception as e:
+        print(f"Simple test template error: {e}")
         return HTMLResponse(content=f"""
         <html>
-            <head><title>Simple Template Error</title></head>
+            <head><title>Simple Test Error</title></head>
             <body>
-                <h1>Simple Template Error</h1>
+                <h1>Simple Test Error</h1>
                 <p>Error: {str(e)}</p>
-                <p>Type: {type(e).__name__}</p>
+                <a href="/dashboard">Back to Dashboard</a>
             </body>
         </html>
         """, status_code=500)
 
 @app.get("/dashboard-simple", response_class=HTMLResponse)
 async def dashboard_simple(request: Request):
-    """Simple dashboard test without authentication"""
-    return templates.TemplateResponse("dashboard_simple.html", {"request": request})
+    """Simple dashboard page - Bootstrap styled"""
+    try:
+        return HTMLResponse(content="""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Simple Dashboard - foodXchange</title>
+            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        </head>
+        <body class="bg-light">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h3 mb-1 font-causten">Simple Dashboard</h1>
+                                <p class="text-muted mb-0 font-roboto-serif">Streamlined dashboard view</p>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/dashboard" class="btn btn-outline-secondary font-causten">
+                                    <i class="bi bi-arrow-left me-2"></i>Full Dashboard
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <div class="d-flex align-items-center justify-content-center mb-2">
+                                            <i class="bi bi-building text-primary fs-1"></i>
+                                        </div>
+                                        <h3 class="text-primary mb-1 font-causten">12</h3>
+                                        <p class="text-muted mb-0 font-roboto-serif">Suppliers</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <div class="d-flex align-items-center justify-content-center mb-2">
+                                            <i class="bi bi-file-earmark-text text-success fs-1"></i>
+                                        </div>
+                                        <h3 class="text-success mb-1 font-causten">24</h3>
+                                        <p class="text-muted mb-0 font-roboto-serif">RFQs</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <div class="d-flex align-items-center justify-content-center mb-2">
+                                            <i class="bi bi-cart text-info fs-1"></i>
+                                        </div>
+                                        <h3 class="text-info mb-1 font-causten">8</h3>
+                                        <p class="text-muted mb-0 font-roboto-serif">Orders</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body text-center">
+                                        <div class="d-flex align-items-center justify-content-center mb-2">
+                                            <i class="bi bi-currency-dollar text-warning fs-1"></i>
+                                        </div>
+                                        <h3 class="text-warning mb-1 font-causten">$45K</h3>
+                                        <p class="text-muted mb-0 font-roboto-serif">Total Spend</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+        </html>
+        """)
+    except Exception as e:
+        print(f"Dashboard simple error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><title>Dashboard Simple Error</title></head>
+            <body>
+                <h1>Dashboard Simple Error</h1>
+                <p>Error: {str(e)}</p>
+                <a href="/dashboard">Back to Dashboard</a>
+            </body>
+        </html>
+        """, status_code=500)
 
 @app.get("/", response_class=HTMLResponse)
 async def landing(request: Request, db: Session = Depends(get_db)):
+    """Landing page - Bootstrap styled"""
     try:
-        # Try to get current user context, but don't fail if database is unavailable
+        # Get current user context
+        current_user = None
         try:
             current_user = get_current_user_context(request, db)
-        except Exception as db_error:
+        except Exception as e:
+            print(f"User context error: {e}")
             current_user = None
-            print(f"Database error in landing page: {db_error}")
-        
-        return templates.TemplateResponse("landing.html", {"request": request, "current_user": current_user})
-    except Exception as e:
-        # Fallback to simple HTML if template rendering fails
+
         return HTMLResponse(content=f"""
-        <html>
-            <head>
-                <title>FoodXchange</title>
-                <style>
-                    body {{ font-family: Arial, sans-serif; padding: 50px; text-align: center; background: #f5f5f5; }}
-                    .container {{ max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
-                    h1 {{ color: #ff6b35; margin-bottom: 20px; }}
-                    .btn {{ display: inline-block; padding: 12px 24px; margin: 10px; background: #ff6b35; color: white; text-decoration: none; border-radius: 5px; }}
-                    .btn:hover {{ background: #e55a2b; }}
-                    .error {{ color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 5px; margin: 20px 0; }}
-                </style>
-            </head>
-            <body>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>foodXchange - Food Supply Chain Management</title>
+            
+            <!-- Comprehensive Favicon Setup -->
+            <link rel="icon" type="image/png" sizes="32x32" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/static/brand/logos/Favicon.png">
+            <link rel="shortcut icon" href="/static/brand/logos/Favicon.png">
+            <link rel="apple-touch-icon" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" href="/favicon.ico">
+            
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+            <style>
+                .hero-section {{
+                    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                    color: white;
+                    padding: 4rem 0;
+                }}
+                .hero-logo {{
+                    max-height: 80px;
+                    filter: brightness(0) invert(1);
+                }}
+                .feature-card {{
+                    transition: transform 0.3s ease;
+                }}
+                .feature-card:hover {{
+                    transform: translateY(-5px);
+                }}
+                .stats-section {{
+                    background-color: #f8f9fa;
+                    padding: 3rem 0;
+                }}
+                .cta-section {{
+                    background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+                    color: white;
+                    padding: 3rem 0;
+                }}
+            </style>
+        </head>
+        <body>
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
                 <div class="container">
-                    <h1>🍎 FoodXchange</h1>
-                    <p style="font-size: 1.2rem; margin-bottom: 30px;">
-                        Streamline your food sourcing with AI-powered supplier matching, automated RFQs, and intelligent analytics.
-                    </p>
-                    <div>
-                        <a href="/dashboard" class="btn">Go to Dashboard</a>
-                        <a href="/login" class="btn">Login</a>
-                        <a href="/register" class="btn">Register</a>
-                    </div>
-                    <div class="error">
-                        <strong>Note:</strong> Template rendering failed: {str(e)}. This is a fallback page.
+                    <a class="navbar-brand d-flex align-items-center" href="/">
+                        <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                             alt="foodXchange" height="40" class="me-2">
+                        <span class="font-causten fw-bold fs-4">foodXchange</span>
+                    </a>
+                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link font-causten" href="#features">Features</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link font-causten" href="#about">About</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link font-causten" href="#contact">Contact</a>
+                            </li>
+                            {'<li class="nav-item dropdown">' if current_user else ''}
+                            {'<a class="nav-link dropdown-toggle font-causten" href="#" role="button" data-bs-toggle="dropdown">' if current_user else ''}
+                            {'<i class="bi bi-person-circle me-1"></i>' if current_user else ''}
+                            {'Guest User' if current_user else ''}
+                            {'</a>' if current_user else ''}
+                            {'<ul class="dropdown-menu">' if current_user else ''}
+                            {'<li><a class="dropdown-item font-causten" href="/dashboard">Dashboard</a></li>' if current_user else ''}
+                            {'<li><a class="dropdown-item font-causten" href="/profile">Profile</a></li>' if current_user else ''}
+                            {'<li><hr class="dropdown-divider"></li>' if current_user else ''}
+                            {'<li><a class="dropdown-item font-causten" href="/logout">Logout</a></li>' if current_user else ''}
+                            {'</ul>' if current_user else ''}
+                            {'</li>' if current_user else ''}
+                            {'<li class="nav-item">' if not current_user else ''}
+                            {'<a class="nav-link font-causten" href="/login">Login</a>' if not current_user else ''}
+                            {'</li>' if not current_user else ''}
+                            {'<li class="nav-item">' if not current_user else ''}
+                            {'<a class="btn btn-primary font-causten ms-2" href="/register">Get Started</a>' if not current_user else ''}
+                            {'</li>' if not current_user else ''}
+                        </ul>
                     </div>
                 </div>
-            </body>
+            </nav>
+
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <div class="d-flex align-items-center mb-4">
+                                <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                                     alt="foodXchange" class="hero-logo me-3">
+                                <div>
+                                    <h1 class="display-4 font-causten fw-bold mb-3">foodXchange</h1>
+                                    <p class="lead font-roboto-serif mb-0">Revolutionizing Food Supply Chain Management</p>
+                                </div>
+                            </div>
+                            <h2 class="h3 font-causten mb-4">Streamline Your Food Procurement Process</h2>
+                            <p class="font-roboto-serif mb-4">
+                                Connect with suppliers, manage RFQs, track orders, and optimize your food supply chain 
+                                with our comprehensive platform designed for the modern food industry.
+                            </p>
+                            <div class="d-flex gap-3">
+                                <a href="/register" class="btn btn-light btn-lg font-causten">
+                                    <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+                                </a>
+                                <a href="#features" class="btn btn-outline-light btn-lg font-causten">
+                                    <i class="bi bi-play-circle me-2"></i>Learn More
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-center">
+                                <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                                     alt="Platform Preview" class="img-fluid" style="max-height: 400px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section id="features" class="py-5">
+                <div class="container">
+                    <div class="row text-center mb-5">
+                        <div class="col-lg-8 mx-auto">
+                            <h2 class="display-5 font-causten mb-3">Why Choose foodXchange?</h2>
+                            <p class="lead font-roboto-serif text-muted">
+                                Comprehensive tools designed specifically for food industry professionals
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm feature-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-building text-primary fs-1"></i>
+                                    </div>
+                                    <h4 class="font-causten mb-3">Supplier Management</h4>
+                                    <p class="font-roboto-serif text-muted">
+                                        Manage your supplier network, track performance, and maintain detailed profiles 
+                                        with contact information and capabilities.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm feature-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-file-earmark-text text-success fs-1"></i>
+                                    </div>
+                                    <h4 class="font-causten mb-3">RFQ Management</h4>
+                                    <p class="font-roboto-serif text-muted">
+                                        Create and manage Request for Quotations, send to multiple suppliers, 
+                                        and track responses in real-time.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm feature-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-cart text-info fs-1"></i>
+                                    </div>
+                                    <h4 class="font-causten mb-3">Order Tracking</h4>
+                                    <p class="font-roboto-serif text-muted">
+                                        Track orders from placement to delivery, monitor status updates, 
+                                        and manage inventory efficiently.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm feature-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-graph-up text-warning fs-1"></i>
+                                    </div>
+                                    <h4 class="font-causten mb-3">Analytics & Insights</h4>
+                                    <p class="font-roboto-serif text-muted">
+                                        Get detailed analytics on spending patterns, supplier performance, 
+                                        and market trends to make informed decisions.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm feature-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-robot text-danger fs-1"></i>
+                                    </div>
+                                    <h4 class="font-causten mb-3">AI-Powered Automation</h4>
+                                    <p class="font-roboto-serif text-muted">
+                                        Leverage artificial intelligence for automated supplier matching, 
+                                        price optimization, and intelligent recommendations.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card border-0 shadow-sm feature-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-shield-check text-secondary fs-1"></i>
+                                    </div>
+                                    <h4 class="font-causten mb-3">Compliance & Safety</h4>
+                                    <p class="font-roboto-serif text-muted">
+                                        Ensure food safety compliance, track certifications, and maintain 
+                                        audit trails for regulatory requirements.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats-section">
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <i class="bi bi-building text-primary fs-1"></i>
+                            </div>
+                            <h3 class="text-primary font-causten">500+</h3>
+                            <p class="font-roboto-serif text-muted">Active Suppliers</p>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <i class="bi bi-file-earmark-text text-success fs-1"></i>
+                            </div>
+                            <h3 class="text-success font-causten">10K+</h3>
+                            <p class="font-roboto-serif text-muted">RFQs Processed</p>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <i class="bi bi-cart text-info fs-1"></i>
+                            </div>
+                            <h3 class="text-info font-causten">$50M+</h3>
+                            <p class="font-roboto-serif text-muted">Orders Managed</p>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <i class="bi bi-people text-warning fs-1"></i>
+                            </div>
+                            <h3 class="text-warning font-causten">200+</h3>
+                            <p class="font-roboto-serif text-muted">Happy Clients</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="cta-section">
+                <div class="container text-center">
+                    <h2 class="display-5 font-causten mb-4">Ready to Transform Your Food Supply Chain?</h2>
+                    <p class="lead font-roboto-serif mb-4">
+                        Join hundreds of food industry professionals who trust foodXchange for their procurement needs.
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="/register" class="btn btn-primary btn-lg font-causten">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Start Free Trial
+                        </a>
+                        <a href="#contact" class="btn btn-outline-light btn-lg font-causten">
+                            <i class="bi bi-chat-dots me-2"></i>Contact Sales
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="bg-dark text-light py-4">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-4 mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                                     alt="foodXchange" height="30" class="me-2">
+                                <span class="font-causten fw-bold">foodXchange</span>
+                            </div>
+                            <p class="font-roboto-serif text-muted">
+                                Revolutionizing food supply chain management with innovative technology and 
+                                industry expertise.
+                            </p>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4">
+                            <h5 class="font-causten mb-3">Product</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#features" class="text-muted text-decoration-none font-roboto-serif">Features</a></li>
+                                <li><a href="/pricing" class="text-muted text-decoration-none font-roboto-serif">Pricing</a></li>
+                                <li><a href="/api" class="text-muted text-decoration-none font-roboto-serif">API</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4">
+                            <h5 class="font-causten mb-3">Company</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="/about" class="text-muted text-decoration-none font-roboto-serif">About</a></li>
+                                <li><a href="/careers" class="text-muted text-decoration-none font-roboto-serif">Careers</a></li>
+                                <li><a href="/contact" class="text-muted text-decoration-none font-roboto-serif">Contact</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4">
+                            <h5 class="font-causten mb-3">Support</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="/help" class="text-muted text-decoration-none font-roboto-serif">Help Center</a></li>
+                                <li><a href="/docs" class="text-muted text-decoration-none font-roboto-serif">Documentation</a></li>
+                                <li><a href="/status" class="text-muted text-decoration-none font-roboto-serif">Status</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 col-md-6 mb-4">
+                            <h5 class="font-causten mb-3">Legal</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="/privacy" class="text-muted text-decoration-none font-roboto-serif">Privacy</a></li>
+                                <li><a href="/terms" class="text-muted text-decoration-none font-roboto-serif">Terms</a></li>
+                                <li><a href="/security" class="text-muted text-decoration-none font-roboto-serif">Security</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <p class="font-roboto-serif text-muted mb-0">
+                                © 2024 foodXchange. All rights reserved.
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="d-flex gap-3 justify-content-md-end">
+                                <a href="#" class="text-muted"><i class="bi bi-twitter fs-5"></i></a>
+                                <a href="#" class="text-muted"><i class="bi bi-linkedin fs-5"></i></a>
+                                <a href="#" class="text-muted"><i class="bi bi-facebook fs-5"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
         </html>
         """)
+    except Exception as e:
+        print(f"Landing page error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><title>Landing Page Error</title></head>
+            <body>
+                <h1>Landing Page Error</h1>
+                <p>Error: {str(e)}</p>
+                <a href="/dashboard">Back to Dashboard</a>
+            </body>
+        </html>
+        """, status_code=500)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request, db: Session = Depends(get_db)):
-    error = request.query_params.get("error")
+    """Login page - Bootstrap styled"""
     try:
-        return templates.TemplateResponse("login.html", {"request": request, "error": error, "current_user": None})
-    except Exception as e:
-        # Fallback to simple HTML if template rendering fails
+        error = request.query_params.get("error", "")
         return HTMLResponse(content=f"""
-        <html>
-            <head>
-                <title>Login - FoodXchange</title>
-                <style>
-                    body {{ font-family: Arial, sans-serif; padding: 50px; text-align: center; background: #f5f5f5; }}
-                    .container {{ max-width: 400px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
-                    h1 {{ color: #ff6b35; margin-bottom: 20px; }}
-                    .form-group {{ margin-bottom: 20px; text-align: left; }}
-                    label {{ display: block; margin-bottom: 5px; font-weight: bold; }}
-                    input {{ width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }}
-                    .btn {{ width: 100%; padding: 12px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }}
-                    .btn:hover {{ background: #e55a2b; }}
-                    .error {{ color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 5px; margin: 20px 0; }}
-                </style>
-            </head>
-            <body>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Login - foodXchange</title>
+            
+            <!-- Comprehensive Favicon Setup -->
+            <link rel="icon" type="image/png" sizes="32x32" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/static/brand/logos/Favicon.png">
+            <link rel="shortcut icon" href="/static/brand/logos/Favicon.png">
+            <link rel="apple-touch-icon" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" href="/favicon.ico">
+            
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+            <style>
+                .login-section {{
+                    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                }}
+                .login-card {{
+                    background: white;
+                    border-radius: 1rem;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                }}
+                .login-logo {{
+                    max-height: 60px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="login-section">
                 <div class="container">
-                    <h1>🍎 FoodXchange Login</h1>
-                    {f'<div class="error">{error}</div>' if error else ''}
-                    <form method="POST" action="/login">
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="email" id="email" name="email" required>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-5 col-md-7">
+                            <div class="login-card p-5">
+                                <div class="text-center mb-4">
+                                    <div class="d-flex align-items-center justify-content-center mb-3">
+                                        <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                                             alt="foodXchange" class="login-logo me-2">
+                                        <span class="font-causten fw-bold fs-3">foodXchange</span>
+                                    </div>
+                                    <h2 class="font-causten mb-2">Welcome Back</h2>
+                                    <p class="font-roboto-serif text-muted">Sign in to your account</p>
+                                </div>
+
+                                {f'<div class="alert alert-danger font-roboto-serif" role="alert">{error}</div>' if error else ''}
+
+                                <form method="POST" action="/login">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label font-causten">Email Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-envelope"></i>
+                                            </span>
+                                            <input type="email" class="form-control font-roboto-serif" id="email" name="email" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label font-causten">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-lock"></i>
+                                            </span>
+                                            <input type="password" class="form-control font-roboto-serif" id="password" name="password" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                                        <label class="form-check-label font-roboto-serif" for="remember">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-primary btn-lg font-causten">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <p class="font-roboto-serif text-muted mb-0">
+                                            Don't have an account? 
+                                            <a href="/register" class="text-decoration-none font-causten">Sign up</a>
+                                        </p>
+                                    </div>
+                                </form>
+                                
+                                <hr class="my-4">
+                                
+                                <div class="text-center">
+                                    <a href="/" class="btn btn-outline-secondary font-causten">
+                                        <i class="bi bi-arrow-left me-2"></i>Back to Home
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="password">Password:</label>
-                            <input type="password" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn">Login</button>
-                    </form>
-                    <p style="margin-top: 20px;">
-                        <a href="/" style="color: #ff6b35;">Back to Home</a>
-                    </p>
-                    <div class="error">
-                        <strong>Note:</strong> Template rendering failed: {str(e)}. This is a fallback login page.
                     </div>
                 </div>
-            </body>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
         </html>
         """)
+    except Exception as e:
+        print(f"Login page error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><title>Login Error</title></head>
+            <body>
+                <h1>Login Error</h1>
+                <p>Error: {str(e)}</p>
+                <a href="/">Back to Home</a>
+            </body>
+        </html>
+        """, status_code=500)
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request, db: Session = Depends(get_db)):
-    error = request.query_params.get("error")
-    return templates.TemplateResponse("register.html", {"request": request, "error": error, "current_user": None})
+    """Register page - Bootstrap styled"""
+    try:
+        error = request.query_params.get("error", "")
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Register - foodXchange</title>
+            
+            <!-- Comprehensive Favicon Setup -->
+            <link rel="icon" type="image/png" sizes="32x32" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/static/brand/logos/Favicon.png">
+            <link rel="shortcut icon" href="/static/brand/logos/Favicon.png">
+            <link rel="apple-touch-icon" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" href="/favicon.ico">
+            
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+            <style>
+                .register-section {
+                    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                }
+                .register-card {
+                    background: white;
+                    border-radius: 1rem;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                }
+                .register-logo {
+                    max-height: 60px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="register-section">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6 col-md-8">
+                            <div class="register-card p-5">
+                                <div class="text-center mb-4">
+                                    <div class="d-flex align-items-center justify-content-center mb-3">
+                                        <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                                             alt="foodXchange" class="register-logo me-2">
+                                        <span class="font-causten fw-bold fs-3">foodXchange</span>
+                                    </div>
+                                    <h2 class="font-causten mb-2">Create Account</h2>
+                                    <p class="font-roboto-serif text-muted">Join the food supply chain revolution</p>
+                                </div>
+
+                                {f'<div class="alert alert-danger font-roboto-serif" role="alert">{error}</div>' if error else ''}
+
+                                <form method="POST" action="/register">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="first_name" class="form-label font-causten">First Name</label>
+                                            <input type="text" class="form-control font-roboto-serif" id="first_name" name="first_name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="last_name" class="form-label font-causten">Last Name</label>
+                                            <input type="text" class="form-control font-roboto-serif" id="last_name" name="last_name" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label font-causten">Email Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-envelope"></i>
+                                            </span>
+                                            <input type="email" class="form-control font-roboto-serif" id="email" name="email" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="company_name" class="form-label font-causten">Company Name</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-building"></i>
+                                            </span>
+                                            <input type="text" class="form-control font-roboto-serif" id="company_name" name="company_name" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label font-causten">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-lock"></i>
+                                            </span>
+                                            <input type="password" class="form-control font-roboto-serif" id="password" name="password" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="confirm_password" class="form-label font-causten">Confirm Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </span>
+                                            <input type="password" class="form-control font-roboto-serif" id="confirm_password" name="confirm_password" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                                        <label class="form-check-label font-roboto-serif" for="terms">
+                                            I agree to the <a href="/terms" class="text-decoration-none">Terms of Service</a> and <a href="/privacy" class="text-decoration-none">Privacy Policy</a>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-primary btn-lg font-causten">
+                                            <i class="bi bi-person-plus me-2"></i>Create Account
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <p class="font-roboto-serif text-muted mb-0">
+                                            Already have an account? 
+                                            <a href="/login" class="text-decoration-none font-causten">Sign in</a>
+                                        </p>
+                                    </div>
+                                </form>
+                                
+                                <hr class="my-4">
+                                
+                                <div class="text-center">
+                                    <a href="/" class="btn btn-outline-secondary font-causten">
+                                        <i class="bi bi-arrow-left me-2"></i>Back to Home
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+        </html>
+        """)
+    except Exception as e:
+        print(f"Register page error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><title>Register Error</title></head>
+            <body>
+                <h1>Register Error</h1>
+                <p>Error: {str(e)}</p>
+                <a href="/">Back to Home</a>
+            </body>
+        </html>
+        """, status_code=500)
 
 # Health Endpoints
 @app.get("/health")
@@ -611,9 +1379,12 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Dashboard - foodXchange</title>
             
-            <!-- Favicon -->
-            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
-            <link rel="shortcut icon" type="image/png" href="/static/brand/logos/Favicon.png">
+            <!-- Comprehensive Favicon Setup -->
+            <link rel="icon" type="image/png" sizes="32x32" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/static/brand/logos/Favicon.png">
+            <link rel="shortcut icon" href="/static/brand/logos/Favicon.png">
+            <link rel="apple-touch-icon" href="/static/brand/logos/Favicon.png">
+            <link rel="icon" href="/favicon.ico">
             
             <!-- Bootstrap CSS -->
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -1024,315 +1795,193 @@ async def suppliers_list(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("suppliers.html", {"request": request, "suppliers": suppliers, "current_user": user})
 
 @app.get("/suppliers/add", response_class=HTMLResponse, name="add_supplier")
-async def add_supplier(request: Request, db: Session = Depends(get_db)):
+async def add_supplier(request: Request):
+    """Add new supplier page - Bootstrap styled"""
     try:
-        user = get_current_user_context(request, db)
-        if not user:
-            return RedirectResponse(url="/login", status_code=302)
-        
-        # Return a complete HTML add supplier page directly
-        return HTMLResponse(content=f"""
+        return HTMLResponse(content="""
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Add Supplier - foodXchange</title>
-            
-            <!-- Favicon -->
             <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
-            <link rel="shortcut icon" type="image/png" href="/static/brand/logos/Favicon.png">
-            
-            <!-- Bootstrap CSS -->
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            
-            <!-- Bootstrap Icons -->
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            
-            <!-- Food Xchange Custom Fonts -->
             <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-            
-            <style>
-                :root {{
-                    --bs-primary: #4A90E2;
-                    --bs-secondary: #F97316;
-                    --bs-success: #10B981;
-                    --bs-info: #4A90E2;
-                    --bs-warning: #F97316;
-                    --bs-danger: #EF4444;
-                    --bs-light: #F8F9FA;
-                    --bs-dark: #212529;
-                }}
-                
-                body {{
-                    font-family: 'Causten', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    background-color: #f8f9fa;
-                }}
-                
-                .sidebar {{
-                    background: linear-gradient(135deg, var(--bs-primary) 0%, #357ABD 100%);
-                    min-height: 100vh;
-                }}
-                
-                .sidebar .nav-link {{
-                    color: rgba(255, 255, 255, 0.8);
-                    padding: 0.75rem 1rem;
-                    border-radius: 0.375rem;
-                    margin: 0.125rem 0;
-                }}
-                
-                .sidebar .nav-link:hover,
-                .sidebar .nav-link.active {{
-                    color: white;
-                    background-color: rgba(255, 255, 255, 0.1);
-                }}
-            </style>
         </head>
-        <body>
-            <!-- Navigation -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
-                <div class="container-fluid">
-                    <a class="navbar-brand d-flex align-items-center" href="/">
-                        <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" alt="foodXchange" height="32" class="me-2">
-                        <span class="text-primary">foodXchange</span>
-                    </a>
-                    
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-person-circle me-1"></i>{user["email"] if user else "User"}
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Main Content -->
+        <body class="bg-light">
             <div class="container-fluid">
                 <div class="row">
-                    <!-- Sidebar -->
-                    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                        <div class="position-sticky pt-3">
-                            <ul class="nav flex-column">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/dashboard">
-                                        <i class="bi bi-speedometer2"></i>Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/rfq/new">
-                                        <i class="bi bi-file-earmark-plus"></i>New RFQ
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/rfqs">
-                                        <i class="bi bi-file-earmark-text"></i>RFQs
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/orders">
-                                        <i class="bi bi-cart"></i>Orders
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="/suppliers">
-                                        <i class="bi bi-building"></i>Suppliers
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/products">
-                                        <i class="bi bi-box"></i>Products
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/quotes">
-                                        <i class="bi bi-currency-dollar"></i>Quotes
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/analytics">
-                                        <i class="bi bi-graph-up"></i>Analytics
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/projects">
-                                        <i class="bi bi-kanban"></i>Projects
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/agent-dashboard">
-                                        <i class="bi bi-robot"></i>AI Agent
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </nav>
-                    
-                    <!-- Main Content Area -->
-                    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 class="h2 font-causten">Add New Supplier</h1>
-                            <div class="btn-toolbar mb-2 mb-md-0">
-                                <a href="/suppliers" class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-arrow-left me-1"></i>Back to Suppliers
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h3 mb-1 font-causten">Add New Supplier</h1>
+                                <p class="text-muted mb-0 font-roboto-serif">Add a new supplier to your network</p>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/suppliers" class="btn btn-outline-secondary font-causten">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to Suppliers
                                 </a>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row justify-content-center">
                             <div class="col-lg-8">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-white">
                                         <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-building-add me-2"></i>Supplier Information
+                                            <i class="bi bi-plus-circle me-2"></i>Supplier Information
                                         </h5>
                                     </div>
                                     <div class="card-body">
-                                        <form method="POST" action="/suppliers/add">
+                                        <form onsubmit="submitSupplier(event)">
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="company_name" class="form-label font-causten">Company Name *</label>
-                                                    <input type="text" class="form-control" id="company_name" name="company_name" required>
+                                                    <label for="supplierName" class="form-label font-causten">Company Name *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierName" required>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="contact_person" class="form-label font-causten">Contact Person</label>
-                                                    <input type="text" class="form-control" id="contact_person" name="contact_person">
+                                                    <label for="supplierStatus" class="form-label font-causten">Status *</label>
+                                                    <select class="form-select font-roboto-serif" id="supplierStatus" required>
+                                                        <option value="">Select Status</option>
+                                                        <option value="Active">Active</option>
+                                                        <option value="Inactive">Inactive</option>
+                                                        <option value="Pending">Pending</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="email" class="form-label font-causten">Email Address *</label>
-                                                    <input type="email" class="form-control" id="email" name="email" required>
+                                                    <label for="contactPerson" class="form-label font-causten">Contact Person *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="contactPerson" required>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label for="phone" class="form-label font-causten">Phone Number</label>
-                                                    <input type="tel" class="form-control" id="phone" name="phone">
+                                                    <label for="supplierEmail" class="form-label font-causten">Email *</label>
+                                                    <input type="email" class="form-control font-roboto-serif" id="supplierEmail" required>
                                                 </div>
                                             </div>
                                             
-                                            <div class="mb-3">
-                                                <label for="address" class="form-label font-causten">Address</label>
-                                                <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierPhone" class="form-label font-causten">Phone *</label>
+                                                    <input type="tel" class="form-control font-roboto-serif" id="supplierPhone" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierCountry" class="form-label font-causten">Country *</label>
+                                                    <select class="form-select font-roboto-serif" id="supplierCountry" required>
+                                                        <option value="">Select Country</option>
+                                                        <option value="United States">United States</option>
+                                                        <option value="Canada">Canada</option>
+                                                        <option value="Mexico">Mexico</option>
+                                                        <option value="United Kingdom">United Kingdom</option>
+                                                        <option value="Germany">Germany</option>
+                                                        <option value="France">France</option>
+                                                        <option value="Italy">Italy</option>
+                                                        <option value="Spain">Spain</option>
+                                                        <option value="China">China</option>
+                                                        <option value="Japan">Japan</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierAddress" class="form-label font-causten">Address *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierAddress" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierCity" class="form-label font-causten">City *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierCity" required>
+                                                </div>
                                             </div>
                                             
                                             <div class="row">
                                                 <div class="col-md-4 mb-3">
-                                                    <label for="city" class="form-label font-causten">City</label>
-                                                    <input type="text" class="form-control" id="city" name="city">
+                                                    <label for="supplierState" class="form-label font-causten">State/Province *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierState" required>
                                                 </div>
                                                 <div class="col-md-4 mb-3">
-                                                    <label for="state" class="form-label font-causten">State/Province</label>
-                                                    <input type="text" class="form-control" id="state" name="state">
+                                                    <label for="supplierZip" class="form-label font-causten">ZIP/Postal Code *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierZip" required>
                                                 </div>
                                                 <div class="col-md-4 mb-3">
-                                                    <label for="country" class="form-label font-causten">Country</label>
-                                                    <input type="text" class="form-control" id="country" name="country">
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="website" class="form-label font-causten">Website</label>
-                                                    <input type="url" class="form-control" id="website" name="website">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="tax_id" class="form-label font-causten">Tax ID</label>
-                                                    <input type="text" class="form-control" id="tax_id" name="tax_id">
+                                                    <label for="paymentTerms" class="form-label font-causten">Payment Terms</label>
+                                                    <select class="form-select font-roboto-serif" id="paymentTerms">
+                                                        <option value="">Select Payment Terms</option>
+                                                        <option value="Net 30">Net 30</option>
+                                                        <option value="Net 15">Net 15</option>
+                                                        <option value="Net 60">Net 60</option>
+                                                        <option value="Due on Receipt">Due on Receipt</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             
                                             <div class="mb-3">
-                                                <label for="specialties" class="form-label font-causten">Specialties/Products</label>
-                                                <textarea class="form-control" id="specialties" name="specialties" rows="3" placeholder="e.g., Organic vegetables, Dairy products, Meat, etc."></textarea>
+                                                <label for="deliveryTime" class="form-label font-causten">Delivery Time</label>
+                                                <input type="text" class="form-control font-roboto-serif" id="deliveryTime" placeholder="e.g., 3-5 business days">
                                             </div>
                                             
                                             <div class="mb-3">
-                                                <label for="notes" class="form-label font-causten">Additional Notes</label>
-                                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                                                <label for="supplierDescription" class="form-label font-causten">Description</label>
+                                                <textarea class="form-control font-roboto-serif" id="supplierDescription" rows="3" placeholder="Enter supplier description..."></textarea>
                                             </div>
                                             
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <a href="/suppliers" class="btn btn-outline-secondary font-causten">
-                                                    <i class="bi bi-x-circle me-2"></i>Cancel
-                                                </a>
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <button type="button" class="btn btn-outline-secondary font-causten" onclick="window.location.href='/suppliers'">
+                                                    Cancel
+                                                </button>
                                                 <button type="submit" class="btn btn-primary font-causten">
-                                                    <i class="bi bi-check-circle me-2"></i>Add Supplier
+                                                    <i class="bi bi-plus-circle me-2"></i>Add Supplier
                                                 </button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-lg-4">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-info-circle me-2"></i>Tips
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <ul class="list-unstyled mb-0">
-                                            <li class="mb-2">
-                                                <i class="bi bi-check-circle text-success me-2"></i>
-                                                <small class="text-muted font-roboto-serif">Provide accurate contact information for better communication</small>
-                                            </li>
-                                            <li class="mb-2">
-                                                <i class="bi bi-check-circle text-success me-2"></i>
-                                                <small class="text-muted font-roboto-serif">List specific products or specialties to improve matching</small>
-                                            </li>
-                                            <li class="mb-2">
-                                                <i class="bi bi-check-circle text-success me-2"></i>
-                                                <small class="text-muted font-roboto-serif">Include tax ID for compliance and invoicing</small>
-                                            </li>
-                                            <li>
-                                                <i class="bi bi-check-circle text-success me-2"></i>
-                                                <small class="text-muted font-roboto-serif">Add notes about quality standards or certifications</small>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </main>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <footer class="bg-light border-top mt-5">
-                <div class="container py-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="text-primary font-causten">foodXchange</h5>
-                            <p class="text-muted font-roboto-serif">B2B Food Marketplace Platform</p>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                            <p class="text-muted font-roboto-serif">&copy; 2024 foodXchange. All rights reserved.</p>
                         </div>
                     </div>
                 </div>
-            </footer>
+            </div>
 
-            <!-- Bootstrap JS -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            
+            <script>
+                function submitSupplier(event) {
+                    event.preventDefault();
+                    
+                    const formData = {
+                        name: document.getElementById('supplierName').value,
+                        status: document.getElementById('supplierStatus').value,
+                        contact_person: document.getElementById('contactPerson').value,
+                        email: document.getElementById('supplierEmail').value,
+                        phone: document.getElementById('supplierPhone').value,
+                        country: document.getElementById('supplierCountry').value,
+                        address: document.getElementById('supplierAddress').value,
+                        city: document.getElementById('supplierCity').value,
+                        state: document.getElementById('supplierState').value,
+                        zip_code: document.getElementById('supplierZip').value,
+                        payment_terms: document.getElementById('paymentTerms').value,
+                        delivery_time: document.getElementById('deliveryTime').value,
+                        description: document.getElementById('supplierDescription').value
+                    };
+                    
+                    // Simulate form submission
+                    alert('Supplier added successfully!');
+                    console.log('Supplier data:', formData);
+                    
+                    // Redirect to suppliers list
+                    setTimeout(() => {
+                        window.location.href = '/suppliers';
+                    }, 1000);
+                }
+            </script>
         </body>
         </html>
         """)
     except Exception as e:
-        print(f"Add Supplier: Error: {e}")
+        print(f"Add supplier page error: {e}")
         return HTMLResponse(content=f"""
         <html>
             <head><title>Add Supplier Error</title></head>
@@ -1345,20 +1994,371 @@ async def add_supplier(request: Request, db: Session = Depends(get_db)):
         """, status_code=500)
 
 @app.get("/suppliers/{supplier_id}", response_class=HTMLResponse, name="view_supplier")
-async def view_supplier(request: Request, supplier_id: int, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("suppliers.html", {"request": request, "title": f"Supplier {supplier_id}", "current_user": user})
+async def view_supplier(request: Request, supplier_id: int):
+    """View supplier details page - Bootstrap styled"""
+    try:
+        supplier = {
+            "id": supplier_id,
+            "name": "Mediterranean Delights",
+            "contact_person": "Maria Rodriguez",
+            "email": "maria@mediterraneandelights.com",
+            "phone": "+1 (555) 123-4567",
+            "address": "789 Supplier Street, Miami, FL 33101",
+            "country": "United States",
+            "rating": 4.8,
+            "products_count": 45,
+            "orders_count": 12,
+            "total_spend": 125000,
+            "status": "Active",
+            "joined_date": "2023-06-15",
+            "certifications": ["Organic", "ISO 9001", "HACCP"],
+            "payment_terms": "Net 30",
+            "delivery_time": "3-5 business days"
+        }
+        
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Supplier Details - foodXchange</title>
+            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        </head>
+        <body class="bg-light">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h3 mb-1 font-causten">Supplier Details</h1>
+                                <p class="text-muted mb-0 font-roboto-serif">#{supplier_id} - {supplier['name']}</p>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/suppliers" class="btn btn-outline-secondary font-causten">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to Suppliers
+                                </a>
+                                <button type="button" class="btn btn-primary font-causten" onclick="editSupplier({supplier_id})">
+                                    <i class="bi bi-pencil me-2"></i>Edit Supplier
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-building me-2"></i>Supplier Information
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Company Name</label>
+                                                <div class="font-causten fw-bold">{supplier['name']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Status</label>
+                                                <div>
+                                                    <span class="badge bg-success font-causten">{supplier['status']}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Contact Person</label>
+                                                <div class="font-causten fw-bold">{supplier['contact_person']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Email</label>
+                                                <div class="font-causten">{supplier['email']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Phone</label>
+                                                <div class="font-causten">{supplier['phone']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Country</label>
+                                                <div class="font-causten">{supplier['country']}</div>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Address</label>
+                                                <div class="font-roboto-serif">{supplier['address']}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-lightning me-2"></i>Quick Actions
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-grid gap-2">
+                                            <button type="button" class="btn btn-outline-primary font-causten" onclick="editSupplier({supplier_id})">
+                                                <i class="bi bi-pencil me-2"></i>Edit Supplier
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success font-causten" onclick="createRFQ({supplier_id})">
+                                                <i class="bi bi-file-earmark-plus me-2"></i>Create RFQ
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger font-causten" onclick="deleteSupplier({supplier_id})">
+                                                <i class="bi bi-trash me-2"></i>Delete Supplier
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            
+            <script>
+                function editSupplier(supplierId) {
+                    alert(`Editing supplier ${supplierId}...`);
+                }
+                
+                function createRFQ(supplierId) {
+                    alert(`Creating RFQ for supplier ${supplierId}...`);
+                }
+                
+                function deleteSupplier(supplierId) {
+                    if (confirm(`Are you sure you want to delete supplier ${supplierId}?`)) {
+                        alert(`Supplier ${supplierId} deleted successfully!`);
+                        window.location.href = '/suppliers';
+                    }
+                }
+            </script>
+        </body>
+        </html>
+        """)
+    except Exception as e:
+        print(f"View supplier page error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><title>Supplier Details Error</title></head>
+            <body>
+                <h1>Supplier Details Error</h1>
+                <p>Error: {str(e)}</p>
+                <a href="/suppliers">Back to Suppliers</a>
+            </body>
+        </html>
+        """, status_code=500)
 
 @app.get("/suppliers/{supplier_id}/edit", response_class=HTMLResponse, name="edit_supplier")
-async def edit_supplier(request: Request, supplier_id: int, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("suppliers.html", {"request": request, "title": f"Edit Supplier {supplier_id}", "current_user": user})
+async def edit_supplier(request: Request, supplier_id: int):
+    """Edit supplier page - Bootstrap styled"""
+    try:
+        supplier = {
+            "id": supplier_id,
+            "name": "Mediterranean Delights",
+            "contact_person": "Maria Rodriguez",
+            "email": "maria@mediterraneandelights.com",
+            "phone": "+1 (555) 123-4567",
+            "address": "789 Supplier Street",
+            "city": "Miami",
+            "state": "FL",
+            "zip_code": "33101",
+            "country": "United States",
+            "status": "Active",
+            "payment_terms": "Net 30",
+            "delivery_time": "3-5 business days"
+        }
+        
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Edit Supplier - foodXchange</title>
+            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        </head>
+        <body class="bg-light">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h3 mb-1 font-causten">Edit Supplier</h1>
+                                <p class="text-muted mb-0 font-roboto-serif">#{supplier_id} - {supplier['name']}</p>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/suppliers/{supplier_id}" class="btn btn-outline-secondary font-causten">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to Supplier
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-pencil me-2"></i>Edit Supplier Information
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form onsubmit="updateSupplier(event)">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierName" class="form-label font-causten">Company Name *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierName" value="{supplier['name']}" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierStatus" class="form-label font-causten">Status *</label>
+                                                    <select class="form-select font-roboto-serif" id="supplierStatus" required>
+                                                        <option value="Active" {'selected' if supplier['status'] == 'Active' else ''}>Active</option>
+                                                        <option value="Inactive" {'selected' if supplier['status'] == 'Inactive' else ''}>Inactive</option>
+                                                        <option value="Pending" {'selected' if supplier['status'] == 'Pending' else ''}>Pending</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="contactPerson" class="form-label font-causten">Contact Person *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="contactPerson" value="{supplier['contact_person']}" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierEmail" class="form-label font-causten">Email *</label>
+                                                    <input type="email" class="form-control font-roboto-serif" id="supplierEmail" value="{supplier['email']}" required>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierPhone" class="form-label font-causten">Phone *</label>
+                                                    <input type="tel" class="form-control font-roboto-serif" id="supplierPhone" value="{supplier['phone']}" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierCountry" class="form-label font-causten">Country *</label>
+                                                    <select class="form-select font-roboto-serif" id="supplierCountry" required>
+                                                        <option value="United States" {'selected' if supplier['country'] == 'United States' else ''}>United States</option>
+                                                        <option value="Canada" {'selected' if supplier['country'] == 'Canada' else ''}>Canada</option>
+                                                        <option value="Mexico" {'selected' if supplier['country'] == 'Mexico' else ''}>Mexico</option>
+                                                        <option value="United Kingdom" {'selected' if supplier['country'] == 'United Kingdom' else ''}>United Kingdom</option>
+                                                        <option value="Germany" {'selected' if supplier['country'] == 'Germany' else ''}>Germany</option>
+                                                        <option value="France" {'selected' if supplier['country'] == 'France' else ''}>France</option>
+                                                        <option value="Italy" {'selected' if supplier['country'] == 'Italy' else ''}>Italy</option>
+                                                        <option value="Spain" {'selected' if supplier['country'] == 'Spain' else ''}>Spain</option>
+                                                        <option value="China" {'selected' if supplier['country'] == 'China' else ''}>China</option>
+                                                        <option value="Japan" {'selected' if supplier['country'] == 'Japan' else ''}>Japan</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierAddress" class="form-label font-causten">Address *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierAddress" value="{supplier['address']}" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="supplierCity" class="form-label font-causten">City *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierCity" value="{supplier['city']}" required>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="supplierState" class="form-label font-causten">State/Province *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierState" value="{supplier['state']}" required>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="supplierZip" class="form-label font-causten">ZIP/Postal Code *</label>
+                                                    <input type="text" class="form-control font-roboto-serif" id="supplierZip" value="{supplier['zip_code']}" required>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="paymentTerms" class="form-label font-causten">Payment Terms</label>
+                                                    <select class="form-select font-roboto-serif" id="paymentTerms">
+                                                        <option value="Net 30" {'selected' if supplier['payment_terms'] == 'Net 30' else ''}>Net 30</option>
+                                                        <option value="Net 15" {'selected' if supplier['payment_terms'] == 'Net 15' else ''}>Net 15</option>
+                                                        <option value="Net 60" {'selected' if supplier['payment_terms'] == 'Net 60' else ''}>Net 60</option>
+                                                        <option value="Due on Receipt" {'selected' if supplier['payment_terms'] == 'Due on Receipt' else ''}>Due on Receipt</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="deliveryTime" class="form-label font-causten">Delivery Time</label>
+                                                <input type="text" class="form-control font-roboto-serif" id="deliveryTime" value="{supplier['delivery_time']}" placeholder="e.g., 3-5 business days">
+                                            </div>
+                                            
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <button type="button" class="btn btn-outline-secondary font-causten" onclick="window.location.href='/suppliers/{supplier_id}'">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" class="btn btn-primary font-causten">
+                                                    <i class="bi bi-check-circle me-2"></i>Update Supplier
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            
+            <script>
+                function updateSupplier(event) {
+                    event.preventDefault();
+                    
+                    const formData = {
+                        id: {supplier_id},
+                        name: document.getElementById('supplierName').value,
+                        status: document.getElementById('supplierStatus').value,
+                        contact_person: document.getElementById('contactPerson').value,
+                        email: document.getElementById('supplierEmail').value,
+                        phone: document.getElementById('supplierPhone').value,
+                        country: document.getElementById('supplierCountry').value,
+                        address: document.getElementById('supplierAddress').value,
+                        city: document.getElementById('supplierCity').value,
+                        state: document.getElementById('supplierState').value,
+                        zip_code: document.getElementById('supplierZip').value,
+                        payment_terms: document.getElementById('paymentTerms').value,
+                        delivery_time: document.getElementById('deliveryTime').value
+                    };
+                    
+                    // Simulate form submission
+                    alert('Supplier updated successfully!');
+                    console.log('Supplier data:', formData);
+                    
+                    // Redirect to supplier details
+                    setTimeout(() => {
+                        window.location.href = '/suppliers/{supplier_id}';
+                    }, 1000);
+                }
+            </script>
+        </body>
+        </html>
+        """)
+    except Exception as e:
+        print(f"Edit supplier page error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><title>Edit Supplier Error</title></head>
+            <body>
+                <h1>Edit Supplier Error</h1>
+                <p>Error: {str(e)}</p>
+                <a href="/suppliers/{supplier_id}">Back to Supplier</a>
+            </body>
+        </html>
+        """, status_code=500)
 
 @app.get("/rfq/new", response_class=HTMLResponse, name="new_rfq")
 async def new_rfq(request: Request, db: Session = Depends(get_db)):
@@ -1529,2114 +2529,6 @@ async def orders_list(request: Request, db: Session = Depends(get_db)):
                 <h1>Orders Error</h1>
                 <p>Error: {str(e)}</p>
                 <a href="/dashboard">Back to Dashboard</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-@app.get("/orders/{order_id}/edit", response_class=HTMLResponse, name="edit_order")
-async def edit_order(request: Request, order_id: int, db: Session = Depends(get_db)):
-    try:
-        user = get_current_user_context(request, db)
-        if not user:
-            return RedirectResponse(url="/login", status_code=302)
-        
-        # Return a simple edit order page
-        return HTMLResponse(content=f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Edit Order - foodXchange</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-        </head>
-        <body class="bg-light">
-            <div class="container mt-5">
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <div class="card shadow">
-                            <div class="card-header bg-primary text-white">
-                                <h4 class="mb-0 font-causten">
-                                    <i class="bi bi-pencil-square me-2"></i>Edit Order #{order_id}
-                                </h4>
-                            </div>
-                            <div class="card-body">
-                                <form>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label font-causten">Order Number</label>
-                                            <input type="text" class="form-control font-roboto-serif" value="ORD-2024-{order_id:03d}" readonly>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label font-causten">Status</label>
-                                            <select class="form-select font-roboto-serif">
-                                                <option>Pending</option>
-                                                <option>Processing</option>
-                                                <option selected>Delivered</option>
-                                                <option>Cancelled</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label font-causten">Product</label>
-                                            <input type="text" class="form-control font-roboto-serif" value="Organic Rice">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label font-causten">Quantity</label>
-                                            <input type="number" class="form-control font-roboto-serif" value="1000">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label font-causten">Notes</label>
-                                        <textarea class="form-control font-roboto-serif" rows="3"></textarea>
-                                    </div>
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <a href="/orders" class="btn btn-outline-secondary font-causten">Cancel</a>
-                                        <button type="submit" class="btn btn-primary font-causten">Update Order</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        </body>
-        </html>
-        """)
-    except Exception as e:
-        print(f"Edit order page error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>Edit Order Error</title></head>
-            <body>
-                <h1>Edit Order Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/orders">Back to Orders</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-@app.get("/products", response_class=HTMLResponse, name="products_list")
-async def products_list(request: Request):
-    """Products management page - Bootstrap styled"""
-    try:
-        products = [
-            {"id": 1, "name": "Organic Rice", "category": "Grains", "unit": "kg", "price": 2.50, "supplier": "ABC Foods", "stock": 1000},
-            {"id": 2, "name": "Fresh Tomatoes", "category": "Vegetables", "unit": "kg", "price": 3.20, "supplier": "Fresh Market", "stock": 500},
-            {"id": 3, "name": "Chicken Breast", "category": "Meat", "unit": "kg", "price": 8.75, "supplier": "Quality Meats", "stock": 200},
-            {"id": 4, "name": "Olive Oil", "category": "Oils", "unit": "L", "price": 12.50, "supplier": "Mediterranean Delights", "stock": 100}
-        ]
-        
-        return HTMLResponse(content=f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Products - foodXchange</title>
-            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-        </head>
-        <body class="bg-light">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div>
-                                <h1 class="h3 mb-1 font-causten">Products</h1>
-                                <p class="text-muted mb-0 font-roboto-serif">Manage your product catalog</p>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-outline-primary font-causten" onclick="exportProducts()">
-                                    <i class="bi bi-download me-2"></i>Export
-                                </button>
-                                <a href="/products/add" class="btn btn-primary font-causten">
-                                    <i class="bi bi-plus-circle me-2"></i>Add Product
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Product Stats Cards -->
-                        <div class="row g-4 mb-4">
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-box text-primary fs-1"></i>
-                                        </div>
-                                        <h3 class="text-primary mb-1 font-causten">{len(products)}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Total Products</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-tags text-success fs-1"></i>
-                                        </div>
-                                        <h3 class="text-success mb-1 font-causten">{len(set(p['category'] for p in products))}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Categories</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-building text-info fs-1"></i>
-                                        </div>
-                                        <h3 class="text-info mb-1 font-causten">{len(set(p['supplier'] for p in products))}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Suppliers</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-currency-dollar text-warning fs-1"></i>
-                                        </div>
-                                        <h3 class="text-warning mb-1 font-causten">${sum(p['price'] * p['stock'] for p in products):,.0f}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Total Value</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Products Table -->
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white border-bottom">
-                                <h5 class="card-title mb-0 font-causten">
-                                    <i class="bi bi-box me-2"></i>Product Catalog
-                                </h5>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="border-0 font-causten">Product</th>
-                                                <th class="border-0 font-causten">Category</th>
-                                                <th class="border-0 font-causten">Supplier</th>
-                                                <th class="border-0 font-causten">Price</th>
-                                                <th class="border-0 font-causten">Stock</th>
-                                                <th class="border-0 font-causten">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {''.join(f'''
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold font-causten">{product['name']}</div>
-                                                    <small class="text-muted font-roboto-serif">ID: #{product['id']}</small>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-light text-dark font-roboto-serif">{product['category']}</span>
-                                                </td>
-                                                <td>
-                                                    <div class="font-causten">{product['supplier']}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="fw-bold text-success font-causten">${product['price']:.2f}/{product['unit']}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="font-causten">{product['stock']:,} {product['unit']}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <a href="/products/{product['id']}" class="btn btn-sm btn-outline-primary font-causten">
-                                                            <i class="bi bi-eye me-1"></i>View
-                                                        </a>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary font-causten" onclick="editProduct({product['id']})">
-                                                            <i class="bi bi-pencil me-1"></i>Edit
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger font-causten" onclick="deleteProduct({product['id']})">
-                                                            <i class="bi bi-trash me-1"></i>Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            ''' for product in products)}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-            
-            <script>
-                function exportProducts() {
-                    alert('Exporting products to Excel...');
-                }
-                
-                function editProduct(productId) {
-                    alert(`Editing product ${productId}...`);
-                }
-                
-                function deleteProduct(productId) {
-                    if (confirm(`Are you sure you want to delete product ${productId}?`)) {
-                        alert(`Product ${productId} deleted successfully!`);
-                    }
-                }
-            </script>
-        </body>
-        </html>
-        """)
-    except Exception as e:
-        print(f"Products page error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>Products Error</title></head>
-            <body>
-                <h1>Products Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/dashboard">Back to Dashboard</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-@app.get("/analytics", response_class=HTMLResponse, name="analytics")
-async def analytics(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    kpis = {
-        "total_spend": 100000,
-        "cost_savings": 15000,
-        "suppliers_engaged": 12,
-        "rfqs_sent": 34
-    }
-    return templates.TemplateResponse("analytics.html", {"request": request, "kpis": kpis, "current_user": user})
-
-@app.get("/quotes/comparison", response_class=HTMLResponse, name="quote_comparison")
-async def quote_comparison(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    from foodxchange.models.rfq import RFQ
-    from foodxchange.models.quote import Quote
-    
-    # Get RFQ ID from query params
-    rfq_id = request.query_params.get("rfq_id")
-    rfq = None
-    quotes = []
-    
-    if rfq_id:
-        rfq = db.query(RFQ).filter(RFQ.id == int(rfq_id)).first()
-        if rfq:
-            quotes = db.query(Quote).filter(Quote.rfq_id == rfq.id).all()
-            
-            # Calculate scores for quotes
-            for quote in quotes:
-                # Simple scoring algorithm
-                price_score = 100 - ((quote.total_price / 10000) * 20)  # Lower price = higher score
-                delivery_score = 100 - (int(quote.delivery_time.split()[0]) * 5) if quote.delivery_time else 50
-                quote.score = int((price_score + delivery_score) / 2)
-                
-            # Sort by score
-            quotes.sort(key=lambda x: x.score, reverse=True)
-    else:
-        # Get all quotes
-        quotes = db.query(Quote).order_by(Quote.created_at.desc()).limit(10).all()
-        for quote in quotes:
-            quote.score = 75  # Default score
-    
-    return templates.TemplateResponse("quote_comparison.html", {
-        "request": request, 
-        "quotes": quotes, 
-        "rfq": rfq,
-        "current_user": user
-    })
-
-@app.get("/projects", response_class=HTMLResponse, name="projects_list")
-async def projects_list(request: Request, db: Session = Depends(get_db)):
-    try:
-        return HTMLResponse(content="""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Projects - foodXchange</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-        </head>
-        <body class="bg-light">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div>
-                                <h1 class="h3 mb-1 font-causten">Projects</h1>
-                                <p class="text-muted mb-0 font-roboto-serif">Manage your sourcing projects</p>
-                            </div>
-                            <div class="btn-group">
-                                <button class="btn btn-primary font-causten" onclick="showNewProject()">
-                                    <i class="bi bi-plus-circle me-2"></i>New Project
-                                </button>
-                                <button class="btn btn-outline-primary font-causten" onclick="showTemplate()">
-                                    <i class="bi bi-file-earmark-text me-2"></i>Use Template
-                                </button>
-                                <button class="btn btn-outline-secondary font-causten" onclick="exportProjects()">
-                                    <i class="bi bi-download me-2"></i>Export
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title mb-0 font-causten">Your Projects</h5>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="border-0 font-causten">Project Name</th>
-                                                <th class="border-0 font-causten">Status</th>
-                                                <th class="border-0 font-causten">Progress</th>
-                                                <th class="border-0 font-causten">Due Date</th>
-                                                <th class="border-0 font-causten">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold font-causten">Summer Sourcing 2024</div>
-                                                    <small class="text-muted font-roboto-serif">Source summer produce</small>
-                                                </td>
-                                                <td><span class="badge bg-warning font-causten">Active</span></td>
-                                                <td>
-                                                    <div class="progress" style="width: 100px;">
-                                                        <div class="progress-bar bg-warning" style="width: 65%"></div>
-                                                    </div>
-                                                    <small class="text-muted font-roboto-serif">65%</small>
-                                                </td>
-                                                <td class="font-roboto-serif">Aug 31, 2024</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <button class="btn btn-sm btn-outline-primary font-causten" onclick="openProject(1)">
-                                                            <i class="bi bi-eye me-1"></i>View
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-secondary font-causten" onclick="editProject(1)">
-                                                            <i class="bi bi-pencil me-1"></i>Edit
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-danger font-causten" onclick="deleteProject(1)">
-                                                            <i class="bi bi-trash me-1"></i>Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold font-causten">Winter Menu Planning</div>
-                                                    <small class="text-muted font-roboto-serif">Plan winter menu</small>
-                                                </td>
-                                                <td><span class="badge bg-secondary font-causten">Planning</span></td>
-                                                <td>
-                                                    <div class="progress" style="width: 100px;">
-                                                        <div class="progress-bar bg-secondary" style="width: 25%"></div>
-                                                    </div>
-                                                    <small class="text-muted font-roboto-serif">25%</small>
-                                                </td>
-                                                <td class="font-roboto-serif">Dec 15, 2024</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <button class="btn btn-sm btn-outline-primary font-causten" onclick="openProject(2)">
-                                                            <i class="bi bi-eye me-1"></i>View
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-secondary font-causten" onclick="editProject(2)">
-                                                            <i class="bi bi-pencil me-1"></i>Edit
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-danger font-causten" onclick="deleteProject(2)">
-                                                            <i class="bi bi-trash me-1"></i>Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-            
-            <script>
-                function showNewProject() {
-                    alert('New Project Modal - Feature coming soon!');
-                }
-                
-                function showTemplate() {
-                    alert('Project Template Modal - Feature coming soon!');
-                }
-                
-                function exportProjects() {
-                    alert('Exporting projects...');
-                }
-                
-                function openProject(projectId) {
-                    alert(`Opening project ${projectId}...`);
-                }
-                
-                function editProject(projectId) {
-                    alert(`Editing project ${projectId}...`);
-                }
-                
-                function deleteProject(projectId) {
-                    if (confirm(`Are you sure you want to delete project ${projectId}?`)) {
-                        alert(`Project ${projectId} deleted successfully!`);
-                    }
-                }
-            </script>
-        </body>
-        </html>
-        """)
-    except Exception as e:
-        print(f"Projects page error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>Projects Error</title></head>
-            <body>
-                <h1>Projects Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/dashboard">Back to Dashboard</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-# Include auth routes (already included above)
-
-# Include agent routes
-from foodxchange.routes.agent_routes import router as agent_router
-app.include_router(agent_router)
-
-# Include orchestrator routes
-from foodxchange.routes.orchestrator_routes import include_orchestrator_routes
-include_orchestrator_routes(app)
-
-# Include web scraper routes
-from foodxchange.routes.scraper_routes import include_scraper_routes
-include_scraper_routes(app)
-
-# Include RFQ routes
-from foodxchange.routes.rfq_routes import include_rfq_routes
-include_rfq_routes(app)
-
-# Include quote routes
-from foodxchange.routes.quote_routes import include_quote_routes
-include_quote_routes(app)
-
-# Include email routes
-from foodxchange.routes.email_routes import include_email_routes
-include_email_routes(app)
-
-# Include planning routes
-from foodxchange.routes.planning_routes import include_planning_routes
-include_planning_routes(app)
-
-# Include notification routes
-from foodxchange.routes.simple_notification_routes import include_notification_routes
-include_notification_routes(app)
-
-# Include order routes
-from foodxchange.routes.order_routes import router as order_router
-app.include_router(order_router)
-
-# Include file routes
-from foodxchange.routes.file_routes import router as file_router
-app.include_router(file_router)
-
-# Include supplier API routes
-from foodxchange.routes.supplier_api_routes import include_supplier_api_routes
-include_supplier_api_routes(app)
-
-# Include product routes
-from foodxchange.routes.product_routes import include_product_routes
-include_product_routes(app)
-
-# Include Bootstrap routes
-from foodxchange.routes.bootstrap_routes import router as bootstrap_router
-app.include_router(bootstrap_router)
-
-# Include AI test routes
-from foodxchange.routes.ai_test_routes import router as ai_test_router
-app.include_router(ai_test_router)
-
-# Include Email test routes
-from foodxchange.routes.email_test_routes import router as email_test_router
-app.include_router(email_test_router)
-
-# Include data mining routes
-from foodxchange.routes.data_mining_routes import include_data_mining_routes
-include_data_mining_routes(app)
-
-# Include notification routes (full version)
-from foodxchange.routes.notification_routes import include_notification_routes as include_full_notification_routes
-include_full_notification_routes(app)
-
-# Agent dashboard route
-@app.get("/agent-dashboard", response_class=HTMLResponse, name="agent_dashboard")
-async def agent_dashboard(request: Request, db: Session = Depends(get_db)):
-    try:
-        return HTMLResponse(content="""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>AI Agent Dashboard - foodXchange</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-        </head>
-        <body class="bg-light">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div>
-                                <h1 class="h3 mb-1 font-causten">AI Agent Dashboard</h1>
-                                <p class="text-muted mb-0 font-roboto-serif">Monitor and manage your AI agents</p>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary font-causten" onclick="startAllAgents()">
-                                    <i class="bi bi-play-circle me-2"></i>Start All
-                                </button>
-                                <button type="button" class="btn btn-outline-danger font-causten" onclick="stopAllAgents()">
-                                    <i class="bi bi-stop-circle me-2"></i>Stop All
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary font-causten" onclick="refreshStatus()">
-                                    <i class="bi bi-arrow-clockwise me-2"></i>Refresh
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title mb-0 font-causten">
-                                    <i class="bi bi-robot me-2"></i>Agent Management
-                                </h5>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="border-0 font-causten">Agent Name</th>
-                                                <th class="border-0 font-causten">Status</th>
-                                                <th class="border-0 font-causten">Type</th>
-                                                <th class="border-0 font-causten">Tasks</th>
-                                                <th class="border-0 font-causten">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold font-causten">Email Monitor Agent</div>
-                                                    <small class="text-muted font-roboto-serif">Monitors supplier emails</small>
-                                                </td>
-                                                <td><span class="badge bg-success font-causten">Active</span></td>
-                                                <td class="font-roboto-serif">Email Processing</td>
-                                                <td class="font-roboto-serif">45 tasks</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <button type="button" class="btn btn-sm btn-outline-success font-causten" onclick="startAgent('email')">
-                                                            <i class="bi bi-play me-1"></i>Start
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger font-causten" onclick="stopAgent('email')">
-                                                            <i class="bi bi-stop me-1"></i>Stop
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-info font-causten" onclick="viewLogs('email')">
-                                                            <i class="bi bi-file-text me-1"></i>Logs
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold font-causten">RFQ Processor</div>
-                                                    <small class="text-muted font-roboto-serif">Processes RFQ requests</small>
-                                                </td>
-                                                <td><span class="badge bg-success font-causten">Active</span></td>
-                                                <td class="font-roboto-serif">RFQ Processing</td>
-                                                <td class="font-roboto-serif">32 tasks</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <button type="button" class="btn btn-sm btn-outline-success font-causten" onclick="startAgent('rfq')">
-                                                            <i class="bi bi-play me-1"></i>Start
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger font-causten" onclick="stopAgent('rfq')">
-                                                            <i class="bi bi-stop me-1"></i>Stop
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-info font-causten" onclick="viewLogs('rfq')">
-                                                            <i class="bi bi-file-text me-1"></i>Logs
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold font-causten">Quote Analyzer</div>
-                                                    <small class="text-muted font-roboto-serif">Analyzes supplier quotes</small>
-                                                </td>
-                                                <td><span class="badge bg-danger font-causten">Inactive</span></td>
-                                                <td class="font-roboto-serif">Quote Analysis</td>
-                                                <td class="font-roboto-serif">0 tasks</td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <button type="button" class="btn btn-sm btn-outline-success font-causten" onclick="startAgent('quote')">
-                                                            <i class="bi bi-play me-1"></i>Start
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger font-causten" onclick="stopAgent('quote')">
-                                                            <i class="bi bi-stop me-1"></i>Stop
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-info font-causten" onclick="viewLogs('quote')">
-                                                            <i class="bi bi-file-text me-1"></i>Logs
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-            
-            <script>
-                // Debug function to test if JavaScript is working
-                console.log('Agent Dashboard JavaScript loaded successfully');
-                
-                // Agent management functions
-                function startAllAgents() {
-                    console.log('startAllAgents function called');
-                    if (confirm('Are you sure you want to start all agents?')) {
-                        alert('Starting all agents...');
-                    }
-                }
-                
-                function stopAllAgents() {
-                    console.log('stopAllAgents function called');
-                    if (confirm('Are you sure you want to stop all agents?')) {
-                        alert('Stopping all agents...');
-                    }
-                }
-                
-                function refreshStatus() {
-                    console.log('refreshStatus function called');
-                    alert('Refreshing agent status...');
-                    location.reload();
-                }
-                
-                function startAgent(agentType) {
-                    console.log('startAgent function called with:', agentType);
-                    alert(`Starting ${agentType} agent...`);
-                }
-                
-                function stopAgent(agentType) {
-                    console.log('stopAgent function called with:', agentType);
-                    if (confirm(`Are you sure you want to stop the ${agentType} agent?`)) {
-                        alert(`Stopping ${agentType} agent...`);
-                    }
-                }
-                
-                function viewLogs(agentType) {
-                    console.log('viewLogs function called with:', agentType);
-                    alert(`Opening logs for ${agentType} agent...`);
-                }
-                
-                // Test function to verify JavaScript is working
-                function testJavaScript() {
-                    alert('JavaScript is working!');
-                }
-                
-                // Add event listeners after page loads
-                document.addEventListener('DOMContentLoaded', function() {
-                    console.log('DOM loaded, adding event listeners');
-                    
-                    // Add click event listeners as backup
-                    document.querySelectorAll('button[onclick]').forEach(function(button) {
-                        button.addEventListener('click', function(e) {
-                            console.log('Button clicked:', this.textContent.trim());
-                        });
-                    });
-                });
-            </script>
-            
-            <!-- Test button to verify JavaScript -->
-            <div class="position-fixed bottom-0 end-0 p-3">
-                <button type="button" class="btn btn-warning" onclick="testJavaScript()">
-                    Test JS
-                </button>
-            </div>
-        </body>
-        </html>
-        """)
-    except Exception as e:
-        print(f"Agent dashboard error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>Agent Dashboard Error</title></head>
-            <body>
-                <h1>Agent Dashboard Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/dashboard">Back to Dashboard</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-# Simple agent status test endpoint (for debugging)
-@app.get("/api/agents/test-status")
-async def test_agent_status():
-    """Simple test endpoint to check if agent routes are working"""
-    return {
-        "status": "ok",
-        "message": "Agent routes are accessible",
-        "timestamp": datetime.utcnow().isoformat()
-    }
-
-# Add missing routes for screens returning 404
-@app.get("/quotes", response_class=HTMLResponse, name="quotes_list")
-async def quotes_list(request: Request):
-    """Quotes management page - Bootstrap styled"""
-    try:
-        quotes = [
-            {"id": 1, "rfq_id": "RFQ-001", "supplier": "ABC Foods", "amount": 15000, "status": "Pending"},
-            {"id": 2, "rfq_id": "RFQ-002", "supplier": "XYZ Suppliers", "amount": 18000, "status": "Accepted"},
-            {"id": 3, "rfq_id": "RFQ-003", "supplier": "Fresh Market", "amount": 22000, "status": "Rejected"},
-            {"id": 4, "rfq_id": "RFQ-004", "supplier": "Organic Co", "amount": 19500, "status": "Pending"}
-        ]
-        
-        return HTMLResponse(content=f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Quotes - foodXchange</title>
-            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-        </head>
-        <body class="bg-light">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div>
-                                <h1 class="h3 mb-1 font-causten">Quotes Management</h1>
-                                <p class="text-muted mb-0 font-roboto-serif">Review and manage supplier quotes for your RFQs</p>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-outline-primary font-causten" onclick="exportQuotes()">
-                                    <i class="bi bi-download me-2"></i>Export
-                                </button>
-                                <button type="button" class="btn btn-primary font-causten" onclick="newQuote()">
-                                    <i class="bi bi-plus-circle me-2"></i>New Quote
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Quote Stats Cards -->
-                        <div class="row g-4 mb-4">
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-clock text-warning fs-1"></i>
-                                        </div>
-                                        <h3 class="text-warning mb-1 font-causten">{len([q for q in quotes if q['status'] == 'Pending'])}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Pending Quotes</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-check-circle text-success fs-1"></i>
-                                        </div>
-                                        <h3 class="text-success mb-1 font-causten">{len([q for q in quotes if q['status'] == 'Accepted'])}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Accepted Quotes</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-x-circle text-danger fs-1"></i>
-                                        </div>
-                                        <h3 class="text-danger mb-1 font-causten">{len([q for q in quotes if q['status'] == 'Rejected'])}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Rejected Quotes</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex align-items-center justify-content-center mb-2">
-                                            <i class="bi bi-graph-up text-info fs-1"></i>
-                                        </div>
-                                        <h3 class="text-info mb-1 font-causten">${sum(q['amount'] for q in quotes):,}</h3>
-                                        <p class="text-muted mb-0 font-roboto-serif">Total Value</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quotes Table -->
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white border-bottom">
-                                <h5 class="card-title mb-0 font-causten">
-                                    <i class="bi bi-file-earmark-text me-2"></i>Quote List
-                                </h5>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="border-0 font-causten">Quote ID</th>
-                                                <th class="border-0 font-causten">RFQ ID</th>
-                                                <th class="border-0 font-causten">Supplier</th>
-                                                <th class="border-0 font-causten">Amount</th>
-                                                <th class="border-0 font-causten">Status</th>
-                                                <th class="border-0 font-causten">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {''.join(f'''
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold font-causten">#{quote['id']}</div>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-light text-dark font-roboto-serif">{quote['rfq_id']}</span>
-                                                </td>
-                                                <td>
-                                                    <div class="fw-bold font-causten">{quote['supplier']}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="fw-bold text-success font-causten">${quote['amount']:,}</div>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-{'success' if quote['status'] == 'Accepted' else 'warning' if quote['status'] == 'Pending' else 'danger'} font-causten">
-                                                        {quote['status']}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        <button type="button" class="btn btn-sm btn-outline-primary font-causten" onclick="viewQuote({quote['id']})">
-                                                            <i class="bi bi-eye me-1"></i>View
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-success font-causten" onclick="acceptQuote({quote['id']})">
-                                                            <i class="bi bi-check me-1"></i>Accept
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger font-causten" onclick="rejectQuote({quote['id']})">
-                                                            <i class="bi bi-x me-1"></i>Reject
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            ''' for quote in quotes)}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-            
-            <script>
-                function exportQuotes() {
-                    alert('Exporting quotes to Excel...');
-                }
-                
-                function newQuote() {
-                    alert('New Quote feature coming soon!');
-                }
-                
-                function viewQuote(quoteId) {
-                    alert(`Viewing quote ${quoteId}...`);
-                }
-                
-                function acceptQuote(quoteId) {
-                    if (confirm(`Are you sure you want to accept quote ${quoteId}?`)) {
-                        alert(`Quote ${quoteId} accepted successfully!`);
-                    }
-                }
-                
-                function rejectQuote(quoteId) {
-                    if (confirm(`Are you sure you want to reject quote ${quoteId}?`)) {
-                        alert(`Quote ${quoteId} rejected successfully!`);
-                    }
-                }
-            </script>
-        </body>
-        </html>
-        """)
-    except Exception as e:
-        print(f"Quotes page error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>Quotes Error</title></head>
-            <body>
-                <h1>Quotes Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/dashboard">Back to Dashboard</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-@app.get("/autopilot", response_class=HTMLResponse, name="autopilot_dashboard")
-async def autopilot_dashboard(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("autopilot_dashboard.html", {"request": request, "current_user": user})
-
-@app.get("/agent", response_class=HTMLResponse, name="agent_dashboard_alt")
-async def agent_dashboard_alt(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("agent_dashboard.html", {"request": request, "current_user": user})
-
-@app.get("/supplier-portal", response_class=HTMLResponse, name="supplier_portal")
-async def supplier_portal(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("supplier_portal.html", {"request": request, "current_user": user})
-
-@app.get("/email-intelligence", response_class=HTMLResponse, name="email_intelligence")
-async def email_intelligence(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("email_intelligence.html", {"request": request, "current_user": user})
-
-@app.get("/quote-comparison", response_class=HTMLResponse, name="quote_comparison_alt")
-async def quote_comparison_alt(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("quote_comparison.html", {"request": request, "current_user": user})
-
-# V0 Component routes
-@app.get("/v0/rfq-form", response_class=HTMLResponse, name="v0_rfq_form")
-async def v0_rfq_form(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("v0-components/sample-rfq-form.html", {"request": request, "current_user": user})
-
-@app.get("/v0/sample-rfq-form", response_class=HTMLResponse, name="v0_sample_rfq_form")
-async def v0_sample_rfq_form(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("v0-components/sample-rfq-form.html", {"request": request, "current_user": user})
-
-# Operator dashboard route - unified control center
-@app.get("/operator", response_class=HTMLResponse, name="operator_dashboard")
-async def operator_dashboard(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("operator_dashboard.html", {"request": request, "current_user": user})
-
-# Orchestrator dashboard route - automation control
-@app.get("/orchestrator", response_class=HTMLResponse, name="orchestrator_dashboard")
-async def orchestrator_dashboard(request: Request, db: Session = Depends(get_db)):
-    user = get_current_user_context(request, db)
-    if not user:
-        return RedirectResponse(url="/login", status_code=302)
-    
-    return templates.TemplateResponse("orchestrator_dashboard.html", {"request": request, "current_user": user})
-
-@app.get("/profile", response_class=HTMLResponse, name="user_profile")
-async def user_profile(request: Request, db: Session = Depends(get_db)):
-    try:
-        user = get_current_user_context(request, db)
-        if not user:
-            return RedirectResponse(url="/login", status_code=302)
-        
-        # Return a complete HTML profile page directly
-        return HTMLResponse(content=f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Profile - foodXchange</title>
-            
-            <!-- Favicon -->
-            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
-            <link rel="shortcut icon" type="image/png" href="/static/brand/logos/Favicon.png">
-            
-            <!-- Bootstrap CSS -->
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            
-            <!-- Bootstrap Icons -->
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            
-            <!-- Food Xchange Custom Fonts -->
-            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-            
-            <style>
-                :root {{
-                    --bs-primary: #4A90E2;
-                    --bs-secondary: #F97316;
-                    --bs-success: #10B981;
-                    --bs-info: #4A90E2;
-                    --bs-warning: #F97316;
-                    --bs-danger: #EF4444;
-                    --bs-light: #F8F9FA;
-                    --bs-dark: #212529;
-                }}
-                
-                body {{
-                    font-family: 'Causten', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    background-color: #f8f9fa;
-                }}
-                
-                .sidebar {{
-                    background: linear-gradient(135deg, var(--bs-primary) 0%, #357ABD 100%);
-                    min-height: 100vh;
-                }}
-                
-                .sidebar .nav-link {{
-                    color: rgba(255, 255, 255, 0.8);
-                    padding: 0.75rem 1rem;
-                    border-radius: 0.375rem;
-                    margin: 0.125rem 0;
-                }}
-                
-                .sidebar .nav-link:hover,
-                .sidebar .nav-link.active {{
-                    color: white;
-                    background-color: rgba(255, 255, 255, 0.1);
-                }}
-                
-                .profile-header {{
-                    background: linear-gradient(135deg, var(--bs-primary) 0%, #357ABD 100%);
-                    color: white;
-                }}
-                
-                .profile-avatar {{
-                    width: 120px;
-                    height: 120px;
-                    border: 4px solid white;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                }}
-            </style>
-        </head>
-        <body>
-            <!-- Navigation -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
-                <div class="container-fluid">
-                    <a class="navbar-brand d-flex align-items-center" href="/">
-                        <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" alt="foodXchange" height="32" class="me-2">
-                        <span class="text-primary">foodXchange</span>
-                    </a>
-                    
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-person-circle me-1"></i>{user["email"] if user else "User"}
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Main Content -->
-            <div class="container-fluid">
-                <div class="row">
-                    <!-- Sidebar -->
-                    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                        <div class="position-sticky pt-3">
-                            <ul class="nav flex-column">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/dashboard">
-                                        <i class="bi bi-speedometer2"></i>Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/rfq/new">
-                                        <i class="bi bi-file-earmark-plus"></i>New RFQ
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/rfqs">
-                                        <i class="bi bi-file-earmark-text"></i>RFQs
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/orders">
-                                        <i class="bi bi-cart"></i>Orders
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/suppliers">
-                                        <i class="bi bi-building"></i>Suppliers
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/products">
-                                        <i class="bi bi-box"></i>Products
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/quotes">
-                                        <i class="bi bi-currency-dollar"></i>Quotes
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/analytics">
-                                        <i class="bi bi-graph-up"></i>Analytics
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/projects">
-                                        <i class="bi bi-kanban"></i>Projects
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/agent-dashboard">
-                                        <i class="bi bi-robot"></i>AI Agent
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </nav>
-                    
-                    <!-- Main Content Area -->
-                    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                        <!-- Profile Header -->
-                        <div class="profile-header rounded-3 p-4 mb-4">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <div class="profile-avatar rounded-circle bg-white d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-person-fill text-primary" style="font-size: 3rem;"></i>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <h2 class="mb-1 font-causten">{user["email"] if user else "User"}</h2>
-                                    <p class="mb-0 font-roboto-serif opacity-75">Procurement Manager</p>
-                                </div>
-                                <div class="col-auto">
-                                    <button class="btn btn-outline-light font-causten" onclick="editProfile()">
-                                        <i class="bi bi-pencil me-2"></i>Edit Profile
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row g-4">
-                            <!-- Profile Information -->
-                            <div class="col-lg-8">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-person-circle me-2"></i>Profile Information
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label font-causten">Full Name</label>
-                                                <input type="text" class="form-control font-roboto-serif" value="John Doe" readonly>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label font-causten">Email Address</label>
-                                                <input type="email" class="form-control font-roboto-serif" value="{user["email"] if user else "user@example.com"}" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label font-causten">Phone Number</label>
-                                                <input type="tel" class="form-control font-roboto-serif" value="+1 (555) 123-4567" readonly>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label font-causten">Company</label>
-                                                <input type="text" class="form-control font-roboto-serif" value="ABC Restaurant Chain" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label font-causten">Job Title</label>
-                                            <input type="text" class="form-control font-roboto-serif" value="Procurement Manager" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label font-causten">Department</label>
-                                            <input type="text" class="form-control font-roboto-serif" value="Supply Chain & Procurement" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Account Settings -->
-                                <div class="card border-0 shadow-sm mt-4">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-gear me-2"></i>Account Settings
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label font-causten">Language</label>
-                                                <select class="form-select font-roboto-serif">
-                                                    <option value="en">English</option>
-                                                    <option value="es">Spanish</option>
-                                                    <option value="fr">French</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label font-causten">Time Zone</label>
-                                                <select class="form-select font-roboto-serif">
-                                                    <option value="UTC-5">Eastern Time (UTC-5)</option>
-                                                    <option value="UTC-6">Central Time (UTC-6)</option>
-                                                    <option value="UTC-7">Mountain Time (UTC-7)</option>
-                                                    <option value="UTC-8">Pacific Time (UTC-8)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label font-causten">Email Notifications</label>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="emailRfq" checked>
-                                                <label class="form-check-label font-roboto-serif" for="emailRfq">
-                                                    New RFQ notifications
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="emailQuotes" checked>
-                                                <label class="form-check-label font-roboto-serif" for="emailQuotes">
-                                                    Quote received notifications
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="emailOrders">
-                                                <label class="form-check-label font-roboto-serif" for="emailOrders">
-                                                    Order status updates
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Activity & Stats -->
-                            <div class="col-lg-4">
-                                <!-- Account Stats -->
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-graph-up me-2"></i>Account Activity
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <span class="font-roboto-serif">RFQs Created</span>
-                                            <span class="badge bg-primary font-causten">24</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <span class="font-roboto-serif">Orders Placed</span>
-                                            <span class="badge bg-success font-causten">12</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <span class="font-roboto-serif">Suppliers Connected</span>
-                                            <span class="badge bg-info font-causten">89</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="font-roboto-serif">Member Since</span>
-                                            <span class="text-muted font-roboto-serif">Jan 2024</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Recent Activity -->
-                                <div class="card border-0 shadow-sm mt-4">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-clock-history me-2"></i>Recent Activity
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="list-group list-group-flush">
-                                            <div class="list-group-item border-0 px-0">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-shrink-0">
-                                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                                            <i class="bi bi-file-earmark-plus text-white"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h6 class="mb-1 font-causten">Created RFQ</h6>
-                                                        <small class="text-muted font-roboto-serif">2 hours ago</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="list-group-item border-0 px-0">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-shrink-0">
-                                                        <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                                            <i class="bi bi-check-circle text-white"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h6 class="mb-1 font-causten">Order Confirmed</h6>
-                                                        <small class="text-muted font-roboto-serif">1 day ago</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="list-group-item border-0 px-0">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-shrink-0">
-                                                        <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                                            <i class="bi bi-building text-white"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h6 class="mb-1 font-causten">Added Supplier</h6>
-                                                        <small class="text-muted font-roboto-serif">3 days ago</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Quick Actions -->
-                                <div class="card border-0 shadow-sm mt-4">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-lightning me-2"></i>Quick Actions
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-outline-primary font-causten" onclick="changePassword()">
-                                                <i class="bi bi-key me-2"></i>Change Password
-                                            </button>
-                                            <button class="btn btn-outline-secondary font-causten" onclick="exportData()">
-                                                <i class="bi bi-download me-2"></i>Export Data
-                                            </button>
-                                            <button class="btn btn-outline-danger font-causten" onclick="deleteAccount()">
-                                                <i class="bi bi-trash me-2"></i>Delete Account
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </main>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <footer class="bg-light border-top mt-5">
-                <div class="container py-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="text-primary font-causten">foodXchange</h5>
-                            <p class="text-muted font-roboto-serif">B2B Food Marketplace Platform</p>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                            <p class="text-muted font-roboto-serif">&copy; 2024 foodXchange. All rights reserved.</p>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-
-            <!-- Bootstrap JS -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-            
-            <script>
-            function editProfile() {{
-                showToast('Edit profile feature coming soon!', 'info');
-            }}
-            
-            function changePassword() {{
-                showToast('Change password feature coming soon!', 'info');
-            }}
-            
-            function exportData() {{
-                showToast('Data export feature coming soon!', 'info');
-            }}
-            
-            function deleteAccount() {{
-                if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {{
-                    showToast('Account deletion feature coming soon!', 'warning');
-                }}
-            }}
-            
-            function showToast(message, type = 'info') {{
-                // Create toast element
-                const toastHtml = `
-                    <div class="toast align-items-center text-white bg-${{type === 'error' ? 'danger' : type}} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                ${{message}}
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    </div>
-                `;
-                
-                // Add to page
-                const toastContainer = document.getElementById('toastContainer') || createToastContainer();
-                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-                
-                // Show toast
-                const toastElement = toastContainer.lastElementChild;
-                const toast = new bootstrap.Toast(toastElement);
-                toast.show();
-                
-                // Remove after hidden
-                toastElement.addEventListener('hidden.bs.toast', () => {{
-                    toastElement.remove();
-                }});
-            }}
-            
-            function createToastContainer() {{
-                const container = document.createElement('div');
-                container.id = 'toastContainer';
-                container.className = 'toast-container position-fixed top-0 end-0 p-3';
-                container.style.zIndex = '1055';
-                document.body.appendChild(container);
-                return container;
-            }}
-            </script>
-        </body>
-        </html>
-        """)
-    except Exception as e:
-        print(f"Profile page error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>Profile Error</title></head>
-            <body>
-                <h1>Profile Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/dashboard">Back to Dashboard</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-@app.get("/logout", response_class=HTMLResponse, name="logout_page")
-async def logout_page(request: Request, db: Session = Depends(get_db)):
-    """Logout confirmation page"""
-    user = get_current_user_context(request, db)
-    return templates.TemplateResponse("logout.html", {"request": request, "current_user": user})
-
-@app.get("/system-status", response_class=HTMLResponse, name="system_status")
-async def system_status(request: Request):
-    """System status dashboard - no authentication required for monitoring"""
-    return templates.TemplateResponse("system_status.html", {"request": request})
-
-# Error handlers
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    """Handle HTTP exceptions with custom error pages"""
-    if request.url.path.startswith("/api/"):
-        # Return JSON for API endpoints
-        return {"detail": exc.detail, "status_code": exc.status_code}
-    
-    # Return HTML error page for web routes
-    return templates.TemplateResponse(
-        "error.html",
-        {
-            "request": request,
-            "status_code": exc.status_code,
-            "detail": exc.detail,
-            "current_user": None
-        },
-        status_code=exc.status_code
-    )
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle validation errors"""
-    logger.error(f"Validation error: {exc}")
-    if request.url.path.startswith("/api/"):
-        return {"detail": "Invalid request data", "errors": exc.errors()}
-    
-    return templates.TemplateResponse(
-        "error.html",
-        {
-            "request": request,
-            "status_code": 400,
-            "detail": "Invalid request data",
-            "current_user": None
-        },
-        status_code=400
-    )
-
-@app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
-    """Handle all other exceptions"""
-    logger.error(f"Unhandled exception: {exc}", exc_info=True)
-    if request.url.path.startswith("/api/"):
-        return {"detail": "Internal server error", "status_code": 500}
-    
-    return templates.TemplateResponse(
-        "error.html",
-        {
-            "request": request,
-            "status_code": 500,
-            "detail": "An unexpected error occurred",
-            "current_user": None
-        },
-        status_code=500
-    )
-
-# API Routes for RFQ Management
-@app.post("/api/rfqs/{rfq_id}/send")
-async def send_rfq_to_suppliers(
-    rfq_id: int,
-    request: Request,
-    supplier_ids: dict = Body(...),
-    db: Session = Depends(get_db)
-):
-    """Send a single RFQ to selected suppliers"""
-    try:
-        user = get_current_user_context(request, db)
-        if not user:
-            raise HTTPException(status_code=401, detail="Authentication required")
-        
-        # Here you would implement the actual logic to send RFQ to suppliers
-        # For now, we'll simulate success
-        return {"message": f"RFQ {rfq_id} sent to {len(supplier_ids.get('supplier_ids', []))} suppliers"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/rfqs/bulk-send")
-async def bulk_send_rfqs(
-    request: Request,
-    data: dict = Body(...),
-    db: Session = Depends(get_db)
-):
-    """Send multiple RFQs to selected suppliers"""
-    try:
-        user = get_current_user_context(request, db)
-        if not user:
-            raise HTTPException(status_code=401, detail="Authentication required")
-        
-        rfq_ids = data.get('rfq_ids', [])
-        supplier_ids = data.get('supplier_ids', [])
-        
-        if not rfq_ids:
-            raise HTTPException(status_code=400, detail="No RFQs selected")
-        
-        if not supplier_ids:
-            raise HTTPException(status_code=400, detail="No suppliers selected")
-        
-        # Here you would implement the actual logic to send multiple RFQs
-        # For now, we'll simulate success
-        return {
-            "message": f"Successfully sent {len(rfq_ids)} RFQs to {len(supplier_ids)} suppliers",
-            "rfqs_sent": len(rfq_ids),
-            "suppliers_targeted": len(supplier_ids)
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/rfqs/export")
-async def export_rfqs_to_excel(
-    request: Request,
-    status: str = Query(None),
-    db: Session = Depends(get_db)
-):
-    """Export RFQs to Excel file"""
-    try:
-        user = get_current_user_context(request, db)
-        if not user:
-            raise HTTPException(status_code=401, detail="Authentication required")
-        
-        # Sample RFQ data for export
-        rfqs_data = [
-            {
-                "RFQ Number": "RFQ-2024-001",
-                "Product": "Organic Rice",
-                "Quantity": "1000 kg",
-                "Delivery Date": "2024-02-15",
-                "Status": "Sent",
-                "Quotes Received": 3,
-                "Created Date": "2024-01-15"
-            },
-            {
-                "RFQ Number": "RFQ-2024-002",
-                "Product": "Fresh Vegetables",
-                "Quantity": "500 kg",
-                "Delivery Date": "2024-02-20",
-                "Status": "Draft",
-                "Quotes Received": 0,
-                "Created Date": "2024-01-16"
-            },
-            {
-                "RFQ Number": "RFQ-2024-003",
-                "Product": "Dairy Products",
-                "Quantity": "200 kg",
-                "Delivery Date": "2024-02-25",
-                "Status": "Quoted",
-                "Quotes Received": 5,
-                "Created Date": "2024-01-17"
-            }
-        ]
-        
-        # Filter by status if provided
-        if status:
-            rfqs_data = [rfq for rfq in rfqs_data if rfq["Status"].lower() == status.lower()]
-        
-        # Create Excel file using openpyxl
-        try:
-            from openpyxl import Workbook
-            from openpyxl.styles import Font, PatternFill, Alignment
-            import io
-            
-            # Create workbook and worksheet
-            wb = Workbook()
-            ws = wb.active
-            ws.title = "RFQs Export"
-            
-            # Define headers
-            headers = ["RFQ Number", "Product", "Quantity", "Delivery Date", "Status", "Quotes Received", "Created Date"]
-            
-            # Style for headers
-            header_font = Font(bold=True, color="FFFFFF")
-            header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
-            header_alignment = Alignment(horizontal="center", vertical="center")
-            
-            # Add headers
-            for col, header in enumerate(headers, 1):
-                cell = ws.cell(row=1, column=col, value=header)
-                cell.font = header_font
-                cell.fill = header_fill
-                cell.alignment = header_alignment
-            
-            # Add data
-            for row, rfq in enumerate(rfqs_data, 2):
-                for col, header in enumerate(headers, 1):
-                    ws.cell(row=row, column=col, value=rfq.get(header, ""))
-            
-            # Auto-adjust column widths
-            for column in ws.columns:
-                max_length = 0
-                column_letter = column[0].column_letter
-                for cell in column:
-                    try:
-                        if len(str(cell.value)) > max_length:
-                            max_length = len(str(cell.value))
-                    except:
-                        pass
-                adjusted_width = min(max_length + 2, 50)
-                ws.column_dimensions[column_letter].width = adjusted_width
-            
-            # Save to bytes
-            excel_file = io.BytesIO()
-            wb.save(excel_file)
-            excel_file.seek(0)
-            
-            # Return Excel file
-            return StreamingResponse(
-                io.BytesIO(excel_file.getvalue()),
-                media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                headers={"Content-Disposition": f"attachment; filename=rfqs_export_{datetime.now().strftime('%Y%m%d')}.xlsx"}
-            )
-            
-        except ImportError:
-            # Fallback to CSV if openpyxl is not available
-            import csv
-            import io
-            
-            output = io.StringIO()
-            writer = csv.writer(output)
-            
-            # Write headers
-            headers = ["RFQ Number", "Product", "Quantity", "Delivery Date", "Status", "Quotes Received", "Created Date"]
-            writer.writerow(headers)
-            
-            # Write data
-            for rfq in rfqs_data:
-                writer.writerow([rfq.get(header, "") for header in headers])
-            
-            output.seek(0)
-            
-            return StreamingResponse(
-                io.BytesIO(output.getvalue().encode('utf-8')),
-                media_type="text/csv",
-                headers={"Content-Disposition": f"attachment; filename=rfqs_export_{datetime.now().strftime('%Y%m%d')}.csv"}
-            )
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
-
-@app.get("/rfqs", response_class=HTMLResponse, name="rfqs_list")
-async def rfqs_list(request: Request, db: Session = Depends(get_db)):
-    try:
-        user = get_current_user_context(request, db)
-        if not user:
-            return RedirectResponse(url="/login", status_code=302)
-        
-        # Sample RFQ data for the template
-        rfqs = [
-            {
-                "id": 1,
-                "rfq_number": "RFQ-2024-001",
-                "product_name": "Organic Rice",
-                "category": "Grains",
-                "quantity": "1000 kg",
-                "delivery_date": datetime(2024, 2, 15),
-                "status": "sent",
-                "created_at": datetime(2024, 1, 15),
-                "quotes": [{"id": 1}, {"id": 2}, {"id": 3}]
-            },
-            {
-                "id": 2,
-                "rfq_number": "RFQ-2024-002",
-                "product_name": "Fresh Vegetables",
-                "category": "Produce",
-                "quantity": "500 kg",
-                "delivery_date": datetime(2024, 2, 20),
-                "status": "draft",
-                "created_at": datetime(2024, 1, 16),
-                "quotes": []
-            },
-            {
-                "id": 3,
-                "rfq_number": "RFQ-2024-003",
-                "product_name": "Dairy Products",
-                "category": "Dairy",
-                "quantity": "200 kg",
-                "delivery_date": datetime(2024, 2, 25),
-                "status": "quoted",
-                "created_at": datetime(2024, 1, 17),
-                "quotes": [{"id": 4}, {"id": 5}, {"id": 6}, {"id": 7}, {"id": 8}]
-            }
-        ]
-        
-        return templates.TemplateResponse("rfqs.html", {
-            "request": request, 
-            "rfqs": rfqs, 
-            "current_user": user
-        })
-    except Exception as e:
-        print(f"RFQs page error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>RFQs Error</title></head>
-            <body>
-                <h1>RFQs Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/dashboard">Back to Dashboard</a>
-            </body>
-        </html>
-        """, status_code=500)
-
-@app.get("/orders/{order_id}", response_class=HTMLResponse, name="view_order")
-async def view_order(request: Request, order_id: int, db: Session = Depends(get_db)):
-    try:
-        user = get_current_user_context(request, db)
-        if not user:
-            return RedirectResponse(url="/login", status_code=302)
-        
-        # Return a complete HTML order view page directly
-        return HTMLResponse(content=f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Order Details - foodXchange</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-        </head>
-        <body class="bg-light">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div>
-                                <h1 class="h3 mb-1 font-causten">Order Details</h1>
-                                <p class="text-muted mb-0 font-roboto-serif">Order #{order_id} - ORD-2024-{order_id:03d}</p>
-                            </div>
-                            <div class="btn-group">
-                                <a href="/orders" class="btn btn-outline-secondary font-causten">
-                                    <i class="bi bi-arrow-left me-1"></i>Back to Orders
-                                </a>
-                                <a href="/orders/{order_id}/edit" class="btn btn-primary font-causten">
-                                    <i class="bi bi-pencil me-1"></i>Edit Order
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-lg-8">
-                                <!-- Order Details Card -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-file-text me-2"></i>Order Information
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Order Number</label>
-                                                <div class="font-causten fw-bold">ORD-2024-{order_id:03d}</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Order Date</label>
-                                                <div class="font-causten">2024-01-15</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Status</label>
-                                                <div>
-                                                    <span class="badge bg-success font-causten">Delivered</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Total Amount</label>
-                                                <div class="font-causten fw-bold text-success">$2,500.00</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Product Details Card -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-box me-2"></i>Product Details
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Product Name</label>
-                                                <div class="font-causten fw-bold">Organic Rice</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Category</label>
-                                                <div class="font-causten">Grains</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Quantity</label>
-                                                <div class="font-causten">1,000 kg</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Unit Price</label>
-                                                <div class="font-causten">$2.50/kg</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Supplier Information Card -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-building me-2"></i>Supplier Information
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Supplier Name</label>
-                                                <div class="font-causten fw-bold">Mediterranean Delights</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Contact Person</label>
-                                                <div class="font-causten">Maria Rodriguez</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Email</label>
-                                                <div class="font-causten">maria@mediterraneandelights.com</div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label text-muted font-roboto-serif">Phone</label>
-                                                <div class="font-causten">+1 (555) 123-4567</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4">
-                                <!-- Order Timeline Card -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-clock-history me-2"></i>Order Timeline
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="timeline">
-                                            <div class="timeline-item">
-                                                <div class="timeline-marker bg-success"></div>
-                                                <div class="timeline-content">
-                                                    <h6 class="font-causten">Order Delivered</h6>
-                                                    <small class="text-muted font-roboto-serif">2024-01-20 02:15 PM</small>
-                                                    <p class="mb-0 font-roboto-serif">Order has been successfully delivered to warehouse</p>
-                                                </div>
-                                            </div>
-                                            <div class="timeline-item">
-                                                <div class="timeline-marker bg-info"></div>
-                                                <div class="timeline-content">
-                                                    <h6 class="font-causten">In Transit</h6>
-                                                    <small class="text-muted font-roboto-serif">2024-01-18 09:30 AM</small>
-                                                    <p class="mb-0 font-roboto-serif">Order shipped from supplier facility</p>
-                                                </div>
-                                            </div>
-                                            <div class="timeline-item">
-                                                <div class="timeline-marker bg-warning"></div>
-                                                <div class="timeline-content">
-                                                    <h6 class="font-causten">Order Confirmed</h6>
-                                                    <small class="text-muted font-roboto-serif">2024-01-15 10:30 AM</small>
-                                                    <p class="mb-0 font-roboto-serif">Order confirmed by supplier</p>
-                                                </div>
-                                            </div>
-                                            <div class="timeline-item">
-                                                <div class="timeline-marker bg-primary"></div>
-                                                <div class="timeline-content">
-                                                    <h6 class="font-causten">Order Placed</h6>
-                                                    <small class="text-muted font-roboto-serif">2024-01-15 10:00 AM</small>
-                                                    <p class="mb-0 font-roboto-serif">Order created in system</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Quick Actions Card -->
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-white">
-                                        <h5 class="card-title mb-0 font-causten">
-                                            <i class="bi bi-lightning me-2"></i>Quick Actions
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="d-grid gap-2">
-                                            <a href="/orders/{order_id}/edit" class="btn btn-outline-primary font-causten">
-                                                <i class="bi bi-pencil me-2"></i>Edit Order
-                                            </a>
-                                            <button class="btn btn-outline-success font-causten">
-                                                <i class="bi bi-printer me-2"></i>Print Invoice
-                                            </button>
-                                            <button class="btn btn-outline-info font-causten">
-                                                <i class="bi bi-envelope me-2"></i>Contact Supplier
-                                            </button>
-                                            <button class="btn btn-outline-warning font-causten">
-                                                <i class="bi bi-arrow-repeat me-2"></i>Reorder
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <style>
-            .timeline {{
-                position: relative;
-                padding-left: 30px;
-            }}
-            .timeline-item {{
-                position: relative;
-                margin-bottom: 25px;
-            }}
-            .timeline-marker {{
-                position: absolute;
-                left: -35px;
-                top: 5px;
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                border: 2px solid white;
-                box-shadow: 0 0 0 2px #dee2e6;
-            }}
-            .timeline-content {{
-                padding-left: 10px;
-            }}
-            .timeline-content h6 {{
-                margin-bottom: 5px;
-            }}
-            .timeline-content p {{
-                font-size: 0.875rem;
-            }}
-            </style>
-
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        </body>
-        </html>
-        """)
-    except Exception as e:
-        print(f"View order page error: {e}")
-        return HTMLResponse(content=f"""
-        <html>
-            <head><title>View Order Error</title></head>
-            <body>
-                <h1>View Order Error</h1>
-                <p>Error: {str(e)}</p>
-                <a href="/orders">Back to Orders</a>
             </body>
         </html>
         """, status_code=500)
@@ -4376,6 +3268,299 @@ async def view_product(request: Request, product_id: int):
             </body>
         </html>
         """, status_code=500)
+
+@app.get("/orders/{order_id}", response_class=HTMLResponse, name="view_order")
+async def view_order(request: Request, order_id: int):
+    """View order details page - Bootstrap styled"""
+    try:
+        # Sample order data
+        order = {
+            "id": order_id,
+            "order_number": f"ORD-2024-{order_id:03d}",
+            "order_date": "2024-01-15",
+            "status": "Delivered",
+            "total_amount": 2500.00,
+            "product_name": "Organic Rice",
+            "category": "Grains",
+            "quantity": 1000,
+            "unit": "kg",
+            "unit_price": 2.50,
+            "supplier_name": "Mediterranean Delights",
+            "contact_person": "Maria Rodriguez",
+            "email": "maria@mediterraneandelights.com",
+            "phone": "+1 (555) 123-4567",
+            "delivery_date": "2024-01-20",
+            "notes": "Premium quality organic rice for restaurant use"
+        }
+        
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Order Details - foodXchange</title>
+            <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        </head>
+        <body class="bg-light">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h3 mb-1 font-causten">Order Details</h1>
+                                <p class="text-muted mb-0 font-roboto-serif">{order['order_number']} - {order['product_name']}</p>
+                            </div>
+                            <div class="btn-group">
+                                <a href="/orders" class="btn btn-outline-secondary font-causten">
+                                    <i class="bi bi-arrow-left me-2"></i>Back to Orders
+                                </a>
+                                <a href="/orders/{order_id}/edit" class="btn btn-primary font-causten">
+                                    <i class="bi bi-pencil me-2"></i>Edit Order
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <!-- Order Information Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-file-text me-2"></i>Order Information
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Order Number</label>
+                                                <div class="font-causten fw-bold">{order['order_number']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Order Date</label>
+                                                <div class="font-causten">{order['order_date']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Status</label>
+                                                <div>
+                                                    <span class="badge bg-success font-causten">{order['status']}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Total Amount</label>
+                                                <div class="font-causten fw-bold text-success">${order['total_amount']:,.2f}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product Details Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-box me-2"></i>Product Details
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Product Name</label>
+                                                <div class="font-causten fw-bold">{order['product_name']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Category</label>
+                                                <div class="font-causten">{order['category']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Quantity</label>
+                                                <div class="font-causten">{order['quantity']:,} {order['unit']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Unit Price</label>
+                                                <div class="font-causten">${order['unit_price']:.2f}/{order['unit']}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Supplier Information Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-building me-2"></i>Supplier Information
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Supplier Name</label>
+                                                <div class="font-causten fw-bold">{order['supplier_name']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Contact Person</label>
+                                                <div class="font-causten">{order['contact_person']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Email</label>
+                                                <div class="font-causten">{order['email']}</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-muted font-roboto-serif">Phone</label>
+                                                <div class="font-causten">{order['phone']}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <!-- Order Timeline Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-clock-history me-2"></i>Order Timeline
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="timeline">
+                                            <div class="timeline-item">
+                                                <div class="timeline-marker bg-success"></div>
+                                                <div class="timeline-content">
+                                                    <h6 class="font-causten">Order Delivered</h6>
+                                                    <small class="text-muted font-roboto-serif">{order['delivery_date']} 02:15 PM</small>
+                                                    <p class="mb-0 font-roboto-serif">Order has been successfully delivered to warehouse</p>
+                                                </div>
+                                            </div>
+                                            <div class="timeline-item">
+                                                <div class="timeline-marker bg-info"></div>
+                                                <div class="timeline-content">
+                                                    <h6 class="font-causten">In Transit</h6>
+                                                    <small class="text-muted font-roboto-serif">2024-01-18 09:30 AM</small>
+                                                    <p class="mb-0 font-roboto-serif">Order shipped from supplier facility</p>
+                                                </div>
+                                            </div>
+                                            <div class="timeline-item">
+                                                <div class="timeline-marker bg-warning"></div>
+                                                <div class="timeline-content">
+                                                    <h6 class="font-causten">Order Confirmed</h6>
+                                                    <small class="text-muted font-roboto-serif">2024-01-15 10:30 AM</small>
+                                                    <p class="mb-0 font-roboto-serif">Order confirmed by supplier</p>
+                                                </div>
+                                            </div>
+                                            <div class="timeline-item">
+                                                <div class="timeline-marker bg-primary"></div>
+                                                <div class="timeline-content">
+                                                    <h6 class="font-causten">Order Placed</h6>
+                                                    <small class="text-muted font-roboto-serif">2024-01-15 10:00 AM</small>
+                                                    <p class="mb-0 font-roboto-serif">Order created in system</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Actions Card -->
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0 font-causten">
+                                            <i class="bi bi-lightning me-2"></i>Quick Actions
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-grid gap-2">
+                                            <a href="/orders/{order_id}/edit" class="btn btn-outline-primary font-causten">
+                                                <i class="bi bi-pencil me-2"></i>Edit Order
+                                            </a>
+                                            <a href="/orders/{order_id}/invoice" class="btn btn-outline-success font-causten">
+                                                <i class="bi bi-printer me-2"></i>Print Invoice
+                                            </a>
+                                            <button type="button" class="btn btn-outline-info font-causten" onclick="contactSupplier()">
+                                                <i class="bi bi-envelope me-2"></i>Contact Supplier
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning font-causten" onclick="reorder()">
+                                                <i class="bi bi-arrow-repeat me-2"></i>Reorder
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+            .timeline {
+                position: relative;
+                padding-left: 30px;
+            }
+            .timeline-item {
+                position: relative;
+                margin-bottom: 25px;
+            }
+            .timeline-marker {
+                position: absolute;
+                left: -35px;
+                top: 5px;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                border: 2px solid white;
+                box-shadow: 0 0 0 2px #dee2e6;
+            }
+            .timeline-content {
+                padding-left: 10px;
+            }
+            .timeline-content h6 {
+                margin-bottom: 5px;
+            }
+            .timeline-content p {
+                font-size: 0.875rem;
+            }
+            </style>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            
+            <script>
+                function contactSupplier() {
+                    alert('Contacting supplier...');
+                }
+                
+                function reorder() {
+                    if (confirm('Are you sure you want to reorder this item?')) {
+                        alert('Creating new order...');
+                    }
+                }
+            </script>
+        </body>
+        </html>
+        """)
+    except Exception as e:
+        print(f"View order page error: {e}")
+        return HTMLResponse(content=f"""
+        <html>
+            <head><title>Order Details Error</title></head>
+            <body>
+                <h1>Order Details Error</h1>
+                <p>Error: {str(e)}</p>
+                <a href="/orders">Back to Orders</a>
+            </body>
+        </html>
+        """, status_code=500)
+
+# Favicon route for better browser compatibility
+@app.get("/favicon.ico")
+async def favicon():
+    """Serve favicon for browser compatibility"""
+    return RedirectResponse(url="/static/brand/logos/Favicon.png")
+
+@app.get("/favicon.png")
+async def favicon_png():
+    """Serve favicon PNG for direct access"""
+    return RedirectResponse(url="/static/brand/logos/Favicon.png")
 
 if __name__ == "__main__":
     import uvicorn
