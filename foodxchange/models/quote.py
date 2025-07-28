@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Numeric, T
 from sqlalchemy.orm import relationship
 import datetime
 
-from app.models.base import Base
+from foodxchange.models.base import Base
 
 class Quote(Base):
     """Quote model for supplier responses to RFQs."""

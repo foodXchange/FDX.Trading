@@ -12,19 +12,19 @@ import random
 import string
 import json
 
-from app.database import get_db
-from app.auth import get_current_user, get_current_user_context
-from app.models.user import User
-from app.models.rfq import RFQ
-from app.models.supplier import Supplier
-from app.models.quote import Quote
-from app.models.company import Company
-from app.models.notification import Notification
-from app.services.simple_notification_service import NotificationService
-from app.services.email_service import EmailService
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user, get_current_user_context
+from foodxchange.models.user import User
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.quote import Quote
+from foodxchange.models.company import Company
+from foodxchange.models.notification import Notification
+from foodxchange.services.simple_notification_service import NotificationService
+from foodxchange.services.email_service import EmailService
 
 router = APIRouter(prefix="/api/rfqs", tags=["rfqs"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 
 def generate_rfq_number() -> str:

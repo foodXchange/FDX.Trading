@@ -13,9 +13,9 @@ import logging
 import asyncio
 from dataclasses import dataclass
 
-from app.config import get_settings
-from app.database import get_db
-from app.models.email import Email as EmailModel
+from foodxchange.config import get_settings
+from foodxchange.database import get_db
+from foodxchange.models.email import Email as EmailModel
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

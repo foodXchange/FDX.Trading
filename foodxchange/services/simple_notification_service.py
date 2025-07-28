@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
-from app.models.notification import Notification
-from app.models.user import User
+from foodxchange.models.notification import Notification
+from foodxchange.models.user import User
 
 
 class NotificationService:

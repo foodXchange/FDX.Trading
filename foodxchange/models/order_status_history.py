@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from app.models.base import Base
+from foodxchange.models.base import Base
 
 
 class OrderStatusHistory(Base):

@@ -7,8 +7,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
 
-from app.database import get_db
-from app.auth import (
+from foodxchange.database import get_db
+from foodxchange.auth import (
     authenticate_user, 
     create_access_token, 
     get_password_hash,
@@ -16,7 +16,7 @@ from app.auth import (
     SessionAuth,
     get_current_user_context
 )
-from app.models.user import User
+from foodxchange.models.user import User
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -116,7 +116,7 @@ def include_auth_routes(app):
     @app.get("/fullstory-test", response_class=HTMLResponse)
     async def fullstory_test_page(request: Request):
         """FullStory tracking test page"""
-        from app.templates import templates
+        from foodxchange.templates import templates
         return templates.TemplateResponse("fullstory_test.html", {"request": request})
     
     # Override the login POST route

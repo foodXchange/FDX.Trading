@@ -8,15 +8,15 @@ from sqlalchemy import func, case
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 
-from app.database import get_db
-from app.auth import get_current_user, get_current_user_context
-from app.models.user import User
-from app.models.rfq import RFQ
-from app.models.quote import Quote
-from app.models.supplier import Supplier
-from app.models.company import Company
-from app.schemas.quote import QuoteCreate, QuoteUpdate, QuoteResponse, QuoteComparison
-from app.services.notification_service import NotificationService
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user, get_current_user_context
+from foodxchange.models.user import User
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.quote import Quote
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.company import Company
+from foodxchange.schemas.quote import QuoteCreate, QuoteUpdate, QuoteResponse, QuoteComparison
+from foodxchange.services.notification_service import NotificationService
 
 router = APIRouter(prefix="/api/quotes", tags=["quotes"])
 notification_service = NotificationService()

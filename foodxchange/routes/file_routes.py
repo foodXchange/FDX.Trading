@@ -7,10 +7,10 @@ from typing import List, Optional
 import logging
 from datetime import datetime
 
-from app.database import get_db
-from app.auth import get_current_user
-from app.models.user import User
-from app.services.blob_storage_service import blob_storage_service
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user
+from foodxchange.models.user import User
+from foodxchange.services.blob_storage_service import blob_storage_service
 
 logger = logging.getLogger(__name__)
 
@@ -198,14 +198,14 @@ async def upload_quote_document(
     """Upload a document for a specific quote"""
     
     # Verify quote exists and belongs to user's company
-    from app.models.quote import Quote
+    from foodxchange.models.quote import Quote
     quote = db.query(Quote).filter_by(id=quote_id).first()
     
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
     
     # Check access (either buyer or supplier)
-    from app.models.rfq import RFQ
+    from foodxchange.models.rfq import RFQ
     rfq = db.query(RFQ).filter_by(id=quote.rfq_id).first()
     
     if rfq.company_id != current_user.company_id and quote.supplier_id != current_user.company_id:
@@ -261,7 +261,7 @@ async def upload_order_document(
     """Upload a document for a specific order"""
     
     # Verify order exists and user has access
-    from app.models.order import Order
+    from foodxchange.models.order import Order
     order = db.query(Order).filter_by(id=order_id).first()
     
     if not order:

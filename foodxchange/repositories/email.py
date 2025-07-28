@@ -1,9 +1,9 @@
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session, Query
 from sqlalchemy import and_, or_, desc, asc, func
-from app.models.email import Email, EmailTask
-from app.schemas.email import EmailCreate, EmailUpdate, EmailStatus, EmailClassification
-from app.repositories.base import BaseRepository
+from foodxchange.models.email import Email, EmailTask
+from foodxchange.schemas.email import EmailCreate, EmailUpdate, EmailStatus, EmailClassification
+from foodxchange.repositories.base import BaseRepository
 import logging
 
 logger = logging.getLogger(__name__)

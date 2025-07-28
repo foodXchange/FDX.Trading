@@ -5,10 +5,10 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict
 from datetime import datetime
 
-from app.database import get_db
-from app.services.email_notification_service import email_notification_service
-from app.services.notification_service import NotificationService
-from app.models.notification import NotificationType, NotificationPriority
+from foodxchange.database import get_db
+from foodxchange.services.email_notification_service import email_notification_service
+from foodxchange.services.notification_service import NotificationService
+from foodxchange.models.notification import NotificationType, NotificationPriority
 
 router = APIRouter(prefix="/api/email-test", tags=["Email Test"])
 

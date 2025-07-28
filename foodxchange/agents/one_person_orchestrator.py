@@ -11,11 +11,11 @@ from dataclasses import dataclass, field
 import json
 
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models.user import User
-from app.models.supplier import Supplier
-from app.models.rfq import RFQ
-from app.models.quote import Quote
+from foodxchange.database import get_db
+from foodxchange.models.user import User
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.quote import Quote
 
 logger = logging.getLogger(__name__)
 
@@ -255,7 +255,7 @@ class OnePersonOrchestrator:
                 
     async def _handle_email_monitoring(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """Handle email monitoring task"""
-        from app.agents.email_monitor_agent import SupplierEmailMonitorAgent
+        from foodxchange.agents.email_monitor_agent import SupplierEmailMonitorAgent
         
         agent = SupplierEmailMonitorAgent(self.db)
         

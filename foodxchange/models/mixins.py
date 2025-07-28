@@ -4,7 +4,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql import func
 from datetime import datetime
 import json
-from app.database import Base
+from foodxchange.database import Base
 
 class TimestampMixin:
     """Add created_at and updated_at timestamps"""

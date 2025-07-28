@@ -12,9 +12,9 @@ from dataclasses import dataclass, field
 import uuid
 from abc import ABC, abstractmethod
 
-from app.services.planning_service import PlanningService, Plan, Task, TaskType, PlanStatus
-from app.services.email_ai_service import EmailAIService
-from app.services.ai_service import ai_service
+from foodxchange.services.planning_service import PlanningService, Plan, Task, TaskType, PlanStatus
+from foodxchange.services.email_ai_service import EmailAIService
+from foodxchange.services.ai_service import ai_service
 
 logger = logging.getLogger(__name__)
 

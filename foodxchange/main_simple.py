@@ -13,8 +13,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 
-from app.database import get_db
-from app.auth import get_current_user_context
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user_context
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -32,10 +32,10 @@ app.add_middleware(
 )
 
 # Static files
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory="foodxchange/static"), name="static")
 
 # Templates
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 # Simple authentication check
 def get_current_user_context(request: Request, db: Session):

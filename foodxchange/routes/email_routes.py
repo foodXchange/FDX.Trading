@@ -10,14 +10,14 @@ from typing import List, Dict, Any
 import json
 from datetime import datetime
 
-from app.database import get_db
-from app.auth import get_current_user_context
-from app.models.email import Email
-from app.services.email_ai_service import email_ai_service
-from app.models.supplier import Supplier
-from app.models.quote import Quote
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user_context
+from foodxchange.models.email import Email
+from foodxchange.services.email_ai_service import email_ai_service
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.quote import Quote
 
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 def include_email_routes(app):
     """Include email-related routes in the main app"""

@@ -13,10 +13,10 @@ import chardet
 from io import StringIO
 
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models.supplier import Supplier
-from app.models.product import Product
-from app.config import get_settings
+from foodxchange.database import get_db
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.product import Product
+from foodxchange.config import get_settings
 
 # Azure translation service
 from azure.ai.translation.text import TextTranslationClient

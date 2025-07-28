@@ -10,10 +10,10 @@ from enum import Enum
 import asyncio
 import aiohttp
 
-from app.config import get_settings
+from foodxchange.config import get_settings
 
 try:
-    from app.agents.email_monitor_agent import EmailIntent
+    from foodxchange.agents.email_monitor_agent import EmailIntent
 except ImportError:
     # Define EmailIntent locally if import fails
     class EmailIntent(Enum):

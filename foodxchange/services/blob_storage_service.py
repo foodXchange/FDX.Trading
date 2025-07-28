@@ -16,7 +16,7 @@ except ImportError:
     AZURE_STORAGE_AVAILABLE = False
     print("Warning: azure-storage-blob package not installed. Run: pip install azure-storage-blob")
 
-from app.config import get_settings
+from foodxchange.config import get_settings
 
 logger = logging.getLogger(__name__)
 

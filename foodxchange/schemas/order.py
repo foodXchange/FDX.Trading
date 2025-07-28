@@ -6,7 +6,7 @@ from typing import Optional, List
 from datetime import datetime
 from enum import Enum
 
-from app.models.order import OrderStatus, PaymentStatus
+from foodxchange.models.order import OrderStatus, PaymentStatus
 
 
 class OrderItemBase(BaseModel):

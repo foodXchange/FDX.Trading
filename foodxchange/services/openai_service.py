@@ -17,7 +17,7 @@ except ImportError as e:
     print(f"Warning: openai package not installed. Error: {e}")
     print("Run: pip install openai")
 
-from app.config import get_settings
+from foodxchange.config import get_settings
 
 logger = logging.getLogger(__name__)
 

@@ -8,17 +8,17 @@ from sqlalchemy.orm import Session
 from typing import Dict, Any, List
 from datetime import datetime
 
-from app.database import get_db
-from app.auth import get_current_user, get_current_user_context
-from app.models.user import User
-from app.agents.one_person_orchestrator import (
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user, get_current_user_context
+from foodxchange.models.user import User
+from foodxchange.agents.one_person_orchestrator import (
     get_or_create_orchestrator, 
     TaskType, 
     TaskStatus
 )
 
 router = APIRouter(prefix="/api/orchestrator", tags=["orchestrator"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 
 @router.get("/status")

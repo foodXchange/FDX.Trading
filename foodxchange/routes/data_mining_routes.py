@@ -8,12 +8,12 @@ from datetime import datetime
 import os
 import shutil
 
-from app.database import get_db
-from app.models.user import User
-from app.models.supplier import Supplier
-from app.auth import get_current_user
-from app.agents.supplier_web_scraper_agent import web_scraping_service, SupplierWebScraperAgent
-from app.agents.csv_data_import_agent import CSVDataImportAgent, ExcelDataImportAgent
+from foodxchange.database import get_db
+from foodxchange.models.user import User
+from foodxchange.models.supplier import Supplier
+from foodxchange.auth import get_current_user
+from foodxchange.agents.supplier_web_scraper_agent import web_scraping_service, SupplierWebScraperAgent
+from foodxchange.agents.csv_data_import_agent import CSVDataImportAgent, ExcelDataImportAgent
 
 router = APIRouter(prefix="/api/data-mining", tags=["data-mining"])
 
@@ -238,7 +238,7 @@ async def get_scraping_status(
         raise HTTPException(status_code=404, detail="Supplier not found")
     
     # Get product count
-    from app.models.product import Product
+    from foodxchange.models.product import Product
     product_count = db.query(Product).filter(
         Product.supplier_id == supplier_id
     ).count()
@@ -267,7 +267,7 @@ async def search_products(
     """
     Search through scraped products
     """
-    from app.models.product import Product
+    from foodxchange.models.product import Product
     
     # Build query
     products_query = db.query(Product).filter(Product.is_active == True)
@@ -316,7 +316,7 @@ async def get_product_categories(
     """
     Get all available product categories
     """
-    from app.models.product import Product
+    from foodxchange.models.product import Product
     from sqlalchemy import func, distinct
     
     # Get distinct categories with counts
@@ -351,7 +351,7 @@ async def translate_products(
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    from app.models.product import Product
+    from foodxchange.models.product import Product
     
     # Count products needing translation
     products_to_translate = db.query(Product).filter(

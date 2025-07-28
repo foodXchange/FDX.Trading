@@ -6,7 +6,7 @@ import platform
 from datetime import datetime
 
 # Load all environment variables from .env and .env.blob files
-from app.load_all_env import load_all_env_files
+from foodxchange.load_all_env import load_all_env_files
 
 # Suppress cryptography warnings about 32-bit Python
 warnings.filterwarnings("ignore", message=".*cryptography.*32-bit.*64-bit.*")
@@ -65,15 +65,15 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy.orm import Session
 import psutil
 
-from app.database import get_db
-from app.auth import SessionAuth, get_current_user_context as get_user_context
+from foodxchange.database import get_db
+from foodxchange.auth import SessionAuth, get_current_user_context as get_user_context
 
 # Import and include authentication routes
-from app.routes.auth_routes import include_auth_routes
+from foodxchange.routes.auth_routes import include_auth_routes
 
 # Azure Monitor integration
 try:
-    from app.services.azure_monitor_service import azure_monitor
+    from foodxchange.services.azure_monitor_service import azure_monitor
     print("Azure Monitor service imported")
 except ImportError as e:
     print(f"Warning: Azure Monitor service not available: {e}")
@@ -112,10 +112,10 @@ app.add_middleware(
 )
 
 # Static files
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory="foodxchange/static"), name="static")
 
 # Templates
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 # Include authentication routes
 include_auth_routes(app)
@@ -240,7 +240,7 @@ async def health_detailed():
     """Detailed health check with system information"""
     try:
         # Test database connection
-        from app.database import get_db
+        from foodxchange.database import get_db
         from sqlalchemy import text
         db = next(get_db())
         db.execute(text("SELECT 1"))
@@ -261,7 +261,7 @@ async def health_advanced():
     """Advanced health check with comprehensive system status"""
     try:
         # Test database connection
-        from app.database import get_db
+        from foodxchange.database import get_db
         from sqlalchemy import text
         db = next(get_db())
         db.execute(text("SELECT 1"))
@@ -330,7 +330,7 @@ async def enhanced_health():
         
         # Database health check
         try:
-            from app.database import get_db
+            from foodxchange.database import get_db
             from sqlalchemy import text
             db = next(get_db())
             db.execute(text("SELECT 1"))
@@ -649,8 +649,8 @@ async def quote_comparison(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/login", status_code=302)
     
-    from app.models.rfq import RFQ
-    from app.models.quote import Quote
+    from foodxchange.models.rfq import RFQ
+    from foodxchange.models.quote import Quote
     
     # Get RFQ ID from query params
     rfq_id = request.query_params.get("rfq_id")
@@ -699,71 +699,71 @@ async def projects_list(request: Request, db: Session = Depends(get_db)):
 # Include auth routes (already included above)
 
 # Include agent routes
-from app.routes.agent_routes import router as agent_router
+from foodxchange.routes.agent_routes import router as agent_router
 app.include_router(agent_router)
 
 # Include orchestrator routes
-from app.routes.orchestrator_routes import include_orchestrator_routes
+from foodxchange.routes.orchestrator_routes import include_orchestrator_routes
 include_orchestrator_routes(app)
 
 # Include web scraper routes
-from app.routes.scraper_routes import include_scraper_routes
+from foodxchange.routes.scraper_routes import include_scraper_routes
 include_scraper_routes(app)
 
 # Include RFQ routes
-from app.routes.rfq_routes import include_rfq_routes
+from foodxchange.routes.rfq_routes import include_rfq_routes
 include_rfq_routes(app)
 
 # Include quote routes
-from app.routes.quote_routes import include_quote_routes
+from foodxchange.routes.quote_routes import include_quote_routes
 include_quote_routes(app)
 
 # Include email routes
-from app.routes.email_routes import include_email_routes
+from foodxchange.routes.email_routes import include_email_routes
 include_email_routes(app)
 
 # Include planning routes
-from app.routes.planning_routes import include_planning_routes
+from foodxchange.routes.planning_routes import include_planning_routes
 include_planning_routes(app)
 
 # Include notification routes
-from app.routes.simple_notification_routes import include_notification_routes
+from foodxchange.routes.simple_notification_routes import include_notification_routes
 include_notification_routes(app)
 
 # Include order routes
-from app.routes.order_routes import router as order_router
+from foodxchange.routes.order_routes import router as order_router
 app.include_router(order_router)
 
 # Include file routes
-from app.routes.file_routes import router as file_router
+from foodxchange.routes.file_routes import router as file_router
 app.include_router(file_router)
 
 # Include supplier API routes
-from app.routes.supplier_api_routes import include_supplier_api_routes
+from foodxchange.routes.supplier_api_routes import include_supplier_api_routes
 include_supplier_api_routes(app)
 
 # Include product routes
-from app.routes.product_routes import include_product_routes
+from foodxchange.routes.product_routes import include_product_routes
 include_product_routes(app)
 
 # Include Bootstrap routes
-from app.routes.bootstrap_routes import router as bootstrap_router
+from foodxchange.routes.bootstrap_routes import router as bootstrap_router
 app.include_router(bootstrap_router)
 
 # Include AI test routes
-from app.routes.ai_test_routes import router as ai_test_router
+from foodxchange.routes.ai_test_routes import router as ai_test_router
 app.include_router(ai_test_router)
 
 # Include Email test routes
-from app.routes.email_test_routes import router as email_test_router
+from foodxchange.routes.email_test_routes import router as email_test_router
 app.include_router(email_test_router)
 
 # Include data mining routes
-from app.routes.data_mining_routes import include_data_mining_routes
+from foodxchange.routes.data_mining_routes import include_data_mining_routes
 include_data_mining_routes(app)
 
 # Include notification routes (full version)
-from app.routes.notification_routes import include_notification_routes as include_full_notification_routes
+from foodxchange.routes.notification_routes import include_notification_routes as include_full_notification_routes
 include_full_notification_routes(app)
 
 # Agent dashboard route

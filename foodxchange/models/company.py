@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 import enum
 
-from app.models.base import Base
+from foodxchange.models.base import Base
 
 
 class CompanyType(enum.Enum):

@@ -6,12 +6,12 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import logging
 
-from app.models.notification import Notification, NotificationType, NotificationPriority
-from app.models.order import Order, OrderStatus
-from app.models.user import User
-from app.models.company import Company
-from app.models.rfq import RFQ
-from app.models.quote import Quote
+from foodxchange.models.notification import Notification, NotificationType, NotificationPriority
+from foodxchange.models.order import Order, OrderStatus
+from foodxchange.models.user import User
+from foodxchange.models.company import Company
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.quote import Quote
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class NotificationService:
     """Service for managing notifications"""
     
     def __init__(self):
-        from app.services.email_notification_service import email_notification_service
+        from foodxchange.services.email_notification_service import email_notification_service
         self.email_service = email_notification_service
         self.sms_service = None    # TODO: Initialize SMS service
         self.push_service = None   # TODO: Initialize push notification service
@@ -245,7 +245,7 @@ class NotificationService:
             ).all()
             
             # Get supplier company name  
-            from app.models.supplier import Supplier
+            from foodxchange.models.supplier import Supplier
             supplier = db.query(Supplier).filter_by(id=quote.supplier_id).first()
             supplier_name = supplier.company_name if supplier else "Supplier"
             

@@ -10,12 +10,12 @@ from dataclasses import dataclass
 import json
 
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models.supplier import Supplier
-from app.models.rfq import RFQ
-from app.models.user import User
-from app.config import get_settings
-from app.services.ai_service import ai_service
+from foodxchange.database import get_db
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.user import User
+from foodxchange.config import get_settings
+from foodxchange.services.ai_service import ai_service
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

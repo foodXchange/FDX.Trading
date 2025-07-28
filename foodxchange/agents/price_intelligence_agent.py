@@ -12,12 +12,12 @@ import statistics
 
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from app.database import get_db
-from app.models.quote import Quote
-from app.models.rfq import RFQ
-from app.models.product import Product
-from app.models.user import User
-from app.config import get_settings
+from foodxchange.database import get_db
+from foodxchange.models.quote import Quote
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.product import Product
+from foodxchange.models.user import User
+from foodxchange.config import get_settings
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

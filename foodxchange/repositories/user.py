@@ -1,9 +1,9 @@
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session, Query
 from sqlalchemy import and_, or_, desc, asc
-from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate, UserRole
-from app.repositories.base import BaseRepository
+from foodxchange.models.user import User
+from foodxchange.schemas.user import UserCreate, UserUpdate, UserRole
+from foodxchange.repositories.base import BaseRepository
 import bcrypt
 import logging
 

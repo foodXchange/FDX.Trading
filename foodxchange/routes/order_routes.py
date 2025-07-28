@@ -6,21 +6,21 @@ from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-from app.database import get_db
-from app.models.order import Order, OrderStatus, PaymentStatus
-from app.models.order_item import OrderItem
-from app.models.order_status_history import OrderStatusHistory
-from app.models.company import Company
-from app.models.user import User
-from app.schemas.order import (
+from foodxchange.database import get_db
+from foodxchange.models.order import Order, OrderStatus, PaymentStatus
+from foodxchange.models.order_item import OrderItem
+from foodxchange.models.order_status_history import OrderStatusHistory
+from foodxchange.models.company import Company
+from foodxchange.models.user import User
+from foodxchange.schemas.order import (
     OrderCreate, OrderUpdate, OrderResponse, OrderListResponse,
     OrderItemCreate, OrderItemUpdate, OrderItemResponse,
     OrderStatusUpdate, OrderStatusHistoryResponse
 )
-from app.auth import get_current_user
-from app.services.simple_notification_service import NotificationService
-from app.models.rfq import RFQ
-from app.models.quote import Quote
+from foodxchange.auth import get_current_user
+from foodxchange.services.simple_notification_service import NotificationService
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.quote import Quote
 
 
 router = APIRouter(prefix="/api/orders", tags=["orders"])

@@ -10,13 +10,13 @@ from datetime import datetime
 import json
 import uuid
 
-from app.database import get_db
-from app.auth import get_current_user
-from app.models.user import User
-from app.models.product import Product
-from app.models.supplier import Supplier
-from app.models.company import Company
-from app.services.simple_notification_service import NotificationService
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user
+from foodxchange.models.user import User
+from foodxchange.models.product import Product
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.company import Company
+from foodxchange.services.simple_notification_service import NotificationService
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 

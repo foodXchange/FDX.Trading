@@ -11,10 +11,10 @@ import json
 from dataclasses import dataclass, asdict
 
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models.supplier import Supplier
-from app.models.email import Email
-from app.config import get_settings
+from foodxchange.database import get_db
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.email import Email
+from foodxchange.config import get_settings
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

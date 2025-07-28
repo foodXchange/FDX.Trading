@@ -10,14 +10,14 @@ from typing import List, Dict, Any
 import json
 from datetime import datetime
 
-from app.database import get_db
-from app.auth import get_current_user_context
-from app.services.planning_service import planning_service, PlanStatus
-from app.services.agent_service import agent_orchestrator
-from app.services.email_ai_service import email_ai_service
-from app.models.email import Email
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user_context
+from foodxchange.services.planning_service import planning_service, PlanStatus
+from foodxchange.services.agent_service import agent_orchestrator
+from foodxchange.services.email_ai_service import email_ai_service
+from foodxchange.models.email import Email
 
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 def include_planning_routes(app):
     """Include planning and agent-related routes in the main app"""

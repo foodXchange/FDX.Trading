@@ -2,8 +2,8 @@ from typing import TypeVar, Generic, Type, Optional, List, Dict, Any, Union
 from sqlalchemy.orm import Session, Query
 from sqlalchemy import and_, or_, desc, asc
 from pydantic import BaseModel
-from app.models.base import Base
-from app.schemas.base import PaginationParams, SearchParams
+from foodxchange.models.base import Base
+from foodxchange.schemas.base import PaginationParams, SearchParams
 import logging
 
 logger = logging.getLogger(__name__)

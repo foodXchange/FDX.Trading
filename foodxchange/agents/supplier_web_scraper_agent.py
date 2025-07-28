@@ -13,10 +13,10 @@ from bs4 import BeautifulSoup
 import re
 
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models.supplier import Supplier
-from app.models.product import Product
-from app.config import get_settings
+from foodxchange.database import get_db
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.product import Product
+from foodxchange.config import get_settings
 
 # Azure services for translation and AI
 # Azure services for translation and AI
@@ -373,7 +373,7 @@ class SupplierWebScraperAgent:
             """
             
             # Call Azure OpenAI
-            from app.services.ai_service import ai_service
+            from foodxchange.services.ai_service import ai_service
             response = await ai_service.analyze_supplier_email({
                 'subject': 'Product Extraction',
                 'body': prompt

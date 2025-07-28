@@ -8,10 +8,10 @@ from typing import Dict, Any, List
 from datetime import datetime
 import asyncio
 
-from app.database import get_db
-from app.agents import agent_manager, AgentState
-from app.models.user import User
-from app.auth import get_current_user
+from foodxchange.database import get_db
+from foodxchange.agents import agent_manager, AgentState
+from foodxchange.models.user import User
+from foodxchange.auth import get_current_user
 
 router = APIRouter(prefix="/api/agents", tags=["agents"])
 
@@ -242,8 +242,8 @@ async def test_email_processing(
         raise HTTPException(status_code=403, detail="Admin access required")
         
     # Import services
-    from app.services.ai_service import analyze_email_with_ai
-    from app.agents.email_monitor_agent import SupplierEmailMonitorAgent
+    from foodxchange.services.ai_service import analyze_email_with_ai
+    from foodxchange.agents.email_monitor_agent import SupplierEmailMonitorAgent
     
     try:
         # Create temporary agent

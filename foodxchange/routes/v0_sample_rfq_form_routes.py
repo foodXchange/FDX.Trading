@@ -5,7 +5,7 @@ from typing import Optional
 import json
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 @router.get("/sample-rfq-form", response_class=HTMLResponse)
 async def sample_rfq_form_page(request: Request):

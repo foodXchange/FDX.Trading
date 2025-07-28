@@ -5,7 +5,7 @@ from typing import Dict, Any
 import json
 
 router = APIRouter(prefix="/bootstrap", tags=["bootstrap"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 
 # Bootstrap Routes
 @router.get("/rfq", response_class=HTMLResponse)

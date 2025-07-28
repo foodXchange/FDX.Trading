@@ -9,17 +9,17 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, date, timedelta
 import json
 
-from app.database import get_db
-from app.auth import get_current_user
-from app.models.user import User
-from app.models.rfq import RFQ
-from app.models.quote import Quote
-from app.models.supplier import Supplier
-from app.models.company import Company
-from app.models.product import Product
-from app.models.notification import Notification
-from app.services.simple_notification_service import NotificationService
-from app.services.email_service import EmailService
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user
+from foodxchange.models.user import User
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.quote import Quote
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.company import Company
+from foodxchange.models.product import Product
+from foodxchange.models.notification import Notification
+from foodxchange.services.simple_notification_service import NotificationService
+from foodxchange.services.email_service import EmailService
 
 router = APIRouter(prefix="/api/supplier", tags=["supplier-api"])
 

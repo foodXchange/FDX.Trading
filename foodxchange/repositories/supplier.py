@@ -1,9 +1,9 @@
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session, Query
 from sqlalchemy import and_, or_, desc, asc, func
-from app.models.supplier import Supplier, SupplierProduct, SupplierCertification
-from app.schemas.supplier import SupplierCreate, SupplierUpdate, SupplierStatus
-from app.repositories.base import BaseRepository
+from foodxchange.models.supplier import Supplier, SupplierProduct, SupplierCertification
+from foodxchange.schemas.supplier import SupplierCreate, SupplierUpdate, SupplierStatus
+from foodxchange.repositories.base import BaseRepository
 import logging
 
 logger = logging.getLogger(__name__)

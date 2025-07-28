@@ -6,12 +6,12 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 
-from app.database import get_db
-from app.auth import get_current_user
-from app.models.user import User
-from app.models.notification import Notification
-from app.services.notification_service import NotificationService
-from app.schemas.notification import (
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user
+from foodxchange.models.user import User
+from foodxchange.models.notification import Notification
+from foodxchange.services.notification_service import NotificationService
+from foodxchange.schemas.notification import (
     NotificationResponse,
     NotificationListResponse,
     MarkReadRequest,

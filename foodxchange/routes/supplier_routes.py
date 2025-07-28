@@ -8,18 +8,18 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-from app.database import get_db
-from app.auth import get_current_user, optional_user
-from app.models.user import User
-from app.models.rfq import RFQ
-from app.models.quote import Quote
-from app.models.supplier import Supplier
-from app.models.company import Company
-from app.schemas.supplier import SupplierResponse, SupplierUpdate
-from app.services.notification_service import NotificationService
+from foodxchange.database import get_db
+from foodxchange.auth import get_current_user, optional_user
+from foodxchange.models.user import User
+from foodxchange.models.rfq import RFQ
+from foodxchange.models.quote import Quote
+from foodxchange.models.supplier import Supplier
+from foodxchange.models.company import Company
+from foodxchange.schemas.supplier import SupplierResponse, SupplierUpdate
+from foodxchange.services.notification_service import NotificationService
 
 router = APIRouter(prefix="/supplier", tags=["supplier"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="foodxchange/templates")
 notification_service = NotificationService()
 
 

@@ -11,7 +11,7 @@ import logging
 from datetime import datetime
 from jinja2 import Template
 
-from app.config import get_settings
+from foodxchange.config import get_settings
 
 logger = logging.getLogger(__name__)
 

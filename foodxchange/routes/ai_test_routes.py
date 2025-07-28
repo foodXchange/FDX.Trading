@@ -1,7 +1,7 @@
 """AI Test Routes for Azure OpenAI Integration"""
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.services.openai_service import openai_service
+from foodxchange.services.openai_service import openai_service
 
 router = APIRouter(prefix="/api/ai-test", tags=["AI Test"])
 
