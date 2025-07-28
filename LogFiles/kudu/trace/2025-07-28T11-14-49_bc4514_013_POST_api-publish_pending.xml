@@ -1,0 +1,34 @@
+<step title="Incoming Request" date="2025-07-28T11:14:49.255" instance="bc4514" url="/api/publish?type=zip&amp;restart=True" method="POST" type="request" pid="780,1,15" Accept="*/*" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.75.0 (MSI)" Accept-Encoding="gzip, deflate" Authorization="Bas..." Cache-Control="no-cache" Content-Type="application/octet-stream" Cookie="ARRAffinity=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65; ARRAffinitySameSite=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65" Content-Length="5680204" x-ms-client-request-id="0dcafa42-6ba4-11f0-8c19-8cf8c504cf6c" x-ms-artifact-checksum="611c0bdf3c87b6078d83f89dfb8a5c158adb4579168b6c211da4ae5ea92c21c5" X-ARR-LOG-ID="0dcafa42-6ba4-11f0-8c19-8cf8c504cf6c" CLIENT-IP="95.35.178.122:56848" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?type=zip&amp;restart=True" X-Client-IP="95.35.178.122" X-Client-Port="56848" >
+  <step title="OneDeploy" date="2025-07-28T11:14:49.309" >
+    <step title="None repository commit" date="2025-07-28T11:14:49.329" >
+      <step title="Commit id: 2d9b594a-ff02-4e2a-aa5f-fe19172ddec6" date="2025-07-28T11:14:49.331" Message="N/A" AuthorName="N/A" AuthorEmail="N/A" /><!-- duration: 2ms -->
+    </step><!-- duration: 5ms -->
+    <step title="Starting PushDeployAsync" date="2025-07-28T11:14:49.336" /><!-- duration: 3ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/4ade14eb-c010-4eb6-b4ff-84e8b53d3450.zip" date="2025-07-28T11:14:49.359" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/4ade14eb-c010-4eb6-b4ff-84e8b53d3450.zip" date="2025-07-28T11:14:49.387" /><!-- duration: 12ms -->
+    </step><!-- duration: 2483ms -->
+    <step title="Attempting to fetch target branch HEAD" date="2025-07-28T11:14:51.864" /><!-- duration: 2ms -->
+    <step title="Acquiring Deployment Lock" date="2025-07-28T11:14:51.871" /><!-- duration: 1ms -->
+    <step title="Acquired Deployment Lock" date="2025-07-28T11:14:51.916" /><!-- duration: 1ms -->
+    <step title="Performing fetch based deployment" date="2025-07-28T11:14:51.922" >
+      <step title="Creating temporary deployment" date="2025-07-28T11:14:51.930" /><!-- duration: 207ms -->
+      <step title="Releasing Deployment Lock" date="2025-07-28T11:14:53.319" /><!-- duration: 8ms -->
+      <step title="Cleaning up temp folders from previous zip deployments and extracting pushed zip file /tmp/zipdeploy/4ade14eb-c010-4eb6-b4ff-84e8b53d3450.zip (5.42 MB) to /tmp/zipdeploy/extracted" date="2025-07-28T11:14:53.357" >
+        <step title="ChmodRecursive Process exited with total time taken in ms: 129" date="2025-07-28T11:14:54.056" /><!-- duration: 9ms -->
+      </step><!-- duration: 738ms -->
+      <step title="None repository commit" date="2025-07-28T11:14:54.105" >
+        <step title="Commit id: 2d9b594a-ff02-4e2a-aa5f-fe19172ddec6" date="2025-07-28T11:14:54.107" Message="OneDeploy" AuthorName="N/A" AuthorEmail="N/A" /><!-- duration: 2ms -->
+      </step><!-- duration: 6ms -->
+      <step title="Deployment timer started" date="2025-07-28T11:14:56.124" >
+        <step title="DeploymentManager.Deploy(id:2d9b594a-ff02-4e2a-aa5f-fe19172ddec6)" date="2025-07-28T11:14:56.127" >
+          <step title="Collecting changeset information" date="2025-07-28T11:14:56.152" /><!-- duration: 76ms -->
+          <step title="Updating submodules" date="2025-07-28T11:14:56.231" /><!-- duration: 1125ms -->
+          <step title="Determining deployment builder" date="2025-07-28T11:14:57.692" >
+            <step title="Builder is OryxBuilder" date="2025-07-28T11:14:57.722" /><!-- duration: 8ms -->
+          </step><!-- duration: 48ms -->
+          <step title="PreDeployment: context.CleanOutputPath False" date="2025-07-28T11:14:57.810" >
+            <step title="PreDeployment: context.OutputPath /home/site/wwwroot" date="2025-07-28T11:14:57.951" >
+              <step title="Building" date="2025-07-28T11:14:58.113" >
+                <step title="Executing external process" date="2025-07-28T11:14:58.708" type="process" path="bash" arguments="-c &quot;oryx build /tmp/zipdeploy/extracted -o /home/site/wwwroot --platform python --platform-version 3.12 -p virtualenv_name=antenv --log-file /tmp/build-debug.log  -i /tmp/8ddcdc7fca7c390 --compress-destination-dir | tee /tmp/oryx-build.log ; exit $PIPESTATUS &quot;" >
+                  <step title="Cpu: gzip(853,6.620s)+tar(852,2.300s)+build.sh(841,0.030s)+oryx(822,6.470s)+tee(823,0.000s)+bash(821,0.000s)=total(15.390s)" date="2025-07-28T11:16:11.452" /><!-- duration: 79ms -->
+                  <step title="bash: no io activity for 61s, prev-cpu=-1.000s, current-cpu=15.390s" date="2025-07-28T11:16:11.559" /><!-- duration: 21ms -->

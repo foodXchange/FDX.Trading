@@ -1,0 +1,11 @@
+<step title="Incoming Request" date="2025-07-27T17:11:43.304" instance="bc4514" url="/api/deployments/latest?deployer=OneDeploy&amp;time=2025-07-27_17-06-06Z" method="GET" type="request" pid="769,1,25" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_335c63d0a8d6cc1036c0d3c7041d5a53040a2ec8400307247c0001f81f165fcf" Authorization="Bas..." Content-Type="application/json; charset=utf-8" Cookie="ARRAffinity=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65;Path=/;HttpOnly;Secure;Domain=foodxchange-app.scm.azurewebsites.net; ARRAffinitySameSite=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65;Path=/;HttpOnly;SameSite=None;Secure;Domain=foodxchange-app.scm.azurewebsites.net" Content-Length="0" X-ARR-LOG-ID="a0815444-1a90-4058-be90-3cf0761080e6" CLIENT-IP="4.227.174.177:43018" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest?deployer=OneDeploy&amp;time=2025-07-27_17-06-06Z" X-Client-IP="4.227.174.177" X-Client-Port="43018" >
+  <step title="Cleanup Xml Logs" date="2025-07-27T17:11:43.306" >
+    <step title="Cleanup Infos" date="2025-07-27T17:11:43.377" totalFiles="1810" totalCleanup="1650" /><!-- duration: 29ms -->
+  </step><!-- duration: 120ms -->
+  <step title="DeploymentService.GetResult" date="2025-07-27T17:11:43.462" >
+    <step title="DeploymentService.GetLatestDeployment" date="2025-07-27T17:11:43.463" >
+      <step title="DeploymentManager.GetResults" date="2025-07-27T17:11:43.479" /><!-- duration: 984ms -->
+    </step><!-- duration: 1010ms -->
+  </step><!-- duration: 1013ms -->
+  <step title="Outgoing response" date="2025-07-27T17:11:44.484" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 8ms -->
+</step><!-- duration: 1190ms -->

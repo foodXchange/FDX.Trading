@@ -1,0 +1,17 @@
+<step title="Incoming Request" date="2025-07-25T09:59:49.028" instance="bc4514" url="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22b08cf915c3a82c6641551aa2f06b026c3bf72db9%22%2C%22repoName%22%3A%22foodXchange%2FFDX.Trading%22%2C%22actor%22%3A%22foodXchange%22%2C%22slotName%22%3A%22Production%22%2C%22commitMessage%22%3A%22Add%20or%20update%20the%20Azure%20App%20Service%20build%20and%20deployment%20workflow%20config%22%7D" method="POST" type="request" pid="768,1,5" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_335c63d0a8d6cc1036c0d3c7041d5a53040a2ec8400307247c0001f81f165fcf" Authorization="Bea..." Content-Type="application/octet-stream" Cookie="ARRAffinity=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65;Path=/;HttpOnly;Secure;Domain=foodxchange-app.scm.azurewebsites.net; ARRAffinitySameSite=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65;Path=/;HttpOnly;SameSite=None;Secure;Domain=foodxchange-app.scm.azurewebsites.net" Transfer-Encoding="chunked" X-ARR-LOG-ID="c6fc2b86-abaf-445a-b640-0f5b5ca443b8" CLIENT-IP="68.220.62.240:23488" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22b08cf915c3a82c6641551aa2f06b026c3bf72db9%22%2C%22repoName%22%3A%22foodXchange%2FFDX.Trading%22%2C%22actor%22%3A%22foodXchange%22%2C%22slotName%22%3A%22Production%22%2C%22commitMessage%22%3A%22Add%20or%20update%20the%20Azure%20App%20Service%20build%20and%20deployment%20workflow%20config%22%7D" X-Client-IP="68.220.62.240" X-Client-Port="23488" >
+  <step title="Cleanup Xml Logs" date="2025-07-25T09:59:49.036" /><!-- duration: 8ms -->
+  <step title="OneDeploy" date="2025-07-25T09:59:49.285" >
+    <step title="None repository commit" date="2025-07-25T09:59:49.296" >
+      <step title="Commit id: 9f950af1-8caa-4601-9b4f-4faa7bc0d5f1" date="2025-07-25T09:59:49.298" Message="N/A" AuthorName="N/A" AuthorEmail="N/A" /><!-- duration: 1ms -->
+    </step><!-- duration: 4ms -->
+    <step title="Starting PushDeployAsync" date="2025-07-25T09:59:49.302" /><!-- duration: 1ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/e2be45c7-6d10-46db-ab96-17f28dc42bac.zip" date="2025-07-25T09:59:49.314" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/e2be45c7-6d10-46db-ab96-17f28dc42bac.zip" date="2025-07-25T09:59:49.317" /><!-- duration: 1ms -->
+    </step><!-- duration: 26453ms -->
+    <step title="Start deployment in the background" date="2025-07-25T10:00:15.778" >
+      <step title="Acquiring Deployment Lock" date="2025-07-25T10:00:15.805" /><!-- duration: 7ms -->
+      <step title="Acquired Deployment Lock" date="2025-07-25T10:00:15.894" /><!-- duration: 2ms -->
+    </step><!-- duration: 244ms -->
+  </step><!-- duration: 26746ms -->
+  <step title="Outgoing response" date="2025-07-25T10:00:16.068" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 10ms -->
+</step><!-- duration: 27080ms -->

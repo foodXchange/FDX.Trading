@@ -1,0 +1,28 @@
+2025-07-28T13:41:09    Error occurred, type: error, text: Unable to open /home/LogFiles/kudu/trace/2025-07-28T11-14-00_bc4514_004_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_docker.log_200_4s.xml, System.IO.FileNotFoundException: Could not find file '/home/LogFiles/kudu/trace/2025-07-28T11-14-00_bc4514_004_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_docker.log_200_4s.xml'.
+File name: '/home/LogFiles/kudu/trace/2025-07-28T11-14-00_bc4514_004_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_docker.log_200_4s.xml'
+   at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.FileInfo.OpenRead()
+   at Kudu.Core.Infrastructure.ZipArchiveExtensions.AddFileAsync(ZipArchive zipArchive, FileInfoBase file, ITracer tracer, String directoryNameInArchive) in /tmp/KuduLite/Kudu.Core/Infrastructure/ZipArchiveExtensions.cs:line 165
+2025-07-28T13:41:09    Error occurred, type: error, text: Unable to open /home/LogFiles/kudu/trace/2025-07-28T11-14-07_bc4514_006_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_scm_docker.log_200_0s.xml, System.IO.FileNotFoundException: Could not find file '/home/LogFiles/kudu/trace/2025-07-28T11-14-07_bc4514_006_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_scm_docker.log_200_0s.xml'.
+File name: '/home/LogFiles/kudu/trace/2025-07-28T11-14-07_bc4514_006_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_scm_docker.log_200_0s.xml'
+   at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.FileInfo.OpenRead()
+   at Kudu.Core.Infrastructure.ZipArchiveExtensions.AddFileAsync(ZipArchive zipArchive, FileInfoBase file, ITracer tracer, String directoryNameInArchive) in /tmp/KuduLite/Kudu.Core/Infrastructure/ZipArchiveExtensions.cs:line 165
+2025-07-28T13:41:09    Error occurred, type: error, text: Unable to open /home/LogFiles/kudu/trace/2025-07-28T11-14-16_bc4514_008_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_docker.log_200_0s.xml, System.IO.FileNotFoundException: Could not find file '/home/LogFiles/kudu/trace/2025-07-28T11-14-16_bc4514_008_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_docker.log_200_0s.xml'.
+File name: '/home/LogFiles/kudu/trace/2025-07-28T11-14-16_bc4514_008_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_docker.log_200_0s.xml'
+   at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.FileInfo.OpenRead()
+   at Kudu.Core.Infrastructure.ZipArchiveExtensions.AddFileAsync(ZipArchive zipArchive, FileInfoBase file, ITracer tracer, String directoryNameInArchive) in /tmp/KuduLite/Kudu.Core/Infrastructure/ZipArchiveExtensions.cs:line 165
+2025-07-28T13:41:09    Error occurred, type: error, text: Unable to open /home/LogFiles/kudu/trace/2025-07-28T11-14-17_bc4514_010_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_scm_docker.log_200_0s.xml, System.IO.FileNotFoundException: Could not find file '/home/LogFiles/kudu/trace/2025-07-28T11-14-17_bc4514_010_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_scm_docker.log_200_0s.xml'.
+File name: '/home/LogFiles/kudu/trace/2025-07-28T11-14-17_bc4514_010_POST_api-vfs-LogFiles-2025_07_28_lw1sdlwk0004AN_default_scm_docker.log_200_0s.xml'
+   at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.FileInfo.OpenRead()
+   at Kudu.Core.Infrastructure.ZipArchiveExtensions.AddFileAsync(ZipArchive zipArchive, FileInfoBase file, ITracer tracer, String directoryNameInArchive) in /tmp/KuduLite/Kudu.Core/Infrastructure/ZipArchiveExtensions.cs:line 165

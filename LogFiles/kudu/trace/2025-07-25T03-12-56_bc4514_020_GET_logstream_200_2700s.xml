@@ -1,0 +1,6 @@
+<step title="Incoming Request" date="2025-07-25T03:12:56.436" instance="bc4514" url="/logstream" method="GET" type="request" pid="770,1,40" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.74.0 (MSI)" Accept-Encoding="identity" Authorization="Bas..." x-ms-client-request-id="0961a903-6905-11f0-a526-8cf8c504cf6c" X-ARR-LOG-ID="0961a903-6905-11f0-a526-8cf8c504cf6c" CLIENT-IP="85.65.236.169:60771" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/logstream" X-Client-IP="85.65.236.169" X-Client-Port="60771" >
+  <step title="Cleanup Xml Logs" date="2025-07-25T03:12:56.473" /><!-- duration: 49ms -->
+  <step title="LogStreamHandlerMiddleware.Invoke" date="2025-07-25T03:12:56.551" /><!-- duration: 188ms -->
+  <step title="Error occurred" date="2025-07-25T03:57:56.849" type="error" text="LogStreamManager: ProcessRequest end" /><!-- duration: 4ms -->
+  <step title="Outgoing response" date="2025-07-25T03:57:56.899" type="response" statusCode="200" statusText="OK" /><!-- duration: 9ms -->
+</step><!-- duration: 2700475ms -->

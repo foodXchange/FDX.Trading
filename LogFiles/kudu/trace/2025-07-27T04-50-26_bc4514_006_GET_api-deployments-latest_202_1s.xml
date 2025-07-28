@@ -1,0 +1,11 @@
+<step title="Incoming Request" date="2025-07-27T04:50:26.516" instance="bc4514" url="/api/deployments/latest" method="GET" type="request" pid="768,1,17" Accept="*/*" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.75.0 (MSI)" Accept-Encoding="gzip, deflate" Authorization="Bas..." x-ms-client-request-id="2abe21ce-6aa5-11f0-a92b-8cf8c504cf6c" X-ARR-LOG-ID="2abe21ce-6aa5-11f0-a92b-8cf8c504cf6c" CLIENT-IP="217.132.154.154:56894" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest" X-Client-IP="217.132.154.154" X-Client-Port="56894" >
+  <step title="Cleanup Xml Logs" date="2025-07-27T04:50:26.518" >
+    <step title="Cleanup Infos" date="2025-07-27T04:50:26.528" totalFiles="860" totalCleanup="700" /><!-- duration: 2ms -->
+  </step><!-- duration: 14ms -->
+  <step title="DeploymentService.GetResult" date="2025-07-27T04:50:26.586" >
+    <step title="DeploymentService.GetLatestDeployment" date="2025-07-27T04:50:26.588" >
+      <step title="DeploymentManager.GetResults" date="2025-07-27T04:50:26.594" /><!-- duration: 508ms -->
+    </step><!-- duration: 520ms -->
+  </step><!-- duration: 531ms -->
+  <step title="Outgoing response" date="2025-07-27T04:50:27.120" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 1ms -->
+</step><!-- duration: 611ms -->

@@ -1,0 +1,17 @@
+<step title="Incoming Request" date="2025-07-28T07:37:06.944" instance="bc4514" url="/api/zipdeploy?isAsync=true" method="POST" type="request" pid="768,1,5" Accept="*/*" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.75.0 (MSI)" Accept-Encoding="gzip, deflate" Authorization="Bas..." Cache-Control="no-cache" Content-Type="application/octet-stream" Cookie="ARRAffinity=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65; ARRAffinitySameSite=bc45149c0fc23967cdceb8859c6de398da9b0c4a4d96e0fa4231363f21476d65" Content-Length="5666609" x-ms-client-request-id="a383dc23-6b85-11f0-8776-8cf8c504cf6c" x-ms-artifact-checksum="a2d544aa2015b9b54b3662328f6ed09ab5f7cd1135d032e68c21ddbb286900f0" X-ARR-LOG-ID="a383dc23-6b85-11f0-8776-8cf8c504cf6c" CLIENT-IP="95.35.178.122:62870" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/zipdeploy?isAsync=true" X-Client-IP="95.35.178.122" X-Client-Port="62870" >
+  <step title="ZipPushDeploy" date="2025-07-28T07:37:07.149" >
+    <step title="ZipDeploy. Extract zip. Remote build." date="2025-07-28T07:37:07.167" /><!-- duration: 1ms -->
+    <step title="None repository commit" date="2025-07-28T07:37:07.178" >
+      <step title="Commit id: cbfa33bf-7276-441f-8c77-d8675b44c468" date="2025-07-28T07:37:07.197" Message="N/A" AuthorName="N/A" AuthorEmail="N/A" /><!-- duration: 8ms -->
+    </step><!-- duration: 29ms -->
+    <step title="Starting PushDeployAsync" date="2025-07-28T07:37:07.225" /><!-- duration: 2ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/3dc1f7f1-8e98-4f5d-bd9a-ef1d106be208.zip" date="2025-07-28T07:37:07.272" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/3dc1f7f1-8e98-4f5d-bd9a-ef1d106be208.zip" date="2025-07-28T07:37:07.275" /><!-- duration: 18ms -->
+    </step><!-- duration: 1125ms -->
+    <step title="Start deployment in the background" date="2025-07-28T07:37:08.410" >
+      <step title="Acquiring Deployment Lock" date="2025-07-28T07:37:08.479" /><!-- duration: 8ms -->
+      <step title="Acquired Deployment Lock" date="2025-07-28T07:37:08.583" /><!-- duration: 1ms -->
+    </step><!-- duration: 252ms -->
+  </step><!-- duration: 1519ms -->
+  <step title="Outgoing response" date="2025-07-28T07:37:08.686" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 1ms -->
+</step><!-- duration: 1744ms -->

@@ -1,0 +1,6 @@
+<step title="Incoming Request" date="2025-07-25T11:58:57.733" instance="bc4514" url="/api/settings" method="GET" type="request" pid="770,1,27" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_335c63d0a8d6cc1036c0d3c7041d5a53040a2ec8400307247c0001f81f165fcf" Authorization="Bea..." Content-Type="application/json; charset=utf-8" Content-Length="0" X-ARR-LOG-ID="79e0d8ba-6992-4664-b50a-7d5fa4d20263" CLIENT-IP="52.173.163.33:16392" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/settings" X-Client-IP="52.173.163.33" X-Client-Port="16392" >
+  <step title="Cleanup Xml Logs" date="2025-07-25T11:58:57.755" >
+    <step title="Cleanup Infos" date="2025-07-25T11:58:57.764" totalFiles="221" totalCleanup="61" /><!-- duration: 8ms -->
+  </step><!-- duration: 20ms -->
+  <step title="Outgoing response" date="2025-07-25T11:58:57.805" type="response" statusCode="200" statusText="OK" /><!-- duration: 1ms -->
+</step><!-- duration: 76ms -->

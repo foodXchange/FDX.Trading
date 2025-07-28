@@ -1,0 +1,65 @@
+2025-07-28T08:34:13  Fetching changes.
+2025-07-28T08:34:13    Starting  LocalZipHandler
+2025-07-28T08:34:13    Cleaning up temp folders from previous zip deployments and extracting pushed zip file /tmp/zipdeploy/47f7eff8-d9e2-4658-877e-6bcd40bbcb13.zip (0.01 MB) to /tmp/zipdeploy/extracted
+2025-07-28T08:34:17  Updating submodules.
+2025-07-28T08:34:17  Preparing deployment for commit id '20371310-b'.
+2025-07-28T08:34:18  PreDeployment: context.CleanOutputPath False
+2025-07-28T08:34:18  PreDeployment: context.OutputPath /home/site/wwwroot
+2025-07-28T08:34:18  Repository path is /tmp/zipdeploy/extracted
+2025-07-28T08:34:18  Running oryx build...
+2025-07-28T08:34:18    Command: oryx build /tmp/zipdeploy/extracted -o /home/site/wwwroot --platform python --platform-version 3.12 -p virtualenv_name=antenv --log-file /tmp/build-debug.log  -i /tmp/8ddcdb18b06192f --compress-destination-dir | tee /tmp/oryx-build.log
+2025-07-28T08:34:21    Operation performed by Microsoft Oryx, https://github.com/Microsoft/Oryx
+2025-07-28T08:34:21    You can report issues at https://github.com/Microsoft/Oryx/issues
+2025-07-28T08:34:21    
+2025-07-28T08:34:21    Oryx Version: 0.2.20250611.1+0649de32f1279969c9023dd41b389cce4bb94493, Commit: 0649de32f1279969c9023dd41b389cce4bb94493, ReleaseTagName: 20250611.1
+2025-07-28T08:34:21    
+2025-07-28T08:34:21    Build Operation ID: 000e662d50cc799f
+2025-07-28T08:34:21    Repository Commit : 20371310-b142-4aac-a830-59d258dade1c
+2025-07-28T08:34:21    OS Type           : bullseye
+2025-07-28T08:34:21    Image Type        : githubactions
+2025-07-28T08:34:21    
+2025-07-28T08:34:21    Primary SDK Storage URL: https://oryx-cdn.microsoft.io
+2025-07-28T08:34:21    Backup SDK Storage URL: https://oryxsdks-cdn.azureedge.net
+2025-07-28T08:34:21    Detecting platforms...
+2025-07-28T08:34:21    External SDK provider is enabled.
+2025-07-28T08:34:21    Requesting metadata for platform python from external SDK provider
+2025-07-28T08:34:23    Requesting metadata for platform python from external SDK provider
+2025-07-28T08:34:25    Detected following platforms:
+2025-07-28T08:34:25      python: 3.12.11
+2025-07-28T08:34:25    Requesting metadata for platform python from external SDK provider
+2025-07-28T08:34:29    Version '3.12.11' of platform 'python' is not installed. Generating script to install it...
+2025-07-28T08:34:30    
+2025-07-28T08:34:30    Using intermediate directory '/tmp/8ddcdb18b06192f'.
+2025-07-28T08:34:30    
+2025-07-28T08:34:30    Copying files to the intermediate directory...
+2025-07-28T08:34:30    Done in 0 sec(s).
+2025-07-28T08:34:30    
+2025-07-28T08:34:30    Source directory     : /tmp/8ddcdb18b06192f
+2025-07-28T08:34:30    Destination directory: /home/site/wwwroot
+2025-07-28T08:34:30    
+2025-07-28T08:34:30    
+2025-07-28T08:34:30    Downloading and extracting 'python' version '3.12.11' to '/tmp/oryx/platforms/python/3.12.11'...
+2025-07-28T08:34:30    Detected image debian flavor: bullseye.
+2025-07-28T08:34:30    Skipping download of python version 3.12.11 as it is available in external sdk provider cache...
+2025-07-28T08:34:30    Extracting contents...
+2025-07-28T08:34:53    Successfully extracted python version 3.12.11 from external sdk provider cache...
+2025-07-28T08:34:53    Done in 23 sec(s).
+2025-07-28T08:34:53    
+2025-07-28T08:34:53    image detector file exists, platform is python..
+2025-07-28T08:34:53    OS detector file exists, OS is bullseye..
+2025-07-28T08:34:54    Executing pre-build command...
+2025-07-28T08:34:54    /tmp/BuildScriptGenerator/1bd01b60466547bba94e8e0da8ca8743/build.sh: /tmp/oryx/platforms/python/3.12.11/bin/pip: /opt/python/3.12.11/bin/python3: bad interpreter: No such file or directory
+2025-07-28T08:34:54    /tmp/BuildScriptGenerator/1bd01b60466547bba94e8e0da8ca8743/build.sh: /tmp/oryx/platforms/python/3.12.11/bin/pip: /opt/python/3.12.11/bin/python3: bad interpreter: No such file or directory
+/bin/bash -c "oryx build /tmp/zipdeploy/extracted -o /home/site/wwwroot --platform python --platform-version 3.12 -p virtualenv_name=antenv --log-file /tmp/build-debug.log  -i /tmp/8ddcdb18b06192f --compress-destination-dir | tee /tmp/oryx-build.log ; exit $PIPESTATUS "
+2025-07-28T08:34:54  
+2025-07-28T08:34:55  
+2025-07-28T08:34:55  Generating summary of Oryx build
+2025-07-28T08:34:55  Parsing the build logs
+2025-07-28T08:34:55  Found 0 issue(s)
+2025-07-28T08:34:55  
+2025-07-28T08:34:55  Build Summary :
+2025-07-28T08:34:55  ===============
+2025-07-28T08:34:56  Errors (0)
+2025-07-28T08:34:56  Warnings (0)
+2025-07-28T08:34:56  
+2025-07-28T08:34:57  Deployment Failed. deployer = OneDeploy deploymentPath = OneDeploy

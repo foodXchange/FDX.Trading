@@ -1,0 +1,7 @@
+<step title="Incoming Request" date="2025-07-27T16:50:24.376" instance="bc4514" url="/diagnostics/runtime" method="GET" type="request" pid="768,1,22" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_335c63d0a8d6cc1036c0d3c7041d5a53040a2ec8400307247c0001f81f165fcf" Authorization="Bas..." Content-Type="application/json; charset=utf-8" Content-Length="0" X-ARR-LOG-ID="5a12a33e-49d9-41b0-afaa-06090ffa8ad3" CLIENT-IP="68.220.61.177:2056" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/diagnostics/runtime" X-Client-IP="68.220.61.177" X-Client-Port="2056" >
+  <step title="Cleanup Xml Logs" date="2025-07-27T16:50:24.384" >
+    <step title="Cleanup Infos" date="2025-07-27T16:50:24.621" totalFiles="1726" totalCleanup="1566" /><!-- duration: 41ms -->
+  </step><!-- duration: 287ms -->
+  <step title="RuntimeController.GetRuntimeVersions" date="2025-07-27T16:50:25.037" /><!-- duration: 29ms -->
+  <step title="Outgoing response" date="2025-07-27T16:50:25.229" type="response" statusCode="200" statusText="OK" /><!-- duration: 9ms -->
+</step><!-- duration: 864ms -->

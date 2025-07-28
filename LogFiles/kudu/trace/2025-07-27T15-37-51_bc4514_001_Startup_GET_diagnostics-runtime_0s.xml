@@ -1,0 +1,5 @@
+<step title="Startup Request" date="2025-07-27T15:37:51.255" instance="bc4514" url="/diagnostics/runtime" method="GET" type="request" pid="768,1,23" ScmType="GitHubAction" SCM_DO_BUILD_DURING_DEPLOYMENT="true" >
+  <step title="Cleanup Xml Logs" date="2025-07-27T15:37:51.295" >
+    <step title="Cleanup Infos" date="2025-07-27T15:37:51.456" totalFiles="1354" totalCleanup="1194" /><!-- duration: 65ms -->
+  </step><!-- duration: 284ms -->
+</step><!-- duration: 353ms -->
