@@ -99,6 +99,59 @@ class HealthHandler(BaseHTTPRequestHandler):
 </body>
 </html>'''
             self.wfile.write(html.encode())
+        elif self.path == '/api':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            html = '''<!DOCTYPE html>
+<html>
+<head>
+    <title>API - FoodXchange</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        .back { display: inline-block; margin-bottom: 20px; color: #1976d2; text-decoration: none; }
+        .endpoint { margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 5px; border-left: 4px solid #1976d2; }
+        .method { display: inline-block; padding: 3px 8px; background: #4caf50; color: white; border-radius: 3px; font-size: 12px; font-weight: bold; }
+        code { background: #e0e0e0; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">← Back to Home</a>
+        <h1>FoodXchange API Documentation</h1>
+        <p>RESTful API for accessing FoodXchange platform services.</p>
+        
+        <h2>Available Endpoints</h2>
+        
+        <div class="endpoint">
+            <span class="method">GET</span> <code>/health</code>
+            <p>Basic health check endpoint</p>
+            <p>Response: <code>{"status": "healthy"}</code></p>
+        </div>
+        
+        <div class="endpoint">
+            <span class="method">GET</span> <code>/health/advanced</code>
+            <p>Detailed system health information</p>
+            <p>Response includes: status, version, database connectivity, uptime</p>
+        </div>
+        
+        <div class="endpoint">
+            <span class="method">GET</span> <code>/api/v1/suppliers</code>
+            <p>List verified suppliers (Coming Soon)</p>
+        </div>
+        
+        <div class="endpoint">
+            <span class="method">GET</span> <code>/api/v1/products</code>
+            <p>Browse available products (Coming Soon)</p>
+        </div>
+        
+        <p style="margin-top: 30px;"><strong>Authentication:</strong> API key required for protected endpoints (Coming Soon)</p>
+    </div>
+</body>
+</html>'''
+            self.wfile.write(html.encode())
         else:
             self.send_response(404)
             self.end_headers()
