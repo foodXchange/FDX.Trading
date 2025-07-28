@@ -28,6 +28,8 @@ except ImportError as e:
     logger.error(f"Import error: {e}")
     logger.info("Falling back to simple WSGI app...")
     
+    error_message = str(e)  # Capture error message for use in inner function
+    
     # Fallback to simple WSGI app
     def application(environ, start_response):
         path = environ.get('PATH_INFO', '/')
@@ -40,7 +42,7 @@ except ImportError as e:
             <body style="font-family: Arial; padding: 50px;">
                 <h1>🍎 FoodXchange</h1>
                 <p style="color: orange;">Running in fallback mode due to import error:</p>
-                <pre style="background: #f0f0f0; padding: 10px;">{str(e)}</pre>
+                <pre style="background: #f0f0f0; padding: 10px;">{error_message}</pre>
                 <p>The application is running but some features may be limited.</p>
                 <hr>
                 <p><a href="/health">Health Check</a></p>

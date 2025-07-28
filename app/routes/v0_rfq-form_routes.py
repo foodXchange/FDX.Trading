@@ -14,7 +14,7 @@ async def rfq_form_page(request: Request):
     )
 
 @router.post("/api/rfq-form")
-async def rfq-form_api():
+async def rfq_form_api():
     """API endpoint for rfq-form functionality"""
     try:
         # Add your API logic here

@@ -1,1 +1,1 @@
-python startup_robust.py
+﻿python application.py
