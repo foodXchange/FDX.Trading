@@ -38,6 +38,8 @@ except Exception as e:
     logger.error(f"Failed to start FastAPI: {e}")
     logger.info("Falling back to simple WSGI...")
     
+    error_message = str(e)  # Capture error message for use in inner function
+    
     # Fallback WSGI app
     def application(environ, start_response):
         path = environ.get('PATH_INFO', '/')
@@ -48,7 +50,7 @@ except Exception as e:
         <body style="font-family: Arial; padding: 50px;">
             <h1>🍎 FoodXchange</h1>
             <p style="color: red;">Application Error:</p>
-            <pre>{str(e)}</pre>
+            <pre>{error_message}</pre>
             <p>Please check the logs for more details.</p>
         </body>
         </html>

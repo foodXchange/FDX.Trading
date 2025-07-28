@@ -4,7 +4,7 @@ Supplier API routes for RFQ viewing and quote submission
 from fastapi import APIRouter, Depends, HTTPException, Request, Query, Form, File, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import or_, and_, func
+from sqlalchemy import or_, and_, func, case
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date, timedelta
 import json

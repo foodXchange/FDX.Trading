@@ -6,7 +6,7 @@ router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/rfq-form", response_class=HTMLResponse)
-async def rfq-form_page(request: Request):
+async def rfq_form_page(request: Request):
     """Render the rfq-form page"""
     return templates.TemplateResponse(
         "v0-components/rfq-form.html",
