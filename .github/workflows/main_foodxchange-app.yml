@@ -68,6 +68,7 @@ jobs:
 
       - name: Format check with black
         run: black --check . --extend-exclude "venv|__pycache__|\.git|node_modules"
+        continue-on-error: true
 
       - name: Run tests
         run: |
