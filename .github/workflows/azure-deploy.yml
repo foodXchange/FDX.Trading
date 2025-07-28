@@ -53,7 +53,8 @@ jobs:
         # Create deployment artifacts
         mkdir -p deploy
         cp -r app deploy/
-        cp -r requirements.txt deploy/
+        cp requirements.txt deploy/
+        cp app.py deploy/
         cp startup.py deploy/ 2>/dev/null || echo "No startup.py found"
         cp web.config deploy/ 2>/dev/null || echo "No web.config found"
         
