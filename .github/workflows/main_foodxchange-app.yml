@@ -62,14 +62,12 @@ jobs:
       - name: Lint with flake8
         run: |
           # Stop build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,__pycache__,.git,node_modules
           # Exit-zero treats all errors as warnings
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        continue-on-error: true
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=venv,__pycache__,.git,node_modules
 
       - name: Format check with black
-        run: black --check .
-        continue-on-error: true
+        run: black --check . --extend-exclude "venv|__pycache__|\.git|node_modules"
 
       - name: Run tests
         run: |
