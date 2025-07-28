@@ -1,197 +1,356 @@
-{% extends "base.html" %}
+{% extends "bootstrap_base.html" %}
 
-{% block title %}Products - FoodXchange{% endblock %}
+{% block title %}Products{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Product Catalog</h1>
-    <div class="page-actions">
-        <input type="search" placeholder="Search products..." class="search-input">
-        <button class="btn btn-primary">Add Product</button>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Products</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="/products/add" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Add Product
+        </a>
     </div>
 </div>
 
-<div class="products-grid">
-    <div class="product-card">
-        <div class="product-image">
-            <div class="placeholder-image">🫒</div>
+<!-- Search and Filters -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Search products..." id="searchInput">
         </div>
-        <div class="product-info">
-            <h3>Extra Virgin Olive Oil</h3>
-            <p class="product-supplier">Mediterranean Delights</p>
-            <p class="product-price">$45/L</p>
-            <div class="product-tags">
-                <span class="tag">Organic</span>
-                <span class="tag">Greece</span>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="grains">Grains</option>
+            <option value="dairy">Dairy</option>
+            <option value="meat">Meat</option>
+            <option value="produce">Produce</option>
+            <option value="beverages">Beverages</option>
+            <option value="frozen">Frozen Foods</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="supplierFilter">
+            <option value="">All Suppliers</option>
+            <option value="fresh-foods">Fresh Foods Co.</option>
+            <option value="global-dairy">Global Dairy Solutions</option>
+            <option value="premium-meats">Premium Meats Ltd.</option>
+        </select>
+    </div>
+</div>
+
+<!-- Products Grid -->
+<div class="row g-4">
+    <!-- Sample Product Cards -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Organic Tomatoes</h5>
+                        <p class="text-muted mb-0">Fresh Produce</p>
+                    </div>
+                    <span class="badge bg-success">In Stock</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-building me-1"></i>Fresh Foods Co.
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>California, USA
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Organic</span>
+                    <span class="badge bg-light text-dark me-1">Local</span>
+                    <span class="badge bg-light text-dark">Grade A</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-primary mb-0">$2.50/kg</h6>
+                        <small class="text-muted">Min order: 100kg</small>
+                    </div>
+                    <div class="btn-group">
+                        <a href="/products/1" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/rfq/new?product=1" class="btn btn-sm btn-primary">Request Quote</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="product-card">
-        <div class="product-image">
-            <div class="placeholder-image">🧀</div>
-        </div>
-        <div class="product-info">
-            <h3>Feta Cheese</h3>
-            <p class="product-supplier">Mediterranean Delights</p>
-            <p class="product-price">$28/kg</p>
-            <div class="product-tags">
-                <span class="tag">PDO</span>
-                <span class="tag">Greece</span>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Parmesan Cheese</h5>
+                        <p class="text-muted mb-0">Dairy & Cheese</p>
+                    </div>
+                    <span class="badge bg-warning">Low Stock</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-building me-1"></i>Global Dairy Solutions
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Wisconsin, USA
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Premium</span>
+                    <span class="badge bg-light text-dark me-1">Aged 24 months</span>
+                    <span class="badge bg-light text-dark">DOP Certified</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-primary mb-0">$18.75/kg</h6>
+                        <small class="text-muted">Min order: 50kg</small>
+                    </div>
+                    <div class="btn-group">
+                        <a href="/products/2" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/rfq/new?product=2" class="btn btn-sm btn-primary">Request Quote</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="product-card">
-        <div class="product-image">
-            <div class="placeholder-image">🍝</div>
-        </div>
-        <div class="product-info">
-            <h3>Artisan Pasta</h3>
-            <p class="product-supplier">Italian Fine Foods</p>
-            <p class="product-price">$12/kg</p>
-            <div class="product-tags">
-                <span class="tag">Handmade</span>
-                <span class="tag">Italy</span>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Beef Tenderloin</h5>
+                        <p class="text-muted mb-0">Meat & Poultry</p>
+                    </div>
+                    <span class="badge bg-success">In Stock</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-building me-1"></i>Premium Meats Ltd.
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Texas, USA
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Premium</span>
+                    <span class="badge bg-light text-dark me-1">USDA Prime</span>
+                    <span class="badge bg-light text-dark">Halal</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-primary mb-0">$32.00/kg</h6>
+                        <small class="text-muted">Min order: 25kg</small>
+                    </div>
+                    <div class="btn-group">
+                        <a href="/products/3" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/rfq/new?product=3" class="btn btn-sm btn-primary">Request Quote</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="product-card">
-        <div class="product-image">
-            <div class="placeholder-image">🍅</div>
-        </div>
-        <div class="product-info">
-            <h3>San Marzano Tomatoes</h3>
-            <p class="product-supplier">Italian Fine Foods</p>
-            <p class="product-price">$35/case</p>
-            <div class="product-tags">
-                <span class="tag">DOP</span>
-                <span class="tag">Italy</span>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Organic Rice</h5>
+                        <p class="text-muted mb-0">Grains & Cereals</p>
+                    </div>
+                    <span class="badge bg-success">In Stock</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-building me-1"></i>Grain Masters International
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Kansas, USA
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Organic</span>
+                    <span class="badge bg-light text-dark me-1">Long Grain</span>
+                    <span class="badge bg-light text-dark">Bulk</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-primary mb-0">$1.65/kg</h6>
+                        <small class="text-muted">Min order: 1000kg</small>
+                    </div>
+                    <div class="btn-group">
+                        <a href="/products/4" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/rfq/new?product=4" class="btn btn-sm btn-primary">Request Quote</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="product-card">
-        <div class="product-image">
-            <div class="placeholder-image">🥓</div>
-        </div>
-        <div class="product-info">
-            <h3>Iberian Ham</h3>
-            <p class="product-supplier">Spanish Imports Co</p>
-            <p class="product-price">$120/kg</p>
-            <div class="product-tags">
-                <span class="tag">Premium</span>
-                <span class="tag">Spain</span>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Fresh Orange Juice</h5>
+                        <p class="text-muted mb-0">Beverages & Juices</p>
+                    </div>
+                    <span class="badge bg-info">New</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-building me-1"></i>Beverage World
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Florida, USA
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Fresh</span>
+                    <span class="badge bg-light text-dark me-1">Cold Pressed</span>
+                    <span class="badge bg-light text-dark">No Preservatives</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-primary mb-0">$3.20/L</h6>
+                        <small class="text-muted">Min order: 100L</small>
+                    </div>
+                    <div class="btn-group">
+                        <a href="/products/5" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/rfq/new?product=5" class="btn btn-sm btn-primary">Request Quote</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="product-card">
-        <div class="product-image">
-            <div class="placeholder-image">🧀</div>
-        </div>
-        <div class="product-info">
-            <h3>Manchego Cheese</h3>
-            <p class="product-supplier">Spanish Imports Co</p>
-            <p class="product-price">$42/kg</p>
-            <div class="product-tags">
-                <span class="tag">Aged</span>
-                <span class="tag">Spain</span>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Frozen Mixed Vegetables</h5>
+                        <p class="text-muted mb-0">Frozen Foods</p>
+                    </div>
+                    <span class="badge bg-success">In Stock</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-building me-1"></i>Frozen Delights Inc.
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Oregon, USA
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Frozen</span>
+                    <span class="badge bg-light text-dark me-1">Mixed Pack</span>
+                    <span class="badge bg-light text-dark">Convenience</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-primary mb-0">$2.80/kg</h6>
+                        <small class="text-muted">Min order: 500kg</small>
+                    </div>
+                    <div class="btn-group">
+                        <a href="/products/6" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/rfq/new?product=6" class="btn btn-sm btn-primary">Request Quote</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-}
+<!-- Pagination -->
+<nav aria-label="Products pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
+{% endblock %}
 
-.page-actions {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
+{% block extra_js %}
+<script>
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const category = card.querySelector('.text-muted').textContent.toLowerCase();
+        const supplier = card.querySelector('.bi-building').parentElement.textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || category.includes(searchTerm) || supplier.includes(searchTerm)) {
+            card.closest('.col-lg-4').style.display = 'block';
+        } else {
+            card.closest('.col-lg-4').style.display = 'none';
+        }
+    });
+});
 
-.search-input {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 250px;
-}
+// Category filter
+document.getElementById('categoryFilter').addEventListener('change', function() {
+    const selectedCategory = this.value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        const category = card.querySelector('.text-muted').textContent.toLowerCase();
+        
+        if (!selectedCategory || category.includes(selectedCategory)) {
+            card.closest('.col-lg-4').style.display = 'block';
+        } else {
+            card.closest('.col-lg-4').style.display = 'none';
+        }
+    });
+});
 
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.product-card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.2s;
-    cursor: pointer;
-}
-
-.product-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.product-image {
-    width: 100%;
-    height: 150px;
-    background: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.placeholder-image {
-    font-size: 48px;
-}
-
-.product-info {
-    padding: 15px;
-}
-
-.product-info h3 {
-    margin: 0 0 8px 0;
-    font-size: 18px;
-}
-
-.product-supplier {
-    color: #666;
-    font-size: 14px;
-    margin: 0 0 8px 0;
-}
-
-.product-price {
-    font-size: 20px;
-    font-weight: 600;
-    color: #28a745;
-    margin: 8px 0;
-}
-
-.product-tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-
-.tag {
-    background: #e9ecef;
-    color: #495057;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-}
-</style>
+// Supplier filter
+document.getElementById('supplierFilter').addEventListener('change', function() {
+    const selectedSupplier = this.value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        const supplier = card.querySelector('.bi-building').parentElement.textContent.toLowerCase();
+        
+        if (!selectedSupplier || supplier.includes(selectedSupplier)) {
+            card.closest('.col-lg-4').style.display = 'block';
+        } else {
+            card.closest('.col-lg-4').style.display = 'none';
+        }
+    });
+});
+</script>
 {% endblock %}

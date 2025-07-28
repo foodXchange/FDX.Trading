@@ -1,219 +1,257 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create RFQ - FoodXchange</title>
-    
-    <!-- Simple Design System -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/simple-design-system.css') }}">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/favicon.ico') }}">
-</head>
-<body>
-    <!-- Skip to content for accessibility -->
-    <a href="#main" class="skip-link">Skip to main content</a>
-    
-    <!-- Simple Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-container">
-                <a href="/" class="navbar-brand">🍎 FoodXchange</a>
-                
-                <button class="navbar-toggle" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                
-                <ul class="navbar-menu">
-                    <li><a href="/dashboard" class="navbar-link">Dashboard</a></li>
-                    <li><a href="/suppliers" class="navbar-link">Suppliers</a></li>
-                    <li><a href="/orders" class="navbar-link">Orders</a></li>
-                    <li><a href="/products" class="navbar-link">Products</a></li>
-                    <li><a href="/auth/logout" class="navbar-link">Logout</a></li>
-                </ul>
+{% extends "bootstrap_base.html" %}
+
+{% block title %}Create RFQ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Create New RFQ</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="/rfqs" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to RFQs
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-file-earmark-plus me-2"></i>Request for Quote
+                </h3>
             </div>
-        </div>
-    </nav>
-    
-    <!-- Main Content -->
-    <main id="main" class="main-content">
-        <div class="container">
-            <!-- Page Header -->
-            <div class="mb-4">
-                <h1>Create New RFQ</h1>
-                <p class="text-muted">Request quotes from your suppliers</p>
-            </div>
-            
-            <div class="grid grid-2">
-                <!-- RFQ Form -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">RFQ Details</h2>
-                    </div>
-                    
-                    <form method="post" action="/rfq/new" data-validate>
-                        <div class="form-group">
-                            <label class="form-label" for="product">Product Name *</label>
-                            <input 
-                                type="text" 
-                                id="product" 
-                                name="product" 
-                                class="form-control" 
-                                placeholder="e.g., Organic Tomatoes"
-                                required
-                            >
+            <div class="card-body p-4">
+                <form method="POST" action="/rfq/new" id="rfqForm" class="needs-validation" novalidate>
+                    <!-- Product Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-box me-2"></i>Product Information
+                            </h5>
                         </div>
                         
-                        <div class="grid grid-2">
-                            <div class="form-group">
-                                <label class="form-label" for="quantity">Quantity *</label>
-                                <input 
-                                    type="number" 
-                                    id="quantity" 
-                                    name="quantity" 
-                                    class="form-control" 
-                                    placeholder="1000"
-                                    min="1"
-                                    required
-                                >
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="unit">Unit *</label>
-                                <select id="unit" name="unit" class="form-control" required>
-                                    <option value="">Select unit...</option>
-                                    <option value="kg">Kilograms (kg)</option>
-                                    <option value="liter">Liters (L)</option>
-                                    <option value="unit">Units</option>
-                                    <option value="box">Boxes</option>
-                                    <option value="pallet">Pallets</option>
-                                </select>
+                        <div class="col-md-6 mb-3">
+                            <label for="product" class="form-label">Product Name *</label>
+                            <input type="text" class="form-control" id="product" name="product" 
+                                   placeholder="e.g., Organic Tomatoes" required>
+                            <div class="invalid-feedback">
+                                Please enter a product name.
                             </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label class="form-label" for="deadline">Response Deadline *</label>
-                            <input 
-                                type="date" 
-                                id="deadline" 
-                                name="deadline" 
-                                class="form-control" 
-                                min="{{ today }}"
-                                required
-                            >
+                        <div class="col-md-6 mb-3">
+                            <label for="productCategory" class="form-label">Product Category *</label>
+                            <select class="form-select" id="productCategory" name="productCategory" required>
+                                <option value="">Select a category</option>
+                                <option value="grains">Grains</option>
+                                <option value="dairy">Dairy</option>
+                                <option value="meat">Meat</option>
+                                <option value="produce">Produce</option>
+                                <option value="beverages">Beverages</option>
+                                <option value="frozen">Frozen Foods</option>
+                                <option value="organic">Organic</option>
+                                <option value="kosher">Kosher</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a product category.
+                            </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label class="form-label" for="delivery_date">Delivery Date *</label>
-                            <input 
-                                type="date" 
-                                id="delivery_date" 
-                                name="delivery_date" 
-                                class="form-control" 
-                                min="{{ today }}"
-                                required
-                            >
+                        <div class="col-md-6 mb-3">
+                            <label for="quantity" class="form-label">Quantity *</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" 
+                                   min="1" placeholder="1000" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid quantity.
+                            </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label class="form-label" for="specifications">Product Specifications</label>
-                            <textarea 
-                                id="specifications" 
-                                name="specifications" 
-                                class="form-control" 
-                                rows="3"
-                                placeholder="e.g., Organic certified, Grade A, specific variety..."
-                            ></textarea>
+                        <div class="col-md-6 mb-3">
+                            <label for="unit" class="form-label">Unit *</label>
+                            <select class="form-select" id="unit" name="unit" required>
+                                <option value="">Select unit</option>
+                                <option value="kg">Kilograms (kg)</option>
+                                <option value="lbs">Pounds (lbs)</option>
+                                <option value="cases">Cases</option>
+                                <option value="pallets">Pallets</option>
+                                <option value="units">Units</option>
+                                <option value="liters">Liters (L)</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a unit.
+                            </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label" for="notes">Additional Notes</label>
-                            <textarea 
-                                id="notes" 
-                                name="notes" 
-                                class="form-control" 
-                                rows="3"
-                                placeholder="Any special requirements, packaging preferences, etc."
-                            ></textarea>
-                        </div>
-                        
-                        <div class="d-flex justify-between align-center mt-4">
-                            <button type="button" class="btn btn-outline" onclick="window.history.back()">
-                                Cancel
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                Send RFQ to Suppliers
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                
-                <!-- Tips & Guidelines -->
-                <div>
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h3 class="card-title">Quick Tips</h3>
-                        </div>
-                        <ul class="m-0">
-                            <li>Be specific about product requirements to get accurate quotes</li>
-                            <li>Set realistic deadlines (minimum 48 hours recommended)</li>
-                            <li>Include quality certifications if required</li>
-                            <li>Mention preferred packaging and delivery terms</li>
-                        </ul>
                     </div>
                     
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Recent RFQs</h3>
+                    <!-- Delivery and Budget -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-calendar-event me-2"></i>Delivery & Budget
+                            </h5>
                         </div>
-                        <div class="p-3 border-bottom">
-                            <strong>Olive Oil - 1000L</strong>
-                            <p class="text-muted m-0">Sent 2 days ago • 3 quotes received</p>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="deadline" class="form-label">Response Deadline *</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline" required>
+                            <div class="invalid-feedback">
+                                Please select a deadline.
+                            </div>
                         </div>
-                        <div class="p-3 border-bottom">
-                            <strong>Parmesan Cheese - 500kg</strong>
-                            <p class="text-muted m-0">Sent 5 days ago • 2 quotes received</p>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="deliveryDate" class="form-label">Required Delivery Date *</label>
+                            <input type="date" class="form-control" id="deliveryDate" name="deliveryDate" required>
+                            <div class="invalid-feedback">
+                                Please select a delivery date.
+                            </div>
                         </div>
-                        <div class="p-3">
-                            <strong>Fresh Tomatoes - 2000kg</strong>
-                            <p class="text-muted m-0">Sent 1 week ago • 5 quotes received</p>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="budget" class="form-label">Budget Range: $<span id="budgetValue">1000</span></label>
+                            <input type="range" class="form-range" id="budget" name="budget" 
+                                   min="100" max="50000" value="1000" step="100">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">$100</small>
+                                <small class="text-muted">$50,000</small>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
+                    <!-- Special Requirements -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-list-check me-2"></i>Special Requirements
+                        </h5>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="4" 
+                                      maxlength="500" placeholder="Enter any special requirements, specifications, or additional notes..."></textarea>
+                            <div class="form-text">
+                                <span id="charCount">0</span>/500 characters
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="organic" name="organic">
+                                    <label class="form-check-label" for="organic">
+                                        Organic certification required
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="kosher" name="kosher">
+                                    <label class="form-check-label" for="kosher">
+                                        Kosher certification required
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="halal" name="halal">
+                                    <label class="form-check-label" for="halal">
+                                        Halal certification required
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gmo_free" name="gmo_free">
+                                    <label class="form-check-label" for="gmo_free">
+                                        GMO-free required
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-person me-2"></i>Contact Information
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="companyName" class="form-label">Company Name *</label>
+                            <input type="text" class="form-control" id="companyName" name="companyName" required>
+                            <div class="invalid-feedback">
+                                Please enter your company name.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="contactName" class="form-label">Contact Name *</label>
+                            <input type="text" class="form-control" id="contactName" name="contactName" required>
+                            <div class="invalid-feedback">
+                                Please enter a contact name.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                            <div class="invalid-feedback">
+                                Please enter a phone number.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="/rfqs" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send me-2"></i>Create RFQ
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    </main>
-    
-    <!-- Simple Footer -->
-    <footer class="mt-5 p-4 bg-light text-center">
-        <p class="text-muted m-0">&copy; 2024 FoodXchange. All rights reserved.</p>
-    </footer>
-    
-    <!-- Simple JavaScript -->
-    <script src="{{ url_for('static', path='/js/simple-utils.js') }}"></script>
-    <script>
-        FX.ready(function() {
-            // Set minimum dates to today
-            const today = new Date().toISOString().split('T')[0];
-            FX.$('#deadline').setAttribute('min', today);
-            FX.$('#delivery_date').setAttribute('min', today);
-            
-            // Auto-adjust delivery date based on deadline
-            FX.on(FX.$('#deadline'), 'change', function(e) {
-                const deadline = new Date(e.target.value);
-                const deliveryDate = new Date(deadline);
-                deliveryDate.setDate(deliveryDate.getDate() + 7); // Add 7 days
-                
-                const deliveryInput = FX.$('#delivery_date');
-                deliveryInput.setAttribute('min', e.target.value);
-                if (!deliveryInput.value || new Date(deliveryInput.value) < deadline) {
-                    deliveryInput.value = deliveryDate.toISOString().split('T')[0];
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Budget range slider
+document.getElementById('budget').addEventListener('input', function() {
+    document.getElementById('budgetValue').textContent = this.value;
+});
+
+// Character counter for notes
+document.getElementById('notes').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
-            });
+                form.classList.add('was-validated');
+            }, false);
         });
-    </script>
-</body>
-</html> 
+    }, false);
+})();
+</script>
+{% endblock %} 

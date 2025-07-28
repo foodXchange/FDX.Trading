@@ -1,169 +1,315 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suppliers - FoodXchange</title>
-    
-    <!-- Simple Design System -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/simple-design-system.css') }}">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/favicon.ico') }}">
-</head>
-<body>
-    <!-- Skip to content for accessibility -->
-    <a href="#main" class="skip-link">Skip to main content</a>
-    
-    <!-- Simple Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-container">
-                <a href="/" class="navbar-brand">🍎 FoodXchange</a>
-                
-                <button class="navbar-toggle" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                
-                <ul class="navbar-menu">
-                    <li><a href="/dashboard" class="navbar-link">Dashboard</a></li>
-                    <li><a href="/suppliers" class="navbar-link">Suppliers</a></li>
-                    <li><a href="/orders" class="navbar-link">Orders</a></li>
-                    <li><a href="/products" class="navbar-link">Products</a></li>
-                    <li><a href="/auth/logout" class="navbar-link">Logout</a></li>
-                </ul>
-            </div>
+{% extends "bootstrap_base.html" %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Suppliers</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="/suppliers/add" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Add Supplier
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Search suppliers by name, category, or location..." id="searchInput">
         </div>
-    </nav>
-    
-    <!-- Main Content -->
-    <main id="main" class="main-content">
-        <div class="container">
-            <!-- Page Header -->
-            <div class="mb-4">
-                <h1>Suppliers</h1>
-                <p class="text-muted">Manage your supplier network and relationships</p>
-            </div>
-            
-            <!-- Quick Actions -->
-            <div class="card mb-4">
-                <div class="d-flex justify-between align-center">
-                    <div class="d-flex" style="gap: var(--spacing-md)">
-                        <input type="text" class="form-control" placeholder="Search suppliers..." style="width: 300px">
-                        <select class="form-control" style="width: 200px">
-                            <option value="">All Categories</option>
-                            <option value="dairy">Dairy Products</option>
-                            <option value="produce">Fresh Produce</option>
-                            <option value="meat">Meat & Poultry</option>
-                            <option value="oils">Oils & Fats</option>
-                        </select>
+    </div>
+    <div class="col-md-4">
+        <select class="form-select" id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="grains">Grains</option>
+            <option value="dairy">Dairy</option>
+            <option value="meat">Meat</option>
+            <option value="produce">Produce</option>
+            <option value="beverages">Beverages</option>
+            <option value="frozen">Frozen Foods</option>
+            <option value="organic">Organic</option>
+        </select>
+    </div>
+</div>
+
+<!-- Suppliers Grid -->
+<div class="row g-4">
+    <!-- Sample Supplier Cards -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Fresh Foods Co.</h5>
+                        <p class="text-muted mb-0">Produce & Organic</p>
                     </div>
-                    <button class="btn btn-primary" onclick="window.location.href='/suppliers/add'">
-                        + Add Supplier
-                    </button>
+                    <span class="badge bg-success">Verified</span>
                 </div>
-            </div>
-            
-            <!-- Suppliers Table -->
-            <div class="card">
-                <div class="table-container">
-                    <table class="table table-striped" id="suppliers-table">
-                        <thead>
-                            <tr>
-                                <th data-sortable>Company</th>
-                                <th data-sortable>Location</th>
-                                <th>Main Products</th>
-                                <th data-sortable>Rating</th>
-                                <th data-sortable>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for supplier in suppliers %}
-                            <tr>
-                                <td>
-                                    <a href="/suppliers/{{ supplier.id }}">
-                                        <strong>{{ supplier.name }}</strong>
-                                    </a>
-                                </td>
-                                <td>{{ supplier.location }}</td>
-                                <td>
-                                    {% for product in supplier.products[:3] %}
-                                        <span class="badge bg-light text-dark p-1 rounded">{{ product }}</span>
-                                    {% endfor %}
-                                    {% if supplier.products|length > 3 %}
-                                        <span class="text-muted">+{{ supplier.products|length - 3 }} more</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <span class="text-warning">★★★★☆</span> 4.5
-                                </td>
-                                <td>
-                                    {% if supplier.status == 'active' %}
-                                        <span class="badge bg-success text-white p-1 rounded">Active</span>
-                                    {% elif supplier.status == 'pending' %}
-                                        <span class="badge bg-warning text-white p-1 rounded">Pending</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary text-white p-1 rounded">{{ supplier.status }}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="d-flex" style="gap: var(--spacing-xs)">
-                                        <button class="btn btn-sm btn-outline" onclick="window.location.href='/suppliers/{{ supplier.id }}/edit'">
-                                            Edit
-                                        </button>
-                                        <button class="btn btn-sm btn-primary" onclick="window.location.href='/rfq/new?supplier={{ supplier.id }}'">
-                                            Send RFQ
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">No suppliers found. Add your first supplier to get started!</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>California, USA
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-star-fill text-warning me-1"></i>4.8 (127 reviews)
+                    </p>
                 </div>
-            </div>
-            
-            <!-- Supplier Stats -->
-            <div class="grid grid-4 mt-4">
-                <div class="card text-center">
-                    <h3 class="text-primary mb-2">{{ suppliers|length }}</h3>
-                    <p class="text-muted m-0">Total Suppliers</p>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Organic</span>
+                    <span class="badge bg-light text-dark me-1">Local</span>
+                    <span class="badge bg-light text-dark">Certified</span>
                 </div>
-                <div class="card text-center">
-                    <h3 class="text-success mb-2">{{ suppliers|selectattr('status', 'equalto', 'active')|list|length }}</h3>
-                    <p class="text-muted m-0">Active Suppliers</p>
-                </div>
-                <div class="card text-center">
-                    <h3 class="text-warning mb-2">{{ suppliers|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
-                    <p class="text-muted m-0">Pending Approval</p>
-                </div>
-                <div class="card text-center">
-                    <h3 class="text-info mb-2">15</h3>
-                    <p class="text-muted m-0">Product Categories</p>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Last order: 2 days ago</small>
+                    <div class="btn-group">
+                        <a href="/suppliers/1" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/suppliers/1/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
     
-    <!-- Simple Footer -->
-    <footer class="mt-5 p-4 bg-light text-center">
-        <p class="text-muted m-0">&copy; 2024 FoodXchange. All rights reserved.</p>
-    </footer>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Global Dairy Solutions</h5>
+                        <p class="text-muted mb-0">Dairy & Cheese</p>
+                    </div>
+                    <span class="badge bg-success">Verified</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Wisconsin, USA
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-star-fill text-warning me-1"></i>4.6 (89 reviews)
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Premium</span>
+                    <span class="badge bg-light text-dark me-1">Bulk</span>
+                    <span class="badge bg-light text-dark">Export</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Last order: 1 week ago</small>
+                    <div class="btn-group">
+                        <a href="/suppliers/2" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/suppliers/2/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <!-- Simple JavaScript -->
-    <script src="{{ url_for('static', path='/js/simple-utils.js') }}"></script>
-    <script>
-        FX.ready(function() {
-            // Initialize table features
-            console.log('Suppliers page loaded');
-        });
-    </script>
-</body>
-</html> 
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Grain Masters International</h5>
+                        <p class="text-muted mb-0">Grains & Cereals</p>
+                    </div>
+                    <span class="badge bg-warning">Pending</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Kansas, USA
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-star-fill text-warning me-1"></i>4.2 (45 reviews)
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Bulk</span>
+                    <span class="badge bg-light text-dark me-1">Wholesale</span>
+                    <span class="badge bg-light text-dark">International</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Last order: 3 weeks ago</small>
+                    <div class="btn-group">
+                        <a href="/suppliers/3" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/suppliers/3/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Premium Meats Ltd.</h5>
+                        <p class="text-muted mb-0">Meat & Poultry</p>
+                    </div>
+                    <span class="badge bg-success">Verified</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Texas, USA
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-star-fill text-warning me-1"></i>4.9 (203 reviews)
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Premium</span>
+                    <span class="badge bg-light text-dark me-1">Halal</span>
+                    <span class="badge bg-light text-dark">Kosher</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Last order: 5 days ago</small>
+                    <div class="btn-group">
+                        <a href="/suppliers/4" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/suppliers/4/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Beverage World</h5>
+                        <p class="text-muted mb-0">Beverages & Juices</p>
+                    </div>
+                    <span class="badge bg-success">Verified</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Florida, USA
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-star-fill text-warning me-1"></i>4.4 (67 reviews)
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Organic</span>
+                    <span class="badge bg-light text-dark me-1">Cold Chain</span>
+                    <span class="badge bg-light text-dark">Bulk</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Last order: 1 day ago</small>
+                    <div class="btn-group">
+                        <a href="/suppliers/5" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/suppliers/5/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Frozen Delights Inc.</h5>
+                        <p class="text-muted mb-0">Frozen Foods</p>
+                    </div>
+                    <span class="badge bg-info">New</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt me-1"></i>Oregon, USA
+                    </p>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-star-fill text-warning me-1"></i>4.7 (23 reviews)
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-light text-dark me-1">Frozen</span>
+                    <span class="badge bg-light text-dark me-1">Convenience</span>
+                    <span class="badge bg-light text-dark">Local</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Last order: Never</small>
+                    <div class="btn-group">
+                        <a href="/suppliers/6" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="/suppliers/6/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Suppliers pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const category = card.querySelector('.text-muted').textContent.toLowerCase();
+        const location = card.querySelector('.bi-geo-alt').parentElement.textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || category.includes(searchTerm) || location.includes(searchTerm)) {
+            card.closest('.col-lg-4').style.display = 'block';
+        } else {
+            card.closest('.col-lg-4').style.display = 'none';
+        }
+    });
+});
+
+// Category filter
+document.getElementById('categoryFilter').addEventListener('change', function() {
+    const selectedCategory = this.value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        const category = card.querySelector('.text-muted').textContent.toLowerCase();
+        
+        if (!selectedCategory || category.includes(selectedCategory)) {
+            card.closest('.col-lg-4').style.display = 'block';
+        } else {
+            card.closest('.col-lg-4').style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %} 

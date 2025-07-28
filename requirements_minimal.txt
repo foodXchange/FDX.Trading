@@ -1,3 +1,2 @@
-# Minimal requirements for initial deployment
-flask==3.0.3
-gunicorn==21.2.0
+fastapi==0.111.0
+uvicorn[standard]==0.30.1

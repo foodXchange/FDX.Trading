@@ -1,23 +1,78 @@
-{% extends "base.html" %}
+{% extends "bootstrap_base.html" %}
 
-{% block title %}Quote Management - Food Xchange{% endblock %}
+{% block title %}Quote Management - FoodXchange{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
+    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Quote Management</h1>
+        <div>
+            <h1 class="h3 mb-1">Quote Management</h1>
+            <p class="text-muted mb-0">Review and manage supplier quotes for your RFQs</p>
+        </div>
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-outline-primary" onclick="exportQuotes()">
-                <i class="bi bi-download me-1"></i>Export
+                <i class="bi bi-download me-2"></i>Export
             </button>
             <button type="button" class="btn btn-primary" onclick="createQuote()">
-                <i class="bi bi-plus me-1"></i>New Quote
+                <i class="bi bi-plus-circle me-2"></i>New Quote
             </button>
         </div>
     </div>
 
+    <!-- Quote Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-clock text-warning fs-1"></i>
+                    </div>
+                    <h3 class="text-warning mb-1">{{ quotes|selectattr("status", "equalto", "Pending")|list|length }}</h3>
+                    <p class="text-muted mb-0">Pending Quotes</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-check-circle text-success fs-1"></i>
+                    </div>
+                    <h3 class="text-success mb-1">{{ quotes|selectattr("status", "equalto", "Accepted")|list|length }}</h3>
+                    <p class="text-muted mb-0">Accepted Quotes</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-x-circle text-danger fs-1"></i>
+                    </div>
+                    <h3 class="text-danger mb-1">{{ quotes|selectattr("status", "equalto", "Rejected")|list|length }}</h3>
+                    <p class="text-muted mb-0">Rejected Quotes</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-graph-up text-info fs-1"></i>
+                    </div>
+                    <h3 class="text-info mb-1">${{ quotes|sum(attribute="amount")|number_format(0) }}</h3>
+                    <p class="text-muted mb-0">Total Value</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filters -->
-    <div class="card mb-4">
+    <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-3">
@@ -41,7 +96,7 @@
                 <div class="col-md-3">
                     <label class="form-label">&nbsp;</label>
                     <button type="button" class="btn btn-secondary w-100" onclick="applyFilters()">
-                        <i class="bi bi-funnel me-1"></i>Filter
+                        <i class="bi bi-funnel me-2"></i>Apply Filters
                     </button>
                 </div>
             </div>
@@ -49,45 +104,64 @@
     </div>
 
     <!-- Quotes Table -->
-    <div class="card">
-        <div class="card-body">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="card-title mb-0">Quote List</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if quotes %}
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Quote ID</th>
-                            <th>RFQ ID</th>
-                            <th>Supplier</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Actions</th>
+                            <th class="border-0">Quote ID</th>
+                            <th class="border-0">RFQ ID</th>
+                            <th class="border-0">Supplier</th>
+                            <th class="border-0">Amount</th>
+                            <th class="border-0">Status</th>
+                            <th class="border-0">Date</th>
+                            <th class="border-0">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for quote in quotes %}
                         <tr>
-                            <td>{{ quote.id }}</td>
-                            <td>{{ quote.rfq_id }}</td>
-                            <td>{{ quote.supplier }}</td>
-                            <td>${{ quote.amount|number_format(2) }}</td>
                             <td>
-                                <span class="badge bg-{{ 'success' if quote.status == 'Accepted' else 'warning' if quote.status == 'Pending' else 'danger' }}">
+                                <div class="fw-bold">#{{ quote.id }}</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">{{ quote.rfq_id }}</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ quote.supplier }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-success">${{ quote.amount|number_format(2) }}</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 
+                                    'success' if quote.status == 'Accepted' else 
+                                    'warning' if quote.status == 'Pending' else 
+                                    'danger' if quote.status == 'Rejected' else
+                                    'secondary'
+                                }}">
                                     {{ quote.status }}
                                 </span>
                             </td>
                             <td>{{ quote.date if quote.date else 'N/A' }}</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewQuote({{ quote.id }})">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewQuote({{ quote.id }})" title="View Details">
                                         <i class="bi bi-eye"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-success" onclick="acceptQuote({{ quote.id }})">
-                                        <i class="bi bi-check"></i>
+                                    {% if quote.status == 'Pending' %}
+                                    <button type="button" class="btn btn-sm btn-outline-success" onclick="acceptQuote({{ quote.id }})" title="Accept Quote">
+                                        <i class="bi bi-check-lg"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="rejectQuote({{ quote.id }})">
-                                        <i class="bi bi-x"></i>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="rejectQuote({{ quote.id }})" title="Reject Quote">
+                                        <i class="bi bi-x-lg"></i>
                                     </button>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -95,40 +169,54 @@
                     </tbody>
                 </table>
             </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-chat-quote text-muted fs-1 mb-3"></i>
+                <h5 class="text-muted">No quotes found</h5>
+                <p class="text-muted mb-3">Quotes from suppliers will appear here once they respond to your RFQs</p>
+                <a href="/rfqs" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Create RFQ
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <!-- Quote Details Modal -->
-<div class="modal fade" id="quoteDetailsModal" tabindex="-1">
+<div class="modal fade" id="quoteDetailsModal" tabindex="-1" aria-labelledby="quoteDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Quote Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="quoteDetailsModalLabel">Quote Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="quoteDetailsContent">
                 <!-- Quote details will be loaded here -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" onclick="acceptQuoteFromModal()">Accept Quote</button>
+                <button type="button" class="btn btn-success" onclick="acceptQuoteFromModal()">
+                    <i class="bi bi-check-lg me-2"></i>Accept Quote
+                </button>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
+let currentQuoteId = null;
+
 function viewQuote(quoteId) {
+    currentQuoteId = quoteId;
     // Load quote details and show modal
     const modal = new bootstrap.Modal(document.getElementById('quoteDetailsModal'));
     document.getElementById('quoteDetailsContent').innerHTML = `
-        <div class="text-center">
-            <div class="spinner-border" role="status">
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
+            <p class="mt-2 text-muted">Loading quote details...</p>
         </div>
     `;
     modal.show();
@@ -138,24 +226,52 @@ function viewQuote(quoteId) {
         document.getElementById('quoteDetailsContent').innerHTML = `
             <div class="row">
                 <div class="col-md-6">
-                    <h6>Quote Information</h6>
-                    <p><strong>Quote ID:</strong> ${quoteId}</p>
-                    <p><strong>RFQ ID:</strong> RFQ-${quoteId.toString().padStart(3, '0')}</p>
-                    <p><strong>Supplier:</strong> ABC Foods</p>
-                    <p><strong>Amount:</strong> $15,000.00</p>
-                    <p><strong>Status:</strong> <span class="badge bg-warning">Pending</span></p>
+                    <h6 class="fw-bold mb-3">Quote Information</h6>
+                    <div class="mb-2">
+                        <small class="text-muted">Quote ID</small>
+                        <div class="fw-bold">#${quoteId}</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">RFQ ID</small>
+                        <div class="fw-bold">RFQ-${quoteId.toString().padStart(3, '0')}</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Supplier</small>
+                        <div class="fw-bold">ABC Foods</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Amount</small>
+                        <div class="fw-bold text-success">$15,000.00</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Status</small>
+                        <div><span class="badge bg-warning">Pending</span></div>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <h6>Product Details</h6>
-                    <p><strong>Product:</strong> Organic Tomatoes</p>
-                    <p><strong>Quantity:</strong> 1,000 kg</p>
-                    <p><strong>Unit Price:</strong> $15.00/kg</p>
-                    <p><strong>Delivery:</strong> 2 weeks</p>
+                    <h6 class="fw-bold mb-3">Product Details</h6>
+                    <div class="mb-2">
+                        <small class="text-muted">Product</small>
+                        <div class="fw-bold">Organic Tomatoes</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Quantity</small>
+                        <div class="fw-bold">1,000 kg</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Unit Price</small>
+                        <div class="fw-bold">$15.00/kg</div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Delivery</small>
+                        <div class="fw-bold">2 weeks</div>
+                    </div>
                 </div>
             </div>
+            <hr>
             <div class="mt-3">
-                <h6>Terms & Conditions</h6>
-                <p>Standard delivery terms apply. Payment due within 30 days of delivery.</p>
+                <h6 class="fw-bold mb-2">Terms & Conditions</h6>
+                <p class="text-muted mb-0">Standard delivery terms apply. Payment due within 30 days of delivery. Quality guarantee provided for all products.</p>
             </div>
         `;
     }, 1000);
@@ -163,26 +279,35 @@ function viewQuote(quoteId) {
 
 function acceptQuote(quoteId) {
     if (confirm('Are you sure you want to accept this quote?')) {
+        // Show loading state
+        showToast('Accepting quote...', 'info');
+        
         // Simulate API call
-        showAlert('Quote accepted successfully!', 'success');
-        // Reload the page or update the table
-        setTimeout(() => location.reload(), 1500);
+        setTimeout(() => {
+            showToast('Quote accepted successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+        }, 1000);
     }
 }
 
 function rejectQuote(quoteId) {
     if (confirm('Are you sure you want to reject this quote?')) {
+        // Show loading state
+        showToast('Rejecting quote...', 'info');
+        
         // Simulate API call
-        showAlert('Quote rejected successfully!', 'success');
-        // Reload the page or update the table
-        setTimeout(() => location.reload(), 1500);
+        setTimeout(() => {
+            showToast('Quote rejected successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+        }, 1000);
     }
 }
 
 function acceptQuoteFromModal() {
-    const quoteId = 1; // Get from modal data
-    acceptQuote(quoteId);
-    bootstrap.Modal.getInstance(document.getElementById('quoteDetailsModal')).hide();
+    if (currentQuoteId) {
+        acceptQuote(currentQuoteId);
+        bootstrap.Modal.getInstance(document.getElementById('quoteDetailsModal')).hide();
+    }
 }
 
 function applyFilters() {
@@ -191,33 +316,58 @@ function applyFilters() {
     const date = document.getElementById('dateFilter').value;
     
     // Simulate filtering
-    showAlert('Filters applied!', 'info');
+    showToast('Filters applied!', 'info');
 }
 
 function exportQuotes() {
-    showAlert('Exporting quotes...', 'info');
-    // Simulate export functionality
+    showToast('Exporting quotes...', 'info');
+    setTimeout(() => {
+        showToast('Quotes exported to Excel!', 'success');
+    }, 2000);
 }
 
 function createQuote() {
-    showAlert('Redirecting to quote creation...', 'info');
-    // Redirect to quote creation page
+    showToast('Redirecting to quote creation...', 'info');
+    setTimeout(() => {
+        window.location.href = '/rfq/new';
+    }, 1000);
 }
 
-function showAlert(message, type) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
-    alertDiv.style.zIndex = '9999';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toastHtml = `
+        <div class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
     `;
     
-    document.body.appendChild(alertDiv);
+    // Add to page
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
     
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 3000);
+    // Show toast
+    const toastElement = toastContainer.lastElementChild;
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+    
+    // Remove after hidden
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '1055';
+    document.body.appendChild(container);
+    return container;
 }
 </script>
 {% endblock %} 

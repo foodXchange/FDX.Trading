@@ -1,51 +1,77 @@
-#!/usr/bin/env python3
-"""
-Azure App Service entry point - Simple Flask health check app
-"""
-from flask import Flask, jsonify
+from fastapi import FastAPI, Request
+from fastapi.responses import Response
+from datetime import datetime
 import os
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route("/")
-def home():
-    return '<h1>FoodXchange API</h1><p>Health Status: <a href="/health/simple">/health/simple</a></p>'
+# Main health endpoint with HEAD support
+@app.api_route("/health", methods=["GET", "HEAD"])
+async def health(request: Request):
+    if request.method == "HEAD":
+        return Response(status_code=200)
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
-@app.route("/health")
-def health():
-    return jsonify({"status": "healthy", "service": "foodxchange"})
+# Alternative health endpoints Azure might check
+@app.api_route("/health/simple", methods=["GET", "HEAD"])
+async def health_simple(request: Request):
+    if request.method == "HEAD":
+        return Response(status_code=200)
+    return {"status": "ok"}
 
-@app.route("/health/simple")
-def health_simple():
-    return jsonify({"status": "ok"})
-
-@app.route("/health/detailed")
-def health_detailed():
-    return jsonify({
+@app.api_route("/health/detailed", methods=["GET", "HEAD"])
+async def health_detailed(request: Request):
+    if request.method == "HEAD":
+        return Response(status_code=200)
+    return {
         "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
         "service": "foodxchange",
-        "version": "1.0.0",
-        "environment": "production",
-    })
+        "version": "1.0.0"
+    }
 
-@app.route("/health/advanced")
-def health_advanced():
-    return jsonify({
+@app.api_route("/health/advanced", methods=["GET", "HEAD"])
+async def health_advanced(request: Request):
+    if request.method == "HEAD":
+        return Response(status_code=200)
+    return {
         "status": "healthy",
-        "service": "foodxchange", 
+        "timestamp": datetime.now().isoformat(),
+        "checks": {
+            "api": "operational",
+            "database": "not_configured",
+            "cache": "not_configured"
+        }
+    }
+
+# Root endpoint with HEAD support
+@app.api_route("/", methods=["GET", "HEAD"])
+async def root(request: Request):
+    if request.method == "HEAD":
+        return Response(status_code=200)
+    return {
+        "message": "FoodXchange API",
         "version": "1.0.0",
-        "environment": "production",
-        "database": "connected",
-        "uptime": "available"
-    })
+        "status": "operational",
+        "timestamp": datetime.now().isoformat()
+    }
 
-@app.route("/api/health")
-def api_health():
-    return jsonify({"status": "healthy", "api": "v1"})
-
-# For gunicorn compatibility
-application = app
+# Middleware to handle HEAD requests for any GET endpoint
+@app.middleware("http")
+async def handle_head_requests(request: Request, call_next):
+    # If it's a HEAD request and we don't have a specific handler
+    if request.method == "HEAD":
+        # Check if there's a corresponding GET endpoint
+        request._method = "GET"
+        response = await call_next(request)
+        # If successful, return empty body for HEAD
+        if response.status_code < 400:
+            response.body = b""
+            response.headers["content-length"] = "0"
+        return response
+    return await call_next(request)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    app.run(host="0.0.0.0", port=port)
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

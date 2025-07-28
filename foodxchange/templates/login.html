@@ -1,105 +1,58 @@
-{% extends "base.html" %}
+{% extends "bootstrap_base.html" %}
 
-{% block title %}Login - FoodXchange{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="login-container">
-    <div class="login-box">
-        <h1 class="login-title">Welcome to FoodXchange</h1>
-        <p class="login-subtitle">B2B Food Marketplace Platform</p>
-        
-        {% if error %}
-        <div class="alert alert-error">{{ error }}</div>
-        {% endif %}
-        
-        <form method="POST" action="/login" class="login-form">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required class="form-control">
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="/static/brand/logos/Favicon.png" alt="Food Xchange" height="48" class="mb-3">
+                        <h2 class="fw-bold text-primary">Welcome Back</h2>
+                        <p class="text-muted">Sign in to your Food Xchange account</p>
+                    </div>
+                    
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="POST" action="/login">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">
+                            Don't have an account? 
+                            <a href="/register" class="text-primary text-decoration-none">Register here</a>
+                        </p>
+                    </div>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required class="form-control">
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-        </form>
-        
-        <div class="login-footer">
-            <p>New to FoodXchange? <a href="/register">Create an account</a></p>
         </div>
     </div>
 </div>
-
-<style>
-.login-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: #f8f9fa;
-}
-
-.login-box {
-    background: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 400px;
-}
-
-.login-title {
-    font-size: 24px;
-    margin-bottom: 8px;
-    text-align: center;
-}
-
-.login-subtitle {
-    color: #6c757d;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.login-form .form-group {
-    margin-bottom: 20px;
-}
-
-.login-form label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.login-form .form-control {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-.btn-block {
-    width: 100%;
-}
-
-.login-footer {
-    margin-top: 20px;
-    text-align: center;
-    color: #6c757d;
-}
-
-.alert {
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
-
-.alert-error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-</style>
 {% endblock %}

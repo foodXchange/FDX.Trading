@@ -1,0 +1,28 @@
+{
+  "startup": {
+    "commandLine": "python azure_startup.py",
+    "runtime": "PYTHON|3.12"
+  },
+  "appSettings": [
+    {
+      "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+      "value": "true"
+    },
+    {
+      "name": "ENABLE_ORYX_BUILD",
+      "value": "true"
+    },
+    {
+      "name": "PYTHON_ENABLE_GUNICORN_MULTIWORKERS",
+      "value": "true"
+    },
+    {
+      "name": "WEBSITES_PORT",
+      "value": "8000"
+    },
+    {
+      "name": "WEBSITE_HEALTHCHECK_MAXUNHEALTHYWORKERPERCENT",
+      "value": "100"
+    }
+  ]
+}

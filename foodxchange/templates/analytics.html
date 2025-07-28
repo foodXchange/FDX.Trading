@@ -1,281 +1,444 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics - FoodXchange</title>
-    
-    <!-- Simple Design System -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/simple-design-system.css') }}">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/favicon.ico') }}">
-</head>
-<body>
-    <!-- Skip to content for accessibility -->
-    <a href="#main" class="skip-link">Skip to main content</a>
-    
-    <!-- Simple Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-container">
-                <a href="/" class="navbar-brand">🍎 FoodXchange</a>
-                
-                <button class="navbar-toggle" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                
-                <ul class="navbar-menu">
-                    <li><a href="/dashboard" class="navbar-link">Dashboard</a></li>
-                    <li><a href="/suppliers" class="navbar-link">Suppliers</a></li>
-                    <li><a href="/orders" class="navbar-link">Orders</a></li>
-                    <li><a href="/analytics" class="navbar-link active">Analytics</a></li>
-                    {% if current_user %}
-                    <li><a href="/auth/logout" class="navbar-link">Logout</a></li>
-                    {% else %}
-                    <li><a href="/login" class="navbar-link">Login</a></li>
-                    {% endif %}
-                </ul>
+{% extends "bootstrap_base.html" %}
+
+{% block title %}Analytics Dashboard - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Analytics Dashboard</h1>
+            <p class="text-muted mb-0">Track your procurement performance and identify savings opportunities</p>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary" onclick="exportReport()">
+                <i class="bi bi-download me-2"></i>Export Report
+            </button>
+            <button type="button" class="btn btn-primary" onclick="scheduleReport()">
+                <i class="bi bi-calendar-plus me-2"></i>Schedule Reports
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-currency-dollar text-primary fs-1"></i>
+                    </div>
+                    <h3 class="text-primary mb-1">${{ "{:,.0f}".format(kpis.total_spend) }}</h3>
+                    <p class="text-muted mb-0">Total Spend</p>
+                </div>
             </div>
         </div>
-    </nav>
-    
-    <!-- Main Content -->
-    <main id="main" class="main-content">
-        <div class="container">
-            <!-- Page Header -->
-            <div class="mb-4">
-                <h1>Analytics Dashboard</h1>
-                <p class="text-muted">Track your procurement performance and identify savings opportunities</p>
-            </div>
-            
-            <!-- KPI Cards -->
-            <div class="grid grid-4 mb-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="text-primary" style="font-size: 2rem;">💰</div>
-                        <h3 class="text-primary">${{ "{:,.0f}".format(kpis.total_spend) }}</h3>
-                        <p class="text-muted">Total Spend</p>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-graph-up-arrow text-success fs-1"></i>
                     </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="text-success" style="font-size: 2rem;">📈</div>
-                        <h3 class="text-success">${{ "{:,.0f}".format(kpis.cost_savings) }}</h3>
-                        <p class="text-muted">Cost Savings</p>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="text-warning" style="font-size: 2rem;">🏭</div>
-                        <h3 class="text-warning">{{ kpis.suppliers_engaged }}</h3>
-                        <p class="text-muted">Active Suppliers</p>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="text-info" style="font-size: 2rem;">📋</div>
-                        <h3 class="text-info">{{ kpis.rfqs_sent }}</h3>
-                        <p class="text-muted">RFQs Sent</p>
-                    </div>
+                    <h3 class="text-success mb-1">${{ "{:,.0f}".format(kpis.cost_savings) }}</h3>
+                    <p class="text-muted mb-0">Cost Savings</p>
                 </div>
             </div>
-            
-            <!-- Charts Row -->
-            <div class="grid grid-2 mb-4">
-                <!-- Spend Trend Chart -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Monthly Spend Trend</h2>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-building text-warning fs-1"></i>
                     </div>
-                    <div class="card-body">
-                        <div class="chart-placeholder">
-                            <canvas id="spendChart" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Category Breakdown -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Spend by Category</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-placeholder">
-                            <canvas id="categoryChart" height="300"></canvas>
-                        </div>
-                    </div>
+                    <h3 class="text-warning mb-1">{{ kpis.suppliers_engaged }}</h3>
+                    <p class="text-muted mb-0">Active Suppliers</p>
                 </div>
             </div>
-            
-            <!-- Supplier Performance -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h2 class="card-title">Top Suppliers by Volume</h2>
-                </div>
-                <div class="table-container">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Supplier</th>
-                                <th>Orders</th>
-                                <th>Total Spend</th>
-                                <th>Avg Delivery Time</th>
-                                <th>Rating</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Mediterranean Delights</td>
-                                <td>45</td>
-                                <td>$125,000</td>
-                                <td>3.2 days</td>
-                                <td>⭐⭐⭐⭐⭐</td>
-                            </tr>
-                            <tr>
-                                <td>Italian Fine Foods</td>
-                                <td>38</td>
-                                <td>$98,500</td>
-                                <td>4.1 days</td>
-                                <td>⭐⭐⭐⭐</td>
-                            </tr>
-                            <tr>
-                                <td>Spanish Imports Co</td>
-                                <td>22</td>
-                                <td>$67,200</td>
-                                <td>5.5 days</td>
-                                <td>⭐⭐⭐⭐</td>
-                            </tr>
-                        </tbody>
-                    </table>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="bi bi-file-earmark-text text-info fs-1"></i>
+                    </div>
+                    <h3 class="text-info mb-1">{{ kpis.rfqs_sent }}</h3>
+                    <p class="text-muted mb-0">RFQs Sent</p>
                 </div>
             </div>
-            
-            <!-- Quick Actions -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Analytics Actions</h2>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <!-- Spend Trend Chart -->
+        <div class="col-lg-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">Monthly Spend Trend</h5>
                 </div>
                 <div class="card-body">
-                    <div class="grid grid-3">
-                        <button class="btn btn-primary" onclick="exportReport()">
-                            📊 Export Report
-                        </button>
-                        <button class="btn btn-secondary" onclick="scheduleReport()">
-                            📅 Schedule Reports
-                        </button>
-                        <button class="btn btn-outline" onclick="customizeMetrics()">
-                            ⚙️ Customize Metrics
-                        </button>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="spendChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
-    
-    <!-- Simple Footer -->
-    <footer class="footer mt-5">
-        <div class="container text-center">
-            <p class="text-muted">© 2024 FoodXchange. All rights reserved.</p>
+        
+        <!-- Category Breakdown -->
+        <div class="col-lg-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">Spend by Category</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
-    </footer>
-    
-    <!-- Simple Design System JS -->
-    <script src="{{ url_for('static', path='/js/simple-utils.js') }}"></script>
-    
-    <!-- Simple Charts (using Chart.js for simplicity) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        // Initialize simple charts
-        document.addEventListener('DOMContentLoaded', function() {
-            // Spend Trend Chart
-            const spendCtx = document.getElementById('spendChart').getContext('2d');
-            new Chart(spendCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Monthly Spend',
-                        data: [65000, 72000, 68000, 81000, 76000, 85000],
-                        borderColor: '#2563eb',
-                        tension: 0.1
-                    }]
+    </div>
+
+    <!-- Supplier Performance -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="card-title mb-0">Top Suppliers by Volume</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0">Supplier</th>
+                            <th class="border-0">Orders</th>
+                            <th class="border-0">Total Spend</th>
+                            <th class="border-0">Avg Delivery Time</th>
+                            <th class="border-0">Rating</th>
+                            <th class="border-0">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">Mediterranean Delights</div>
+                                        <small class="text-muted">Greece</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">45</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-success">$125,000</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold">3.2 days</div>
+                            </td>
+                            <td>
+                                <div class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" title="Contact">
+                                        <i class="bi bi-envelope"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">Italian Fine Foods</div>
+                                        <small class="text-muted">Italy</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">38</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-success">$98,500</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold">4.1 days</div>
+                            </td>
+                            <td>
+                                <div class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" title="Contact">
+                                        <i class="bi bi-envelope"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">Spanish Imports Co</div>
+                                        <small class="text-muted">Spain</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning text-dark">22</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-success">$67,200</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold">5.5 days</div>
+                            </td>
+                            <td>
+                                <div class="text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" title="Contact">
+                                        <i class="bi bi-envelope"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="card-title mb-0">Analytics Actions</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-primary w-100" onclick="exportReport()">
+                        <i class="bi bi-download me-2"></i>Export Report
+                    </button>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-outline-primary w-100" onclick="scheduleReport()">
+                        <i class="bi bi-calendar-plus me-2"></i>Schedule Reports
+                    </button>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-outline-secondary w-100" onclick="customizeMetrics()">
+                        <i class="bi bi-gear me-2"></i>Customize Metrics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Report Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel">Schedule Reports</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="frequency" class="form-label">Frequency</label>
+                        <select class="form-select" id="frequency" required>
+                            <option value="">Select frequency...</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailRecipients" class="form-label">Email Recipients</label>
+                        <input type="email" class="form-control" id="emailRecipients" placeholder="email@example.com" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveSchedule()">Save Schedule</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">FoodXchange</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Spend Trend Chart
+        const spendCtx = document.getElementById('spendChart').getContext('2d');
+        new Chart(spendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Monthly Spend',
+                    data: [65000, 72000, 68000, 81000, 76000, 85000],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
                         }
                     }
                 }
-            });
-            
-            // Category Chart
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Produce', 'Dairy', 'Meat', 'Grains', 'Other'],
-                    datasets: [{
-                        data: [30, 25, 20, 15, 10],
-                        backgroundColor: [
-                            '#2563eb',
-                            '#10b981',
-                            '#f59e0b',
-                            '#ef4444',
-                            '#6b7280'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
+            }
         });
         
-        // Simple action handlers
-        function exportReport() {
-            FX.toast('Generating report...', 'info');
-            setTimeout(() => {
-                FX.toast('Report downloaded!', 'success');
-            }, 2000);
-        }
-        
-        function scheduleReport() {
-            FX.modal.show(`
-                <h3>Schedule Reports</h3>
-                <form data-validate>
-                    <div class="form-group">
-                        <label class="form-label">Frequency</label>
-                        <select class="form-control" required>
-                            <option value="">Select...</option>
-                            <option>Daily</option>
-                            <option>Weekly</option>
-                            <option>Monthly</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email Recipients</label>
-                        <input type="email" class="form-control" placeholder="email@example.com" required>
-                    </div>
-                </form>
-            `, {
-                title: 'Schedule Reports',
-                footer: '<button class="btn btn-primary" onclick="FX.toast(\'Report scheduled!\', \'success\'); FX.modal.hide();">Save Schedule</button>'
-            });
-        }
-        
-        function customizeMetrics() {
+        // Category Chart
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Produce', 'Dairy', 'Meat', 'Grains', 'Other'],
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: [
+                        '#0d6efd',
+                        '#198754',
+                        '#ffc107',
+                        '#dc3545',
+                        '#6c757d'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    });
+    
+    // Action handlers
+    function exportReport() {
+        showToast('Generating report...', 'info');
+        setTimeout(() => {
+            showToast('Report downloaded successfully!', 'success');
+        }, 2000);
+    }
+    
+    function scheduleReport() {
+        const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+        modal.show();
+    }
+    
+    function saveSchedule() {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleModal'));
+        modal.hide();
+        showToast('Report schedule saved!', 'success');
+    }
+    
+    function customizeMetrics() {
+        showToast('Redirecting to settings...', 'info');
+        setTimeout(() => {
             window.location.href = '/settings/analytics';
+        }, 1000);
+    }
+    
+    function showToast(message, type = 'info') {
+        const toastEl = document.getElementById('liveToast');
+        const toastMessage = document.getElementById('toastMessage');
+        toastMessage.textContent = message;
+        
+        // Update toast styling based on type
+        toastEl.className = 'toast';
+        if (type === 'success') {
+            toastEl.classList.add('bg-success', 'text-white');
+        } else if (type === 'error') {
+            toastEl.classList.add('bg-danger', 'text-white');
+        } else if (type === 'warning') {
+            toastEl.classList.add('bg-warning', 'text-dark');
         }
-    </script>
-</body>
-</html>
+        
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+</script>
+{% endblock %}

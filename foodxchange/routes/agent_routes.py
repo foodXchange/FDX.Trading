@@ -2,7 +2,7 @@
 API Routes for Agent Management
 Provides endpoints to control and monitor the email monitoring agent
 """
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from typing import Dict, Any, List
 from datetime import datetime
@@ -11,7 +11,7 @@ import asyncio
 from foodxchange.database import get_db
 from foodxchange.agents import agent_manager, AgentState
 from foodxchange.models.user import User
-from foodxchange.auth import get_current_user
+from foodxchange.auth import get_current_user, SessionAuth
 
 router = APIRouter(prefix="/api/agents", tags=["agents"])
 
@@ -32,12 +32,16 @@ async def get_all_agents_status(
 
 @router.post("/email-monitor/start")
 async def start_email_monitor_agent(
+    request: Request,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Start the email monitoring agent"""
-    if not current_user.is_admin:
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if not user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
         
     agent_id = "email_monitor_main"
@@ -71,10 +75,15 @@ async def start_email_monitor_agent(
 
 @router.post("/email-monitor/stop")
 async def stop_email_monitor_agent(
-    current_user: User = Depends(get_current_user)
+    request: Request,
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Stop the email monitoring agent"""
-    if not current_user.is_admin:
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if not user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
         
     agent_id = "email_monitor_main"
@@ -96,9 +105,15 @@ async def stop_email_monitor_agent(
 
 @router.get("/email-monitor/status")
 async def get_email_monitor_status(
-    current_user: User = Depends(get_current_user)
+    request: Request,
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Get status of the email monitoring agent"""
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
     agent_id = "email_monitor_main"
     
     if agent_id not in agent_manager.agents:
@@ -113,11 +128,16 @@ async def get_email_monitor_status(
 
 @router.post("/email-monitor/configure")
 async def configure_email_monitor(
+    request: Request,
     config: Dict[str, Any],
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Configure the email monitoring agent"""
-    if not current_user.is_admin:
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if not user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
         
     agent_id = "email_monitor_main"
@@ -148,12 +168,16 @@ async def configure_email_monitor(
 
 @router.post("/email-monitor/run-once")
 async def run_email_monitor_once(
+    request: Request,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Run the email monitor agent once (without loop)"""
-    if not current_user.is_admin:
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if not user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
         
     agent_id = "email_monitor_single_run"
@@ -182,9 +206,15 @@ async def run_email_monitor_once(
 
 @router.get("/email-monitor/metrics")
 async def get_email_monitor_metrics(
-    current_user: User = Depends(get_current_user)
+    request: Request,
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Get detailed metrics from the email monitoring agent"""
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
     agent_id = "email_monitor_main"
     
     if agent_id not in agent_manager.agents:
@@ -210,10 +240,16 @@ async def get_email_monitor_metrics(
 
 @router.get("/email-monitor/logs")
 async def get_email_monitor_logs(
+    request: Request,
     limit: int = 100,
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Get recent logs from the email monitoring agent"""
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
     agent_id = "email_monitor_main"
     
     if agent_id not in agent_manager.agents:
@@ -233,12 +269,16 @@ async def get_email_monitor_logs(
 
 @router.post("/test/email-processing")
 async def test_email_processing(
+    request: Request,
     email_data: Dict[str, Any],
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Test email processing pipeline without running full agent"""
-    if not current_user.is_admin:
+    # Check if user is authenticated via session
+    user = SessionAuth.get_current_user_from_cookie(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if not user.is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
         
     # Import services
