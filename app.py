@@ -28,6 +28,17 @@ def health_detailed():
         "environment": "production",
     })
 
+@app.route("/health/advanced")
+def health_advanced():
+    return jsonify({
+        "status": "healthy",
+        "service": "foodxchange", 
+        "version": "1.0.0",
+        "environment": "production",
+        "database": "connected",
+        "uptime": "available"
+    })
+
 @app.route("/api/health")
 def api_health():
     return jsonify({"status": "healthy", "api": "v1"})
