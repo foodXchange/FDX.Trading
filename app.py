@@ -1,77 +1,61 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import Response
+from flask import Flask, jsonify, Response, request
 from datetime import datetime
 import os
 
-app = FastAPI()
+app = Flask(__name__)
 
-# Main health endpoint with HEAD support
-@app.api_route("/health", methods=["GET", "HEAD"])
-async def health(request: Request):
-    if request.method == "HEAD":
-        return Response(status_code=200)
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+# Basic health endpoint that handles both GET and HEAD
+@app.route('/health', methods=['GET', 'HEAD'])
+def health():
+    if request.method == 'HEAD':
+        return Response(status=200)
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat()
+    })
+
+# Root endpoint
+@app.route('/', methods=['GET', 'HEAD'])
+def root():
+    if request.method == 'HEAD':
+        return Response(status=200)
+    return jsonify({
+        'message': 'FoodXchange API',
+        'version': '1.0.0',
+        'status': 'operational',
+        'timestamp': datetime.now().isoformat()
+    })
 
 # Alternative health endpoints Azure might check
-@app.api_route("/health/simple", methods=["GET", "HEAD"])
-async def health_simple(request: Request):
-    if request.method == "HEAD":
-        return Response(status_code=200)
-    return {"status": "ok"}
+@app.route('/health/simple', methods=['GET', 'HEAD'])
+def health_simple():
+    if request.method == 'HEAD':
+        return Response(status=200)
+    return jsonify({'status': 'ok'})
 
-@app.api_route("/health/detailed", methods=["GET", "HEAD"])
-async def health_detailed(request: Request):
-    if request.method == "HEAD":
-        return Response(status_code=200)
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "service": "foodxchange",
-        "version": "1.0.0"
-    }
+@app.route('/health/detailed', methods=['GET', 'HEAD'])
+def health_detailed():
+    if request.method == 'HEAD':
+        return Response(status=200)
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'service': 'foodxchange',
+        'version': '1.0.0'
+    })
 
-@app.api_route("/health/advanced", methods=["GET", "HEAD"])
-async def health_advanced(request: Request):
-    if request.method == "HEAD":
-        return Response(status_code=200)
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "checks": {
-            "api": "operational",
-            "database": "not_configured",
-            "cache": "not_configured"
-        }
-    }
+# Azure health probe endpoint
+@app.route('/robots933456.txt', methods=['GET', 'HEAD'])
+def robots():
+    if request.method == 'HEAD':
+        return Response(status=200)
+    return Response('', status=200)
 
-# Root endpoint with HEAD support
-@app.api_route("/", methods=["GET", "HEAD"])
-async def root(request: Request):
-    if request.method == "HEAD":
-        return Response(status_code=200)
-    return {
-        "message": "FoodXchange API",
-        "version": "1.0.0",
-        "status": "operational",
-        "timestamp": datetime.now().isoformat()
-    }
+# Standard favicon endpoint
+@app.route('/favicon.ico')
+def favicon():
+    return Response('', status=204)
 
-# Middleware to handle HEAD requests for any GET endpoint
-@app.middleware("http")
-async def handle_head_requests(request: Request, call_next):
-    # If it's a HEAD request and we don't have a specific handler
-    if request.method == "HEAD":
-        # Check if there's a corresponding GET endpoint
-        request._method = "GET"
-        response = await call_next(request)
-        # If successful, return empty body for HEAD
-        if response.status_code < 400:
-            response.body = b""
-            response.headers["content-length"] = "0"
-        return response
-    return await call_next(request)
-
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.getenv("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port)
