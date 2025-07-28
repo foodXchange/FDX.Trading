@@ -119,14 +119,59 @@ jobs:
         with:
           name: python-app
 
-      # Deploy using Publish Profile (most reliable method)
-      - name: Deploy to Azure Web App
+      # Deploy using Publish Profile with retry logic
+      - name: Deploy to Azure Web App (Attempt 1)
         uses: azure/webapps-deploy@v2
-        id: deploy-to-webapp
+        id: deploy-to-webapp-1
+        continue-on-error: true
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: deploy.zip
+
+      # Wait and retry if first attempt failed with 409 conflict
+      - name: Wait before retry
+        if: failure() && steps.deploy-to-webapp-1.outcome == 'failure'
+        run: |
+          echo "First deployment attempt failed, waiting 60 seconds before retry..."
+          sleep 60
+
+      - name: Deploy to Azure Web App (Attempt 2)
+        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp-2
+        if: failure() && steps.deploy-to-webapp-1.outcome == 'failure'
+        continue-on-error: true
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy.zip
+
+      # Final retry with longer wait
+      - name: Wait before final retry
+        if: failure() && steps.deploy-to-webapp-2.outcome == 'failure'
+        run: |
+          echo "Second deployment attempt failed, waiting 120 seconds before final retry..."
+          sleep 120
+
+      - name: Deploy to Azure Web App (Final Attempt)
+        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp-final
+        if: failure() && steps.deploy-to-webapp-2.outcome == 'failure'
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy.zip
+        timeout-minutes: 10
+        
+      # Add retry mechanism for deployment conflicts
+      - name: Retry deployment on conflict
+        if: failure() && steps.deploy-to-webapp.outcome == 'failure'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy.zip
+        timeout-minutes: 10
 
       - name: Verify deployment
         run: |
