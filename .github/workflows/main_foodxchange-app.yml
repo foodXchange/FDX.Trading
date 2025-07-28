@@ -148,6 +148,15 @@ jobs:
             --type zip \
             --async false
 
+      # Fix startup configuration for Linux
+      - name: Configure startup command
+        if: steps.azure-login-oidc.outcome == 'success' || steps.azure-login-service-principal.outcome == 'success'
+        run: |
+          az webapp config set \
+            --resource-group foodxchange-rg \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --startup-file "startup.sh"
+
       # Fallback to publish profile if Azure login failed
       - name: Deploy using Publish Profile
         if: steps.azure-login-oidc.outcome == 'failure'
