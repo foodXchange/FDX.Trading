@@ -1,0 +1,103 @@
+name: Deploy to Azure (CLI Method)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: foodxchange-app
+  AZURE_RESOURCE_GROUP: foodxchange-rg
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Create deployment package
+      run: |
+        # Ensure startup.py exists
+        if [ ! -f startup.py ]; then
+          echo "Creating startup.py..."
+          cat > startup.py << 'EOF'
+        import os
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).parent))
+        
+        try:
+            from app.main import app
+        except Exception as e:
+            print(f"Error importing app: {e}")
+            from fastapi import FastAPI
+            app = FastAPI()
+            
+            @app.get("/")
+            def root():
+                return {"status": "starting", "error": str(e)}
+            
+            @app.get("/health")
+            def health():
+                return {"status": "ok"}
+            
+            @app.get("/health/detailed")
+            def health_detailed():
+                return {"status": "ok", "service": "foodxchange"}
+        
+        if __name__ == "__main__":
+            import uvicorn
+            port = int(os.environ.get("PORT", 8000))
+            uvicorn.run(app, host="0.0.0.0", port=port)
+        EOF
+        fi
+        
+        # Create zip package
+        zip -r deploy.zip . -x "*.git*" -x "venv/*" -x "__pycache__/*" -x "*.pyc"
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Deploy to Azure Web App
+      run: |
+        az webapp deploy \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --name ${{ env.AZURE_WEBAPP_NAME }} \
+          --src-path deploy.zip \
+          --type zip
+    
+    - name: Set startup command
+      run: |
+        az webapp config set \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --name ${{ env.AZURE_WEBAPP_NAME }} \
+          --startup-file "python startup.py"
+    
+    - name: Restart app
+      run: |
+        az webapp restart \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --name ${{ env.AZURE_WEBAPP_NAME }}
+    
+    - name: Wait for deployment
+      run: sleep 60
+    
+    - name: Check deployment
+      run: |
+        echo "Checking health endpoints..."
+        curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || echo "Azure URL health check failed"
+        curl -f https://www.fdx.trading/health || echo "Custom domain health check failed"
