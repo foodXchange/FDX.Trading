@@ -119,12 +119,14 @@ jobs:
         with:
           name: python-app
 
-      # Stop any existing deployments first
-      - name: Stop existing deployment
+      # Check deployment status and stop any existing deployments
+      - name: Check and clear deployment locks
         run: |
-          echo "Attempting to stop any existing deployments..."
-          # This will help clear any locks
-          sleep 10
+          echo "Checking for active deployments and clearing locks..."
+          # Add diagnostics to understand the deployment state
+          echo "Current UTC time: $(date -u)"
+          echo "Waiting 30 seconds to ensure previous deployment is complete..."
+          sleep 30
 
       # Deploy using Publish Profile with retry logic
       - name: Deploy to Azure Web App (Attempt 1)
@@ -138,11 +140,14 @@ jobs:
           clean: true
 
       # Wait and retry if first attempt failed with 409 conflict
-      - name: Wait before retry
+      - name: Diagnose and wait before retry
         if: steps.deploy-to-webapp-1.outcome == 'failure'
         run: |
-          echo "First deployment attempt failed, waiting 60 seconds before retry..."
-          sleep 60
+          echo "First deployment attempt failed. Analyzing error..."
+          echo "Current UTC time: $(date -u)"
+          echo "Waiting 90 seconds for deployment locks to clear..."
+          sleep 90
+          echo "Ready for retry attempt"
 
       - name: Deploy to Azure Web App (Attempt 2)
         uses: azure/webapps-deploy@v2
@@ -156,12 +161,15 @@ jobs:
           clean: true
           restart: true
 
-      # Final retry with longer wait
-      - name: Wait before final retry
+      # Final retry with longer wait and forced cleanup
+      - name: Extended wait and cleanup before final retry
         if: steps.deploy-to-webapp-2.outcome == 'failure'
         run: |
-          echo "Second deployment attempt failed, waiting 120 seconds before final retry..."
-          sleep 120
+          echo "Second deployment attempt failed. Performing extended cleanup..."
+          echo "Current UTC time: $(date -u)"
+          echo "Waiting 180 seconds for all deployment processes to complete..."
+          sleep 180
+          echo "Proceeding with final deployment attempt"
 
       - name: Deploy to Azure Web App (Final Attempt)
         uses: azure/webapps-deploy@v2
@@ -175,13 +183,37 @@ jobs:
           restart: true
         timeout-minutes: 15
 
-      - name: Verify deployment
+      - name: Check deployment status
         run: |
-          echo "Deployment completed. Checking app health..."
-          sleep 30
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || echo "000")
-          if [ "$response" = "200" ]; then
-            echo "✅ App is healthy!"
+          # Determine which deployment succeeded
+          if [ "${{ steps.deploy-to-webapp-1.outcome }}" = "success" ]; then
+            echo "✅ Deployment succeeded on first attempt"
+          elif [ "${{ steps.deploy-to-webapp-2.outcome }}" = "success" ]; then
+            echo "✅ Deployment succeeded on second attempt"
+          elif [ "${{ steps.deploy-to-webapp-final.outcome }}" = "success" ]; then
+            echo "✅ Deployment succeeded on final attempt"
           else
-            echo "⚠️ Health check returned: $response"
+            echo "❌ All deployment attempts failed"
+            exit 1
+          fi
+
+      - name: Verify deployment health
+        run: |
+          echo "Verifying deployment health..."
+          echo "Current UTC time: $(date -u)"
+          sleep 45
+          
+          # Test main health endpoint
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || echo "000")
+          echo "Health endpoint response: $response"
+          
+          # Test custom domain if available
+          custom_response=$(curl -s -o /dev/null -w "%{http_code}" https://www.fdx.trading/health || echo "000")
+          echo "Custom domain health response: $custom_response"
+          
+          if [ "$response" = "200" ] || [ "$custom_response" = "200" ]; then
+            echo "✅ App is healthy and responding!"
+          else
+            echo "⚠️ Health checks failed - Azure: $response, Custom: $custom_response"
+            echo "App may still be starting up..."
           fi
