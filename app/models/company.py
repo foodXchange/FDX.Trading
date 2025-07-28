@@ -95,7 +95,6 @@ class Company(Base):
     
     # Relationships
     contacts = relationship("Contact", back_populates="company", cascade="all, delete-orphan")
-    users = relationship("User", back_populates="company_rel")
     
     # For suppliers
     supplier_profile = relationship("Supplier", back_populates="company", uselist=False)

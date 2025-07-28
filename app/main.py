@@ -68,6 +68,9 @@ import psutil
 from app.database import get_db
 from app.auth import SessionAuth, get_current_user_context as get_user_context
 
+# Import and include authentication routes
+from app.routes.auth_routes import include_auth_routes
+
 # Azure Monitor integration
 try:
     from app.services.azure_monitor_service import azure_monitor
@@ -114,6 +117,9 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # Templates
 templates = Jinja2Templates(directory="app/templates")
 
+# Include authentication routes
+include_auth_routes(app)
+
 # Global start time for uptime tracking
 start_time = time.time()
 
@@ -122,12 +128,97 @@ def get_current_user_context(request: Request, db: Session):
 
 @app.get("/", response_class=HTMLResponse)
 async def landing(request: Request, db: Session = Depends(get_db)):
-    return templates.TemplateResponse("landing.html", {"request": request, "current_user": get_current_user_context(request, db)})
+    try:
+        # Try to get current user context, but don't fail if database is unavailable
+        try:
+            current_user = get_current_user_context(request, db)
+        except Exception as db_error:
+            current_user = None
+            print(f"Database error in landing page: {db_error}")
+        
+        return templates.TemplateResponse("landing.html", {"request": request, "current_user": current_user})
+    except Exception as e:
+        # Fallback to simple HTML if template rendering fails
+        return HTMLResponse(content=f"""
+        <html>
+            <head>
+                <title>FoodXchange</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; padding: 50px; text-align: center; background: #f5f5f5; }}
+                    .container {{ max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+                    h1 {{ color: #ff6b35; margin-bottom: 20px; }}
+                    .btn {{ display: inline-block; padding: 12px 24px; margin: 10px; background: #ff6b35; color: white; text-decoration: none; border-radius: 5px; }}
+                    .btn:hover {{ background: #e55a2b; }}
+                    .error {{ color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 5px; margin: 20px 0; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>🍎 FoodXchange</h1>
+                    <p style="font-size: 1.2rem; margin-bottom: 30px;">
+                        Streamline your food sourcing with AI-powered supplier matching, automated RFQs, and intelligent analytics.
+                    </p>
+                    <div>
+                        <a href="/dashboard" class="btn">Go to Dashboard</a>
+                        <a href="/login" class="btn">Login</a>
+                        <a href="/register" class="btn">Register</a>
+                    </div>
+                    <div class="error">
+                        <strong>Note:</strong> Template rendering failed: {str(e)}. This is a fallback page.
+                    </div>
+                </div>
+            </body>
+        </html>
+        """)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request, db: Session = Depends(get_db)):
     error = request.query_params.get("error")
-    return templates.TemplateResponse("login.html", {"request": request, "error": error, "current_user": None})
+    try:
+        return templates.TemplateResponse("login.html", {"request": request, "error": error, "current_user": None})
+    except Exception as e:
+        # Fallback to simple HTML if template rendering fails
+        return HTMLResponse(content=f"""
+        <html>
+            <head>
+                <title>Login - FoodXchange</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; padding: 50px; text-align: center; background: #f5f5f5; }}
+                    .container {{ max-width: 400px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+                    h1 {{ color: #ff6b35; margin-bottom: 20px; }}
+                    .form-group {{ margin-bottom: 20px; text-align: left; }}
+                    label {{ display: block; margin-bottom: 5px; font-weight: bold; }}
+                    input {{ width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }}
+                    .btn {{ width: 100%; padding: 12px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }}
+                    .btn:hover {{ background: #e55a2b; }}
+                    .error {{ color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 5px; margin: 20px 0; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>🍎 FoodXchange Login</h1>
+                    {f'<div class="error">{error}</div>' if error else ''}
+                    <form method="POST" action="/login">
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                    <p style="margin-top: 20px;">
+                        <a href="/" style="color: #ff6b35;">Back to Home</a>
+                    </p>
+                    <div class="error">
+                        <strong>Note:</strong> Template rendering failed: {str(e)}. This is a fallback login page.
+                    </div>
+                </div>
+            </body>
+        </html>
+        """)
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request, db: Session = Depends(get_db)):
@@ -150,8 +241,9 @@ async def health_detailed():
     try:
         # Test database connection
         from app.database import get_db
+        from sqlalchemy import text
         db = next(get_db())
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         db_status = "healthy"
     except Exception as e:
         db_status = f"unhealthy: {str(e)}"
@@ -170,12 +262,13 @@ async def health_advanced():
     try:
         # Test database connection
         from app.database import get_db
+        from sqlalchemy import text
         db = next(get_db())
-        db.execute("SELECT 1")
-        db.execute("SELECT version()")
-        db_version = db.fetchone()[0]
-        db.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'")
-        table_count = db.fetchone()[0]
+        db.execute(text("SELECT 1"))
+        db_version_result = db.execute(text("SELECT version()"))
+        db_version = db_version_result.fetchone()[0]
+        table_count_result = db.execute(text("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'"))
+        table_count = table_count_result.fetchone()[0]
         db_status = {
             "status": "healthy",
             "version": db_version,
@@ -238,8 +331,9 @@ async def enhanced_health():
         # Database health check
         try:
             from app.database import get_db
+            from sqlalchemy import text
             db = next(get_db())
-            db.execute("SELECT 1")
+            db.execute(text("SELECT 1"))
             db_status = "healthy"
         except Exception as e:
             db_status = f"unhealthy: {str(e)}"
@@ -602,9 +696,7 @@ async def projects_list(request: Request, db: Session = Depends(get_db)):
     ]
     return templates.TemplateResponse("projects.html", {"request": request, "projects": projects, "current_user": user})
 
-# Include auth routes
-from app.routes.auth_routes import include_auth_routes
-include_auth_routes(app)
+# Include auth routes (already included above)
 
 # Include agent routes
 from app.routes.agent_routes import router as agent_router
