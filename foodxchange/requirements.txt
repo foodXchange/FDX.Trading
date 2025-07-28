@@ -16,7 +16,7 @@ wheel
 sentry-sdk[fastapi]==1.40.0
 httpx==0.25.2
 openai==1.35.7
-beautifulsoup4==4.12.2
+beautifulsoup4==4.13.4
 azure-communication-email==1.0.0
 # Azure Monitor dependencies
 opencensus-ext-azure==1.1.12
