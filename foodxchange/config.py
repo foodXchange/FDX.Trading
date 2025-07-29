@@ -23,11 +23,25 @@ class Settings(BaseSettings):
     debug: bool = os.getenv("DEBUG", "True").lower() == "true"
     use_https: bool = os.getenv("USE_HTTPS", "False").lower() == "true"
     
-    # Azure settings (optional)
+    # Azure OpenAI settings (optional)
     azure_openai_api_key: Optional[str] = os.getenv("AZURE_OPENAI_API_KEY")
     azure_openai_endpoint: Optional[str] = os.getenv("AZURE_OPENAI_ENDPOINT")
     azure_openai_deployment_name: Optional[str] = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+    
+    # Azure Computer Vision settings (optional)
+    azure_vision_endpoint: Optional[str] = os.getenv("AZURE_VISION_ENDPOINT")
+    azure_vision_key: Optional[str] = os.getenv("AZURE_VISION_KEY")
+    
+    # Azure Cognitive Search settings (optional)
+    azure_search_endpoint: Optional[str] = os.getenv("AZURE_SEARCH_ENDPOINT")
+    azure_search_key: Optional[str] = os.getenv("AZURE_SEARCH_KEY")
+    azure_search_index: Optional[str] = os.getenv("AZURE_SEARCH_INDEX", "products")
+    
+    # Azure Storage settings (optional)
     azure_storage_connection_string: Optional[str] = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+    azure_storage_container: Optional[str] = os.getenv("AZURE_STORAGE_CONTAINER", "product-images")
+    
+    # Azure Communication Services (optional)
     azure_email_connection_string: Optional[str] = os.getenv("AZURE_EMAIL_CONNECTION_STRING")
     
     # Email settings (optional)
@@ -67,4 +81,6 @@ def get_settings():
             _env_file=None,
             database_url=os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db"),
             secret_key=os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
-        ) 
+        )
+
+settings = get_settings() 

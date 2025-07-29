@@ -1,6 +1,0 @@
-<step title="Incoming Request" date="2025-07-28T08:13:41.347" instance="bc4514" url="/dump" method="GET" type="request" pid="772,1,17" Host="foodxchange-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.75.0 (MSI)" Accept-Encoding="identity" Authorization="Bas..." x-ms-client-request-id="c2244e09-6b8a-11f0-92fd-8cf8c504cf6c" X-ARR-LOG-ID="c2244e09-6b8a-11f0-92fd-8cf8c504cf6c" CLIENT-IP="95.35.178.122:49389" X-SITE-DEPLOYMENT-ID="foodxchange-app" WAS-DEFAULT-HOSTNAME="foodxchange-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/dump" X-Client-IP="95.35.178.122" X-Client-Port="49389" >
-  <step title="Cleanup Xml Logs" date="2025-07-28T08:13:41.349" >
-    <step title="Cleanup Infos" date="2025-07-28T08:13:41.378" totalFiles="2023" totalCleanup="1863" /><!-- duration: 17ms -->
-  </step><!-- duration: 48ms -->
-  <step title="Outgoing response" date="2025-07-28T08:13:51.916" type="response" statusCode="200" statusText="OK" /><!-- duration: 3ms -->
-</step><!-- duration: 10578ms -->

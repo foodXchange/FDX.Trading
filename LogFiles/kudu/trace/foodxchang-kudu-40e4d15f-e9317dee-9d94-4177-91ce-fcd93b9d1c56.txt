@@ -1,1 +1,0 @@
-2025-07-27T17:05:44  Startup Request, url: /diagnostics/runtime, method: GET, type: request, pid: 769,1,7, SCM_DO_BUILD_DURING_DEPLOYMENT: true, ScmType: GitHubAction

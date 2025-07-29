@@ -1,8 +1,0 @@
-<step title="Error occurred" date="2025-07-28T11:03:19.593" instance="bc4514" type="error" text="Open() at /tmp/KuduLite/Kudu.Core/Deployment/DeploymentStatusFile.cs:89: Root element is missing." stackTrace="   at System.Xml.XmlTextReaderImpl.Throw(Exception e)
-   at System.Xml.XmlTextReaderImpl.ThrowWithoutLineInfo(String res)
-   at System.Xml.XmlTextReaderImpl.ParseDocumentContent()
-   at System.Xml.Linq.XDocument.Load(XmlReader reader, LoadOptions options)
-   at System.Xml.Linq.XDocument.Load(Stream stream, LoadOptions options)
-   at Kudu.Core.Deployment.DeploymentStatusFile.LoadXmlStatusFile(String path) in /tmp/KuduLite/Kudu.Core/Deployment/DeploymentStatusFile.cs:line 104
-   at Kudu.Core.Infrastructure.OperationManager.Attempt[T](Func`1 action, Int32 retries, Int32 delayBeforeRetry, Func`2 shouldRetry) in /tmp/KuduLite/Kudu.Core/Infrastructure/OperationManager.cs:line 29
-   at Kudu.Core.Deployment.DeploymentStatusFile.&lt;&gt;c__DisplayClass7_0.&lt;Open&gt;b__0() in /tmp/KuduLite/Kudu.Core/Deployment/DeploymentStatusFile.cs:line 82" /><!-- duration: 19ms -->

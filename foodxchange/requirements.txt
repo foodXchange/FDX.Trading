@@ -19,6 +19,13 @@ openai==1.35.7
 beautifulsoup4==4.13.4
 azure-communication-email==1.0.0
 openpyxl==3.1.2
+
+# Azure AI Services for Product Analysis
+azure-cognitiveservices-vision-computervision==0.9.0
+azure-core==1.30.0
+azure-storage-blob==12.19.0
+azure-search-documents==11.4.0
+
 # Azure Monitor dependencies
 opencensus-ext-azure==1.1.12
 opencensus-ext-fastapi==0.1.0

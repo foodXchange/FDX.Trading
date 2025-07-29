@@ -1,81 +1,70 @@
-# FoodXchange Documentation
+# FoodXchange Sourcing Module Documentation
 
-Welcome to the FoodXchange platform documentation. This comprehensive guide covers all aspects of the B2B food supply chain platform.
+Welcome to the FoodXchange Sourcing Module documentation. This lean, focused guide covers the essential aspects of the B2B food sourcing platform.
 
-## 📚 Documentation Index
+## 🎯 Project Overview
 
-### Getting Started
-- **[Main README](../README.md)** - Project overview and quick start guide
-- **[Development Guide](DEVELOPMENT.md)** - Development environment setup and coding standards
-- **[Deployment Guide](DEPLOYMENT.md)** - Deployment instructions for various environments
+FoodXchange is a streamlined B2B food sourcing platform that connects buyers with suppliers through an intelligent, AI-powered matching system.
 
-### API Documentation
-- **[API Reference](API.md)** - Complete API documentation with examples
-- **[Interactive API Docs](http://localhost:8000/docs)** - Swagger UI (when running locally)
-- **[ReDoc](http://localhost:8000/redoc)** - Alternative API documentation
+## 🚀 Quick Start
 
-### Architecture & Design
-- **[System Architecture](ARCHITECTURE.md)** - High-level system design and components
-- **[Database Schema](DATABASE.md)** - Database design and relationships
-- **[Security Guide](SECURITY.md)** - Security best practices and implementation
+### Development Setup
+1. **Install Dependencies**
+   ```bash
+   pip install -r foodxchange/requirements.txt
+   ```
 
-### User Guides
-- **[User Manual](USER_GUIDE.md)** - End-user documentation
-- **[Admin Guide](ADMIN_GUIDE.md)** - Administrative functions and system management
-- **[Agent Guide](AGENT_GUIDE.md)** - Agent-specific features and workflows
+2. **Start Development Server**
+   ```bash
+   cd foodxchange
+   python main.py
+   ```
 
-### Technical Reference
-- **[Configuration](CONFIGURATION.md)** - Environment variables and settings
-- **[Troubleshooting](TROUBLESHOOTING.md)** - Common issues and solutions
-- **[Performance](PERFORMANCE.md)** - Optimization and monitoring
+3. **Access Application**
+   - Main App: http://localhost:8000
+   - API Docs: http://localhost:8000/docs
 
-## 🚀 Quick Navigation
+## 📁 Project Structure
 
-### For Developers
-1. Start with [Development Guide](DEVELOPMENT.md)
-2. Review [API Reference](API.md)
-3. Check [Deployment Guide](DEPLOYMENT.md)
+```
+foodxchange/
+├── main.py              # Main FastAPI application
+├── routes/              # API route handlers
+│   ├── auth_routes.py   # Authentication
+│   ├── supplier_routes.py # Supplier management
+│   ├── product_routes.py # Product catalog
+│   ├── rfq_routes.py    # RFQ management
+│   └── quote_routes.py  # Quote management
+├── models/              # Database models
+│   ├── user.py          # User management
+│   ├── supplier.py      # Supplier data
+│   ├── product.py       # Product data
+│   ├── rfq.py          # RFQ data
+│   └── quote.py        # Quote data
+├── services/            # Business logic
+│   ├── email_service.py # Email functionality
+│   └── notification_service.py # Notifications
+├── agents/              # AI agents
+│   ├── smart_sourcing_agent.py # Smart sourcing
+│   └── csv_data_import_agent.py # CSV import
+└── static/              # Static assets
+    ├── brand/           # Branding assets
+    └── bootstrap/       # Bootstrap framework
+```
 
-### For System Administrators
-1. Read [Deployment Guide](DEPLOYMENT.md)
-2. Review [Configuration](CONFIGURATION.md)
-3. Check [Security Guide](SECURITY.md)
+## 🎯 Core Features
 
-### For End Users
-1. Start with [User Manual](USER_GUIDE.md)
-2. Review role-specific guides (Admin, Agent)
-3. Check [Troubleshooting](TROUBLESHOOTING.md) if needed
-
-## 📋 Documentation Status
-
-| Document | Status | Last Updated |
-|----------|--------|--------------|
-| Main README | ✅ Complete | 2024-01-15 |
-| Development Guide | ✅ Complete | 2024-01-15 |
-| Deployment Guide | ✅ Complete | 2024-01-15 |
-| API Reference | ✅ Complete | 2024-01-15 |
-| User Manual | 🔄 In Progress | - |
-| Admin Guide | 🔄 In Progress | - |
-| Agent Guide | 🔄 In Progress | - |
-| System Architecture | 🔄 In Progress | - |
-| Database Schema | 🔄 In Progress | - |
-| Security Guide | 🔄 In Progress | - |
-
-## 🎯 Key Features Documentation
-
-### Core Platform Features
+### Sourcing Module
+- **Supplier Discovery** - Find and manage suppliers
+- **Product Catalog** - Browse and search products
 - **RFQ Management** - Create and manage Requests for Quotes
-- **Supplier Management** - Comprehensive supplier verification and rating
-- **Quote Comparison** - AI-powered quote analysis and recommendations
-- **Email Intelligence** - Automated email processing and RFQ extraction
-- **Analytics Dashboard** - Real-time insights and performance metrics
+- **Quote Comparison** - Compare and evaluate quotes
+- **CSV Import** - Bulk import supplier and product data
 
-### User Roles & Permissions
-- **Admin** - Full system access and management
-- **Buyer** - Create RFQs, compare quotes, manage suppliers
-- **Supplier** - View RFQs, submit quotes, manage profile
-- **Agent** - Represent suppliers, manage proposals and samples
-- **Operator** - System-wide monitoring and control
+### User Management
+- **Authentication** - Secure user login and registration
+- **Role-based Access** - Different permissions for buyers and suppliers
+- **Profile Management** - User and company profiles
 
 ## 🔧 Technical Stack
 
@@ -83,84 +72,42 @@ Welcome to the FoodXchange platform documentation. This comprehensive guide cove
 - **FastAPI** - Modern Python web framework
 - **SQLAlchemy** - Database ORM
 - **PostgreSQL** - Primary database
-- **Alembic** - Database migrations
-- **Jinja2** - Template engine
+- **Bootstrap 5** - Frontend framework
 
-### Frontend
-- **HTML/CSS/JavaScript** - Static assets
-- **Responsive Design** - Mobile-friendly interface
-- **Modern UI** - Clean, professional design
+### AI & Automation
+- **Smart Sourcing Agent** - AI-powered supplier matching
+- **CSV Import Agent** - Automated data import
+- **Email Service** - Automated communication
 
-### Infrastructure
-- **Azure App Service** - Hosting platform
-- **Azure Database for PostgreSQL** - Managed database
-- **Azure Storage** - File storage
-- **Redis** - Caching (optional)
+## 📊 Database Schema
 
-## 📞 Support & Resources
+### Core Tables
+- **users** - User accounts and authentication
+- **suppliers** - Supplier information and ratings
+- **products** - Product catalog and specifications
+- **rfqs** - Request for Quotes
+- **quotes** - Supplier quotes and pricing
+- **orders** - Purchase orders
+- **notifications** - System notifications
 
-### Documentation Support
-- **Email**: docs@foodxchange.com
-- **GitHub Issues**: [Documentation Issues](https://github.com/yourusername/foodxchange/issues)
-- **Wiki**: [Internal Wiki](https://wiki.foodxchange.com)
+## 🚀 Deployment
 
-### Technical Support
-- **Email**: support@foodxchange.com
-- **API Support**: api-support@foodxchange.com
-- **Deployment Support**: deployment@foodxchange.com
+### Local Development
+```bash
+cd foodxchange
+python main.py
+```
 
-### Community
-- **Discord**: [FoodXchange Community](https://discord.gg/foodxchange)
-- **GitHub**: [Repository](https://github.com/yourusername/foodxchange)
-- **Status Page**: [System Status](https://status.foodxchange.com)
+### Production
+The application is designed to be deployed on Azure App Service with PostgreSQL database.
 
-## 🔄 Contributing to Documentation
+## 📞 Support
 
-### How to Contribute
-1. Fork the repository
-2. Create a feature branch: `git checkout -b docs/feature-name`
-3. Make your changes
-4. Commit with conventional commit format: `docs: add user guide section`
-5. Push and create a pull request
-
-### Documentation Standards
-- Use clear, concise language
-- Include code examples where appropriate
-- Add screenshots for UI-related content
-- Keep information up-to-date
-- Follow the established structure
-
-### Documentation Tools
-- **Markdown** - Primary format for all documentation
-- **Mermaid** - For diagrams and flowcharts
-- **Code highlighting** - For code examples
-- **Tables** - For structured information
-
-## 📈 Documentation Analytics
-
-### Most Viewed Pages
-1. [API Reference](API.md) - 45% of views
-2. [Deployment Guide](DEPLOYMENT.md) - 25% of views
-3. [Development Guide](DEVELOPMENT.md) - 20% of views
-4. [User Manual](USER_GUIDE.md) - 10% of views
-
-### Search Terms
-- "API authentication" - 150 searches/month
-- "deployment azure" - 120 searches/month
-- "database setup" - 100 searches/month
-- "email processing" - 80 searches/month
-
-## 🎉 Getting Help
-
-If you can't find what you're looking for:
-
-1. **Search the documentation** - Use Ctrl+F or browser search
-2. **Check the FAQ** - Common questions and answers
-3. **Contact support** - Email or create an issue
-4. **Join the community** - Discord for real-time help
+For questions or issues:
+1. Check the code comments for implementation details
+2. Review the API documentation at `/docs`
+3. Contact the development team
 
 ---
 
-**Last Updated**: January 15, 2024  
-**Version**: 1.0.0  
-**Maintained by**: FoodXchange Team 
+**FoodXchange Sourcing Module** - Streamlined B2B Food Sourcing 

@@ -5,34 +5,14 @@ __pycache__/
 *.so
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
 
 # Virtual environments
 venv/
 env/
 ENV/
-env.bak/
-venv.bak/
-
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Environment variables
 .env
@@ -40,6 +20,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.blob
 
 # IDE
 .vscode/
@@ -71,14 +52,6 @@ logs/
 temp/
 tmp/
 
-# Build artifacts
-app.zip
-build/
-dist/
-
-# Azure
-.azure/
-
 # Coverage reports
 htmlcov/
 .coverage
@@ -91,32 +64,6 @@ coverage.xml
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# pyenv
-.python-version
-
-# pipenv
-Pipfile.lock
-
-# PEP 582
-__pypackages__/
-
-# Celery
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
 # mypy
 .mypy_cache/
 .dmypy.json
@@ -125,11 +72,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Claude
-.claude/
-
 # Sensitive files
-.env.blob
 azure_blob_config.json
 publish_profile.xml
 *.key
@@ -137,5 +80,4 @@ publish_profile.xml
 *.cert
 *.pfx
 secrets/
-credentials/
-nul 
+credentials/ 
