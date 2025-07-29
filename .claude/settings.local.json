@@ -63,7 +63,8 @@
       "Bash(C:/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe -m uvicorn foodxchange.main:app --reload --port 8000 --host 0.0.0.0)",
       "Bash(mkdir:*)",
       "Bash(find:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }

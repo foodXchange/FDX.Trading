@@ -42,6 +42,27 @@ def get_db():
 def get_current_user_context(request: Request, db=None):
     return None
 
+# Simple login handler (temporary - bypasses database)
+@app.post("/auth/login")
+async def simple_login(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...)
+):
+    """Simple login that works without database - defaults to admin"""
+    # For testing - accept any email/password and log in as admin
+    if email and password:
+        # Redirect to dashboard as admin
+        return RedirectResponse(url="/dashboard", status_code=303)
+    else:
+        return RedirectResponse(url="/login?error=Invalid+credentials", status_code=303)
+
+# Auto-login route for admin access
+@app.get("/admin")
+async def admin_login():
+    """Direct admin access - bypasses login form"""
+    return RedirectResponse(url="/dashboard", status_code=303)
+
 # Import and include all route modules
 try:
     from .routes import (
