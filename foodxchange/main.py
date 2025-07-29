@@ -33,7 +33,7 @@ app.add_middleware(
 )
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="foodxchange/static"), name="static")
 
 # Simple database session mock (replace with actual database)
 def get_db():
@@ -426,6 +426,466 @@ async def dashboard(request: Request):
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    """)
+
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    """Registration page"""
+    return HTMLResponse(content="""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Register - FoodXchange</title>
+        <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        <style>
+            body {
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Roboto Serif', serif;
+            }
+            .register-container {
+                max-width: 500px;
+                width: 100%;
+                padding: 20px;
+            }
+            .register-card {
+                background: white;
+                border: none;
+                border-radius: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                padding: 3rem;
+                position: relative;
+                overflow: hidden;
+            }
+            .register-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255, 127, 0, 0.05) 0%, transparent 70%);
+                transform: rotate(45deg);
+            }
+            .logo-section {
+                text-align: center;
+                margin-bottom: 2rem;
+                z-index: 1;
+                position: relative;
+            }
+            .logo-section img {
+                max-width: 180px;
+                margin-bottom: 1rem;
+            }
+            .form-control {
+                border: 2px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 0.875rem 1.25rem;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background-color: #f8f9fa;
+            }
+            .form-control:focus {
+                border-color: #ff7f00;
+                box-shadow: 0 0 0 0.2rem rgba(255, 127, 0, 0.1);
+                background-color: white;
+            }
+            .form-label {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 0.5rem;
+                font-family: 'Causten', sans-serif;
+            }
+            .btn-register {
+                background: linear-gradient(135deg, #ff7f00 0%, #ff9a33 100%);
+                border: none;
+                border-radius: 12px;
+                padding: 0.875rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: white;
+                transition: all 0.3s ease;
+                font-family: 'Causten', sans-serif;
+            }
+            .btn-register:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(255, 127, 0, 0.3);
+                background: linear-gradient(135deg, #ff9a33 0%, #ff7f00 100%);
+            }
+            .divider {
+                text-align: center;
+                margin: 2rem 0;
+                position: relative;
+            }
+            .divider::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: #e0e0e0;
+            }
+            .divider span {
+                background: white;
+                padding: 0 1rem;
+                position: relative;
+                color: #666;
+                font-size: 0.9rem;
+            }
+            .login-link {
+                text-align: center;
+                margin-top: 2rem;
+                color: #666;
+            }
+            .login-link a {
+                color: #ff7f00;
+                text-decoration: none;
+                font-weight: 600;
+                transition: color 0.3s ease;
+            }
+            .login-link a:hover {
+                color: #ff9a33;
+                text-decoration: underline;
+            }
+            .feature-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+                color: #666;
+                font-size: 0.9rem;
+            }
+            .feature-item i {
+                color: #ff7f00;
+                margin-right: 0.5rem;
+            }
+            .alert {
+                border-radius: 12px;
+                border: none;
+                padding: 1rem 1.25rem;
+            }
+            .alert-danger {
+                background-color: #fee;
+                color: #c33;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="register-container">
+            <div class="register-card">
+                <div class="logo-section">
+                    <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                         alt="FoodXchange Logo">
+                    <h2 class="font-causten fw-bold mb-1">Create Your Account</h2>
+                    <p class="text-muted">Join the AI-powered B2B food sourcing revolution</p>
+                </div>
+                
+                <form method="POST" action="/auth/register" class="position-relative" style="z-index: 1;">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0" style="border-radius: 12px 0 0 12px;">
+                                    <i class="bi bi-person text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="name" name="name" 
+                                       placeholder="John Doe" required style="border-radius: 0 12px 12px 0;">
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0" style="border-radius: 12px 0 0 12px;">
+                                    <i class="bi bi-envelope text-muted"></i>
+                                </span>
+                                <input type="email" class="form-control border-start-0" id="email" name="email" 
+                                       placeholder="john@company.com" required style="border-radius: 0 12px 12px 0;">
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0" style="border-radius: 12px 0 0 12px;">
+                                    <i class="bi bi-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0" id="password" name="password" 
+                                       placeholder="Minimum 6 characters" required minlength="6" style="border-radius: 0 12px 12px 0;">
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-4">
+                            <label for="company" class="form-label">Company Name <span class="text-muted">(Optional)</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0" style="border-radius: 12px 0 0 12px;">
+                                    <i class="bi bi-building text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="company" name="company" 
+                                       placeholder="Your Company Ltd." style="border-radius: 0 12px 12px 0;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-register w-100 mb-3">
+                        <i class="bi bi-person-plus-fill me-2"></i>Create Account
+                    </button>
+                    
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>AI-powered product analysis and matching</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Access to verified B2B suppliers</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Automated RFQ and quote management</span>
+                    </div>
+                </form>
+                
+                <div class="divider">
+                    <span>Already have an account?</span>
+                </div>
+                
+                <div class="login-link">
+                    <a href="/login" class="font-causten">Sign in to your account</a>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Show error message if present in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger alert-dismissible fade show mb-3';
+                alertDiv.innerHTML = `
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>${error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('form').insertAdjacentElement('beforebegin', alertDiv);
+            }
+        </script>
+    </body>
+    </html>
+    """)
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    """Login page"""
+    return HTMLResponse(content="""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login - FoodXchange</title>
+        <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="/static/brand/fx-fonts.css">
+        <style>
+            body {
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Roboto Serif', serif;
+            }
+            .login-container {
+                max-width: 450px;
+                width: 100%;
+                padding: 20px;
+            }
+            .login-card {
+                background: white;
+                border: none;
+                border-radius: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                padding: 3rem;
+                position: relative;
+                overflow: hidden;
+            }
+            .login-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255, 127, 0, 0.05) 0%, transparent 70%);
+                transform: rotate(45deg);
+            }
+            .logo-section {
+                text-align: center;
+                margin-bottom: 2rem;
+                z-index: 1;
+                position: relative;
+            }
+            .logo-section img {
+                max-width: 180px;
+                margin-bottom: 1rem;
+            }
+            .form-control {
+                border: 2px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 0.875rem 1.25rem;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background-color: #f8f9fa;
+            }
+            .form-control:focus {
+                border-color: #ff7f00;
+                box-shadow: 0 0 0 0.2rem rgba(255, 127, 0, 0.1);
+                background-color: white;
+            }
+            .form-label {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 0.5rem;
+                font-family: 'Causten', sans-serif;
+            }
+            .btn-login {
+                background: linear-gradient(135deg, #ff7f00 0%, #ff9a33 100%);
+                border: none;
+                border-radius: 12px;
+                padding: 0.875rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: white;
+                transition: all 0.3s ease;
+                font-family: 'Causten', sans-serif;
+            }
+            .btn-login:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(255, 127, 0, 0.3);
+                background: linear-gradient(135deg, #ff9a33 0%, #ff7f00 100%);
+            }
+            .divider {
+                text-align: center;
+                margin: 2rem 0;
+                position: relative;
+            }
+            .divider::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: #e0e0e0;
+            }
+            .divider span {
+                background: white;
+                padding: 0 1rem;
+                position: relative;
+                color: #666;
+                font-size: 0.9rem;
+            }
+            .register-link {
+                text-align: center;
+                margin-top: 2rem;
+                color: #666;
+            }
+            .register-link a {
+                color: #ff7f00;
+                text-decoration: none;
+                font-weight: 600;
+                transition: color 0.3s ease;
+            }
+            .register-link a:hover {
+                color: #ff9a33;
+                text-decoration: underline;
+            }
+            .alert {
+                border-radius: 12px;
+                border: none;
+                padding: 1rem 1.25rem;
+            }
+            .alert-danger {
+                background-color: #fee;
+                color: #c33;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <div class="login-card">
+                <div class="logo-section">
+                    <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
+                         alt="FoodXchange Logo">
+                    <h2 class="font-causten fw-bold mb-1">Welcome Back</h2>
+                    <p class="text-muted">Sign in to your FoodXchange account</p>
+                </div>
+                
+                <form method="POST" action="/auth/login" class="position-relative" style="z-index: 1;">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0" style="border-radius: 12px 0 0 12px;">
+                                <i class="bi bi-envelope text-muted"></i>
+                            </span>
+                            <input type="email" class="form-control border-start-0" id="email" name="email" 
+                                   placeholder="your@email.com" required style="border-radius: 0 12px 12px 0;">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0" style="border-radius: 12px 0 0 12px;">
+                                <i class="bi bi-lock text-muted"></i>
+                            </span>
+                            <input type="password" class="form-control border-start-0" id="password" name="password" 
+                                   placeholder="Your password" required style="border-radius: 0 12px 12px 0;">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login w-100 mb-3">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </form>
+                
+                <div class="divider">
+                    <span>New to FoodXchange?</span>
+                </div>
+                
+                <div class="register-link">
+                    <a href="/register" class="font-causten">Create your free account</a>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Show error message if present in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger alert-dismissible fade show mb-3';
+                alertDiv.innerHTML = `
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>${error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('form').insertAdjacentElement('beforebegin', alertDiv);
+            }
+        </script>
     </body>
     </html>
     """)

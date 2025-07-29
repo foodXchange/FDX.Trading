@@ -21,6 +21,10 @@ ENV/
 .env.test.local
 .env.production.local
 .env.blob
+.env.alternative
+.env.complete
+.env.final
+.env.working
 
 # IDE
 .vscode/
