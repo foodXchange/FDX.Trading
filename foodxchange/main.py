@@ -3,12 +3,26 @@ FoodXchange - AI-Powered B2B Food Sourcing Platform
 Main FastAPI application with integrated product analysis system
 """
 
+import os
+from dotenv import load_dotenv
+
+# Load environment variables FIRST before any other imports
+from pathlib import Path
+import logging
+logging.basicConfig(level=logging.INFO)
+early_logger = logging.getLogger("env_loader")
+
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path, override=True)
+early_logger.info(f"Loading .env from: {env_path.absolute()}")
+early_logger.info(f"AZURE_OPENAI_ENDPOINT: {os.getenv('AZURE_OPENAI_ENDPOINT', 'NOT SET')}")
+early_logger.info(f".env exists: {env_path.exists()}")
+
 from fastapi import FastAPI, Request, Form, Depends, HTTPException, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-import os
 import json
 import logging
 from pathlib import Path
@@ -99,7 +113,7 @@ async def simple_login(
     password: str = Form(...)
 ):
     """Simple login that works without database - defaults to admin"""
-    # For testing - accept any email/password and log in as admin
+    # Development login - accept any email/password and log in as admin
     if email and password:
         # Redirect to dashboard as admin
         return RedirectResponse(url="/dashboard", status_code=303)
@@ -119,11 +133,12 @@ try:
     sys.path.append(str(BASE_DIR))
     sys.path.append(str(BASE_DIR.parent))  # Add parent directory to path
     
-    from foodxchange.routes import product_analysis_routes, data_import_routes
+    from foodxchange.routes import product_analysis_routes, data_import_routes, azure_testing_routes_fastapi
     
     # Include routers
     app.include_router(product_analysis_routes.router)
     app.include_router(data_import_routes.router)
+    app.include_router(azure_testing_routes_fastapi.router)
     
     logger.info("✅ Route modules loaded successfully")
     

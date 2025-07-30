@@ -374,7 +374,7 @@ class AgentManager {
                 </div>
                 
                 <div class="wizard-actions">
-                    <button onclick="agentManager.testAutomation()" class="btn-secondary">Test Rule</button>
+            
                     <button onclick="agentManager.saveAutomation()" class="btn-primary">Save & Activate</button>
                 </div>
             </div>

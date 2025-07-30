@@ -204,6 +204,169 @@
             opacity: 1;
         }
     }
+
+    /* Step-by-Step Navigation Styles */
+    .step-navigation {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .step-indicators {
+        gap: 20px;
+    }
+
+    .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0.6;
+    }
+
+    .step-item.active {
+        opacity: 1;
+    }
+
+    .step-item.completed {
+        opacity: 0.8;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #6c757d;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .step-item.active .step-number {
+        background: #0d6efd;
+        transform: scale(1.1);
+    }
+
+    .step-item.completed .step-number {
+        background: #198754;
+    }
+
+    .step-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-align: center;
+        color: #6c757d;
+    }
+
+    .step-item.active .step-label {
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    /* Step Content Styles */
+    .step-content {
+        min-height: 400px;
+    }
+
+    .step-panel {
+        display: none;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    .step-panel.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Confidence Indicators */
+    .confidence-indicator {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+
+    .confidence-indicator.high {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .confidence-indicator.medium {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .confidence-indicator.low {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Suggestion and Review Items */
+    .suggestion-item, .review-item, .status-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .suggestion-item:last-child, .review-item:last-child, .status-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Progress Bar Enhancements */
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+    }
+
+    .progress-bar {
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+
+    /* Form Validation Styles */
+    .form-control.is-valid {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .step-indicators {
+            gap: 10px;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+        
+        .step-label {
+            font-size: 0.7rem;
+        }
+        
+        .step-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .step-actions .btn {
+            width: 100%;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -226,12 +389,7 @@
         </div>
     </div>
 
-    <!-- Sample Data Alert -->
-    <div class="sample-data mb-2">
-        <h6><i class="fas fa-info-circle me-2"></i>Getting Started</h6>
-        <p class="mb-1">Try uploading food product images to see AI analysis in action. Supported formats: JPG, PNG, WEBP</p>
-        <small class="text-muted">Sample analysis includes product identification, nutritional insights, and sourcing recommendations.</small>
-    </div>
+
 
     <div class="row">
         <!-- Left Column - Upload and Analysis -->
@@ -270,25 +428,410 @@
                         </div>
                     </div>
 
-                    <!-- Analysis Button -->
-                    <div class="text-center mt-2">
-                        <button class="btn btn-primary" onclick="analyzeImages()" id="analyzeBtn" disabled>
+                    <!-- Analysis Button with Tooltip -->
+                    <div class="text-center mt-2" id="manualAnalysisSection">
+                        <button class="btn btn-primary" onclick="analyzeImages()" id="analyzeBtn" disabled 
+                                data-bs-toggle="tooltip" 
+                                data-bs-placement="bottom" 
+                                title="AI will analyze the product image and auto-fill the form. Please review all fields carefully as AI may make mistakes. You can edit any field to correct the information.">
                             <i class="fas fa-robot me-2"></i>Analyze with AI
                         </button>
                         <div class="mt-2">
                             <small class="text-muted" id="buttonStatus">Button disabled - upload images first</small>
                         </div>
+                        <div class="mt-2">
+                            <small class="text-warning">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                AI analysis may contain errors. Please verify and edit all fields as needed.
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Auto-Analysis Status -->
+                    <div class="text-center mt-2" id="autoAnalysisStatus" style="display: none;">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="spinner-border text-primary me-2" role="status">
+                                <span class="visually-hidden">Analyzing...</span>
+                            </div>
+                            <span class="text-primary">AI is analyzing your product...</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Analysis Results -->
+            <!-- Step-by-Step Analysis Form -->
             <div class="card border-0 shadow-sm" id="analysisCard" style="display: none;">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Analysis Results</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>AI Product Analysis</h5>
+                        <div class="d-flex align-items-center">
+                            <div id="imageThumbnail" class="me-3" style="width: 60px; height: 45px; border-radius: 8px; overflow: hidden;">
+                                <!-- Thumbnail will be populated here -->
+                            </div>
+                            <div class="text-white">
+                                <small>AI Progress: <span id="aiProgress">85%</span></small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body" id="analysisContent">
-                    <!-- Results will be populated here -->
+                
+                <!-- Step Navigation -->
+                <div class="card-body p-0">
+                    <div class="step-navigation bg-light p-3 border-bottom">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="step-indicators d-flex">
+                                        <div class="step-item active" data-step="1">
+                                            <div class="step-number">1</div>
+                                            <div class="step-label">Upload & Identity</div>
+                                        </div>
+                                        <div class="step-item" data-step="2">
+                                            <div class="step-number">2</div>
+                                            <div class="step-label">Characteristics</div>
+                                        </div>
+                                        <div class="step-item" data-step="3">
+                                            <div class="step-number">3</div>
+                                            <div class="step-label">Nutrition</div>
+                                        </div>
+                                        <div class="step-item" data-step="4">
+                                            <div class="step-number">4</div>
+                                            <div class="step-label">Review</div>
+                                        </div>
+                                    </div>
+                                    <div class="step-actions">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm me-2" id="prevStep" onclick="previousStep()" disabled>
+                                            <i class="fas fa-chevron-left me-1"></i>Previous
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-sm" id="nextStep" onclick="nextStep()">
+                                            Next<i class="fas fa-chevron-right ms-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step Content -->
+                    <div class="step-content p-4">
+                        <!-- Step 1: Upload & Identity -->
+                        <div class="step-panel active" id="step1">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0"><i class="fas fa-tag me-2"></i>Product Identity</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="productName" class="form-label">
+                                                    Product Name <span class="text-danger">*</span>
+                                                    <span class="confidence-indicator high" id="productNameConfidence">95%</span>
+                                                </label>
+                                                <input type="text" class="form-control" id="productName" name="productName" required>
+                                                <div class="form-text">OCR from main text</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="brandName" class="form-label">
+                                                    Brand
+                                                    <span class="confidence-indicator medium" id="brandNameConfidence">75%</span>
+                                                </label>
+                                                <input type="text" class="form-control" id="brandName" name="brandName">
+                                                <div class="form-text">Detected from logo/text</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="productCategory" class="form-label">
+                                                    Category
+                                                    <span class="confidence-indicator high" id="categoryConfidence">90%</span>
+                                                </label>
+                                                <select class="form-select" id="productCategory" name="productCategory">
+                                                    <option value="">Select category</option>
+                                                    <option value="Food & Beverage">Food & Beverage</option>
+                                                    <option value="Snacks">Snacks</option>
+                                                    <option value="Beverages">Beverages</option>
+                                                    <option value="Dairy">Dairy</option>
+                                                    <option value="Bakery">Bakery</option>
+                                                    <option value="Frozen Foods">Frozen Foods</option>
+                                                    <option value="Canned Goods">Canned Goods</option>
+                                                    <option value="Condiments">Condiments</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="packageSize" class="form-label">
+                                                    Package Size
+                                                    <span class="confidence-indicator high" id="packageSizeConfidence">88%</span>
+                                                </label>
+                                                <input type="text" class="form-control" id="packageSize" name="packageSize" placeholder="e.g., 25g, 500ml">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>AI Suggestions</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="suggestion-item mb-2">
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                <small>Product name detected with high confidence</small>
+                                            </div>
+                                            <div class="suggestion-item mb-2">
+                                                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                                <small>Brand name may need review</small>
+                                            </div>
+                                            <div class="suggestion-item">
+                                                <i class="fas fa-info-circle text-info me-2"></i>
+                                                <small>Category automatically assigned</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Special Characteristics -->
+                        <div class="step-panel" id="step2">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-star me-2"></i>Dietary & Religious</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="kosherStatus" class="form-label">
+                                                    Kosher Status
+                                                    <span class="confidence-indicator low" id="kosherConfidence">45%</span>
+                                                </label>
+                                                <select class="form-select" id="kosherStatus" name="kosherStatus">
+                                                    <option value="Unknown">Unknown</option>
+                                                    <option value="Kosher">Kosher</option>
+                                                    <option value="Kosher Parve">Kosher Parve</option>
+                                                    <option value="Not Kosher">Not Kosher</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Dietary Features</label>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="glutenFree" name="dietaryFeatures" value="Gluten-Free">
+                                                            <label class="form-check-label" for="glutenFree">Gluten-Free</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="organic" name="dietaryFeatures" value="Organic">
+                                                            <label class="form-check-label" for="organic">Organic</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="vegan" name="dietaryFeatures" value="Vegan">
+                                                            <label class="form-check-label" for="vegan">Vegan</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="nonGmo" name="dietaryFeatures" value="Non-GMO">
+                                                            <label class="form-check-label" for="nonGmo">Non-GMO</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="healthClaims" class="form-label">Health Claims</label>
+                                                <input type="text" class="form-control" id="healthClaims" name="healthClaims" placeholder="e.g., No Sugar Added, High Protein, Vitamin Enriched">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="allergenWarnings" class="form-label">Allergen Warnings</label>
+                                                <input type="text" class="form-control" id="allergenWarnings" name="allergenWarnings" placeholder="e.g., Contains: Nuts, Dairy, Soy">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Need Review</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="review-item mb-2">
+                                                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                                <small>Kosher Status (45%)</small>
+                                            </div>
+                                            <div class="review-item">
+                                                <i class="fas fa-info-circle text-info me-2"></i>
+                                                <small>Check dietary features carefully</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Details & Nutrition -->
+                        <div class="step-panel" id="step3">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Product Details</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="productType" class="form-label">Product Type</label>
+                                                <input type="text" class="form-control" id="productType" name="productType" placeholder="e.g., puffed snack, beverage, crackers">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="mainIngredients" class="form-label">Main Ingredients</label>
+                                                <textarea class="form-control" id="mainIngredients" name="mainIngredients" rows="2" placeholder="First 3-4 ingredients only"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="flavorProfile" class="form-label">Flavor Profile</label>
+                                                <select class="form-select" id="flavorProfile" name="flavorProfile">
+                                                    <option value="">Select flavor</option>
+                                                    <option value="Sweet">Sweet</option>
+                                                    <option value="Salty">Salty</option>
+                                                    <option value="Spicy">Spicy</option>
+                                                    <option value="Neutral">Neutral</option>
+                                                    <option value="Sour">Sour</option>
+                                                    <option value="Bitter">Bitter</option>
+                                                    <option value="Umami">Umami</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="targetGroup" class="form-label">Target Group</label>
+                                                <select class="form-select" id="targetGroup" name="targetGroup">
+                                                    <option value="">Select target group</option>
+                                                    <option value="Kids">Kids</option>
+                                                    <option value="Family">Family</option>
+                                                    <option value="Adults">Adults</option>
+                                                    <option value="General">General</option>
+                                                </select>
+                                                <div class="form-text">Only if obvious from packaging</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card border-success mt-3">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0"><i class="fas fa-apple-alt me-2"></i>Nutritional Quick Facts</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="caloriesPerServing" class="form-label">Calories per Serving</label>
+                                                        <input type="text" class="form-control" id="caloriesPerServing" name="caloriesPerServing" placeholder="e.g., 120 kcal">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="servingSize" class="form-label">Serving Size</label>
+                                                        <input type="text" class="form-control" id="servingSize" name="servingSize" placeholder="e.g., per package or per X grams">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="keyNutrients" class="form-label">Key Nutrients</label>
+                                                <input type="text" class="form-control" id="keyNutrients" name="keyNutrients" placeholder="e.g., protein, fat, carbs (only if prominently displayed)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Analysis Status</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="progress mb-3">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 85%">85%</div>
+                                            </div>
+                                            <div class="status-item mb-2">
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                <small>8/10 fields ready</small>
+                                            </div>
+                                            <div class="status-item">
+                                                <i class="fas fa-clock text-warning me-2"></i>
+                                                <small>Estimated time: 2-3 min</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Review & Complete -->
+                        <div class="step-panel" id="step4">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="card border-secondary">
+                                        <div class="card-header bg-secondary text-white">
+                                            <h6 class="mb-0"><i class="fas fa-eye me-2"></i>Review & Complete</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="reviewSummary">
+                                                <!-- Review summary will be populated here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0"><i class="fas fa-robot me-2"></i>AI Analysis Meta</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="confidenceLevel" class="form-label">Overall Confidence</label>
+                                                <div class="d-flex align-items-center">
+                                                    <input type="range" class="form-range flex-grow-1 me-2" id="confidenceLevel" name="confidenceLevel" min="0" max="100" value="80">
+                                                    <span id="confidenceValue" class="badge bg-primary">80%</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="textQuality" class="form-label">Text Quality</label>
+                                                <select class="form-select" id="textQuality" name="textQuality">
+                                                    <option value="Clear">Clear</option>
+                                                    <option value="Partial">Partial</option>
+                                                    <option value="Poor">Poor</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="analysisStatus" class="form-label">Analysis Status</label>
+                                                <select class="form-select" id="analysisStatus" name="analysisStatus">
+                                                    <option value="Complete">Complete</option>
+                                                    <option value="Needs Review">Needs Review</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="card-footer bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="button" class="btn btn-outline-secondary me-2" onclick="saveAsDraft()">
+                                    <i class="fas fa-save me-2"></i>Save as Draft
+                                </button>
+                                <button type="button" class="btn btn-outline-info me-2" onclick="autoPopulateFields()">
+                                    <i class="fas fa-magic me-2"></i>Auto-Populate
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-secondary me-2" onclick="resetForm()">
+                                    <i class="fas fa-undo me-2"></i>Reset
+                                </button>
+                                <button type="submit" class="btn btn-success" id="completeAnalysis" style="display: none;">
+                                    <i class="fas fa-check me-2"></i>Complete Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -310,8 +853,74 @@
             </div>
         </div>
 
-        <!-- Right Column - Project Management -->
+        <!-- Right Column - Enhanced Analysis Status -->
         <div class="col-lg-4">
+            <!-- Analysis Status -->
+            <div class="card border-0 shadow-sm mb-2" id="analysisStatusCard" style="display: none;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Analysis Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%">85%</div>
+                    </div>
+                    <div class="status-item mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>8/10 fields ready</small>
+                    </div>
+                    <div class="status-item mb-2">
+                        <i class="fas fa-clock text-warning me-2"></i>
+                        <small>Estimated time: 2-3 min</small>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-robot text-info me-2"></i>
+                        <small>AI confidence: 85%</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm mb-2" id="quickActionsCard" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-outline-primary w-100 mb-2" onclick="saveAsDraft()">
+                        <i class="fas fa-save me-2"></i>Save as Draft
+                    </button>
+                    <button class="btn btn-outline-info w-100 mb-2" onclick="autoPopulateFields()">
+                        <i class="fas fa-magic me-2"></i>Auto-Populate
+                    </button>
+                    <button class="btn btn-outline-warning w-100 mb-2" onclick="exportAnalysis()">
+                        <i class="fas fa-download me-2"></i>Export Data
+                    </button>
+                    <button class="btn btn-outline-secondary w-100" onclick="resetForm()">
+                        <i class="fas fa-undo me-2"></i>Reset Form
+                    </button>
+                </div>
+            </div>
+
+            <!-- Need Review -->
+            <div class="card border-0 shadow-sm mb-2" id="needReviewCard" style="display: none;">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Need Review</h5>
+                </div>
+                <div class="card-body">
+                    <div class="review-item mb-2">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        <small>Brand (65%)</small>
+                    </div>
+                    <div class="review-item mb-2">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        <small>Kosher Status (45%)</small>
+                    </div>
+                    <div class="review-item">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <small>Check dietary features</small>
+                    </div>
+                </div>
+            </div>
+
             <!-- Save Project Section -->
             <div class="card border-0 shadow-sm mb-2">
                 <div class="card-header bg-info text-white">
@@ -440,11 +1049,17 @@
     let currentAnalysisData = null;
     let multiProductMode = false;
     let selectedProducts = [];
+    let currentStep = 1;
+    const totalSteps = 4;
+    
+    // Configuration option for automatic analysis
+    let autoAnalysisEnabled = true; // Set to false to require manual analysis button click
 
     // Load saved state on page load
     document.addEventListener('DOMContentLoaded', function() {
         loadAnalysisState();
         loadBuyers();
+        initializeStepNavigation();
         
         // Initialize upload area click handler
         const uploadArea = document.getElementById('uploadArea');
@@ -455,7 +1070,209 @@
         analyzeBtn.addEventListener('click', function(e) {
             console.log('Analyze button clicked via event listener');
         });
+        
+        // Add event listener for auto-analysis toggle
+        const autoAnalysisToggle = document.getElementById('autoAnalysisToggle');
+        autoAnalysisToggle.addEventListener('change', function(e) {
+            autoAnalysisEnabled = e.target.checked;
+            updateUploadAreaMessage();
+            
+            if (autoAnalysisEnabled) {
+                showNotification('Auto-analysis enabled. Images will be analyzed automatically after upload.', 'info');
+                document.getElementById('manualAnalysisSection').style.display = 'none';
+            } else {
+                showNotification('Auto-analysis disabled. Click the Analyze button after upload.', 'info');
+                if (window.selectedFiles && window.selectedFiles.length > 0) {
+                    document.getElementById('manualAnalysisSection').style.display = 'block';
+                }
+            }
+        });
     });
+    
+    function updateUploadAreaMessage() {
+        const uploadArea = document.getElementById('uploadArea');
+        const existingContent = uploadArea.innerHTML;
+        
+        if (autoAnalysisEnabled) {
+            if (!existingContent.includes('AI analysis starts automatically')) {
+                // Add auto-analysis message if not present
+                const messageP = '<p class="text-primary mb-2"><strong>AI analysis starts automatically after upload!</strong></p>';
+                uploadArea.innerHTML = uploadArea.innerHTML.replace(
+                    '<button class="btn btn-primary btn-sm"',
+                    messageP + '<button class="btn btn-primary btn-sm"'
+                );
+            }
+        } else {
+            // Remove auto-analysis message if present
+            uploadArea.innerHTML = uploadArea.innerHTML.replace(
+                '<p class="text-primary mb-2"><strong>AI analysis starts automatically after upload!</strong></p>',
+                ''
+            );
+        }
+    }
+
+    // Step Navigation Functions
+    function initializeStepNavigation() {
+        // Add click handlers to step indicators
+        document.querySelectorAll('.step-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const step = parseInt(this.dataset.step);
+                if (step <= currentStep || step === 1) {
+                    goToStep(step);
+                }
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' && currentStep < totalSteps) {
+                nextStep();
+            } else if (e.key === 'ArrowLeft' && currentStep > 1) {
+                previousStep();
+            }
+        });
+    }
+
+    function goToStep(step) {
+        // Hide all step panels
+        document.querySelectorAll('.step-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+
+        // Show target step panel
+        document.getElementById(`step${step}`).classList.add('active');
+
+        // Update step indicators
+        document.querySelectorAll('.step-item').forEach((item, index) => {
+            const stepNumber = index + 1;
+            item.classList.remove('active', 'completed');
+            
+            if (stepNumber === step) {
+                item.classList.add('active');
+            } else if (stepNumber < step) {
+                item.classList.add('completed');
+            }
+        });
+
+        // Update navigation buttons
+        const prevBtn = document.getElementById('prevStep');
+        const nextBtn = document.getElementById('nextStep');
+        const completeBtn = document.getElementById('completeAnalysis');
+
+        prevBtn.disabled = step === 1;
+        nextBtn.style.display = step === totalSteps ? 'none' : 'inline-block';
+        completeBtn.style.display = step === totalSteps ? 'inline-block' : 'none';
+
+        currentStep = step;
+        updateProgress();
+    }
+
+    function nextStep() {
+        if (currentStep < totalSteps) {
+            goToStep(currentStep + 1);
+        }
+    }
+
+    function previousStep() {
+        if (currentStep > 1) {
+            goToStep(currentStep - 1);
+        }
+    }
+
+    function updateProgress() {
+        const progress = Math.round((currentStep / totalSteps) * 100);
+        document.getElementById('aiProgress').textContent = `${progress}%`;
+        
+        // Update progress bar in step 3
+        const progressBar = document.querySelector('.progress-bar');
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress}%`;
+        }
+
+        // Generate review summary when reaching step 4
+        if (currentStep === 4) {
+            generateReviewSummary();
+        }
+    }
+
+    function generateReviewSummary() {
+        const reviewContainer = document.getElementById('reviewSummary');
+        const formData = collectFormData();
+        
+        let html = '<div class="row">';
+        
+        // Product Identity Summary
+        html += `
+            <div class="col-md-6 mb-3">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-tag me-2"></i>Product Identity</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Name:</strong> ${formData.productName || 'Not specified'}</p>
+                        <p><strong>Brand:</strong> ${formData.brandName || 'Not specified'}</p>
+                        <p><strong>Category:</strong> ${formData.productCategory || 'Not specified'}</p>
+                        <p><strong>Size:</strong> ${formData.packageSize || 'Not specified'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Characteristics Summary
+        html += `
+            <div class="col-md-6 mb-3">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0"><i class="fas fa-star me-2"></i>Characteristics</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Kosher:</strong> ${formData.kosherStatus || 'Unknown'}</p>
+                        <p><strong>Dietary:</strong> ${formData.dietaryFeatures.length > 0 ? formData.dietaryFeatures.join(', ') : 'None specified'}</p>
+                        <p><strong>Health Claims:</strong> ${formData.healthClaims || 'None'}</p>
+                        <p><strong>Allergens:</strong> ${formData.allergenWarnings || 'None specified'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Product Details Summary
+        html += `
+            <div class="col-md-6 mb-3">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Product Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Type:</strong> ${formData.productType || 'Not specified'}</p>
+                        <p><strong>Ingredients:</strong> ${formData.mainIngredients || 'Not specified'}</p>
+                        <p><strong>Flavor:</strong> ${formData.flavorProfile || 'Not specified'}</p>
+                        <p><strong>Target:</strong> ${formData.targetGroup || 'General'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Nutrition Summary
+        html += `
+            <div class="col-md-6 mb-3">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0"><i class="fas fa-apple-alt me-2"></i>Nutrition</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Calories:</strong> ${formData.caloriesPerServing || 'Not specified'}</p>
+                        <p><strong>Serving Size:</strong> ${formData.servingSize || 'Not specified'}</p>
+                        <p><strong>Key Nutrients:</strong> ${formData.keyNutrients || 'Not specified'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        html += '</div>';
+        
+        reviewContainer.innerHTML = html;
+    }
 
     // Notification function
     function showNotification(message, type = 'info') {
@@ -552,6 +1369,9 @@
                     document.getElementById('analyzeBtn').disabled = false;
                     document.getElementById('buttonStatus').textContent = 'Button enabled - ready to analyze';
                     console.log('Analyze button enabled');
+                    
+                    // Show manual analysis button after upload
+                    document.getElementById('manualAnalysisSection').style.display = 'block';
                 }
             }, 100);
             
@@ -568,6 +1388,7 @@
                 <i class="fas fa-check-circle fa-2x mb-2"></i>
                 <h6>Upload Successful!</h6>
                 <p class="text-muted mb-2">${fileCount} image${fileCount > 1 ? 's' : ''} ready for analysis</p>
+                <p class="text-info small"><i class="fas fa-info-circle me-1"></i>Click "Analyze with AI" button below to start analysis</p>
                 <button class="btn btn-outline-primary btn-sm" onclick="resetUpload()">
                     <i class="fas fa-upload me-2"></i>Upload More Images
                 </button>
@@ -598,7 +1419,7 @@
     }
 
     async function analyzeImages() {
-        console.log('Analyze button clicked');
+        console.log('Starting automatic AI analysis...');
         const files = window.selectedFiles || document.getElementById('imageInput').files;
         console.log('Files found:', files);
         console.log('Selected files:', window.selectedFiles);
@@ -609,6 +1430,10 @@
             return;
         }
 
+        // Show auto-analysis status
+        document.getElementById('autoAnalysisStatus').style.display = 'block';
+        
+        // Hide manual button if visible
         const analyzeBtn = document.getElementById('analyzeBtn');
         const originalText = analyzeBtn.innerHTML;
         analyzeBtn.disabled = true;
@@ -643,56 +1468,136 @@
             analyzeBtn.disabled = false;
             analyzeBtn.innerHTML = originalText;
             document.getElementById('buttonStatus').textContent = 'Analysis complete';
+            
+            // Hide auto-analysis status
+            document.getElementById('autoAnalysisStatus').style.display = 'none';
         }
     }
 
     function displayAnalysisResults(data) {
         const analysisCard = document.getElementById('analysisCard');
-        const analysisContent = document.getElementById('analysisContent');
-        
         analysisCard.style.display = 'block';
         
-        let html = '';
+        // Create image thumbnail
+        createImageThumbnail(data);
         
-        if (data.analysis && data.analysis.length > 0) {
-            data.analysis.forEach((result, index) => {
-                html += `
-                    <div class="analysis-result mb-2">
-                        <h6 class="text-primary mb-3">Analysis ${index + 1}</h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p class="mb-2"><strong class="text-dark">Product:</strong> <span class="text-body">${result.product_name || 'Unknown'}</span></p>
-                                <p class="mb-2"><strong class="text-dark">Category:</strong> <span class="text-body">${result.category || 'Unknown'}</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p class="mb-2"><strong class="text-dark">Confidence:</strong> <span class="text-success">${(result.confidence * 100).toFixed(1)}%</span></p>
-                            </div>
-                        </div>
-                        <p class="mb-0"><strong class="text-dark">Description:</strong> <span class="text-body">${result.description || 'No description available'}</span></p>
-                    </div>
-                `;
-            });
+        // Auto-populate form fields with AI data
+        autoPopulateFormWithData(data);
+        
+        // Start with step 1
+        goToStep(1);
+        
+        // Show AI processing animation
+        showAIProcessingAnimation();
+        
+        // Show verification reminder notification
+        showNotification('AI analysis complete! Please carefully review and verify all auto-filled fields. Edit any incorrect information.', 'warning');
+        
+        // Reset upload area to allow new uploads
+        setTimeout(() => {
+            resetUpload();
+        }, 2000);
+        
+        // Add verification reminder banner
+        addVerificationReminder();
+    }
+
+    function showAIProcessingAnimation() {
+        // Simulate AI processing with progress updates
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            document.getElementById('aiProgress').textContent = `${progress}%`;
+            
+            if (progress >= 85) {
+                clearInterval(progressInterval);
+                showNotification('AI analysis complete! Review and confirm the details.', 'success');
+                showSidebarCards();
+            }
+        }, 100);
+    }
+
+    function showSidebarCards() {
+        // Show the enhanced sidebar cards
+        document.getElementById('analysisStatusCard').style.display = 'block';
+        document.getElementById('quickActionsCard').style.display = 'block';
+        document.getElementById('needReviewCard').style.display = 'block';
+    }
+
+    function exportAnalysis() {
+        const formData = collectFormData();
+        const dataStr = JSON.stringify(formData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `product_analysis_${new Date().getTime()}.json`;
+        link.click();
+        
+        showNotification('Analysis data exported successfully!', 'success');
+    }
+
+    function createImageThumbnail(data) {
+        const thumbnailContainer = document.getElementById('imageThumbnail');
+        if (data.analyzed_images && data.analyzed_images.length > 0) {
+            const img = document.createElement('img');
+            img.src = data.analyzed_images[0];
+            img.className = 'img-fluid rounded border';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            thumbnailContainer.innerHTML = '';
+            thumbnailContainer.appendChild(img);
         }
-        
+    }
+
+    function autoPopulateFormWithData(data) {
+        // Populate Product Identity
         if (data.brief) {
-            html += `
-                <div class="analysis-result">
-                    <h6 class="text-primary mb-3">Product Brief</h6>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-2"><strong class="text-dark">Name:</strong> <span class="text-body">${data.brief.product_name || 'Unknown'}</span></p>
-                            <p class="mb-2"><strong class="text-dark">Brand:</strong> <span class="text-body">${data.brief.brand_name || 'Unknown'}</span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-2"><strong class="text-dark">Category:</strong> <span class="text-body">${data.brief.category || 'Unknown'}</span></p>
-                        </div>
-                    </div>
-                    <p class="mb-0"><strong class="text-dark">Description:</strong> <span class="text-body">${data.brief.description || 'No description available'}</span></p>
-                </div>
-            `;
+            document.getElementById('productName').value = data.brief.product_name || '';
+            document.getElementById('brandName').value = data.brief.brand_name || '';
+            document.getElementById('productCategory').value = data.brief.category || '';
+            document.getElementById('packageSize').value = data.brief.package_size || '';
         }
         
-        analysisContent.innerHTML = html;
+        // Populate Basic Description
+        if (data.brief) {
+            document.getElementById('productType').value = data.brief.product_type || '';
+            document.getElementById('mainIngredients').value = data.brief.main_ingredients || '';
+            document.getElementById('flavorProfile').value = data.brief.flavor_profile || '';
+            document.getElementById('targetGroup').value = data.brief.target_group || '';
+        }
+        
+        // Populate Special Characteristics
+        if (data.brief) {
+            document.getElementById('kosherStatus').value = data.brief.kosher_status || 'Unknown';
+            document.getElementById('healthClaims').value = data.brief.health_claims || '';
+            document.getElementById('allergenWarnings').value = data.brief.allergen_warnings || '';
+            
+            // Handle dietary features checkboxes
+            const dietaryFeatures = data.brief.dietary_features || [];
+            document.getElementById('glutenFree').checked = dietaryFeatures.includes('Gluten-Free');
+            document.getElementById('organic').checked = dietaryFeatures.includes('Organic');
+            document.getElementById('vegan').checked = dietaryFeatures.includes('Vegan');
+            document.getElementById('nonGmo').checked = dietaryFeatures.includes('Non-GMO');
+        }
+        
+        // Populate Nutritional Facts
+        if (data.brief) {
+            document.getElementById('caloriesPerServing').value = data.brief.calories_per_serving || '';
+            document.getElementById('servingSize').value = data.brief.serving_size || '';
+            document.getElementById('keyNutrients').value = data.brief.key_nutrients || '';
+        }
+        
+        // Populate AI Analysis Meta
+        if (data.analysis && data.analysis.length > 0) {
+            const confidence = data.analysis[0].confidence || 0.8;
+            document.getElementById('confidenceLevel').value = Math.round(confidence * 100);
+            document.getElementById('confidenceValue').textContent = Math.round(confidence * 100) + '%';
+        }
+        
+        document.getElementById('textQuality').value = data.brief?.text_quality || 'Clear';
+        document.getElementById('analysisStatus').value = data.brief?.analysis_status || 'Complete';
     }
 
     // State management functions
@@ -788,6 +1693,30 @@
             console.error('Error loading buyers:', error);
         }
     }
+
+    // Form submission handler for step-by-step interface
+    document.getElementById('completeAnalysis')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const formData = collectFormData();
+        
+        // Validate required fields
+        if (!formData.productName) {
+            showNotification('Product name is required!', 'error');
+            return;
+        }
+        
+        // Save completed analysis
+        localStorage.setItem('completedAnalysis', JSON.stringify(formData));
+        
+        showNotification('Analysis completed successfully!', 'success');
+        
+        // Optionally redirect or show success state
+        setTimeout(() => {
+            // You can redirect to a results page or show a success modal
+            showNotification('Analysis saved! You can now export or share the results.', 'info');
+        }, 1000);
+    });
 
     // Multi-product functionality
     function toggleMultiProductMode() {
@@ -906,4 +1835,7 @@
         }
     };
 </script>
+
+<!-- Enhanced Product Analysis JavaScript -->
+<script src="{{ url_for('static', filename='js/product-analysis-enhanced.js') }}"></script>
 {% endblock %} 

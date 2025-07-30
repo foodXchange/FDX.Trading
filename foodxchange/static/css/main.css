@@ -194,19 +194,7 @@
     margin: 1rem 0 !important;
 }
 
-/* Sample data optimizations */
-.sample-data {
-    background: #fff3cd !important;
-    border: 1px solid #ffeaa7 !important;
-    border-radius: 0.5rem !important;
-    padding: 1rem !important;
-    margin: 1rem 0 !important;
-}
 
-.sample-data h6 {
-    color: #856404 !important;
-    margin-bottom: 0.5rem !important;
-}
 
 /* Quick actions optimizations */
 .quick-actions {

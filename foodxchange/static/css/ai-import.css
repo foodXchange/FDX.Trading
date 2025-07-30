@@ -1,0 +1,378 @@
+/* AI-Powered Import Styles */
+
+/* Import Container */
+.import-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Progress Indicator */
+.import-progress {
+    margin-bottom: 2rem;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: -1;
+}
+
+.progress-step {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active {
+    background: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.progress-step.completed {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+/* Import Steps */
+.import-step {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.step-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.step-header h3 {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.step-header p {
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Upload Step */
+.upload-area {
+    margin: 2rem 0;
+}
+
+.upload-dropzone {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    padding: 3rem;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-dropzone:hover {
+    background: #e9ecef;
+    border-color: #0056b3;
+}
+
+.upload-dropzone.dragover {
+    background: #007bff20;
+    border-color: #007bff;
+}
+
+.ai-features {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+}
+
+.feature-list i {
+    margin-right: 0.75rem;
+}
+
+/* Analysis Step */
+.analysis-summary {
+    margin: 2rem 0;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.stat-card h5 {
+    font-size: 2rem;
+    margin: 0;
+    color: #007bff;
+}
+
+.stat-card p {
+    margin: 0;
+    color: #6c757d;
+}
+
+/* Mapping Step */
+.mapping-section {
+    margin-bottom: 2rem;
+}
+
+.mapping-section h4 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.mapping-section h4 i {
+    margin-right: 0.5rem;
+}
+
+.mapping-list {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.mapping-row {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.mapping-row:last-child {
+    margin-bottom: 0;
+}
+
+.mapping-row.confirmed {
+    border-color: #28a74520;
+    background: #28a74510;
+}
+
+.mapping-row.uncertain {
+    border-color: #ffc10720;
+    background: #ffc10710;
+}
+
+.source-field,
+.target-field {
+    flex: 1;
+}
+
+.field-name {
+    font-weight: 500;
+    display: block;
+}
+
+.sample-values {
+    color: #6c757d;
+    font-size: 0.875rem;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.mapping-arrow {
+    padding: 0 1rem;
+    color: #6c757d;
+}
+
+.confidence-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+.confidence-badge.high {
+    background: #28a745;
+    color: white;
+}
+
+.confidence-badge.medium {
+    background: #ffc107;
+    color: #212529;
+}
+
+.confidence-badge.low {
+    background: #dc3545;
+    color: white;
+}
+
+.mapping-select {
+    max-width: 250px;
+}
+
+/* Unmapped Fields */
+.unmapped-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.unmapped-field {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.unmapped-field .field-name {
+    font-weight: 500;
+}
+
+.unmapped-field .suggestion {
+    color: #6c757d;
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Preview Step */
+.preview-container {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-results {
+    width: 100%;
+}
+
+.data-quality-score {
+    text-align: center;
+}
+
+.progress {
+    height: 30px;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.issue-list {
+    list-style: none;
+    padding: 0;
+}
+
+.issue-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    border-left: 4px solid;
+}
+
+.issue-item.high {
+    background: #dc354510;
+    border-left-color: #dc3545;
+}
+
+.issue-item.medium {
+    background: #ffc10710;
+    border-left-color: #ffc107;
+}
+
+.issue-item.low {
+    background: #17a2b810;
+    border-left-color: #17a2b8;
+}
+
+/* Complete Step */
+.success-message {
+    text-align: center;
+    padding: 3rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Loading States */
+.loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+.progress-message,
+.error-message {
+    text-align: center;
+    padding: 3rem;
+}
+
+.error-message {
+    color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mapping-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .mapping-arrow {
+        transform: rotate(90deg);
+        padding: 1rem 0;
+        text-align: center;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .action-buttons button {
+        width: 100%;
+    }
+}

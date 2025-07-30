@@ -46,5 +46,11 @@ class ImportRecord(Base, TimestampMixin):
     is_duplicate = Column(Boolean, default=False)
     is_updated = Column(Boolean, default=False)
     
+    # AI-related fields
+    ai_assisted = Column(Boolean, default=False)
+    ai_confidence_score = Column(JSON, nullable=True)  # Field-level confidence scores
+    ai_mapping_used = Column(JSON, nullable=True)  # The field mappings AI suggested
+    ai_cleaning_applied = Column(JSON, nullable=True)  # What cleaning operations were applied
+    
     def __repr__(self):
-        return f"<ImportRecord(id={self.id}, row={self.row_number}, status={self.status})>"
+        return f"<ImportRecord(id={self.id}, row={self.row_number}, status={self.status}, ai={self.ai_assisted})>"

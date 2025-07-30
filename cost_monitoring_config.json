@@ -1,0 +1,52 @@
+{
+  "alerts": [
+    {
+      "id": "daily_budget",
+      "name": "Daily Budget Alert",
+      "type": "cost_threshold",
+      "threshold": 5.0,
+      "period": "daily",
+      "services": ["all"],
+      "enabled": true,
+      "last_triggered": null,
+      "notification_email": null,
+      "notification_webhook": null
+    },
+    {
+      "id": "monthly_budget",
+      "name": "Monthly Budget Alert",
+      "type": "budget_exceeded",
+      "threshold": 50.0,
+      "period": "monthly",
+      "services": ["all"],
+      "enabled": true,
+      "last_triggered": null,
+      "notification_email": null,
+      "notification_webhook": null
+    },
+    {
+      "id": "openai_limit",
+      "name": "OpenAI Rate Limit Warning",
+      "type": "limit_warning",
+      "threshold": 80.0,
+      "period": "realtime",
+      "services": ["openai"],
+      "enabled": true,
+      "last_triggered": null,
+      "notification_email": null,
+      "notification_webhook": null
+    },
+    {
+      "id": "cost_anomaly",
+      "name": "Cost Anomaly Detection",
+      "type": "anomaly_detected",
+      "threshold": 3.0,
+      "period": "hourly",
+      "services": ["all"],
+      "enabled": true,
+      "last_triggered": null,
+      "notification_email": null,
+      "notification_webhook": null
+    }
+  ]
+}

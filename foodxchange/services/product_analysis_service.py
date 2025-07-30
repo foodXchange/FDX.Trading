@@ -13,6 +13,8 @@ import aiohttp
 import base64
 from urllib.parse import urlparse
 
+from .azure_ai_vision_service import azure_ai_vision_service
+
 logger = logging.getLogger(__name__)
 
 class ProductAnalysisService:
@@ -59,12 +61,14 @@ class ProductAnalysisService:
             logger.error(f"Azure services configuration error: {e}")
             raise
     
-    async def analyze_product_image(self, image_url: str, db=None) -> Dict[str, Any]:
+    async def analyze_product_image(self, image_url: str, db=None, use_gpt4v: bool = True) -> Dict[str, Any]:
         """
-        Analyze product image using Azure Computer Vision with OCR
+        Analyze product image using Azure AI services
         
         Args:
             image_url: URL or path to the product image
+            db: Database session for ML improvements
+            use_gpt4v: Whether to use GPT-4 Vision (True) or traditional Computer Vision (False)
             
         Returns:
             Dictionary containing analysis results
@@ -74,6 +78,73 @@ class ProductAnalysisService:
                 "Azure AI services not configured. Cannot analyze images without Azure credentials.\n"
                 "Please run setup_azure_keys.py or setup_azure_keys.bat to configure."
             )
+        
+        # Use GPT-4 Vision for more accurate analysis
+        if use_gpt4v:
+            try:
+                logger.info("Using GPT-4 Vision for product analysis")
+                gpt4v_result = await azure_ai_vision_service.analyze_product_image_gpt4v(image_url)
+                
+                if gpt4v_result.get("success"):
+                    # Format the GPT-4V result to match existing structure
+                    analysis_data = gpt4v_result["data"]
+                    
+                    # Extract confidence scores
+                    confidence_scores = analysis_data.get("confidence_scores", {})
+                    
+                    # Build analysis result in expected format
+                    analysis = {
+                        "product_name": analysis_data.get("product_name", "Unknown Product"),
+                        "brand": analysis_data.get("brand_name", ""),
+                        "category": analysis_data.get("category", "Food & Beverage"),
+                        "description": f"{analysis_data.get('product_type', '')} - {analysis_data.get('package_size', '')}".strip(' - '),
+                        "tags": [],  # GPT-4V doesn't provide tags
+                        "objects": [],  # GPT-4V doesn't provide objects
+                        "brands": [analysis_data.get("brand_name")] if analysis_data.get("brand_name") else [],
+                        "detected_text": [analysis_data.get("product_name", ""), analysis_data.get("brand_name", "")],
+                        "colors": {},  # GPT-4V doesn't analyze colors
+                        "confidence_score": confidence_scores.get("overall", 0.9),
+                        "ocr_text": "",  # GPT-4V extracts structured data directly
+                        "hebrew_text": "",
+                        "english_text": "",
+                        "detected_language": "en",
+                        "weight": analysis_data.get("package_size", ""),
+                        "kosher": analysis_data.get("kosher_status", ""),
+                        "features": analysis_data.get("dietary_features", []),
+                        "gpt4v_analysis": analysis_data,  # Store full GPT-4V analysis
+                        "analysis_method": "gpt-4-vision"
+                    }
+                    
+                    # Apply ML improvements if database is available
+                    if db:
+                        try:
+                            from .ml_improvement_service import ml_improvement_service
+                            corrections = ml_improvement_service.check_for_corrections(
+                                analysis.get('tags', []),
+                                analysis.get('objects', []),
+                                analysis.get('brands', []),
+                                db
+                            )
+                            if corrections:
+                                analysis = ml_improvement_service.apply_learning_to_analysis(
+                                    analysis, corrections
+                                )
+                                logger.info(f"Applied ML corrections: {corrections}")
+                        except Exception as e:
+                            logger.warning(f"ML improvements not available: {e}")
+                    
+                    return analysis
+                else:
+                    logger.warning(f"GPT-4 Vision analysis failed: {gpt4v_result.get('error')}")
+                    # Fall back to traditional Computer Vision
+                    use_gpt4v = False
+            except Exception as e:
+                logger.error(f"Error with GPT-4 Vision: {e}")
+                # Fall back to traditional Computer Vision
+                use_gpt4v = False
+        
+        # Traditional Computer Vision approach (fallback or if specified)
+        if not use_gpt4v:
         
         try:
             # Use the newer Image Analysis 4.0 API for better results
@@ -499,6 +570,59 @@ class ProductAnalysisService:
                 "Azure OpenAI not configured. Cannot generate product brief without Azure credentials.\n"
                 "Please run setup_azure_keys.py or setup_azure_keys.bat to configure."
             )
+        
+        # If we have GPT-4V analysis data, use it directly for the brief
+        if analysis_result.get("analysis_method") == "gpt-4-vision" and "gpt4v_analysis" in analysis_result:
+            gpt4v_data = analysis_result["gpt4v_analysis"]
+            
+            # Map GPT-4V data to brief format
+            brief_data = {
+                "product_name": gpt4v_data.get("product_name", "Unknown Product"),
+                "producing_company": gpt4v_data.get("brand_name", "Unknown Company"),
+                "brand_name": gpt4v_data.get("brand_name", "Unknown Brand"),
+                "country_of_origin": "Israel" if gpt4v_data.get("kosher_status", "").startswith("Kosher") else "Unknown",
+                "category": gpt4v_data.get("category", "Food & Beverage"),
+                "packaging_type": gpt4v_data.get("product_type", "Unknown"),
+                "product_weight": gpt4v_data.get("package_size", "Unknown"),
+                "product_appearance": f"{gpt4v_data.get('product_type', '')} with {gpt4v_data.get('flavor_profile', 'neutral')} flavor",
+                "shelf_life": "12-24 months",
+                "storage_conditions": "Store in a cool, dry place",
+                "target_market": gpt4v_data.get("target_group", "General Market"),
+                "kosher": gpt4v_data.get("kosher_status", "Not specified"),
+                "kosher_writings": gpt4v_data.get("kosher_status", "None"),
+                "gluten_free": "Gluten-Free" in gpt4v_data.get("dietary_features", []),
+                "sugar_free": "Sugar-Free" in gpt4v_data.get("dietary_features", []),
+                "no_sugar_added": "No Sugar Added" in gpt4v_data.get("health_claims", ""),
+                "other_certifications": [f for f in gpt4v_data.get("dietary_features", []) if f not in ["Gluten-Free", "Sugar-Free"]],
+                "price_range": "$2.50 - $8.00 per unit",
+                "currency": "USD",
+                "minimum_order": "1000 units",
+                "payment_terms": "Net 30 days",
+                "related_products": [],
+                "supplier_requirements": ["Food safety certification", "Quality assurance", "Consistent supply"],
+                "quality_standards": ["ISO 22000", "HACCP", "GMP"],
+                "market_insights": f"Growing demand for {gpt4v_data.get('category', 'food')} products with {', '.join(gpt4v_data.get('dietary_features', ['standard']))} features",
+                "main_ingredients": gpt4v_data.get("main_ingredients", ""),
+                "flavor_profile": gpt4v_data.get("flavor_profile", "neutral"),
+                "dietary_features": gpt4v_data.get("dietary_features", []),
+                "health_claims": gpt4v_data.get("health_claims", ""),
+                "allergen_warnings": gpt4v_data.get("allergen_warnings", ""),
+                "calories_per_serving": gpt4v_data.get("calories_per_serving", ""),
+                "serving_size": gpt4v_data.get("serving_size", ""),
+                "key_nutrients": gpt4v_data.get("key_nutrients", ""),
+                "text_quality": gpt4v_data.get("confidence_scores", {}).get("text_quality", "clear"),
+                "analysis_status": gpt4v_data.get("confidence_scores", {}).get("analysis_status", "complete")
+            }
+            
+            # Apply ML improvements if available
+            if db:
+                try:
+                    from .ml_improvement_service import ml_improvement_service
+                    brief_data = ml_improvement_service.apply_learning_to_brief(brief_data, db)
+                except Exception as e:
+                    logger.warning(f"ML improvements not available for brief: {e}")
+            
+            return brief_data
         
         try:
             

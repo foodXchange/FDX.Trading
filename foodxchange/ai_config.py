@@ -34,6 +34,13 @@ AZURE_AI_CONFIG = {
         "endpoint": os.getenv("AZURE_SEARCH_ENDPOINT", ""),
         "key": os.getenv("AZURE_SEARCH_KEY", ""),
         "index_name": "products"
+    },
+    
+    # Document Intelligence for document analysis
+    "DOCUMENT_INTELLIGENCE": {
+        "endpoint": os.getenv("AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT", ""),
+        "key": os.getenv("AZURE_DOCUMENT_INTELLIGENCE_KEY", ""),
+        "api_version": "2023-10-31-preview"
     }
 }
 

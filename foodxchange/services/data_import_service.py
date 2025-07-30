@@ -1,6 +1,7 @@
 """
 Data Import Service for CSV/Excel file processing
 Handles bulk import of buyers and suppliers data
+Now with AI-powered field mapping and data cleaning
 """
 
 import pandas as pd
@@ -10,6 +11,8 @@ from typing import List, Dict, Any, Tuple, Optional
 from datetime import datetime
 import os
 from pathlib import Path
+import asyncio
+from .ai_data_import_service import ai_data_import_service
 
 logger = logging.getLogger(__name__)
 
@@ -301,6 +304,115 @@ class DataImportService:
                 'error': str(e)
             }
     
+    async def analyze_with_ai(self, file_path: str, data_type: str) -> Dict[str, Any]:
+        """
+        Use AI to analyze and suggest field mappings
+        
+        Args:
+            file_path: Path to the file
+            data_type: 'buyers' or 'suppliers'
+            
+        Returns:
+            AI analysis results with field mappings
+        """
+        try:
+            # Read file data
+            with open(file_path, 'rb') as f:
+                file_data = f.read()
+            
+            file_name = os.path.basename(file_path)
+            
+            # Call AI service
+            result = await ai_data_import_service.analyze_import_file(
+                file_data,
+                file_name,
+                data_type
+            )
+            
+            if result['success']:
+                # Add file info to result
+                result['file_path'] = file_path
+                result['file_name'] = file_name
+                result['data_type'] = data_type
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in AI analysis: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    async def import_with_ai_assistance(
+        self,
+        file_path: str,
+        data_type: str,
+        user_mappings: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Import data with AI assistance for field mapping and cleaning
+        
+        Args:
+            file_path: Path to the file
+            data_type: 'buyers' or 'suppliers'
+            user_mappings: User-confirmed mappings from AI analysis
+            
+        Returns:
+            Import results
+        """
+        try:
+            # Read file data
+            with open(file_path, 'rb') as f:
+                file_data = f.read()
+            
+            file_name = os.path.basename(file_path)
+            
+            # Process with AI
+            result = await ai_data_import_service.process_import_with_ai(
+                file_data,
+                file_name,
+                data_type,
+                user_mappings
+            )
+            
+            # If data is ready for import
+            if result.get('success') and result.get('step') == 'import_ready':
+                # Save the cleaned data
+                cleaned_data = result['data']['cleaned_data']
+                
+                # Add timestamps
+                timestamp = datetime.now().isoformat()
+                for record in cleaned_data:
+                    record['created_at'] = timestamp
+                    record['updated_at'] = timestamp
+                    record['imported_via'] = 'ai_assisted'
+                
+                # Save to JSON file
+                output_dir = os.path.join(os.getcwd(), 'data', data_type)
+                os.makedirs(output_dir, exist_ok=True)
+                
+                output_file = os.path.join(
+                    output_dir,
+                    f'{data_type}_ai_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+                )
+                
+                with open(output_file, 'w', encoding='utf-8') as f:
+                    json.dump(cleaned_data, f, indent=2, ensure_ascii=False)
+                
+                # Add file path to result
+                result['file_path'] = output_file
+                result['message'] = f"Successfully imported {len(cleaned_data)} {data_type} with AI assistance"
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in AI-assisted import: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
     def get_import_template(self, data_type: str) -> pd.DataFrame:
         """
         Generate a template file for import
@@ -314,32 +426,32 @@ class DataImportService:
         if data_type == 'buyers':
             columns = self.BUYER_REQUIRED_COLUMNS + self.BUYER_OPTIONAL_COLUMNS
             sample_data = {
-                'name': ['John Smith', 'Jane Doe'],
-                'email': ['john@example.com', 'jane@example.com'],
-                'company_name': ['ABC Corp', 'XYZ Ltd'],
-                'phone': ['+1-234-567-8900', '+1-234-567-8901'],
-                'country': ['USA', 'Canada'],
-                'city': ['New York', 'Toronto'],
-                'address': ['123 Main St', '456 Oak Ave'],
-                'industry': ['Food & Beverage', 'Retail'],
-                'company_size': ['Medium', 'Large'],
-                'payment_terms': ['Net 30', 'Net 60']
+                'name': ['Buyer Name'],
+                'email': ['buyer@company.com'],
+                'company_name': ['Company Name'],
+                'phone': ['+1-234-567-8900'],
+                'country': ['Country'],
+                'city': ['City'],
+                'address': ['Address'],
+                'industry': ['Industry'],
+                'company_size': ['Size'],
+                'payment_terms': ['Payment Terms']
             }
         else:
             columns = self.SUPPLIER_REQUIRED_COLUMNS + self.SUPPLIER_OPTIONAL_COLUMNS
             sample_data = {
-                'name': ['Supplier One', 'Supplier Two'],
-                'email': ['supplier1@example.com', 'supplier2@example.com'],
-                'company_name': ['Fresh Foods Inc', 'Quality Produce Ltd'],
-                'phone': ['+1-234-567-8900', '+1-234-567-8901'],
-                'country': ['USA', 'Mexico'],
-                'city': ['Los Angeles', 'Mexico City'],
-                'address': ['789 Farm Road', '321 Market St'],
-                'industry': ['Agriculture', 'Food Processing'],
-                'company_size': ['Large', 'Medium'],
-                'certifications': ['ISO 9001, HACCP', 'Organic, Fair Trade'],
-                'payment_terms': ['Net 30', 'Net 45'],
-                'minimum_order': ['$5,000', '$10,000']
+                'name': ['Supplier Name'],
+                'email': ['supplier@company.com'],
+                'company_name': ['Company Name'],
+                'phone': ['+1-234-567-8900'],
+                'country': ['Country'],
+                'city': ['City'],
+                'address': ['Address'],
+                'industry': ['Industry'],
+                'company_size': ['Size'],
+                'certifications': ['Certifications'],
+                'payment_terms': ['Payment Terms'],
+                'minimum_order': ['Minimum Order']
             }
         
         # Create DataFrame with sample data

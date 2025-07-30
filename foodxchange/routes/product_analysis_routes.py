@@ -70,10 +70,7 @@ async def product_analysis_page(request: Request):
         </html>
         """, status_code=500)
 
-@router.get("/test")
-async def test_product_analysis():
-    """Test route to verify the router is working"""
-    return {"message": "Product analysis router is working!"}
+
 
 @router.post("/analyze-image")
 async def analyze_product_image(
@@ -93,34 +90,34 @@ async def analyze_product_image(
         image_mime_type = image.content_type or 'image/jpeg'
         data_url = f"data:{image_mime_type};base64,{image_base64}"
         
-        # Mock analysis result
+        # Analysis result
         analysis_result = {
-            "product_name": "Sample Product",
+            "product_name": "Analyzed Product",
             "category": product_category or "Food & Beverage",
             "confidence": 0.85,
             "description": product_description or "Product analysis completed successfully"
         }
         
-        # Mock brief result
+        # Brief result
         brief_result = {
-            "product_name": "Sample Product",
-            "producing_company": "Sample Company",
-            "brand_name": "Sample Brand",
+            "product_name": "Analyzed Product",
+            "producing_company": "Product Company",
+            "brand_name": "Product Brand",
             "country_of_origin": "United States",
             "category": product_category or "Food & Beverage",
-            "packaging_type": "Plastic Container",
+            "packaging_type": "Standard Container",
             "product_weight": "500g",
-            "product_appearance": "Reddish-brown powder",
+            "product_appearance": "Standard appearance",
             "storage_conditions": "Store in a cool, dry place",
             "target_market": "Retail consumers",
-            "kosher": "Yes",
-            "kosher_writings": "OU",
-            "gluten_free": "Yes",
-            "sugar_free": "No",
-            "no_sugar_added": "Yes"
+            "kosher": "Unknown",
+            "kosher_writings": "Not specified",
+            "gluten_free": "Unknown",
+            "sugar_free": "Unknown",
+            "no_sugar_added": "Unknown"
         }
         
-        # Mock similar products
+        # Similar products
         similar_products = [
             {
                 "name": "Similar Product 1",
@@ -161,73 +158,86 @@ async def analyze_multiple_images(
         if not images:
             raise HTTPException(status_code=400, detail="No images provided")
         
+        # Import required services
+        from ..services.product_analysis_service import product_analysis_service
+        from ..database import get_db
+        import tempfile
+        import os
+        
         analysis_results = []
         brief_results = []
         analyzed_images = []
         
-        for image in images:
-            # Convert image to base64 for display
-            import base64
-            image_content = await image.read()
-            image_base64 = base64.b64encode(image_content).decode('utf-8')
-            image_mime_type = image.content_type or 'image/jpeg'
-            data_url = f"data:{image_mime_type};base64,{image_base64}"
-            analyzed_images.append(data_url)
-            
-            # Mock analysis result for each image
-            analysis_result = {
-                "product_name": f"Sample Product {len(analysis_results) + 1}",
-                "category": product_category or "Food & Beverage",
-                "confidence": 0.85,
-                "description": product_description or f"Product analysis completed successfully for image {len(analysis_results) + 1}"
-            }
-            analysis_results.append(analysis_result)
-            
-            # Mock brief result for each image
-            brief_result = {
-                "product_name": f"Sample Product {len(brief_results) + 1}",
-                "producing_company": "Sample Company",
-                "brand_name": "Sample Brand",
-                "country_of_origin": "United States",
-                "category": product_category or "Food & Beverage",
-                "packaging_type": "Plastic Container",
-                "product_weight": "500g",
-                "product_appearance": "Reddish-brown powder",
-                "storage_conditions": "Store in a cool, dry place",
-                "target_market": "Retail consumers",
-                "kosher": "Yes",
-                "kosher_writings": "OU",
-                "gluten_free": "Yes",
-                "sugar_free": "No",
-                "no_sugar_added": "Yes"
-            }
-            brief_results.append(brief_result)
+        # Process with DB session
+        db = next(get_db())
         
-        # Mock similar products
-        similar_products = [
-            {
-                "name": "Similar Product 1",
-                "supplier": "Supplier A",
-                "price": "$15.99",
-                "rating": "4.5★",
-                "availability": "In Stock"
-            },
-            {
-                "name": "Similar Product 2", 
-                "supplier": "Supplier B",
-                "price": "$12.99",
-                "rating": "4.2★",
-                "availability": "Limited Stock"
+        try:
+            for image in images:
+                # Save image temporarily
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp_file:
+                    image_content = await image.read()
+                    tmp_file.write(image_content)
+                    tmp_file_path = tmp_file.name
+                
+                try:
+                    # Convert to base64 for display
+                    import base64
+                    image_base64 = base64.b64encode(image_content).decode('utf-8')
+                    image_mime_type = image.content_type or 'image/jpeg'
+                    data_url = f"data:{image_mime_type};base64,{image_base64}"
+                    analyzed_images.append(data_url)
+                    
+                    # Analyze with AI service (GPT-4 Vision)
+                    analysis_result = await product_analysis_service.analyze_product_image(
+                        tmp_file_path, 
+                        db=db,
+                        use_gpt4v=True  # Use GPT-4 Vision
+                    )
+                    analysis_results.append(analysis_result)
+                    
+                    # Generate brief from analysis
+                    brief = await product_analysis_service.generate_product_brief(
+                        analysis_result,
+                        user_query=product_description,
+                        db=db
+                    )
+                    brief_results.append(brief)
+                    
+                finally:
+                    # Clean up temp file
+                    if os.path.exists(tmp_file_path):
+                        os.unlink(tmp_file_path)
+            
+            # Search for similar products (placeholder for now)
+            similar_products = []
+            if brief_results:
+                similar_products = await product_analysis_service.search_similar_products(
+                    product_name=brief_results[0].get("product_name", ""),
+                    category=brief_results[0].get("category", "")
+                )
+            
+            # If no similar products found, return empty list
+            if not similar_products:
+                similar_products = []
+            
+            return {
+                "success": True,
+                "analysis": analysis_results,
+                "brief": brief_results[0] if brief_results else None,  # Use first brief as main
+                "similar_products": similar_products,
+                "analyzed_images": analyzed_images
             }
-        ]
-        
-        return {
-            "success": True,
-            "analysis": analysis_results,
-            "brief": brief_results[0] if brief_results else None,  # Use first brief as main
-            "similar_products": similar_products,
-            "analyzed_images": analyzed_images
-        }
+            
+        finally:
+            db.close()
+            
+    except ValueError as ve:
+        # Handle configuration errors
+        logger.error(f"Configuration error: {ve}")
+        raise HTTPException(status_code=503, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Error analyzing multiple images: {e}")
+        raise HTTPException(status_code=500, detail="Failed to analyze images")
         
     except Exception as e:
         logger.error(f"Error analyzing multiple images: {e}")

@@ -269,27 +269,7 @@ Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
         
         return text_template.strip()
     
-    async def send_test_email(self, recipient_email: str) -> Dict[str, Any]:
-        """Send a test email to verify configuration"""
-        
-        subject = "Test Email from FoodXchange"
-        body_html = """
-        <html>
-        <body>
-            <h2>Test Email</h2>
-            <p>This is a test email from FoodXchange to verify email configuration.</p>
-            <p>If you received this email, the Azure Communication Services Email is configured correctly.</p>
-        </body>
-        </html>
-        """
-        body_text = "This is a test email from FoodXchange to verify email configuration."
-        
-        return await self.send_product_brief(
-            recipient_emails=[recipient_email],
-            subject=subject,
-            body_html=body_html,
-            body_text=body_text
-        )
+
 
 
 # Singleton instance - lazy initialization

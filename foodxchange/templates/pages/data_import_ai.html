@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+
+{% block title %}AI-Powered Data Import - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai-import.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">AI-Powered Data Import</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Data Import</li>
+    </ol>
+
+    <!-- AI Features Notice -->
+    <div id="aiStatusAlert" class="alert alert-info mb-4">
+        <i class="fas fa-spinner fa-spin me-2"></i>
+        Checking AI features availability...
+    </div>
+
+    <!-- Import Options -->
+    <div class="row mb-4">
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-users me-1"></i>
+                    Import Buyers
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Buyer Data Import</h5>
+                    <p class="card-text">Import buyer information with intelligent field mapping and data validation.</p>
+                    
+                    <div class="ai-benefits mb-3">
+                        <small class="text-muted">AI Features:</small>
+                        <ul class="small mb-2">
+                            <li>Automatic field detection</li>
+                            <li>Smart data cleaning</li>
+                            <li>Duplicate detection</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="startAIImport('buyers')">
+                        <i class="fas fa-magic me-1"></i> AI-Powered Import
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="showClassicImport('buyers')">
+                        <i class="fas fa-file-import me-1"></i> Classic Import
+                    </button>
+                    <a href="{{ url_for('data_import.download_template', data_type='buyers') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-download me-1"></i> Template
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-truck me-1"></i>
+                    Import Suppliers
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Supplier Data Import</h5>
+                    <p class="card-text">Import supplier information with intelligent field mapping and data validation.</p>
+                    
+                    <div class="ai-benefits mb-3">
+                        <small class="text-muted">AI Features:</small>
+                        <ul class="small mb-2">
+                            <li>Company name standardization</li>
+                            <li>Contact info validation</li>
+                            <li>Certification detection</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="btn btn-success" onclick="startAIImport('suppliers')">
+                        <i class="fas fa-magic me-1"></i> AI-Powered Import
+                    </button>
+                    <button class="btn btn-outline-success" onclick="showClassicImport('suppliers')">
+                        <i class="fas fa-file-import me-1"></i> Classic Import
+                    </button>
+                    <a href="{{ url_for('data_import.download_template', data_type='suppliers') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-download me-1"></i> Template
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Import Container -->
+    <div id="aiImportContainer" class="card mb-4" style="display: none;">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-magic me-2"></i>
+                <span id="importTitle">AI-Powered Import</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Progress Indicator -->
+            <div class="import-progress mb-4">
+                <div class="progress-steps">
+                    <div class="progress-step active" data-step="upload">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="progress-step" data-step="analysis">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="progress-step" data-step="mapping">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="progress-step" data-step="preview">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="progress-step" data-step="validation">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                    <div class="progress-step" data-step="complete">
+                        <i class="fas fa-flag-checkered"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Content -->
+            <div id="importContainer" class="import-container">
+                <!-- Dynamic content loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Import History -->
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-history me-1"></i>
+            Import History
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="importHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>File</th>
+                            <th>Type</th>
+                            <th>Method</th>
+                            <th>Records</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Classic Import Modal (fallback) -->
+<div class="modal fade" id="classicImportModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="classicImportTitle">Classic Import</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Classic import steps -->
+                <div id="classicStep1" class="classic-step">
+                    <h6>Select File</h6>
+                    <form id="classicUploadForm">
+                        <input type="hidden" id="classicDataType" name="data_type" value="">
+                        <div class="mb-3">
+                            <label for="classicFileInput" class="form-label">Choose CSV or Excel file</label>
+                            <input type="file" class="form-control" id="classicFileInput" name="file" accept=".csv,.xlsx,.xls" required>
+                            <div class="form-text">Manual field mapping will be required</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-eye me-1"></i> Preview Data
+                        </button>
+                    </form>
+                </div>
+                
+                <div id="classicStep2" class="classic-step" style="display: none;">
+                    <h6>Preview & Mapping</h6>
+                    <div id="classicPreviewContent">
+                        <!-- Preview content will be loaded here -->
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-secondary" onclick="backToClassicStep1()">Back</button>
+                        <button class="btn btn-success" onclick="processClassicImport()">Import</button>
+                    </div>
+                </div>
+                
+                <div id="classicStep3" class="classic-step" style="display: none;">
+                    <h6>Import Results</h6>
+                    <div id="classicResults">
+                        <!-- Results will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Include AI Import Manager -->
+<script src="{{ url_for('static', filename='js/ai-import-manager.js') }}"></script>
+
+<script>
+// Check AI availability on load
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        const response = await fetch('/api/import/ai-enabled');
+        const data = await response.json();
+        
+        const alertDiv = document.getElementById('aiStatusAlert');
+        if (data.enabled) {
+            alertDiv.className = 'alert alert-success mb-4';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>AI Features Active!</strong> Your imports will benefit from intelligent field mapping, data cleaning, and validation.
+            `;
+        } else {
+            alertDiv.className = 'alert alert-warning mb-4';
+            alertDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>AI Features Limited:</strong> Configure Azure OpenAI for full AI-powered import capabilities.
+                <a href="#" class="alert-link ms-2" onclick="showAISetupGuide()">Setup Guide</a>
+            `;
+        }
+    } catch (error) {
+        console.error('Error checking AI status:', error);
+    }
+    
+    // Load import history
+    loadImportHistory();
+});
+
+// Start AI Import
+function startAIImport(dataType) {
+    document.getElementById('importTitle').textContent = `AI-Powered ${dataType.charAt(0).toUpperCase() + dataType.slice(1)} Import`;
+    document.getElementById('aiImportContainer').style.display = 'block';
+    
+    // Scroll to import container
+    document.getElementById('aiImportContainer').scrollIntoView({ behavior: 'smooth' });
+    
+    // Initialize AI Import Manager
+    aiImportManager.init(dataType);
+}
+
+// Show classic import (fallback)
+function showClassicImport(dataType) {
+    // Show modal instead of redirect
+    document.getElementById('classicDataType').value = dataType;
+    document.getElementById('classicImportTitle').textContent = `Classic ${dataType.charAt(0).toUpperCase() + dataType.slice(1)} Import`;
+    
+    // Reset form
+    document.getElementById('classicUploadForm').reset();
+    document.querySelectorAll('.classic-step').forEach(el => el.style.display = 'none');
+    document.getElementById('classicStep1').style.display = 'block';
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('classicImportModal'));
+    modal.show();
+}
+
+// Classic import form handler
+document.getElementById('classicUploadForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch('/api/import/preview', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showClassicPreview(data);
+        } else {
+            alert('Preview failed: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+});
+
+// Show classic preview
+function showClassicPreview(data) {
+    document.getElementById('classicStep1').style.display = 'none';
+    document.getElementById('classicStep2').style.display = 'block';
+    
+    let previewHtml = `
+        <div class="alert alert-info">
+            Total Rows: ${data.total_rows}, 
+            Valid Emails: ${data.valid_emails}
+        </div>
+        <h6>Column Mapping</h6>
+        <div class="row mb-3">
+    `;
+    
+    // Show mapping interface
+    if (data.expected_columns) {
+        data.expected_columns.forEach(col => {
+            const suggested = Object.keys(data.column_mapping || {}).find(k => data.column_mapping[k] === col);
+            previewHtml += `
+                <div class="col-md-6 mb-2">
+                    <label>${col}:</label>
+                    <select class="form-select classic-mapping" data-target="${col}">
+                        <option value="">-- Select --</option>
+                        ${data.available_columns.map(avail => 
+                            `<option value="${avail}" ${avail === suggested ? 'selected' : ''}>${avail}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+            `;
+        });
+    }
+    
+    previewHtml += `</div><h6>Data Preview</h6><div class="table-responsive">
+        <table class="table table-sm table-bordered">`;
+    
+    // Add preview data
+    if (data.preview_data && data.preview_data.length > 0) {
+        const cols = Object.keys(data.preview_data[0]);
+        previewHtml += '<thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+        
+        data.preview_data.slice(0, 5).forEach(row => {
+            previewHtml += '<tr>' + cols.map(c => `<td>${row[c] || ''}</td>`).join('') + '</tr>';
+        });
+        
+        previewHtml += '</tbody>';
+    }
+    
+    previewHtml += '</table></div>';
+    
+    document.getElementById('classicPreviewContent').innerHTML = previewHtml;
+    
+    // Store data for import
+    window.classicPreviewData = data;
+}
+
+// Back to step 1
+function backToClassicStep1() {
+    document.getElementById('classicStep2').style.display = 'none';
+    document.getElementById('classicStep1').style.display = 'block';
+}
+
+// Process classic import
+async function processClassicImport() {
+    // Collect mapping
+    const mapping = {};
+    document.querySelectorAll('.classic-mapping').forEach(el => {
+        if (el.value) {
+            mapping[el.value] = el.dataset.target;
+        }
+    });
+    
+    // Re-upload file with mapping
+    const formData = new FormData(document.getElementById('classicUploadForm'));
+    formData.append('column_mapping', JSON.stringify(mapping));
+    
+    try {
+        const response = await fetch('/api/import/process', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('classicStep2').style.display = 'none';
+            document.getElementById('classicStep3').style.display = 'block';
+            
+            document.getElementById('classicResults').innerHTML = `
+                <div class="alert alert-success">
+                    <h5>Import Successful!</h5>
+                    <p>${result.message}</p>
+                    <p>Imported: ${result.imported_count} records</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.reload()">Done</button>
+            `;
+            
+            // Reload history
+            loadImportHistory();
+        } else {
+            alert('Import failed: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+// Load import history
+async function loadImportHistory() {
+    try {
+        const response = await fetch('/api/import/history');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayImportHistory(data.history);
+        }
+    } catch (error) {
+        console.error('Error loading history:', error);
+    }
+}
+
+// Display import history
+function displayImportHistory(history) {
+    const tbody = document.querySelector('#importHistoryTable tbody');
+    
+    if (!history || history.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No import history</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = history.map(item => {
+        const date = new Date(item.import_date * 1000).toLocaleString();
+        const method = item.ai_assisted ? 
+            '<span class="badge bg-primary"><i class="fas fa-magic me-1"></i>AI</span>' : 
+            '<span class="badge bg-secondary">Classic</span>';
+        
+        return `
+            <tr>
+                <td>${date}</td>
+                <td>${item.filename}</td>
+                <td>${item.data_type}</td>
+                <td>${method}</td>
+                <td>${item.record_count}</td>
+                <td><span class="badge bg-success">Success</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewImportDetails('${item.file_path}')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// View import details
+function viewImportDetails(filePath) {
+    // TODO: Implement details view
+    console.log('View details for:', filePath);
+}
+
+// Show AI setup guide
+function showAISetupGuide() {
+    alert('To enable AI features, configure Azure OpenAI in your environment settings.');
+}
+
+// Update progress indicator
+function updateProgress(step) {
+    document.querySelectorAll('.progress-step').forEach(el => {
+        el.classList.remove('active', 'completed');
+        
+        const stepName = el.dataset.step;
+        if (stepName === step) {
+            el.classList.add('active');
+        } else if (getStepOrder(stepName) < getStepOrder(step)) {
+            el.classList.add('completed');
+        }
+    });
+}
+
+// Get step order
+function getStepOrder(step) {
+    const steps = ['upload', 'analysis', 'mapping', 'preview', 'validation', 'complete'];
+    return steps.indexOf(step);
+}
+
+// Override AI Import Manager navigation to update progress
+const originalNavigate = aiImportManager.navigateToStep;
+aiImportManager.navigateToStep = function(step) {
+    originalNavigate.call(this, step);
+    updateProgress(step);
+};
+</script>
+{% endblock %}

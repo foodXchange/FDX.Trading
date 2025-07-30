@@ -1,0 +1,825 @@
+{% extends "base.html" %}
+{% block title %}Azure Testing Dashboard - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-3">
+                <i class="fas fa-vial me-2"></i>Azure Services Testing Dashboard
+            </h1>
+            <p class="text-muted">Test real Azure services with free tier limits and monitor usage</p>
+        </div>
+    </div>
+
+    <!-- Service Status Cards -->
+    <div class="row mb-4" id="serviceStatusCards">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-brain text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">OpenAI GPT-4</h6>
+                            <small class="text-muted">Vision Analysis</small>
+                        </div>
+                    </div>
+                    <div class="service-status" data-service="openai">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-file-alt text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Document Intelligence</h6>
+                            <small class="text-muted">OCR & Analysis</small>
+                        </div>
+                    </div>
+                    <div class="service-status" data-service="document_intelligence">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-language text-info"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Translator</h6>
+                            <small class="text-muted">Multi-language</small>
+                        </div>
+                    </div>
+                    <div class="service-status" data-service="translator">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-eye text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Computer Vision</h6>
+                            <small class="text-muted">Image Analysis</small>
+                        </div>
+                    </div>
+                    <div class="service-status" data-service="computer_vision">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>Usage Summary (Last 30 Days)
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportUsageData()">
+                            <i class="fas fa-download me-1"></i>Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="usageSummary">
+                        <div class="col-md-3 text-center">
+                            <h4 class="mb-0 text-primary">$<span id="totalCost">0.00</span></h4>
+                            <small class="text-muted">Total Cost</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <h4 class="mb-0 text-success"><span id="totalCalls">0</span></h4>
+                            <small class="text-muted">API Calls</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <h4 class="mb-0 text-info"><span id="successRate">0</span>%</h4>
+                            <small class="text-muted">Success Rate</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <h4 class="mb-0 text-warning"><span id="avgTime">0.0</span>s</h4>
+                            <small class="text-muted">Avg Processing Time</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Scenarios -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-flask me-2"></i>Test Scenarios
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Product Image Analysis -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100 border">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-image text-primary me-2"></i>Product Image Analysis
+                                    </h6>
+                                    <p class="text-muted small">Test GPT-4 Vision for product label extraction</p>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Upload Product Image</label>
+                                        <input type="file" class="form-control" id="productImageFile" accept=".jpg,.jpeg,.png">
+                                    </div>
+                                    
+                                    <button class="btn btn-primary btn-sm" onclick="testProductImage()">
+                                        <i class="fas fa-play me-1"></i>Run Test
+                                    </button>
+                                    
+                                    <div id="productImageResult" class="mt-3" style="display: none;">
+                                        <hr>
+                                        <div class="result-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- CSV Translation -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100 border">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-language text-info me-2"></i>CSV Translation
+                                    </h6>
+                                    <p class="text-muted small">Test multilingual CSV translation</p>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Upload CSV File</label>
+                                        <input type="file" class="form-control" id="csvTranslationFile" accept=".csv">
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label class="form-label">Source Language</label>
+                                            <select class="form-select form-select-sm" id="sourceLang">
+                                                <option value="he">Hebrew</option>
+                                                <option value="ar">Arabic</option>
+                                                <option value="ru">Russian</option>
+                                                <option value="es">Spanish</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label">Target Language</label>
+                                            <select class="form-select form-select-sm" id="targetLang">
+                                                <option value="en">English</option>
+                                                <option value="he">Hebrew</option>
+                                                <option value="fr">French</option>
+                                                <option value="de">German</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-info btn-sm text-white" onclick="testCsvTranslation()">
+                                        <i class="fas fa-play me-1"></i>Run Test
+                                    </button>
+                                    
+                                    <div id="csvTranslationResult" class="mt-3" style="display: none;">
+                                        <hr>
+                                        <div class="result-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Document Analysis -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100 border">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-file-pdf text-success me-2"></i>Document Analysis
+                                    </h6>
+                                    <p class="text-muted small">Test Document Intelligence for PDF/invoice extraction</p>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Upload Document</label>
+                                        <input type="file" class="form-control" id="documentFile" accept=".pdf,.jpg,.jpeg,.png">
+                                    </div>
+                                    
+                                    <button class="btn btn-success btn-sm" onclick="testDocumentAnalysis()">
+                                        <i class="fas fa-play me-1"></i>Run Test
+                                    </button>
+                                    
+                                    <div id="documentAnalysisResult" class="mt-3" style="display: none;">
+                                        <hr>
+                                        <div class="result-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Batch Testing -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100 border">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-rocket text-warning me-2"></i>Quick Test Scenarios
+                                    </h6>
+                                    <p class="text-muted small">Run predefined test scenarios</p>
+                                    
+                                    <div id="testScenarios" class="list-group list-group-flush">
+                                        <!-- Scenarios will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Usage Monitor -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tachometer-alt me-2"></i>Live Usage Monitor
+                        </h5>
+                        <div>
+                            <span class="badge bg-success me-2">
+                                <i class="fas fa-circle me-1"></i>Live
+                            </span>
+                            <small class="text-muted">Updates every 5 seconds</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="usageChart" height="100"></canvas>
+                    
+                    <!-- Recent Activity -->
+                    <h6 class="mt-4 mb-3">Recent Activity</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Service</th>
+                                    <th>Operation</th>
+                                    <th>Status</th>
+                                    <th>Cost</th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivity">
+                                <!-- Activity will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Result Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Test Result</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalResultContent">
+                <!-- Result content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .service-status {
+        min-height: 60px;
+    }
+    .limit-progress {
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+        background-color: #e9ecef;
+        margin-bottom: 0.5rem;
+    }
+    .limit-progress .progress-bar {
+        transition: width 0.3s ease;
+    }
+    .result-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .activity-success {
+        color: #28a745;
+    }
+    .activity-error {
+        color: #dc3545;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let usageChart = null;
+    let updateInterval = null;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadServiceStatus();
+        loadTestScenarios();
+        initializeUsageChart();
+        startLiveMonitoring();
+    });
+
+    // Load service status
+    async function loadServiceStatus() {
+        try {
+            const response = await fetch('/azure-test/api/status');
+            const data = await response.json();
+            
+            if (data.success) {
+                updateServiceCards(data);
+                updateUsageSummary(data.usage_summary);
+            }
+        } catch (error) {
+            console.error('Error loading service status:', error);
+        }
+    }
+
+    // Update service status cards
+    function updateServiceCards(data) {
+        const services = ['openai', 'document_intelligence', 'translator', 'computer_vision'];
+        
+        services.forEach(service => {
+            const statusDiv = document.querySelector(`[data-service="${service}"]`);
+            if (!statusDiv) return;
+            
+            const isConfigured = data.services_configured[service];
+            const limits = data.limits_status[service];
+            
+            let html = '';
+            
+            if (!isConfigured) {
+                html = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Not Configured</span>';
+            } else {
+                html = '<span class="text-success mb-2 d-block"><i class="fas fa-check-circle me-1"></i>Active</span>';
+                
+                // Add limit bars
+                if (limits) {
+                    Object.keys(limits).forEach(key => {
+                        if (key.includes('_percentage')) {
+                            const percentage = Math.round(limits[key]);
+                            const metricName = key.replace('_percentage', '').replace(/_/g, ' ');
+                            const colorClass = percentage > 80 ? 'bg-danger' : percentage > 60 ? 'bg-warning' : 'bg-success';
+                            
+                            html += `
+                                <div class="mb-2">
+                                    <small class="text-muted">${metricName}</small>
+                                    <div class="limit-progress">
+                                        <div class="progress-bar ${colorClass}" style="width: ${percentage}%"></div>
+                                    </div>
+                                    <small class="text-muted">${percentage}% used</small>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+            }
+            
+            statusDiv.innerHTML = html;
+        });
+    }
+
+    // Update usage summary
+    function updateUsageSummary(summary) {
+        document.getElementById('totalCost').textContent = summary.total_cost.toFixed(2);
+        document.getElementById('totalCalls').textContent = summary.total_api_calls;
+        document.getElementById('successRate').textContent = Math.round(summary.success_rate * 100);
+        document.getElementById('avgTime').textContent = summary.average_processing_time.toFixed(1);
+    }
+
+    // Load test scenarios
+    async function loadTestScenarios() {
+        try {
+            const response = await fetch('/azure-test/api/test-scenarios');
+            const data = await response.json();
+            
+            if (data.success) {
+                const container = document.getElementById('testScenarios');
+                container.innerHTML = data.scenarios.map(scenario => `
+                    <a href="#" class="list-group-item list-group-item-action" onclick="runScenario('${scenario.id}'); return false;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${scenario.name}</h6>
+                                <small class="text-muted">${scenario.description}</small>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">Est. cost</small><br>
+                                <span class="badge bg-info">$${scenario.estimated_cost.toFixed(3)}</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            }
+        } catch (error) {
+            console.error('Error loading test scenarios:', error);
+        }
+    }
+
+    // Test product image
+    async function testProductImage() {
+        const fileInput = document.getElementById('productImageFile');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert('Please select an image file');
+            return;
+        }
+        
+        const resultDiv = document.getElementById('productImageResult');
+        const resultContent = resultDiv.querySelector('.result-content');
+        
+        resultContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+        resultDiv.style.display = 'block';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const response = await fetch('/azure-test/api/test/product-image', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                resultContent.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Analysis completed successfully
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Processing Time</small><br>
+                            <strong>${data.processing_time.toFixed(2)}s</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Estimated Cost</small><br>
+                            <strong>$${data.estimated_cost.toFixed(4)}</strong>
+                        </div>
+                    </div>
+                    <h6>Extracted Product Information:</h6>
+                    <pre>${JSON.stringify(data.product_info, null, 2)}</pre>
+                `;
+            } else {
+                resultContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>${data.error}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    // Test CSV translation
+    async function testCsvTranslation() {
+        const fileInput = document.getElementById('csvTranslationFile');
+        const file = fileInput.files[0];
+        const sourceLang = document.getElementById('sourceLang').value;
+        const targetLang = document.getElementById('targetLang').value;
+        
+        if (!file) {
+            alert('Please select a CSV file');
+            return;
+        }
+        
+        const resultDiv = document.getElementById('csvTranslationResult');
+        const resultContent = resultDiv.querySelector('.result-content');
+        
+        resultContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+        resultDiv.style.display = 'block';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('source_lang', sourceLang);
+        formData.append('target_lang', targetLang);
+        
+        try {
+            const response = await fetch('/azure-test/api/test/csv-translation', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                resultContent.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Translation completed successfully
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <small class="text-muted">Characters</small><br>
+                            <strong>${data.characters_processed.toLocaleString()}</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">Processing Time</small><br>
+                            <strong>${data.processing_time.toFixed(2)}s</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">Estimated Cost</small><br>
+                            <strong>$${data.estimated_cost.toFixed(4)}</strong>
+                        </div>
+                    </div>
+                    <h6>Preview (First 5 rows):</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>${Object.keys(data.preview.translated[0] || {}).map(col => `<th>${col}</th>`).join('')}</tr>
+                            </thead>
+                            <tbody>
+                                ${data.preview.translated.slice(0, 5).map(row => 
+                                    `<tr>${Object.values(row).map(val => `<td>${val}</td>`).join('')}</tr>`
+                                ).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                resultContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>${data.error}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    // Test document analysis
+    async function testDocumentAnalysis() {
+        const fileInput = document.getElementById('documentFile');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert('Please select a document file');
+            return;
+        }
+        
+        const resultDiv = document.getElementById('documentAnalysisResult');
+        const resultContent = resultDiv.querySelector('.result-content');
+        
+        resultContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+        resultDiv.style.display = 'block';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const response = await fetch('/azure-test/api/test/document-analysis', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                resultContent.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Document analysis completed
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <small class="text-muted">Pages</small><br>
+                            <strong>${data.pages_processed}</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">Processing Time</small><br>
+                            <strong>${data.processing_time.toFixed(2)}s</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">Estimated Cost</small><br>
+                            <strong>$${data.estimated_cost.toFixed(4)}</strong>
+                        </div>
+                    </div>
+                    <h6>Extracted Data:</h6>
+                    <pre>${JSON.stringify(data.extracted_data, null, 2)}</pre>
+                `;
+            } else {
+                resultContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>${data.error}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    // Initialize usage chart
+    function initializeUsageChart() {
+        const ctx = document.getElementById('usageChart').getContext('2d');
+        usageChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'API Calls',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }, {
+                    label: 'Cost ($)',
+                    data: [],
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    },
+                }
+            }
+        });
+    }
+
+    // Start live monitoring
+    function startLiveMonitoring() {
+        updateLiveData();
+        updateInterval = setInterval(updateLiveData, 5000);
+    }
+
+    // Update live data
+    async function updateLiveData() {
+        try {
+            // Get recent history
+            const response = await fetch('/azure-test/api/usage/history?days=1');
+            const data = await response.json();
+            
+            if (data.success) {
+                updateRecentActivity(data.history);
+                updateChart(data.history);
+            }
+            
+            // Refresh status
+            loadServiceStatus();
+        } catch (error) {
+            console.error('Error updating live data:', error);
+        }
+    }
+
+    // Update recent activity table
+    function updateRecentActivity(history) {
+        const tbody = document.getElementById('recentActivity');
+        const recent = history.slice(-10).reverse();
+        
+        tbody.innerHTML = recent.map(item => {
+            const time = new Date(item.timestamp).toLocaleTimeString();
+            const statusIcon = item.success 
+                ? '<i class="fas fa-check-circle text-success"></i>' 
+                : '<i class="fas fa-exclamation-circle text-danger"></i>';
+            
+            return `
+                <tr>
+                    <td>${time}</td>
+                    <td>${item.service}</td>
+                    <td>${item.operation}</td>
+                    <td>${statusIcon}</td>
+                    <td>$${item.estimated_cost.toFixed(4)}</td>
+                    <td>${item.processing_time.toFixed(2)}s</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Update chart
+    function updateChart(history) {
+        // Group by hour
+        const hourlyData = {};
+        const now = new Date();
+        
+        // Initialize last 24 hours
+        for (let i = 23; i >= 0; i--) {
+            const hour = new Date(now - i * 60 * 60 * 1000);
+            const key = hour.toISOString().slice(0, 13);
+            hourlyData[key] = { calls: 0, cost: 0 };
+        }
+        
+        // Aggregate data
+        history.forEach(item => {
+            const hour = item.timestamp.slice(0, 13);
+            if (hourlyData[hour]) {
+                hourlyData[hour].calls++;
+                hourlyData[hour].cost += item.estimated_cost;
+            }
+        });
+        
+        // Update chart
+        const labels = Object.keys(hourlyData).map(k => {
+            const hour = new Date(k + ':00:00').getHours();
+            return `${hour}:00`;
+        });
+        
+        usageChart.data.labels = labels;
+        usageChart.data.datasets[0].data = Object.values(hourlyData).map(d => d.calls);
+        usageChart.data.datasets[1].data = Object.values(hourlyData).map(d => d.cost);
+        usageChart.update();
+    }
+
+    // Export usage data
+    function exportUsageData() {
+        window.location.href = '/azure-test/api/usage/export?days=30';
+    }
+
+    // Run test scenario
+    async function runScenario(scenarioId) {
+        alert(`Running scenario: ${scenarioId}\nNote: This would run a predefined test with sample data.`);
+        // Implementation would load sample files and run appropriate tests
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (updateInterval) {
+            clearInterval(updateInterval);
+        }
+    });
+</script>
+{% endblock %}

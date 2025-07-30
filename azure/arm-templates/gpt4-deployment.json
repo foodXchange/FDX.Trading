@@ -1,0 +1,89 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "openAiAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing OpenAI account"
+      }
+    },
+    "deploymentName": {
+      "type": "string",
+      "defaultValue": "gpt-4o",
+      "metadata": {
+        "description": "Name for the GPT-4 deployment"
+      }
+    },
+    "modelName": {
+      "type": "string",
+      "defaultValue": "gpt-4o",
+      "allowedValues": ["gpt-4", "gpt-4-32k", "gpt-4o", "gpt-4-turbo"],
+      "metadata": {
+        "description": "GPT-4 model variant to deploy"
+      }
+    },
+    "modelVersion": {
+      "type": "string",
+      "defaultValue": "2024-05-13",
+      "metadata": {
+        "description": "Model version"
+      }
+    },
+    "capacity": {
+      "type": "int",
+      "defaultValue": 30,
+      "minValue": 1,
+      "maxValue": 1000,
+      "metadata": {
+        "description": "Tokens per minute (thousands)"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(parameters('openAiAccountName'), '/', parameters('deploymentName'))]",
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "[parameters('modelName')]",
+          "version": "[parameters('modelVersion')]"
+        },
+        "raiPolicyName": "Microsoft.Default",
+        "scaleSettings": {
+          "scaleType": "Standard",
+          "capacity": "[parameters('capacity')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(parameters('openAiAccountName'), '/gpt-35-turbo')]",
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "gpt-35-turbo",
+          "version": "0613"
+        },
+        "raiPolicyName": "Microsoft.Default",
+        "scaleSettings": {
+          "scaleType": "Standard",
+          "capacity": 30
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "deploymentName": {
+      "type": "string",
+      "value": "[parameters('deploymentName')]"
+    },
+    "deploymentId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.CognitiveServices/accounts/deployments', parameters('openAiAccountName'), parameters('deploymentName'))]"
+    }
+  }
+}

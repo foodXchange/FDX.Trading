@@ -80,7 +80,17 @@
       "Bash(start http://localhost:8003)",
       "Bash(start cmd /c \"python -m foodxchange.main\")",
       "Bash(dir:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(mv:*)",
+      "Bash(if [ -f \".env\" ])",
+      "Bash(then echo \".env file exists\")",
+      "Bash(else echo \".env file does not exist\")",
+      "Bash(fi)",
+      "Bash(if [ -f \"cost_monitoring_config.json\" ])",
+      "Bash(then cat cost_monitoring_config.json)",
+      "Bash(else echo \"File does not exist\")",
+      "Bash(pip show:*)",
+      "Bash(docker:*)"
     ],
     "deny": []
   }
