@@ -1,0 +1,353 @@
+<!-- FormModal Component -->
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="{{ modal_id }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-{{ size|default('lg') }}">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="{{ modal_id }}Label">
+                    {% if icon %}<i class="fas fa-{{ icon }} me-2"></i>{% endif %}
+                    {{ title|default('Form') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="{{ modal_id }}_form" method="POST" action="{{ action_url|default('#') }}" enctype="multipart/form-data">
+                    {% if csrf_token %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    {% endif %}
+                    
+                    <!-- Form Fields -->
+                    <div class="row g-3">
+                        {% for field in fields %}
+                        <div class="col-{{ field.width|default('12') }}">
+                            <!-- Text Input -->
+                            {% if field.type == 'text' or field.type == 'email' or field.type == 'password' or field.type == 'number' %}
+                            <div class="form-group">
+                                <label for="{{ field.name }}" class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                <input type="{{ field.type }}" 
+                                       class="form-control {% if field.classes %}{{ field.classes }}{% endif %}" 
+                                       id="{{ field.name }}" 
+                                       name="{{ field.name }}"
+                                       value="{{ field.value|default('') }}"
+                                       placeholder="{{ field.placeholder|default('') }}"
+                                       {% if field.required %}required{% endif %}
+                                       {% if field.min %}min="{{ field.min }}"{% endif %}
+                                       {% if field.max %}max="{{ field.max }}"{% endif %}
+                                       {% if field.step %}step="{{ field.step }}"{% endif %}
+                                       {% if field.pattern %}pattern="{{ field.pattern }}"{% endif %}
+                                       {% if field.readonly %}readonly{% endif %}
+                                       {% if field.disabled %}disabled{% endif %}>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Textarea -->
+                            {% elif field.type == 'textarea' %}
+                            <div class="form-group">
+                                <label for="{{ field.name }}" class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                <textarea class="form-control {% if field.classes %}{{ field.classes }}{% endif %}" 
+                                          id="{{ field.name }}" 
+                                          name="{{ field.name }}"
+                                          rows="{{ field.rows|default(3) }}"
+                                          placeholder="{{ field.placeholder|default('') }}"
+                                          {% if field.required %}required{% endif %}
+                                          {% if field.readonly %}readonly{% endif %}
+                                          {% if field.disabled %}disabled{% endif %}>{{ field.value|default('') }}</textarea>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Select -->
+                            {% elif field.type == 'select' %}
+                            <div class="form-group">
+                                <label for="{{ field.name }}" class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                <select class="form-select {% if field.classes %}{{ field.classes }}{% endif %}" 
+                                        id="{{ field.name }}" 
+                                        name="{{ field.name }}"
+                                        {% if field.required %}required{% endif %}
+                                        {% if field.multiple %}multiple{% endif %}
+                                        {% if field.disabled %}disabled{% endif %}>
+                                    {% if field.placeholder %}
+                                    <option value="">{{ field.placeholder }}</option>
+                                    {% endif %}
+                                    {% for option in field.options %}
+                                    <option value="{{ option.value }}" 
+                                            {% if option.selected or field.value == option.value %}selected{% endif %}
+                                            {% if option.disabled %}disabled{% endif %}>
+                                        {{ option.label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Checkbox -->
+                            {% elif field.type == 'checkbox' %}
+                            <div class="form-check">
+                                <input class="form-check-input {% if field.classes %}{{ field.classes }}{% endif %}" 
+                                       type="checkbox" 
+                                       id="{{ field.name }}" 
+                                       name="{{ field.name }}"
+                                       value="{{ field.value|default('1') }}"
+                                       {% if field.checked %}checked{% endif %}
+                                       {% if field.required %}required{% endif %}
+                                       {% if field.disabled %}disabled{% endif %}>
+                                <label class="form-check-label" for="{{ field.name }}">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Radio Group -->
+                            {% elif field.type == 'radio' %}
+                            <div class="form-group">
+                                <label class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {% for option in field.options %}
+                                <div class="form-check">
+                                    <input class="form-check-input {% if field.classes %}{{ field.classes }}{% endif %}" 
+                                           type="radio" 
+                                           id="{{ field.name }}_{{ loop.index }}" 
+                                           name="{{ field.name }}"
+                                           value="{{ option.value }}"
+                                           {% if option.checked or field.value == option.value %}checked{% endif %}
+                                           {% if field.required %}required{% endif %}
+                                           {% if field.disabled %}disabled{% endif %}>
+                                    <label class="form-check-label" for="{{ field.name }}_{{ loop.index }}">
+                                        {{ option.label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- File Upload -->
+                            {% elif field.type == 'file' %}
+                            <div class="form-group">
+                                <label for="{{ field.name }}" class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                <input type="file" 
+                                       class="form-control {% if field.classes %}{{ field.classes }}{% endif %}" 
+                                       id="{{ field.name }}" 
+                                       name="{{ field.name }}"
+                                       {% if field.accept %}accept="{{ field.accept }}"{% endif %}
+                                       {% if field.multiple %}multiple{% endif %}
+                                       {% if field.required %}required{% endif %}
+                                       {% if field.disabled %}disabled{% endif %}>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Date/Time -->
+                            {% elif field.type == 'date' or field.type == 'datetime-local' %}
+                            <div class="form-group">
+                                <label for="{{ field.name }}" class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                <input type="{{ field.type }}" 
+                                       class="form-control {% if field.classes %}{{ field.classes }}{% endif %}" 
+                                       id="{{ field.name }}" 
+                                       name="{{ field.name }}"
+                                       value="{{ field.value|default('') }}"
+                                       {% if field.min %}min="{{ field.min }}"{% endif %}
+                                       {% if field.max %}max="{{ field.max }}"{% endif %}
+                                       {% if field.required %}required{% endif %}
+                                       {% if field.disabled %}disabled{% endif %}>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Custom HTML -->
+                            {% elif field.type == 'html' %}
+                            <div class="form-group">
+                                {% if field.label %}
+                                <label class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {% endif %}
+                                {{ field.html|safe }}
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                {% if show_cancel %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {{ cancel_text|default('Cancel') }}
+                </button>
+                {% endif %}
+                
+                {% if show_reset %}
+                <button type="button" class="btn btn-outline-secondary" onclick="resetForm('{{ modal_id }}_form')">
+                    {{ reset_text|default('Reset') }}
+                </button>
+                {% endif %}
+                
+                <button type="submit" 
+                        form="{{ modal_id }}_form" 
+                        class="btn btn-{{ submit_color|default('primary') }}"
+                        {% if submit_disabled %}disabled{% endif %}>
+                    {% if submit_icon %}<i class="fas fa-{{ submit_icon }} me-2"></i>{% endif %}
+                    {{ submit_text|default('Submit') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// FormModal JavaScript functionality
+function openFormModal(modalId, data = {}) {
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    
+    // Populate form with data if provided
+    if (data) {
+        populateForm(modalId + '_form', data);
+    }
+    
+    modal.show();
+}
+
+function populateForm(formId, data) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    Object.keys(data).forEach(key => {
+        const field = form.querySelector(`[name="${key}"]`);
+        if (field) {
+            if (field.type === 'checkbox') {
+                field.checked = data[key];
+            } else if (field.type === 'radio') {
+                const radio = form.querySelector(`[name="${key}"][value="${data[key]}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                field.value = data[key];
+            }
+        }
+    });
+}
+
+function resetForm(formId) {
+    const form = document.getElementById(formId);
+    if (form) {
+        form.reset();
+        // Clear any custom validation states
+        form.querySelectorAll('.is-invalid').forEach(field => {
+            field.classList.remove('is-invalid');
+        });
+    }
+}
+
+function validateForm(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return false;
+    
+    let isValid = true;
+    
+    // Clear previous validation states
+    form.querySelectorAll('.is-invalid').forEach(field => {
+        field.classList.remove('is-invalid');
+    });
+    
+    // Check required fields
+    form.querySelectorAll('[required]').forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        }
+    });
+    
+    // Check email format
+    form.querySelectorAll('input[type="email"]').forEach(field => {
+        if (field.value && !isValidEmail(field.value)) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        }
+    });
+    
+    return isValid;
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Form submission handler
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form[id$="_form"]');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!validateForm(form.id)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                submitBtn.disabled = true;
+                
+                // Reset button after form submission
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 5000);
+            }
+        });
+    });
+});
+
+// Auto-close modal on successful submission
+function handleFormSuccess(modalId, message = 'Form submitted successfully!') {
+    const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+    if (modal) {
+        modal.hide();
+    }
+    
+    // Show success message
+    showNotification(message, 'success');
+}
+
+function handleFormError(modalId, message = 'An error occurred. Please try again.') {
+    showNotification(message, 'error');
+}
+</script> 

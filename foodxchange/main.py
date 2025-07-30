@@ -54,13 +54,32 @@ def url_for(name: str, **path_params) -> str:
         "login_page": "/login",
         "projects": "/projects",
         "suppliers": "/suppliers",
-        "buyers": "/buyers"
+        "buyers": "/buyers",
+        "simple_login": "/auth/login",
+        "admin_login": "/admin",
+        "dashboard.index": "/dashboard",
+        "data_import.import_page": "/import/",
+        "data_import.preview_import": "/import/preview",
+        "data_import.process_import": "/import/process",
+        "data_import.download_template": "/import/template/",
+        "data_import.import_history": "/import/history",
+        "data_import.import_details": "/import/details/",
+        "profile": "/profile/",
+        "profile_edit": "/profile/edit",
+        "profile_settings": "/profile/settings"
     }
     
     if name == "static" and "filename" in path_params:
         return f"/static/{path_params['filename']}"
     
-    return routes.get(name, "/")
+    # Handle routes with path parameters
+    base_route = routes.get(name, "/")
+    
+    # Replace path parameters in the route
+    for param, value in path_params.items():
+        base_route = base_route.replace(f"{{{param}}}", str(value))
+    
+    return base_route
 
 # Add url_for to template globals
 templates.env.globals["url_for"] = url_for
@@ -95,183 +114,153 @@ async def admin_login():
 
 # Import and include route modules
 try:
-    from foodxchange.routes import product_analysis_routes
+    # Make templates available globally before importing routes
+    import sys
+    sys.path.append(str(BASE_DIR))
+    sys.path.append(str(BASE_DIR.parent))  # Add parent directory to path
+    
+    from foodxchange.routes import product_analysis_routes, data_import_routes
     
     # Include routers
     app.include_router(product_analysis_routes.router)
-    app.include_router(buyers_routes.router)
+    app.include_router(data_import_routes.router)
     
     logger.info("✅ Route modules loaded successfully")
     
 except ImportError as e:
     logger.warning(f"⚠️ Some route modules could not be loaded: {e}")
 
-@app.get("/product-analysis/")
-async def product_analysis_page(request: Request):
-    """Product Analysis page using Jinja2 template"""
-    try:
-        return templates.TemplateResponse("pages/product_analysis.html", {"request": request})
-    except Exception as e:
-        logger.error(f"Template error: {e}")
-        return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
+# Add profile routes directly to avoid import issues
+from fastapi import APIRouter, Form, UploadFile, File
+from fastapi.responses import JSONResponse, RedirectResponse
+import shutil
+from typing import Optional
+from datetime import datetime
 
-@app.post("/product-analysis/analyze-image")
-async def analyze_product_image(
-    image: UploadFile = File(...),
-    product_description: Optional[str] = Form(None),
-    product_category: Optional[str] = Form(None)
-):
-    """Analyze product image using AI"""
-    try:
-        import os
-        import base64
-        from foodxchange.services.product_analysis_service import ProductAnalysisService
-        
-        # Create uploads directory if it doesn't exist
-        upload_dir = os.path.join(os.getcwd(), "uploads")
-        os.makedirs(upload_dir, exist_ok=True)
-        
-        # Save uploaded image
-        image_path = os.path.join(upload_dir, image.filename)
-        with open(image_path, "wb") as buffer:
-            content = await image.read()
-            buffer.write(content)
-        
-        # Initialize AI service
-        ai_service = ProductAnalysisService()
-        
-        # Analyze image using AI
-        analysis_result = await ai_service.analyze_product_image(image_path)
-        
-        if "error" in analysis_result:
-            return {"success": False, "error": analysis_result["error"]}
-        
-        # Generate product brief
-        user_query = ""
-        if product_description:
-            user_query = f"Additional product information: {product_description}"
-        if product_category:
-            user_query += f" Category: {product_category}"
-        
-        brief_result = await ai_service.generate_product_brief(analysis_result, user_query)
-        
-        # Search for similar products
-        similar_products = await ai_service.search_similar_products(
-            analysis_result.get("product_name", ""),
-            analysis_result.get("category", "")
-        )
-        
-        # Convert image to base64 for display
-        image_base64 = base64.b64encode(content).decode('utf-8')
-        image_mime_type = image.content_type or 'image/jpeg'
-        data_url = f"data:{image_mime_type};base64,{image_base64}"
-        
-        return {
-            "success": True,
-            "analysis": analysis_result,
-            "brief": brief_result,
-            "similar_products": similar_products,
-            "analyzed_images": [data_url]
-        }
-    except Exception as e:
-        logger.error(f"Error analyzing image: {e}")
-        return {"success": False, "error": f"Failed to analyze image: {str(e)}"}
+profile_router = APIRouter(prefix="/profile", tags=["profile"])
 
-@app.post("/product-analysis/analyze-image-url")
-async def analyze_product_image_url(
-    image_url: str = Form(...),
-    product_description: Optional[str] = Form(None),
-    product_category: Optional[str] = Form(None)
-):
-    """Analyze product image from URL using AI"""
-    try:
-        from foodxchange.services.product_analysis_service import ProductAnalysisService
-        
-        # Initialize AI service
-        ai_service = ProductAnalysisService()
-        
-        # Analyze image using AI
-        analysis_result = await ai_service.analyze_product_image(image_url)
-        
-        if "error" in analysis_result:
-            return {"success": False, "error": analysis_result["error"]}
-        
-        # Generate product brief
-        user_query = ""
-        if product_description:
-            user_query = f"Additional product information: {product_description}"
-        if product_category:
-            user_query += f" Category: {product_category}"
-        
-        brief_result = await ai_service.generate_product_brief(analysis_result, user_query)
-        
-        # Search for similar products
-        similar_products = await ai_service.search_similar_products(
-            analysis_result.get("product_name", ""),
-            analysis_result.get("category", "")
-        )
-        
-        return {
-            "success": True,
-            "analysis": analysis_result,
-            "brief": brief_result,
-            "similar_products": similar_products,
-            "analyzed_images": [image_url]
-        }
-    except Exception as e:
-        logger.error(f"Error analyzing image URL: {e}")
-        return {"success": False, "error": f"Failed to analyze image URL: {str(e)}"}
+# Mock user data
+MOCK_USER = {
+    "id": 1,
+    "name": "Admin User",
+    "email": "admin@foodxchange.com",
+    "company": "FoodXchange Inc.",
+    "role": "admin",
+    "is_active": True,
+    "is_admin": True,
+    "created_at": datetime.now(),
+    "updated_at": datetime.now(),
+    "phone": "+1 234 567 8900",
+    "country": "United States",
+    "city": "New York",
+    "address": "123 Business St, Suite 100",
+    "bio": "Experienced food industry professional with over 10 years in B2B sourcing and supply chain management.",
+    "profile_picture": None,
+    "job_title": "Senior Sourcing Manager",
+    "department": "Operations",
+    "industry": "Food & Beverage",
+    "company_size": "51-200",
+    "website": "https://foodxchange.com",
+    "linkedin": "https://linkedin.com/in/adminuser",
+    "timezone": "America/New_York",
+    "language": "en"
+}
 
-@app.post("/product-analysis/save-project")
-async def save_analysis_as_project(
+class MockUser:
+    def __init__(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+
+@profile_router.get("/")
+async def profile_page(request: Request):
+    """Display user profile page"""
+    user = MockUser(MOCK_USER)
+    return templates.TemplateResponse("pages/profile.html", {
+        "request": request,
+        "user": user,
+        "current_user": {"name": user.name, "email": user.email, "is_admin": user.is_admin}
+    })
+
+@profile_router.get("/edit")
+async def edit_profile_page(request: Request):
+    """Display profile edit page"""
+    user = MockUser(MOCK_USER)
+    return templates.TemplateResponse("pages/profile_edit.html", {
+        "request": request,
+        "user": user,
+        "current_user": {"name": user.name, "email": user.email, "is_admin": user.is_admin}
+    })
+
+@profile_router.get("/settings")
+async def profile_settings_page(request: Request):
+    """Display profile settings page"""
+    user = MockUser(MOCK_USER)
+    return templates.TemplateResponse("pages/profile_settings.html", {
+        "request": request,
+        "user": user,
+        "current_user": {"name": user.name, "email": user.email, "is_admin": user.is_admin}
+    })
+
+@profile_router.post("/update")
+async def update_profile(
+    request: Request,
     name: str = Form(...),
-    description: str = Form(None),
-    buyer_id: Optional[str] = Form(None),
-    priority: str = Form("medium"),
-    search_type: Optional[str] = Form(None),
-    analysis_data: str = Form(...)
+    email: str = Form(...),
+    phone: Optional[str] = Form(None),
+    country: Optional[str] = Form(None),
+    city: Optional[str] = Form(None),
+    address: Optional[str] = Form(None),
+    bio: Optional[str] = Form(None),
+    job_title: Optional[str] = Form(None),
+    department: Optional[str] = Form(None),
+    industry: Optional[str] = Form(None),
+    company_size: Optional[str] = Form(None),
+    website: Optional[str] = Form(None),
+    linkedin: Optional[str] = Form(None),
+    timezone: Optional[str] = Form(None),
+    language: Optional[str] = Form(None)
 ):
-    """Save analysis as project"""
-    try:
-        import os
-        import json
-        from datetime import datetime
-        
-        # Create projects directory if it doesn't exist
-        projects_dir = os.path.join(os.getcwd(), "projects")
-        os.makedirs(projects_dir, exist_ok=True)
-        
-        # Generate filename
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"project_{timestamp}.json"
-        filepath = os.path.join(projects_dir, filename)
-        
-        # Prepare project data
-        project_data = {
-            "name": name,
-            "description": description,
-            "buyer_id": buyer_id if buyer_id and buyer_id != "" else None,
-            "priority": priority,
-            "search_type": search_type or "image",
-            "analysis_data": json.loads(analysis_data),
-            "created_at": datetime.now().isoformat()
-        }
-        
-        # Save to file
-        with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(project_data, f, indent=2, ensure_ascii=False)
-        
-        return {
-            "success": True,
-            "message": "Project saved successfully",
-            "filename": filename
-        }
-    except Exception as e:
-        logger.error(f"Error saving project: {e}")
-        return {
+    """Update user profile"""
+    MOCK_USER.update({
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "country": country,
+        "city": city,
+        "address": address,
+        "bio": bio,
+        "job_title": job_title,
+        "department": department,
+        "industry": industry,
+        "company_size": company_size,
+        "website": website,
+        "linkedin": linkedin,
+        "timezone": timezone or "UTC",
+        "language": language or "en",
+        "updated_at": datetime.now()
+    })
+    return JSONResponse(content={"success": True, "message": "Profile updated successfully"})
+
+@profile_router.post("/change-password")
+async def change_password(
+    request: Request,
+    current_password: str = Form(...),
+    new_password: str = Form(...),
+    confirm_password: str = Form(...)
+):
+    """Change user password"""
+    if new_password != confirm_password:
+        return JSONResponse(content={
             "success": False,
-            "message": "Error saving project"
-        }
+            "message": "New passwords do not match"
+        }, status_code=400)
+    return JSONResponse(content={"success": True, "message": "Password changed successfully"})
+
+# Include the profile router
+app.include_router(profile_router)
+
+
+# Product analysis routes are handled by the product_analysis_routes module
 
 @app.get("/")
 async def landing(request: Request):
@@ -283,6 +272,7 @@ async def landing(request: Request):
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
 
 @app.get("/dashboard")
+@app.head("/dashboard")
 async def dashboard(request: Request):
     """Dashboard page using Jinja2 template"""
     try:
@@ -500,6 +490,42 @@ async def delete_project(filename: str):
             "message": "Error deleting project"
         }
 
+@app.put("/projects/{filename}")
+async def update_project(filename: str, request: Request):
+    """Update a project"""
+    try:
+        projects_dir = os.path.join(os.getcwd(), "projects")
+        project_path = os.path.join(projects_dir, filename)
+        
+        if not os.path.exists(project_path):
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        # Get the updated project data from request body
+        updated_data = await request.json()
+        
+        # Read existing project to preserve any fields not being updated
+        with open(project_path, 'r', encoding='utf-8') as f:
+            existing_data = json.loads(f.read())
+        
+        # Merge the updated data with existing data
+        merged_data = {**existing_data, **updated_data}
+        
+        # Write the updated project back to file
+        with open(project_path, 'w', encoding='utf-8') as f:
+            json.dump(merged_data, f, indent=2, ensure_ascii=False)
+        
+        return {
+            "success": True,
+            "message": "Project updated successfully",
+            "project": merged_data
+        }
+    except Exception as e:
+        logger.error(f"Error updating project {filename}: {e}")
+        return {
+            "success": False,
+            "message": f"Error updating project: {str(e)}"
+        }
+
 @app.get("/favicon.ico")
 async def favicon():
     """Serve favicon"""
@@ -518,6 +544,7 @@ async def favicon_png():
     else:
         raise HTTPException(status_code=404, detail="Favicon not found")
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8003, reload=True) 
+    uvicorn.run("foodxchange.main:app", host="0.0.0.0", port=8003, reload=True) 

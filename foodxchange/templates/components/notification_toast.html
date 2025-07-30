@@ -1,0 +1,396 @@
+<!-- NotificationToast Component -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+    <!-- Toast notifications will be dynamically inserted here -->
+</div>
+
+<!-- Toast Template (hidden) -->
+<template id="toastTemplate">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <div class="toast-icon me-2">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <strong class="me-auto toast-title">Notification</strong>
+            <small class="toast-time">Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <p class="toast-message mb-0"></p>
+            {% if show_progress %}
+            <div class="progress mt-2" style="height: 2px;">
+                <div class="progress-bar" role="progressbar" style="width: 100%"></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</template>
+
+<style>
+.toast-container {
+    max-width: 400px;
+}
+
+.toast {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.toast-header {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    padding: 0.75rem 1rem;
+}
+
+.toast-body {
+    padding: 1rem;
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.toast-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.toast-message {
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.toast-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Toast types */
+.toast.toast-success {
+    background-color: #d1e7dd;
+    border-left: 4px solid #198754;
+}
+
+.toast.toast-success .toast-header {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.toast.toast-success .toast-icon {
+    background-color: #198754;
+    color: white;
+}
+
+.toast.toast-error {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+}
+
+.toast.toast-error .toast-header {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.toast.toast-error .toast-icon {
+    background-color: #dc3545;
+    color: white;
+}
+
+.toast.toast-warning {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.toast.toast-warning .toast-header {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.toast.toast-warning .toast-icon {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.toast.toast-info {
+    background-color: #d1ecf1;
+    border-left: 4px solid #0dcaf0;
+}
+
+.toast.toast-info .toast-header {
+    background-color: #d1ecf1;
+    color: #055160;
+}
+
+.toast.toast-info .toast-icon {
+    background-color: #0dcaf0;
+    color: white;
+}
+
+/* Animation */
+.toast {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast.fade-out {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Progress bar animation */
+.toast .progress-bar {
+    animation: progressShrink 5s linear forwards;
+}
+
+@keyframes progressShrink {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .toast-container {
+        max-width: 100%;
+        padding: 0.5rem;
+    }
+    
+    .toast {
+        margin-bottom: 0.25rem;
+    }
+    
+    .toast-header,
+    .toast-body {
+        padding: 0.75rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .toast {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .toast-header {
+        background-color: #2d3748;
+        border-bottom-color: #4a5568;
+    }
+    
+    .toast-time {
+        color: #a0aec0;
+    }
+}
+</style>
+
+<script>
+// NotificationToast JavaScript functionality
+class NotificationManager {
+    constructor() {
+        this.container = document.querySelector('.toast-container');
+        this.template = document.getElementById('toastTemplate');
+        this.toasts = new Map();
+        this.counter = 0;
+        
+        if (!this.container) {
+            this.createContainer();
+        }
+    }
+    
+    createContainer() {
+        this.container = document.createElement('div');
+        this.container.className = 'toast-container position-fixed top-0 end-0 p-3';
+        this.container.style.zIndex = '1055';
+        document.body.appendChild(this.container);
+    }
+    
+    show(message, type = 'info', options = {}) {
+        const toastId = `toast-${++this.counter}`;
+        const toast = this.createToast(toastId, message, type, options);
+        
+        this.container.appendChild(toast);
+        this.toasts.set(toastId, toast);
+        
+        // Initialize Bootstrap toast
+        const bsToast = new bootstrap.Toast(toast, {
+            autohide: options.autohide !== false,
+            delay: options.delay || 5000
+        });
+        
+        bsToast.show();
+        
+        // Auto-remove from map when hidden
+        toast.addEventListener('hidden.bs.toast', () => {
+            this.toasts.delete(toastId);
+            toast.remove();
+        });
+        
+        return toastId;
+    }
+    
+    createToast(id, message, type, options) {
+        const toast = this.template.content.cloneNode(true).querySelector('.toast');
+        toast.id = id;
+        toast.classList.add(`toast-${type}`);
+        
+        // Set icon based on type
+        const iconMap = {
+            success: 'check-circle',
+            error: 'exclamation-circle',
+            warning: 'exclamation-triangle',
+            info: 'info-circle'
+        };
+        
+        const icon = toast.querySelector('.toast-icon i');
+        icon.className = `fas fa-${iconMap[type] || 'info-circle'}`;
+        
+        // Set title
+        const title = toast.querySelector('.toast-title');
+        title.textContent = options.title || this.getDefaultTitle(type);
+        
+        // Set message
+        const messageEl = toast.querySelector('.toast-message');
+        messageEl.textContent = message;
+        
+        // Set time
+        const timeEl = toast.querySelector('.toast-time');
+        timeEl.textContent = this.getTimeString();
+        
+        // Add progress bar if requested
+        if (options.showProgress) {
+            const progressContainer = toast.querySelector('.progress');
+            if (progressContainer) {
+                progressContainer.style.display = 'block';
+            }
+        }
+        
+        // Add custom classes
+        if (options.classes) {
+            toast.classList.add(...options.classes.split(' '));
+        }
+        
+        return toast;
+    }
+    
+    getDefaultTitle(type) {
+        const titles = {
+            success: 'Success',
+            error: 'Error',
+            warning: 'Warning',
+            info: 'Information'
+        };
+        return titles[type] || 'Notification';
+    }
+    
+    getTimeString() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+    
+    hide(toastId) {
+        const toast = this.toasts.get(toastId);
+        if (toast) {
+            const bsToast = bootstrap.Toast.getInstance(toast);
+            if (bsToast) {
+                bsToast.hide();
+            }
+        }
+    }
+    
+    hideAll() {
+        this.toasts.forEach((toast, id) => {
+            this.hide(id);
+        });
+    }
+    
+    // Convenience methods
+    success(message, options = {}) {
+        return this.show(message, 'success', options);
+    }
+    
+    error(message, options = {}) {
+        return this.show(message, 'error', options);
+    }
+    
+    warning(message, options = {}) {
+        return this.show(message, 'warning', options);
+    }
+    
+    info(message, options = {}) {
+        return this.show(message, 'info', options);
+    }
+}
+
+// Global notification manager instance
+const notificationManager = new NotificationManager();
+
+// Global functions for easy access
+function showNotification(message, type = 'info', options = {}) {
+    return notificationManager.show(message, type, options);
+}
+
+function showSuccess(message, options = {}) {
+    return notificationManager.success(message, options);
+}
+
+function showError(message, options = {}) {
+    return notificationManager.error(message, options);
+}
+
+function showWarning(message, options = {}) {
+    return notificationManager.warning(message, options);
+}
+
+function showInfo(message, options = {}) {
+    return notificationManager.info(message, options);
+}
+
+// Auto-show notifications for form submissions
+document.addEventListener('DOMContentLoaded', function() {
+    // Listen for form submission success/error events
+    document.addEventListener('formSuccess', function(e) {
+        showSuccess(e.detail.message || 'Form submitted successfully!');
+    });
+    
+    document.addEventListener('formError', function(e) {
+        showError(e.detail.message || 'An error occurred. Please try again.');
+    });
+    
+    // Listen for AJAX errors
+    document.addEventListener('ajaxError', function(e) {
+        showError(e.detail.message || 'Network error. Please check your connection.');
+    });
+});
+
+// Example usage:
+// showSuccess('Your changes have been saved!');
+// showError('Failed to save changes. Please try again.');
+// showWarning('Please review your input before submitting.');
+// showInfo('New updates are available.');
+</script> 

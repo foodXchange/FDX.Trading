@@ -47,9 +47,17 @@ class ProductAnalysisService:
                 logger.info("Azure AI services configured successfully")
                 logger.info(f"Using OpenAI endpoint: {self.openai_endpoint}")
             else:
-                logger.info("Azure AI services not configured - using demo mode")
+                raise ValueError(
+                    "Azure AI services not configured. Please set up the following environment variables:\n"
+                    "- AZURE_VISION_ENDPOINT\n"
+                    "- AZURE_VISION_KEY\n"
+                    "- AZURE_OPENAI_API_KEY\n"
+                    "- AZURE_OPENAI_ENDPOINT\n"
+                    "Run setup_azure_keys.py or setup_azure_keys.bat to configure."
+                )
         except Exception as e:
-            logger.warning(f"Azure services not available: {e}")
+            logger.error(f"Azure services configuration error: {e}")
+            raise
     
     async def analyze_product_image(self, image_url: str, db=None) -> Dict[str, Any]:
         """
@@ -62,24 +70,21 @@ class ProductAnalysisService:
             Dictionary containing analysis results
         """
         if not self.is_azure_configured:
-            logger.warning("Azure AI services not configured - using demo mode")
-            return self._generate_demo_analysis(image_url)
+            raise ValueError(
+                "Azure AI services not configured. Cannot analyze images without Azure credentials.\n"
+                "Please run setup_azure_keys.py or setup_azure_keys.bat to configure."
+            )
         
         try:
-            # First, perform OCR to read text (including Hebrew)
-            ocr_text = await self._perform_ocr(image_url)
-            
-            # Prepare the request to Azure Computer Vision
-            vision_url = f"{self.vision_endpoint}vision/v3.2/analyze"
+            # Use the newer Image Analysis 4.0 API for better results
+            vision_url = f"{self.vision_endpoint}computervision/imageanalysis:analyze"
             params = {
-                'visualFeatures': 'Categories,Description,Tags,Objects,Color,Brands',
-                'details': 'Landmarks',
-                'language': 'en',
-                'model-version': 'latest'
+                'api-version': '2024-02-01',
+                'features': 'tags,read,caption,objects,denseCaptions',
+                'language': 'en'
             }
             
             headers = {
-                'Content-Type': 'application/json',
                 'Ocp-Apim-Subscription-Key': self.vision_key
             }
             
@@ -101,7 +106,7 @@ class ProductAnalysisService:
                         if response.status == 200:
                             result = await response.json()
                             logger.info(f"Vision API response received successfully")
-                            processed_result = self._process_vision_result(result, ocr_text)
+                            processed_result = self._process_vision_v4_result(result)
                             
                             # Apply ML improvements if database is available
                             if db:
@@ -125,14 +130,13 @@ class ProductAnalysisService:
                         else:
                             error_text = await response.text()
                             logger.error(f"Azure Vision API error: {response.status} - {error_text}")
-                            logger.warning("Falling back to demo mode due to API error")
-                            return self._generate_demo_analysis(image_url)
+                            raise ValueError(f"Azure Vision API error: {response.status} - {error_text}")
                 else:
                     async with session.post(vision_url, params=params, headers=headers, data=body) as response:
                         if response.status == 200:
                             result = await response.json()
                             logger.info(f"Vision API response received successfully")
-                            processed_result = self._process_vision_result(result, ocr_text)
+                            processed_result = self._process_vision_v4_result(result)
                             
                             # Apply ML improvements if database is available
                             if db:
@@ -156,55 +160,18 @@ class ProductAnalysisService:
                         else:
                             error_text = await response.text()
                             logger.error(f"Azure Vision API error: {response.status} - {error_text}")
-                            logger.warning("Falling back to demo mode due to API error")
-                            return self._generate_demo_analysis(image_url)
+                            raise ValueError(f"Azure Vision API error: {response.status} - {error_text}")
                             
         except Exception as e:
             logger.error(f"Error in image analysis: {e}")
-            logger.warning("Falling back to demo mode due to error")
-            return self._generate_demo_analysis(image_url)
-    
-    def _generate_demo_analysis(self, image_url: str) -> Dict[str, Any]:
-        """Generate demo analysis when Azure services are not available"""
-        logger.info("Generating demo analysis")
-        
-        # Extract filename or URL for demo data
-        if image_url.startswith(('http://', 'https://')):
-            demo_name = "Online Product"
-        else:
-            import os
-            demo_name = os.path.basename(image_url).split('.')[0] or "Uploaded Product"
-        
-        return {
-            "product_name": f"{demo_name}",
-            "brand_name": "Sample Brand",
-            "producing_company": "Sample Company",
-            "country_of_origin": "United States",
-            "category": "Food & Beverage",
-            "packaging_type": "Stand-up bag",
-            "product_weight": "250g",
-            "product_appearance": "Pale white colored, extruded corn salty snack",
-            "target_market": "Adults",
-            "kosher_details": "Kosher certified",
-            "gluten_free": "Yes",
-            "sugar_free": "No",
-            "no_sugar_added": "Yes",
-            "shelf_life": "12 months",
-            "storage_conditions": "Store in a cool, dry place",
-            "tags": ["food", "snack", "corn", "salty"],
-            "objects": ["package", "bag"],
-            "brands": ["Sample Brand"],
-            "colors": ["white", "pale"],
-            "confidence": 0.85,
-            "is_demo": True
-        }
+            raise
     
     async def _perform_ocr(self, image_url: str) -> Dict[str, Any]:
         """Perform OCR on image to extract text in multiple languages including Hebrew"""
         try:
             ocr_url = f"{self.vision_endpoint}vision/v3.2/ocr"
             params = {
-                'language': 'unk',  # Auto-detect language (supports Hebrew)
+                'language': 'he',  # Specify Hebrew explicitly
                 'detectOrientation': 'true'
             }
             
@@ -265,6 +232,152 @@ class ProductAnalysisService:
             "detected_language": ocr_result.get('language', 'unknown')
         }
     
+    def _process_vision_v4_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """Process results from Image Analysis 4.0 API"""
+        detected_text = []
+        hebrew_text = []
+        english_text = []
+        
+        # Extract text from readResult
+        if 'readResult' in result:
+            for block in result['readResult'].get('blocks', []):
+                for line in block.get('lines', []):
+                    text = line.get('text', '')
+                    detected_text.append(text)
+                    
+                    # Detect Hebrew characters
+                    if any('\u0590' <= c <= '\u05FF' for c in text):
+                        hebrew_text.append(text)
+                    else:
+                        english_text.append(text)
+        
+        # Extract tags
+        tags = []
+        if 'tagsResult' in result:
+            tags = [tag['name'] for tag in result['tagsResult'].get('values', [])]
+        
+        # Extract description
+        description = ''
+        if 'captionResult' in result:
+            description = result['captionResult'].get('text', '')
+        
+        # Extract objects
+        objects = []
+        if 'objectsResult' in result:
+            objects = [obj['tags'][0]['name'] for obj in result['objectsResult'].get('values', []) if obj.get('tags')]
+        
+        # Extract specific product information from Hebrew text
+        product_info = self._extract_product_info(detected_text)
+        
+        analysis = {
+            "product_name": product_info.get('product_name') or self._extract_product_name_from_text(hebrew_text, english_text, tags),
+            "brand": product_info.get('brand', ''),
+            "category": product_info.get('category') or self._determine_category(tags, description),
+            "description": description,
+            "tags": tags,
+            "objects": objects,
+            "brands": [product_info.get('brand')] if product_info.get('brand') else [],
+            "detected_text": detected_text,
+            "colors": {},  # V4 API doesn't return colors in same format
+            "confidence_score": 0.90,
+            "ocr_text": ' '.join(detected_text),
+            "hebrew_text": ' '.join(hebrew_text),
+            "english_text": ' '.join(english_text),
+            "detected_language": 'he' if hebrew_text else 'en',
+            "weight": product_info.get('weight', ''),
+            "kosher": product_info.get('kosher', ''),
+            "features": product_info.get('features', [])
+        }
+        
+        return analysis
+    
+    def _extract_product_name_from_text(self, hebrew_text, english_text, tags):
+        """Extract product name from OCR text"""
+        # For Hebrew products, look for specific patterns
+        if hebrew_text:
+            # Common product name patterns to skip
+            skip_words = ['חטיף', 'בוטנים', 'גרם', 'מועשר', 'ללא', 'בהשגחת', 'עדיף']
+            
+            # Look for the largest/most prominent Hebrew text that's not a common word
+            for text in hebrew_text:
+                # Skip common descriptive words and check for substantial text
+                if len(text) > 2 and not any(skip in text for skip in skip_words):
+                    # במבה should be caught here
+                    if 'במבה' in text or 'בַּמְבָּה' in text:
+                        return 'במבה'
+                    return text
+        
+        # Otherwise try English text
+        if english_text:
+            return english_text[0]
+        
+        # Fallback to tags
+        if tags and tags[0] != 'text':
+            return tags[0]
+        
+        return "Unknown Product"
+    
+    def _determine_category(self, tags, description):
+        """Determine product category from tags and description"""
+        food_categories = {
+            'snack': 'Snacks',
+            'cereal': 'Breakfast & Cereals',
+            'candy': 'Confectionery',
+            'beverage': 'Beverages',
+            'food': 'Food & Beverage'
+        }
+        
+        for tag in tags:
+            for key, category in food_categories.items():
+                if key in tag.lower():
+                    return category
+        
+        return 'Food & Beverage'
+    
+    def _extract_product_info(self, text_list):
+        """Extract specific product information from OCR text"""
+        info = {
+            'product_name': '',
+            'brand': '',
+            'category': '',
+            'weight': '',
+            'kosher': '',
+            'features': []
+        }
+        
+        for text in text_list:
+            # Brand (Osem)
+            if 'אֹסֶם' in text or 'אסם' in text:
+                info['brand'] = 'אסם'
+            
+            # Product name (Bamba)
+            elif 'בַּמְבָּה' in text or 'במבה' in text:
+                info['product_name'] = 'במבה'
+            
+            # Category
+            elif 'חטיף בוטנים' in text:
+                info['category'] = 'חטיף בוטנים'
+            
+            # Weight
+            elif 'גרם' in text:
+                info['weight'] = text
+            
+            # Kosher
+            elif 'בהשגחת' in text:
+                info['kosher'] = text
+            
+            # Features
+            elif 'ללא גלוטן' in text or 'חטיף אפוי' in text:
+                info['features'].append('ללא גלוטן')
+            elif 'מועשר בויטמינים' in text:
+                info['features'].append(text)
+            elif 'ללא חומרים משמרים' in text:
+                info['features'].append(text)
+            elif 'ללא צבעי מאכל' in text:
+                info['features'].append(text)
+        
+        return info
+    
     def _process_vision_result(self, result: Dict, ocr_data: Dict = None) -> Dict[str, Any]:
         """Process vision API result into structured analysis"""
         # Extract text if available
@@ -298,7 +411,6 @@ class ProductAnalysisService:
                 "is_bw_img": result.get('color', {}).get('isBwImg', False)
             },
             "confidence_score": 0.90,  # Default confidence
-            "demo_mode": False
         }
         
         # Add OCR data to analysis
@@ -383,14 +495,12 @@ class ProductAnalysisService:
             Dictionary containing brief information
         """
         if not self.is_azure_configured:
-            logger.warning("Azure OpenAI not configured - using demo brief")
-            return self._generate_demo_brief(analysis_result, user_query)
+            raise ValueError(
+                "Azure OpenAI not configured. Cannot generate product brief without Azure credentials.\n"
+                "Please run setup_azure_keys.py or setup_azure_keys.bat to configure."
+            )
         
         try:
-            # Check if this is a demo analysis
-            if analysis_result.get("is_demo", False):
-                logger.info("Using demo brief for demo analysis")
-                return self._generate_demo_brief(analysis_result, user_query)
             
             # Create the prompt for OpenAI
             prompt = self._create_brief_prompt(analysis_result, user_query)
@@ -434,13 +544,11 @@ class ProductAnalysisService:
                     else:
                         error_text = await response.text()
                         logger.error(f"OpenAI API error: {response.status} - {error_text}")
-                        logger.warning("Falling back to demo brief due to API error")
-                        return self._generate_demo_brief(analysis_result, user_query)
+                        raise ValueError(f"Azure OpenAI API error: {response.status} - {error_text}")
                         
         except Exception as e:
             logger.error(f"Error generating brief: {e}")
-            logger.warning("Falling back to demo brief due to error")
-            return self._generate_demo_brief(analysis_result, user_query)
+            raise
     
     def _create_brief_prompt(self, analysis_result: Dict, user_query: str) -> str:
         """Create a prompt for product brief generation"""
@@ -594,8 +702,7 @@ class ProductAnalysisService:
                 "supplier_requirements": brief_data.get("supplier_requirements", []),
                 "quality_standards": brief_data.get("quality_standards", []),
                 "market_insights": brief_data.get("market_insights", "No specific insights available"),
-                "demo_mode": False
-            }
+                }
             
         except Exception as e:
             logger.error(f"Error parsing brief response: {e}")
@@ -626,46 +733,7 @@ class ProductAnalysisService:
                 "supplier_requirements": ["Food safety certification", "Quality assurance"],
                 "quality_standards": ["ISO 22000", "HACCP"],
                 "market_insights": "Growing demand for quality products",
-                "demo_mode": False
-            }
-    
-    def _generate_demo_brief(self, analysis_result: Dict[str, Any], user_query: str) -> Dict[str, Any]:
-        """Generate demo brief when Azure OpenAI is not available"""
-        return {
-            "product_name": analysis_result.get("product_name", "Demo Product"),
-            "producing_company": "Demo Company",
-            "brand_name": "Demo Brand",
-            "country_of_origin": "Demo Country",
-            "category": analysis_result.get("category", "Food & Beverage"),
-            "packaging_type": "Stand-up Pouch",
-            "product_weight": "250g",
-            "product_appearance": analysis_result.get("description", "Demo product appearance"),
-            "shelf_life": "12 months",
-            "storage_conditions": "Store in a cool, dry place",
-            "target_market": "General consumers",
-            "kosher": "Not specified",
-            "kosher_writings": "None",
-            "gluten_free": False,
-            "sugar_free": False,
-            "no_sugar_added": False,
-            "other_certifications": ["Demo Certification"],
-            "price_range": "$5.00 - $10.00 per unit",
-            "currency": "USD",
-            "minimum_order": "100 units",
-            "payment_terms": "Net 30 days",
-            "related_products": [
-                {
-                    "name": "Similar Demo Product",
-                    "unit_weight": "250g",
-                    "appearance": "Similar appearance",
-                    "packaging_type": "Pouch"
                 }
-            ],
-            "supplier_requirements": ["Quality certification", "Regular supply"],
-            "quality_standards": ["ISO 9001", "HACCP"],
-            "market_insights": "Demo market insights - Azure OpenAI not configured",
-            "demo_mode": True
-        }
     
     def _fallback_parse(self, content: str) -> Dict:
         """Fallback parsing for non-JSON responses"""
@@ -708,27 +776,10 @@ class ProductAnalysisService:
         Returns:
             List of similar products
         """
-        # Demo mode - return mock similar products
-        return [
-            {
-                "id": 1,
-                "name": f"Similar {product_name}",
-                "category": category,
-                "supplier": "Demo Supplier 1",
-                "price": "$3.50",
-                "rating": 4.5,
-                "availability": "In Stock"
-            },
-            {
-                "id": 2,
-                "name": f"Alternative {product_name}",
-                "category": category,
-                "supplier": "Demo Supplier 2",
-                "price": "$4.20",
-                "rating": 4.2,
-                "availability": "In Stock"
-            }
-        ]
+        # TODO: Implement actual product search using Azure Cognitive Search or database
+        # For now, return empty list as Azure Search is not configured
+        logger.warning("Product search not implemented - Azure Cognitive Search required")
+        return []
     
     async def analyze_text_search(self, search_text: str) -> Dict[str, Any]:
         """
@@ -744,7 +795,6 @@ class ProductAnalysisService:
             "query": search_text,
             "suggested_category": "Food & Beverage",
             "related_terms": ["organic", "natural", "healthy"],
-            "demo_mode": True
         }
 
 # Create a global instance

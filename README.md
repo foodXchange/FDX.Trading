@@ -48,9 +48,19 @@ An advanced AI-powered platform for B2B food product analysis and sourcing. The 
 ## 📦 Installation
 
 ### Prerequisites
+
+⚠️ **IMPORTANT: Azure AI Services Required**
+FoodXchange requires Azure AI services to function. You MUST have:
+- Azure Computer Vision API credentials
+- Azure OpenAI API credentials
+- An active Azure subscription
+
+Without these services configured, the application will not work.
+
+### System Requirements
 - Python 3.8+
-- Azure OpenAI API Key
-- Azure Computer Vision API Key
+- Windows/Mac/Linux OS
+- Azure CLI (for automated setup)
 
 ### Setup
 
@@ -65,14 +75,24 @@ An advanced AI-powered platform for B2B food product analysis and sourcing. The 
    pip install -r foodxchange/requirements.txt
    ```
 
-3. **Set up environment variables**
-   Create a `.env` file in the root directory:
+3. **Configure Azure AI Services (REQUIRED)**
+   
+   Run the automated setup script:
+   ```bash
+   # Windows
+   setup_azure_keys.bat
+   
+   # Cross-platform
+   python setup_azure_keys.py
+   ```
+   
+   Or manually create a `.env` file:
    ```env
-   # Azure Computer Vision
+   # Azure Computer Vision (REQUIRED)
    AZURE_VISION_ENDPOINT=https://your-region.api.cognitive.microsoft.com/
    AZURE_VISION_KEY=your-vision-key
    
-   # Azure OpenAI
+   # Azure OpenAI (REQUIRED)
    AZURE_OPENAI_API_KEY=your-openai-key
    AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
    AZURE_OPENAI_DEPLOYMENT_NAME=gpt-35-turbo

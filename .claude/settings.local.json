@@ -75,7 +75,12 @@
       "Bash(link_domain.bat)",
       "Bash(pwsh:*)",
       "Bash(touch:*)",
-      "Bash(git filter-branch:*)"
+      "Bash(git filter-branch:*)",
+      "Bash(del:*)",
+      "Bash(start http://localhost:8003)",
+      "Bash(start cmd /c \"python -m foodxchange.main\")",
+      "Bash(dir:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

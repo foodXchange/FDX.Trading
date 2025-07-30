@@ -1,0 +1,565 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Main Content Column (8 cols) -->
+        <div class="col-lg-8">
+            <!-- Profile Header Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <!-- Profile Picture -->
+                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                            <div class="position-relative d-inline-block">
+                                {% if user.profile_picture %}
+                                    <img src="{{ user.profile_picture }}" alt="Profile" class="rounded-circle border-4 border-primary" style="width: 120px; height: 120px; object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 120px; height: 120px; font-size: 3rem;">
+                                        {{ user.name[0].upper() if user.name else 'U' }}
+                                    </div>
+                                {% endif %}
+                                <div class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white" style="width: 24px; height: 24px;"></div>
+                                <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0" title="Upload Photo">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Info -->
+                        <div class="col-md-9">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                <div class="mb-3 mb-md-0">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <h1 class="h3 mb-0 text-dark">{{ user.name }}</h1>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Verified
+                                        </span>
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-crown me-1"></i>Premium
+                                        </span>
+                                    </div>
+                                    <p class="text-muted mb-1">{{ user.email }}</p>
+                                    {% if user.job_title %}
+                                        <h5 class="text-primary mb-1">{{ user.job_title }}</h5>
+                                    {% endif %}
+                                    {% if user.company %}
+                                        <p class="text-muted mb-2">{{ user.company }}</p>
+                                    {% endif %}
+                                    <div class="d-flex align-items-center gap-3 text-muted small">
+                                        <span><i class="fas fa-calendar me-1"></i>Member since {{ user.created_at.strftime('%B %Y') }}</span>
+                                        <span><i class="fas fa-map-marker-alt me-1"></i>{{ user.city or 'Location not set' }}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('profile_edit') }}" class="btn btn-primary">
+                                        <i class="fas fa-edit me-2"></i>Edit Profile
+                                    </a>
+                                    <button class="btn btn-outline-secondary" onclick="shareProfile()">
+                                        <i class="fas fa-share me-2"></i>Share
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bio Section -->
+                    {% if user.bio %}
+                    <div class="mt-4 pt-4 border-top">
+                        <h6 class="text-muted text-uppercase mb-2">About</h6>
+                        <p class="text-dark mb-0">{{ user.bio }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Contact Information Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-address-card text-primary me-2"></i>Contact Information
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editContactInfo()">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-envelope text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Email</div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="mailto:{{ user.email }}" class="text-decoration-none">{{ user.email }}</a>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ user.email }}')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if user.phone %}
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-phone text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Phone</div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="tel:{{ user.phone }}" class="text-decoration-none">{{ user.phone }}</a>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ user.phone }}')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {% if user.country or user.city %}
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-map-marker-alt text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Location</div>
+                                    <div>
+                                        {% if user.city %}{{ user.city }}{% if user.country %}, {% endif %}{% endif %}
+                                        {% if user.country %}{{ user.country }}{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if user.website %}
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-globe text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Website</div>
+                                    <a href="{{ user.website }}" target="_blank" class="text-decoration-none">{{ user.website }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if user.linkedin %}
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fab fa-linkedin text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">LinkedIn</div>
+                                    <a href="{{ user.linkedin }}" target="_blank" class="text-decoration-none">View Profile</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Professional Information Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-briefcase text-primary me-2"></i>Professional Information
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editProfessionalInfo()">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Role</div>
+                                <span class="badge bg-primary">{{ user.role.title() }}</span>
+                            </div>
+                            
+                            {% if user.department %}
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Department</div>
+                                <div class="fw-bold">{{ user.department }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {% if user.industry %}
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Industry</div>
+                                <div class="fw-bold">{{ user.industry }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if user.company_size %}
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Company Size</div>
+                                <div class="fw-bold">{{ user.company_size }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Skills Tags -->
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="fw-bold small text-muted mb-2">Skills & Expertise</div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark">Product Analysis</span>
+                            <span class="badge bg-light text-dark">Supplier Management</span>
+                            <span class="badge bg-light text-dark">Procurement</span>
+                            <span class="badge bg-light text-dark">AI Tools</span>
+                            <span class="badge bg-light text-dark">Data Analytics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Settings Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog text-primary me-2"></i>Account Settings
+                    </h5>
+                    <a href="{{ url_for('profile_settings') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-cog me-1"></i>Manage Settings
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Account Status</div>
+                                <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                    {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Member Since</div>
+                                <div class="fw-bold">{{ user.created_at.strftime('%B %d, %Y') }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Timezone</div>
+                                <div class="fw-bold">{{ user.timezone or 'UTC' }}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="fw-bold small text-muted mb-1">Language</div>
+                                <div class="fw-bold">{{ user.language or 'English' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar Column (4 cols) -->
+        <div class="col-lg-4">
+            <!-- Account Statistics Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Account Statistics
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="border-end">
+                                <h4 class="mb-1 text-primary">127</h4>
+                                <small class="text-muted">Analyses This Month</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h4 class="mb-1 text-success">89%</h4>
+                            <small class="text-muted">Accuracy Rate</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="border-end">
+                                <h4 class="mb-1 text-info">45</h4>
+                                <small class="text-muted">Suppliers Connected</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h4 class="mb-1 text-warning">23</h4>
+                            <small class="text-muted">Projects Completed</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Profile Completion</small>
+                            <small class="text-muted">85%</small>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt text-primary me-2"></i>Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <button class="list-group-item list-group-item-action border-0 d-flex align-items-center" onclick="changePassword()">
+                            <i class="fas fa-key text-primary me-3"></i>
+                            <div>
+                                <div class="fw-bold small">Change Password</div>
+                                <small class="text-muted">Update your account security</small>
+                            </div>
+                        </button>
+                        <button class="list-group-item list-group-item-action border-0 d-flex align-items-center" onclick="exportData()">
+                            <i class="fas fa-download text-primary me-3"></i>
+                            <div>
+                                <div class="fw-bold small">Export Data</div>
+                                <small class="text-muted">Download your profile data</small>
+                            </div>
+                        </button>
+                        <button class="list-group-item list-group-item-action border-0 d-flex align-items-center" onclick="downloadVCard()">
+                            <i class="fas fa-address-card text-primary me-3"></i>
+                            <div>
+                                <div class="fw-bold small">Download vCard</div>
+                                <small class="text-muted">Save contact to phone</small>
+                            </div>
+                        </button>
+                        <button class="list-group-item list-group-item-action border-0 d-flex align-items-center" onclick="contactSupport()">
+                            <i class="fas fa-headset text-primary me-3"></i>
+                            <div>
+                                <div class="fw-bold small">Contact Support</div>
+                                <small class="text-muted">Get help with your account</small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-clock text-primary me-2"></i>Recent Activity
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-chart-line text-white fa-sm"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Product Analysis Completed</div>
+                                    <div class="text-muted small">Organic Tomatoes • 2 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-handshake text-white fa-sm"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">New Supplier Connected</div>
+                                    <div class="text-muted small">Fresh Farms Inc • 1 day ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-edit text-white fa-sm"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Profile Updated</div>
+                                    <div class="text-muted small">Contact information • 3 days ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-project-diagram text-white fa-sm"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Project Created</div>
+                                    <div class="text-muted small">Q4 Procurement • 1 week ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Achievements Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-trophy text-primary me-2"></i>Achievements & Badges
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4 mb-3">
+                            <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                <i class="fas fa-star text-white"></i>
+                            </div>
+                            <div class="small fw-bold">Early Adopter</div>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                <i class="fas fa-check-circle text-white"></i>
+                            </div>
+                            <div class="small fw-bold">Verified</div>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                                <i class="fas fa-chart-line text-white"></i>
+                            </div>
+                            <div class="small fw-bold">Analyst</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <small class="text-muted">Next Achievement</small>
+                            <small class="text-muted">75%</small>
+                        </div>
+                        <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 75%"></div>
+                        </div>
+                        <small class="text-muted">Complete 50 analyses to unlock "Data Master" badge</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Copy to clipboard function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('Copied to clipboard!', 'success');
+    }).catch(() => {
+        showNotification('Failed to copy', 'error');
+    });
+}
+
+// Share profile function
+function shareProfile() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ user.name }} - FoodXchange Profile',
+            text: 'Check out {{ user.name }}\'s profile on FoodXchange',
+            url: window.location.href
+        });
+    } else {
+        copyToClipboard(window.location.href);
+        showNotification('Profile link copied to clipboard!', 'success');
+    }
+}
+
+// Quick action functions
+function editContactInfo() {
+    window.location.href = '{{ url_for("profile_edit") }}';
+}
+
+function editProfessionalInfo() {
+    window.location.href = '{{ url_for("profile_edit") }}';
+}
+
+function changePassword() {
+    window.location.href = '{{ url_for("profile_settings") }}';
+}
+
+function exportData() {
+    showNotification('Export feature coming soon!', 'info');
+}
+
+function downloadVCard() {
+    const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:{{ user.name }}
+EMAIL:{{ user.email }}
+{% if user.phone %}TEL:{{ user.phone }}{% endif %}
+{% if user.company %}ORG:{{ user.company }}{% endif %}
+{% if user.job_title %}TITLE:{{ user.job_title }}{% endif %}
+{% if user.website %}URL:{{ user.website }}{% endif %}
+END:VCARD`;
+    
+    const blob = new Blob([vcard], { type: 'text/vcard' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '{{ user.name }}.vcf';
+    a.click();
+    window.URL.revokeObjectURL(url);
+    showNotification('vCard downloaded!', 'success');
+}
+
+function contactSupport() {
+    window.location.href = 'mailto:support@foodxchange.com?subject=Profile Support Request';
+}
+
+// Notification function (assuming it exists)
+function showNotification(message, type) {
+    // Implementation depends on your notification system
+    console.log(`${type}: ${message}`);
+    // You can integrate with your existing notification system here
+}
+
+// Profile completion calculation
+document.addEventListener('DOMContentLoaded', function() {
+    // Calculate profile completion percentage based on filled fields
+    const fields = ['name', 'email', 'job_title', 'company', 'bio', 'phone', 'city', 'country', 'website', 'linkedin'];
+    let completedFields = 0;
+    
+    fields.forEach(field => {
+        if (field === 'name' && '{{ user.name }}') completedFields++;
+        else if (field === 'email' && '{{ user.email }}') completedFields++;
+        else if (field === 'job_title' && '{{ user.job_title }}') completedFields++;
+        else if (field === 'company' && '{{ user.company }}') completedFields++;
+        else if (field === 'bio' && '{{ user.bio }}') completedFields++;
+        else if (field === 'phone' && '{{ user.phone }}') completedFields++;
+        else if (field === 'city' && '{{ user.city }}') completedFields++;
+        else if (field === 'country' && '{{ user.country }}') completedFields++;
+        else if (field === 'website' && '{{ user.website }}') completedFields++;
+        else if (field === 'linkedin' && '{{ user.linkedin }}') completedFields++;
+    });
+    
+    const completionPercentage = Math.round((completedFields / fields.length) * 100);
+    
+    // Update the progress bar
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        progressBar.style.width = completionPercentage + '%';
+    }
+    
+    // Update the percentage text
+    const percentageText = document.querySelector('.text-muted');
+    if (percentageText && percentageText.textContent.includes('%')) {
+        percentageText.textContent = completionPercentage + '%';
+    }
+});
+</script>
+{% endblock %}

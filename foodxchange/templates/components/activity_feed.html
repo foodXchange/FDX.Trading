@@ -1,0 +1,37 @@
+<!-- ActivityFeed Component -->
+<div class="card">
+    <div class="card-header">
+        <h6 class="mb-0">{{ title|default('Recent Activity') }}</h6>
+    </div>
+    <div class="card-body">
+        {% if activities %}
+        {% for activity in activities %}
+        <div class="activity-item">
+            <div class="d-flex align-items-center">
+                <div class="avatar bg-{{ activity.color|default('primary') }} text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                    <i class="fas fa-{{ activity.icon|default('info') }}"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <small class="text-muted">{{ activity.time }}</small>
+                    <p class="mb-0 small">{{ activity.message }}</p>
+                </div>
+                {% if activity.badge %}
+                <span class="badge bg-{{ activity.badge.color|default('secondary') }}">{{ activity.badge.text }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="text-center py-3">
+            <i class="fas fa-clock fa-2x text-muted mb-2"></i>
+            <p class="text-muted small mb-0">No recent activity</p>
+        </div>
+        {% endif %}
+        
+        {% if view_all_url %}
+        <div class="text-center mt-3">
+            <a href="{{ view_all_url }}" class="btn btn-outline-primary btn-sm">View All Activity</a>
+        </div>
+        {% endif %}
+    </div>
+</div> 

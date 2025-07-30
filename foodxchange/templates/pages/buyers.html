@@ -31,204 +31,361 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky pt-3">
-                <h4 class="text-white mb-4">
-                    <i class="fas fa-exchange-alt me-2"></i>
-                </h4>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('product_analysis') }}">
-                            <i class="fas fa-search me-2"></i>
-                            AI Analysis
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-2"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('projects') }}">
-                            <i class="fas fa-folder me-2"></i>
-                            Projects
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('suppliers') }}">
-                            <i class="fas fa-truck me-2"></i>
-                            Suppliers
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('buyers') }}">
-                            <i class="fas fa-users me-2"></i>
-                            Buyers
-                        </a>
-                    </li>
-                </ul>
+    <!-- Page Header -->
+    <div class="row mb-2">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">Buyer Management</h1>
+                    <p class="text-muted mb-0">Manage your buyer relationships and sourcing requirements</p>
+                </div>
+                <div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBuyerModal">
+                        <i class="fas fa-plus me-2"></i>Add New Buyer
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Main content -->
-        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2 font-causten">Buyers</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBuyerModal">
-                        <i class="fas fa-plus me-2"></i>Add Buyer
-                    </button>
-                </div>
-            </div>
 
-            <!-- Search and Filter -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" id="buyerSearch" placeholder="Search buyers by name, company, or email...">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" id="buyerFilter">
-                        <option value="">All Buyers</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="new">New (This Month)</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-sm btn-outline-secondary float-end" onclick="exportBuyers()">
-                        <i class="fas fa-download me-1"></i>Export CSV
-                    </button>
-                </div>
-            </div>
 
-            <!-- Buyers Grid -->
-            <div class="row" id="buyersGrid">
-                <!-- Add New Buyer Card -->
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card add-buyer-card h-100" onclick="showAddBuyerModal()">
-                        <div class="text-center">
-                            <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Add New Buyer</h5>
+    <!-- Buyer Stats -->
+    <div class="row mb-2">
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Total Buyers</h6>
+                            <h3 class="mb-0">12</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +3 this month</small>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Buyer cards will be loaded here dynamically -->
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Active Projects</h6>
+                            <h3 class="mb-0">28</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +8 this week</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-info bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Total Value</h6>
+                            <h3 class="mb-0">$2.4M</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +15% this quarter</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Pending</h6>
+                            <h3 class="mb-0">5</h3>
+                            <small class="text-warning"><i class="fas fa-minus"></i> No change</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Buyer List -->
+        <div class="col-lg-8">
+            <!-- Buyer List -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Buyer Directory</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Sample Buyers -->
+                    <div class="buyer-item mb-2 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Healthy Foods Co.</h6>
+                                <p class="text-muted mb-1">Organic and natural food products</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-success">Active</span>
+                                    <span class="badge bg-info">8 Projects</span>
+                                    <small class="text-muted">Last contact: 2 days ago</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View Details</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Contact</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="buyer-item mb-2 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Global Supermarkets Ltd.</h6>
+                                <p class="text-muted mb-1">International retail chain</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-success">Active</span>
+                                    <span class="badge bg-info">15 Projects</span>
+                                    <small class="text-muted">Last contact: 1 week ago</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View Details</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Contact</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="buyer-item mb-2 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Local Market Chain</h6>
+                                <p class="text-muted mb-1">Regional grocery stores</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-warning">Pending</span>
+                                    <span class="badge bg-info">3 Projects</span>
+                                    <small class="text-muted">Last contact: 3 weeks ago</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View Details</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Contact</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty State (hidden when sample data is shown) -->
+                    <div class="empty-state d-none">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5>No Buyers Added Yet</h5>
+                        <p class="text-muted">Start building your buyer network to track sourcing requirements and manage relationships.</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBuyerModal">
+                            <i class="fas fa-plus me-2"></i>Add Your First Buyer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Quick Actions & Tips -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm mb-2">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-outline-success w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addBuyerModal">
+                        <i class="fas fa-plus me-2"></i>Add New Buyer
+                    </button>
+                    <button class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-file-import me-2"></i>Import Buyers
+                    </button>
+                    <button class="btn btn-outline-info w-100 mb-2">
+                        <i class="fas fa-download me-2"></i>Export Data
+                    </button>
+                    <button class="btn btn-outline-warning w-100">
+                        <i class="fas fa-chart-bar me-2"></i>View Analytics
+                    </button>
+                </div>
             </div>
 
-            <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="text-center d-none">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+            <!-- Recent Activity -->
+            <div class="card border-0 shadow-sm mb-2">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
                 </div>
-                <p class="mt-2">Loading buyers...</p>
+                <div class="card-body">
+                    <div class="activity-item mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">New buyer added</h6>
+                                <small class="text-muted">Healthy Foods Co. • 2 days ago</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-item mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">Buyer updated</h6>
+                                <small class="text-muted">Global Supermarkets • 1 week ago</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">New project created</h6>
+                                <small class="text-muted">Local Market Chain • 3 weeks ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Buyer Management Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="tip-item mb-2">
+                        <i class="fas fa-user-plus text-primary me-2"></i>
+                        <small>Add detailed buyer profiles to track specific requirements</small>
+                    </div>
+                    <div class="tip-item mb-2">
+                        <i class="fas fa-tags text-success me-2"></i>
+                        <small>Use categories to organize buyers by industry or region</small>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-chart-line text-info me-2"></i>
+                        <small>Track buyer activity to identify opportunities</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Add Buyer Modal -->
-<div class="modal fade" id="addBuyerModal" tabindex="-1" aria-labelledby="addBuyerModalLabel" aria-hidden="true">
+<div class="modal fade" id="addBuyerModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title font-causten" id="buyerModalTitle">Add New Buyer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Add New Buyer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="addBuyerForm">
-                    <input type="hidden" id="buyerId" value="">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="buyerName" class="form-label">Contact Name *</label>
-                                <input type="text" class="form-control" id="buyerName" required>
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="buyerName" class="form-label">Contact Name *</label>
+                            <input type="text" class="form-control" id="buyerName" required>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="companyName" class="form-label">Company Name *</label>
-                                <input type="text" class="form-control" id="companyName" required>
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="companyName" class="form-label">Company Name *</label>
+                            <input type="text" class="form-control" id="companyName" required>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="buyerEmail" class="form-label">Email *</label>
-                                <input type="email" class="form-control" id="buyerEmail" required>
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="buyerEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="buyerEmail" required>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="buyerPhone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="buyerPhone">
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="buyerPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="buyerPhone">
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="buyerCountry" class="form-label">Country</label>
-                                <input type="text" class="form-control" id="buyerCountry">
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="buyerCountry" class="form-label">Country</label>
+                            <select class="form-select" id="buyerCountry">
+                                <option value="">Select country</option>
+                                <option value="US">United States</option>
+                                <option value="CA">Canada</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="IL">Israel</option>
+                                <option value="other">Other</option>
+                            </select>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="buyerCity" class="form-label">City</label>
-                                <input type="text" class="form-control" id="buyerCity">
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="buyerCity" class="form-label">City</label>
+                            <input type="text" class="form-control" id="buyerCity">
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label for="buyerAddress" class="form-label">Address</label>
                         <textarea class="form-control" id="buyerAddress" rows="2"></textarea>
                     </div>
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="buyerIndustry" class="form-label">Industry</label>
-                                <select class="form-select" id="buyerIndustry">
-                                    <option value="">Select Industry</option>
-                                    <option value="food_beverage">Food & Beverage</option>
-                                    <option value="retail">Retail</option>
-                                    <option value="wholesale">Wholesale</option>
-                                    <option value="restaurant">Restaurant</option>
-                                    <option value="catering">Catering</option>
-                                    <option value="manufacturing">Manufacturing</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="buyerIndustry" class="form-label">Industry</label>
+                            <select class="form-select" id="buyerIndustry">
+                                <option value="">Select industry</option>
+                                <option value="retail">Retail</option>
+                                <option value="wholesale">Wholesale</option>
+                                <option value="restaurant">Restaurant</option>
+                                <option value="manufacturing">Manufacturing</option>
+                                <option value="other">Other</option>
+                            </select>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="companySize" class="form-label">Company Size</label>
-                                <select class="form-select" id="companySize">
-                                    <option value="">Select Size</option>
-                                    <option value="small">Small (1-50)</option>
-                                    <option value="medium">Medium (51-200)</option>
-                                    <option value="large">Large (200+)</option>
-                                </select>
-                            </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="companySize" class="form-label">Company Size</label>
+                            <select class="form-select" id="companySize">
+                                <option value="">Select size</option>
+                                <option value="small">Small (1-50 employees)</option>
+                                <option value="medium">Medium (51-500 employees)</option>
+                                <option value="large">Large (500+ employees)</option>
+                            </select>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="paymentTerms" class="form-label">Payment Terms</label>
-                                <select class="form-select" id="paymentTerms">
-                                    <option value="">Select Terms</option>
-                                    <option value="net_30">Net 30</option>
-                                    <option value="net_60">Net 60</option>
-                                    <option value="net_90">Net 90</option>
-                                    <option value="immediate">Immediate</option>
-                                </select>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label for="paymentTerms" class="form-label">Payment Terms</label>
+                        <select class="form-select" id="paymentTerms">
+                            <option value="">Select terms</option>
+                            <option value="net30">Net 30</option>
+                            <option value="net60">Net 60</option>
+                            <option value="net90">Net 90</option>
+                            <option value="immediate">Immediate</option>
+                        </select>
                     </div>
                 </form>
             </div>
@@ -240,201 +397,39 @@
     </div>
 </div>
 
-{% endblock %}
-
-{% block extra_js %}
 <script>
-    let buyers = [];
-    let filteredBuyers = [];
-
-    // Load buyers on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadBuyers();
-        
-        // Set up search and filter handlers
-        document.getElementById('buyerSearch').addEventListener('input', filterBuyers);
-        document.getElementById('buyerFilter').addEventListener('change', filterBuyers);
-    });
-
-    async function loadBuyers() {
-        const spinner = document.getElementById('loadingSpinner');
-        spinner.classList.remove('d-none');
-        
-        try {
-            const response = await fetch('/buyers/list');
-            const data = await response.json();
-            
-            if (data.success) {
-                buyers = data.buyers;
-                filterBuyers();
-            }
-        } catch (error) {
-            console.error('Error loading buyers:', error);
-        } finally {
-            spinner.classList.add('d-none');
-        }
-    }
-
-    function filterBuyers() {
-        const searchTerm = document.getElementById('buyerSearch').value.toLowerCase();
-        const filterType = document.getElementById('buyerFilter').value;
-        
-        filteredBuyers = buyers.filter(buyer => {
-            const matchesSearch = !searchTerm || 
-                buyer.name.toLowerCase().includes(searchTerm) ||
-                buyer.company_name.toLowerCase().includes(searchTerm) ||
-                buyer.email.toLowerCase().includes(searchTerm);
-            
-            let matchesFilter = true;
-            if (filterType === 'new') {
-                const buyerDate = new Date(buyer.created_at);
-                const oneMonthAgo = new Date();
-                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-                matchesFilter = buyerDate > oneMonthAgo;
-            }
-            
-            return matchesSearch && matchesFilter;
-        });
-        
-        displayBuyers();
-    }
-
-    function displayBuyers() {
-        const grid = document.getElementById('buyersGrid');
-        const addCard = grid.querySelector('.add-buyer-card').parentElement.outerHTML;
-        
-        let html = addCard;
-        
-        filteredBuyers.forEach(buyer => {
-            html += `
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card buyer-card h-100" onclick="viewBuyer('${buyer.id}')">
-                        <div class="card-body">
-                            <h5 class="card-title">${buyer.name}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">${buyer.company_name}</h6>
-                            <p class="card-text">
-                                <i class="fas fa-envelope me-2"></i>${buyer.email}<br>
-                                ${buyer.phone ? `<i class="fas fa-phone me-2"></i>${buyer.phone}<br>` : ''}
-                                ${buyer.location ? `<i class="fas fa-map-marker-alt me-2"></i>${buyer.location}` : ''}
-                            </p>
-                        </div>
-                        <div class="card-footer text-muted">
-                            <small>Added: ${new Date(buyer.created_at).toLocaleDateString()}</small>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        grid.innerHTML = html;
-    }
-
-    function showAddBuyerModal() {
-        document.getElementById('buyerModalTitle').textContent = 'Add New Buyer';
-        document.getElementById('addBuyerForm').reset();
-        document.getElementById('buyerId').value = '';
-        
-        const modal = new bootstrap.Modal(document.getElementById('addBuyerModal'));
-        modal.show();
-    }
-
+    // Save buyer function
     async function saveBuyer() {
-        const buyerId = document.getElementById('buyerId').value;
-        const formData = new FormData();
-        
-        // Get location from city and country
-        const city = document.getElementById('buyerCity').value;
-        const country = document.getElementById('buyerCountry').value;
-        const location = [city, country].filter(x => x).join(', ');
-        
-        formData.append('name', document.getElementById('buyerName').value);
-        formData.append('company_name', document.getElementById('companyName').value);
-        formData.append('email', document.getElementById('buyerEmail').value);
-        formData.append('phone', document.getElementById('buyerPhone').value);
-        formData.append('location', location);
-        formData.append('notes', document.getElementById('buyerAddress').value);
+        const form = document.getElementById('addBuyerForm');
+        const formData = new FormData(form);
         
         try {
-            const url = buyerId ? `/buyers/${buyerId}` : '/buyers/add';
-            const method = buyerId ? 'PUT' : 'POST';
-            
-            const response = await fetch(url, {
-                method: method,
+            const response = await fetch('/buyers/create', {
+                method: 'POST',
                 body: formData
             });
             
             const data = await response.json();
             
             if (data.success) {
+                alert('Buyer added successfully!');
                 bootstrap.Modal.getInstance(document.getElementById('addBuyerModal')).hide();
-                loadBuyers();
+                form.reset();
+                // Optionally refresh the buyer list
+                location.reload();
             } else {
-                alert('Error saving buyer');
+                alert('Error adding buyer: ' + (data.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Error saving buyer');
+            alert('Error adding buyer');
         }
     }
 
-    function viewBuyer(buyerId) {
-        // For now, just show edit modal
-        editBuyer(buyerId);
-    }
-
-    async function editBuyer(buyerId) {
-        try {
-            const response = await fetch(`/buyers/${buyerId}`);
-            const data = await response.json();
-            
-            if (data.success) {
-                const buyer = data.buyer;
-                
-                document.getElementById('buyerModalTitle').textContent = 'Edit Buyer';
-                document.getElementById('buyerId').value = buyer.id;
-                document.getElementById('buyerName').value = buyer.name;
-                document.getElementById('companyName').value = buyer.company_name;
-                document.getElementById('buyerEmail').value = buyer.email;
-                document.getElementById('buyerPhone').value = buyer.phone || '';
-                
-                // Parse location back to city and country if needed
-                if (buyer.location) {
-                    const parts = buyer.location.split(', ');
-                    document.getElementById('buyerCity').value = parts[0] || '';
-                    document.getElementById('buyerCountry').value = parts[1] || '';
-                }
-                
-                document.getElementById('buyerAddress').value = buyer.notes || '';
-                
-                const modal = new bootstrap.Modal(document.getElementById('addBuyerModal'));
-                modal.show();
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error loading buyer details');
-        }
-    }
-
-    function exportBuyers() {
-        const csv = [
-            ['Name', 'Company', 'Email', 'Phone', 'Location', 'Created'],
-            ...filteredBuyers.map(b => [
-                b.name,
-                b.company_name,
-                b.email,
-                b.phone || '',
-                b.location || '',
-                new Date(b.created_at).toLocaleDateString()
-            ])
-        ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-        
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `buyers_${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
+    // Load buyers on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // You can add logic to load actual buyers here
+        console.log('Buyers page loaded');
+    });
 </script>
 {% endblock %} 

@@ -1,0 +1,213 @@
+<!-- DataTable Component -->
+<div class="card">
+    {% if show_header %}
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">{{ title|default('Data Table') }}</h5>
+        {% if show_search %}
+        <div class="d-flex gap-2">
+            <div class="input-group" style="width: 300px;">
+                <input type="text" class="form-control" id="{{ table_id }}_search" placeholder="Search..." aria-label="Search">
+                <button class="btn btn-outline-secondary" type="button" onclick="filterTable('{{ table_id }}')">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            {% if show_filters %}
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#{{ table_id }}_filters">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if show_filters %}
+    <div class="collapse" id="{{ table_id }}_filters">
+        <div class="card-body border-bottom">
+            <div class="row g-3">
+                {% for filter in filters %}
+                <div class="col-md-3">
+                    <label for="{{ table_id }}_filter_{{ filter.name }}" class="form-label">{{ filter.label }}</label>
+                    <select class="form-select" id="{{ table_id }}_filter_{{ filter.name }}" onchange="filterTable('{{ table_id }}')">
+                        <option value="">All {{ filter.label }}</option>
+                        {% for option in filter.options %}
+                        <option value="{{ option.value }}">{{ option.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" id="{{ table_id }}">
+            <thead class="table-light">
+                <tr>
+                    {% for column in columns %}
+                    <th class="{% if column.sortable %}sortable{% endif %}" 
+                        {% if column.sortable %}onclick="sortTable('{{ table_id }}', {{ loop.index0 }})"{% endif %}
+                        style="cursor: {% if column.sortable %}pointer{% else %}default{% endif %};">
+                        {{ column.label }}
+                        {% if column.sortable %}
+                        <i class="fas fa-sort ms-1 text-muted"></i>
+                        {% endif %}
+                    </th>
+                    {% endfor %}
+                    {% if show_actions %}
+                    <th class="text-end">Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    {% for column in columns %}
+                    <td>
+                        {% if column.type == 'badge' %}
+                            <span class="badge bg-{{ row[column.key].color|default('secondary') }}">{{ row[column.key].text }}</span>
+                        {% elif column.type == 'status' %}
+                            <span class="badge bg-{{ row[column.key]|status_color }}">{{ row[column.key]|title }}</span>
+                        {% elif column.type == 'date' %}
+                            {{ row[column.key]|format_date }}
+                        {% elif column.type == 'currency' %}
+                            ${{ "%.2f"|format(row[column.key]) }}
+                        {% elif column.type == 'percentage' %}
+                            {{ "%.1f"|format(row[column.key]) }}%
+                        {% elif column.type == 'link' %}
+                            <a href="{{ row[column.key].url }}" class="text-decoration-none">{{ row[column.key].text }}</a>
+                        {% else %}
+                            {{ row[column.key] }}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                    {% if show_actions %}
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm" role="group">
+                            {% if actions.view %}
+                            <button type="button" class="btn btn-outline-primary" onclick="viewItem('{{ row.id }}')" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% endif %}
+                            {% if actions.edit %}
+                            <button type="button" class="btn btn-outline-secondary" onclick="editItem('{{ row.id }}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            {% endif %}
+                            {% if actions.delete %}
+                            <button type="button" class="btn btn-outline-danger" onclick="deleteItem('{{ row.id }}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if show_pagination and pagination %}
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                Showing {{ pagination.start }} to {{ pagination.end }} of {{ pagination.total }} entries
+            </div>
+            <nav aria-label="Table pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="?page={{ pagination.prev_page }}" {% if not pagination.has_prev %}tabindex="-1"{% endif %}>Previous</a>
+                    </li>
+                    
+                    {% for page_num in pagination.pages %}
+                    <li class="page-item {% if page_num == pagination.current_page %}active{% endif %}">
+                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                    </li>
+                    {% endfor %}
+                    
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="?page={{ pagination.next_page }}" {% if not pagination.has_next %}tabindex="-1"{% endif %}>Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// DataTable JavaScript functionality
+function sortTable(tableId, columnIndex) {
+    const table = document.getElementById(tableId);
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const header = table.querySelector('thead tr');
+    const column = header.children[columnIndex];
+    
+    // Remove sort indicators from all columns
+    header.querySelectorAll('th').forEach(th => {
+        const icon = th.querySelector('i');
+        if (icon) icon.className = 'fas fa-sort ms-1 text-muted';
+    });
+    
+    // Add sort indicator to current column
+    const icon = column.querySelector('i');
+    const isAscending = !column.classList.contains('sort-asc');
+    
+    if (isAscending) {
+        icon.className = 'fas fa-sort-up ms-1 text-primary';
+        column.classList.add('sort-asc');
+        column.classList.remove('sort-desc');
+    } else {
+        icon.className = 'fas fa-sort-down ms-1 text-primary';
+        column.classList.add('sort-desc');
+        column.classList.remove('sort-asc');
+    }
+    
+    // Sort rows
+    rows.sort((a, b) => {
+        const aValue = a.children[columnIndex].textContent.trim();
+        const bValue = b.children[columnIndex].textContent.trim();
+        
+        if (isAscending) {
+            return aValue.localeCompare(bValue);
+        } else {
+            return bValue.localeCompare(aValue);
+        }
+    });
+    
+    // Reorder rows
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+function filterTable(tableId) {
+    const table = document.getElementById(tableId);
+    const searchTerm = document.getElementById(tableId + '_search').value.toLowerCase();
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// Action handlers (to be implemented by parent pages)
+function viewItem(id) {
+    console.log('View item:', id);
+    // Implement view functionality
+}
+
+function editItem(id) {
+    console.log('Edit item:', id);
+    // Implement edit functionality
+}
+
+function deleteItem(id) {
+    if (confirm('Are you sure you want to delete this item?')) {
+        console.log('Delete item:', id);
+        // Implement delete functionality
+    }
+}
+</script> 

@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+
+{% block title %}Data Import - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Data Import</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Data Import</li>
+    </ol>
+
+    <!-- Import Options -->
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-upload me-1"></i>
+                    Import Buyers
+                </div>
+                <div class="card-body">
+                    <p>Import buyer information from CSV or Excel files.</p>
+                    <button class="btn btn-primary" onclick="showImportModal('buyers')">
+                        <i class="fas fa-file-import me-1"></i> Import Buyers
+                    </button>
+                    <a href="{{ url_for('data_import.download_template', data_type='buyers') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-download me-1"></i> Download Template
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-upload me-1"></i>
+                    Import Suppliers
+                </div>
+                <div class="card-body">
+                    <p>Import supplier information from CSV or Excel files.</p>
+                    <button class="btn btn-primary" onclick="showImportModal('suppliers')">
+                        <i class="fas fa-file-import me-1"></i> Import Suppliers
+                    </button>
+                    <a href="{{ url_for('data_import.download_template', data_type='suppliers') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-download me-1"></i> Download Template
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import History -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-history me-1"></i>
+            Import History
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="importHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>File</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Total Rows</th>
+                            <th>Success</th>
+                            <th>Failed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Import Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Step 1: File Upload -->
+                <div id="step1" class="import-step">
+                    <h6>Step 1: Select File</h6>
+                    <form id="uploadForm">
+                        <input type="hidden" id="dataType" name="data_type" value="">
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label">Choose CSV or Excel file</label>
+                            <input type="file" class="form-control" id="fileInput" name="file" accept=".csv,.xlsx,.xls" required>
+                            <div class="form-text">Supported formats: CSV, Excel (XLSX, XLS). Maximum file size: 10MB</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-eye me-1"></i> Preview Data
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Step 2: Preview & Mapping -->
+                <div id="step2" class="import-step" style="display: none;">
+                    <h6>Step 2: Preview & Column Mapping</h6>
+                    
+                    <!-- Validation Summary -->
+                    <div id="validationSummary" class="alert alert-info mb-3">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Column Mapping -->
+                    <div id="columnMapping" class="mb-3">
+                        <h6>Column Mapping</h6>
+                        <p class="text-muted">Map your file columns to the expected fields:</p>
+                        <div id="mappingContainer">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Data Preview -->
+                    <div id="dataPreview" class="mb-3">
+                        <h6>Data Preview</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm" id="previewTable">
+                                <thead>
+                                    <!-- Populated by JavaScript -->
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" onclick="backToStep1()">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="processImport()">
+                            <i class="fas fa-upload me-1"></i> Import Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Import Results -->
+                <div id="step3" class="import-step" style="display: none;">
+                    <h6>Step 3: Import Results</h6>
+                    <div id="importResults">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" onclick="showImportModal(currentDataType)">Import Another File</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Import Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let currentDataType = '';
+let previewData = null;
+let tempFilename = null;
+
+// Initialize on page load
+$(document).ready(function() {
+    loadImportHistory();
+    
+    // Handle file upload form
+    $('#uploadForm').on('submit', function(e) {
+        e.preventDefault();
+        previewImport();
+    });
+});
+
+function showImportModal(dataType) {
+    currentDataType = dataType;
+    $('#dataType').val(dataType);
+    $('#importModalLabel').text('Import ' + dataType.charAt(0).toUpperCase() + dataType.slice(1));
+    
+    // Reset to step 1
+    $('.import-step').hide();
+    $('#step1').show();
+    $('#uploadForm')[0].reset();
+    
+    // Show modal
+    $('#importModal').modal('show');
+}
+
+function previewImport() {
+    const formData = new FormData($('#uploadForm')[0]);
+    
+    // Show loading
+    showLoading('Analyzing file...');
+    
+    $.ajax({
+        url: '{{ url_for("data_import.preview_import") }}',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            hideLoading();
+            
+            if (response.success) {
+                previewData = response;
+                tempFilename = response.temp_filename;
+                showPreview(response);
+            } else {
+                showError('Preview failed: ' + response.error);
+            }
+        },
+        error: function(xhr) {
+            hideLoading();
+            showError('Error previewing file: ' + (xhr.responseJSON?.error || 'Unknown error'));
+        }
+    });
+}
+
+function showPreview(data) {
+    // Move to step 2
+    $('.import-step').hide();
+    $('#step2').show();
+    
+    // Show validation summary
+    let summaryHtml = `
+        <strong>File Summary:</strong><br>
+        Total Rows: ${data.total_rows}<br>
+        Valid Emails: ${data.valid_emails}<br>
+        Invalid Emails: ${data.invalid_emails}<br>
+    `;
+    
+    if (!data.is_valid) {
+        summaryHtml += `<br><strong class="text-danger">Missing Required Columns:</strong> ${data.missing_columns.join(', ')}`;
+    }
+    
+    $('#validationSummary').html(summaryHtml);
+    
+    // Show column mapping
+    showColumnMapping(data.available_columns, data.expected_columns, data.column_mapping);
+    
+    // Show data preview
+    showDataPreview(data.preview_data);
+}
+
+function showColumnMapping(available, expected, suggested) {
+    let mappingHtml = '<div class="row">';
+    
+    expected.forEach(col => {
+        const isRequired = ['name', 'email'].includes(col);
+        const suggestedSource = Object.keys(suggested).find(key => suggested[key] === col) || '';
+        
+        mappingHtml += `
+            <div class="col-md-6 mb-2">
+                <div class="input-group">
+                    <span class="input-group-text ${isRequired ? 'bg-warning' : ''}">${col}${isRequired ? ' *' : ''}</span>
+                    <select class="form-select mapping-select" data-target="${col}">
+                        <option value="">-- Not mapped --</option>
+                        ${available.map(avail => 
+                            `<option value="${avail}" ${avail === suggestedSource ? 'selected' : ''}>${avail}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+            </div>
+        `;
+    });
+    
+    mappingHtml += '</div>';
+    $('#mappingContainer').html(mappingHtml);
+}
+
+function showDataPreview(data) {
+    if (!data || data.length === 0) {
+        $('#previewTable').html('<tr><td>No data to preview</td></tr>');
+        return;
+    }
+    
+    // Build table header
+    const columns = Object.keys(data[0]);
+    let headerHtml = '<tr><th>#</th>';
+    columns.forEach(col => {
+        headerHtml += `<th>${col}</th>`;
+    });
+    headerHtml += '</tr>';
+    
+    // Build table body
+    let bodyHtml = '';
+    data.forEach((row, index) => {
+        bodyHtml += `<tr><td>${index + 1}</td>`;
+        columns.forEach(col => {
+            bodyHtml += `<td>${row[col] || ''}</td>`;
+        });
+        bodyHtml += '</tr>';
+    });
+    
+    $('#previewTable thead').html(headerHtml);
+    $('#previewTable tbody').html(bodyHtml);
+}
+
+function backToStep1() {
+    $('.import-step').hide();
+    $('#step1').show();
+}
+
+function processImport() {
+    // Collect column mapping
+    const columnMapping = {};
+    $('.mapping-select').each(function() {
+        const target = $(this).data('target');
+        const source = $(this).val();
+        if (source) {
+            columnMapping[source] = target;
+        }
+    });
+    
+    // Use the existing file
+    const formData = new FormData($('#uploadForm')[0]);
+    formData.append('column_mapping', JSON.stringify(columnMapping));
+    
+    // Show loading
+    showLoading('Importing data...');
+    
+    $.ajax({
+        url: '{{ url_for("data_import.process_import") }}',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            hideLoading();
+            
+            if (response.success) {
+                showImportResults(response);
+                loadImportHistory(); // Refresh history
+            } else {
+                showError('Import failed: ' + response.error);
+            }
+        },
+        error: function(xhr) {
+            hideLoading();
+            showError('Error importing data: ' + (xhr.responseJSON?.error || 'Unknown error'));
+        }
+    });
+}
+
+function showImportResults(result) {
+    $('.import-step').hide();
+    $('#step3').show();
+    
+    let resultsHtml = `
+        <div class="alert alert-success">
+            <h5>Import Completed!</h5>
+            <p>${result.message}</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3>${result.imported_count}</h3>
+                        <p class="text-muted">Records Imported</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3>${result.total_count || result.imported_count}</h3>
+                        <p class="text-muted">Total Records</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    $('#importResults').html(resultsHtml);
+}
+
+function loadImportHistory() {
+    $.ajax({
+        url: '{{ url_for("data_import.import_history") }}',
+        type: 'GET',
+        success: function(response) {
+            if (response.success) {
+                displayImportHistory(response.history);
+            }
+        }
+    });
+}
+
+function displayImportHistory(history) {
+    let html = '';
+    
+    history.forEach(item => {
+        const date = new Date(item.import_date * 1000).toLocaleString();
+        
+        html += `
+            <tr>
+                <td>${date}</td>
+                <td>${item.filename}</td>
+                <td>${item.data_type}</td>
+                <td><span class="badge bg-success">Success</span></td>
+                <td>${item.record_count}</td>
+                <td>${item.record_count}</td>
+                <td>0</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewImportDetails('${item.file_path}')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    $('#importHistoryTable tbody').html(html || '<tr><td colspan="8" class="text-center">No import history</td></tr>');
+}
+
+function viewImportDetails(filePath) {
+    alert('Import details: ' + filePath);
+}
+
+function showLoading(message) {
+    // Simple loading indicator
+    console.log('Loading:', message);
+}
+
+function hideLoading() {
+    // Hide loading indicator
+}
+
+function showError(message) {
+    alert('Error: ' + message);
+}
+</script>
+{% endblock %}

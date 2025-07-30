@@ -1,0 +1,329 @@
+<!-- EmptyState Component -->
+<div class="empty-state text-center py-5">
+    <!-- Icon -->
+    {% if icon %}
+    <div class="empty-state-icon mb-4">
+        <div class="icon-wrapper bg-{{ icon_color|default('light') }} bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
+             style="width: 80px; height: 80px;">
+            <i class="fas fa-{{ icon }} fa-2x text-{{ icon_color|default('muted') }}"></i>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Title -->
+    {% if title %}
+    <h4 class="empty-state-title mb-3 {% if title_color %}text-{{ title_color }}{% endif %}">
+        {{ title }}
+    </h4>
+    {% endif %}
+    
+    <!-- Description -->
+    {% if description %}
+    <p class="empty-state-description text-muted mb-4" style="max-width: 500px; margin: 0 auto;">
+        {{ description }}
+    </p>
+    {% endif %}
+    
+    <!-- Actions -->
+    {% if primary_action or secondary_actions %}
+    <div class="empty-state-actions">
+        {% if primary_action %}
+        <div class="mb-3">
+            <a href="{{ primary_action.url|default('#') }}" 
+               class="btn btn-{{ primary_action.color|default('primary') }} btn-lg"
+               {% if primary_action.onclick %}onclick="{{ primary_action.onclick }}"{% endif %}
+               {% if primary_action.target %}target="{{ primary_action.target }}"{% endif %}>
+                {% if primary_action.icon %}<i class="fas fa-{{ primary_action.icon }} me-2"></i>{% endif %}
+                {{ primary_action.text }}
+            </a>
+        </div>
+        {% endif %}
+        
+        {% if secondary_actions %}
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            {% for action in secondary_actions %}
+            <a href="{{ action.url|default('#') }}" 
+               class="btn btn-outline-{{ action.color|default('secondary') }}"
+               {% if action.onclick %}onclick="{{ action.onclick }}"{% endif %}
+               {% if action.target %}target="{{ action.target }}"{% endif %}>
+                {% if action.icon %}<i class="fas fa-{{ action.icon }} me-1"></i>{% endif %}
+                {{ action.text }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Additional Content -->
+    {% if additional_content %}
+    <div class="empty-state-additional mt-4">
+        {{ additional_content|safe }}
+    </div>
+    {% endif %}
+    
+    <!-- Help Links -->
+    {% if help_links %}
+    <div class="empty-state-help mt-4 pt-3 border-top">
+        <p class="text-muted small mb-2">Need help getting started?</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            {% for link in help_links %}
+            <a href="{{ link.url }}" 
+               class="text-decoration-none text-muted small"
+               {% if link.target %}target="{{ link.target }}"{% endif %}>
+                <i class="fas fa-{{ link.icon }} me-1"></i>
+                {{ link.text }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.empty-state {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-state-icon .icon-wrapper {
+    transition: all 0.3s ease;
+}
+
+.empty-state:hover .empty-state-icon .icon-wrapper {
+    transform: scale(1.05);
+}
+
+.empty-state-title {
+    font-weight: 600;
+}
+
+.empty-state-description {
+    line-height: 1.6;
+}
+
+.empty-state-actions .btn {
+    transition: all 0.2s ease;
+}
+
+.empty-state-actions .btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Animation for empty state appearance */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-state {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .empty-state {
+        padding: 3rem 1rem;
+        min-height: 250px;
+    }
+    
+    .empty-state-icon .icon-wrapper {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    
+    .empty-state-icon .icon-wrapper i {
+        font-size: 1.5rem !important;
+    }
+    
+    .empty-state-title {
+        font-size: 1.25rem;
+    }
+    
+    .empty-state-actions .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .empty-state-description {
+        color: #adb5bd !important;
+    }
+    
+    .empty-state-help .text-muted {
+        color: #6c757d !important;
+    }
+}
+</style>
+
+<script>
+// EmptyState JavaScript functionality
+function showEmptyState(containerId, config = {}) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Default configuration
+    const defaultConfig = {
+        icon: 'inbox',
+        icon_color: 'muted',
+        title: 'No data available',
+        description: 'There are no items to display at the moment.',
+        primary_action: null,
+        secondary_actions: [],
+        help_links: []
+    };
+    
+    const finalConfig = { ...defaultConfig, ...config };
+    
+    // Generate HTML
+    const html = generateEmptyStateHTML(finalConfig);
+    container.innerHTML = html;
+    
+    // Add animation class
+    container.querySelector('.empty-state').style.animation = 'none';
+    setTimeout(() => {
+        container.querySelector('.empty-state').style.animation = 'fadeInUp 0.6s ease-out';
+    }, 10);
+}
+
+function generateEmptyStateHTML(config) {
+    // This would generate the HTML based on the config
+    // For now, we'll use a simple template
+    return `
+        <div class="empty-state text-center py-5">
+            <div class="empty-state-icon mb-4">
+                <div class="icon-wrapper bg-${config.icon_color} bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <i class="fas fa-${config.icon} fa-2x text-${config.icon_color}"></i>
+                </div>
+            </div>
+            <h4 class="empty-state-title mb-3">${config.title}</h4>
+            <p class="empty-state-description text-muted mb-4" style="max-width: 500px; margin: 0 auto;">${config.description}</p>
+        </div>
+    `;
+}
+
+// Common empty state configurations
+const EmptyStateConfigs = {
+    noData: {
+        icon: 'inbox',
+        title: 'No data available',
+        description: 'There are no items to display at the moment.',
+        primary_action: {
+            text: 'Add your first item',
+            url: '#',
+            color: 'primary',
+            icon: 'plus'
+        }
+    },
+    
+    noResults: {
+        icon: 'search',
+        title: 'No results found',
+        description: 'Try adjusting your search criteria or filters.',
+        primary_action: {
+            text: 'Clear filters',
+            url: '#',
+            color: 'secondary',
+            icon: 'times'
+        },
+        secondary_actions: [
+            {
+                text: 'Browse all items',
+                url: '#',
+                color: 'outline-secondary'
+            }
+        ]
+    },
+    
+    noProjects: {
+        icon: 'folder-open',
+        title: 'No projects yet',
+        description: 'Create your first project to start analyzing products with AI.',
+        primary_action: {
+            text: 'Start new analysis',
+            url: '/product-analysis/',
+            color: 'primary',
+            icon: 'robot'
+        },
+        help_links: [
+            {
+                text: 'View tutorial',
+                url: '#',
+                icon: 'play-circle'
+            },
+            {
+                text: 'Contact support',
+                url: 'mailto:support@foodxchange.com',
+                icon: 'envelope'
+            }
+        ]
+    },
+    
+    noSuppliers: {
+        icon: 'truck',
+        title: 'No suppliers added',
+        description: 'Add suppliers to start building your network and finding products.',
+        primary_action: {
+            text: 'Add supplier',
+            url: '#',
+            color: 'primary',
+            icon: 'plus',
+            onclick: 'openFormModal("addSupplierModal")'
+        }
+    },
+    
+    noBuyers: {
+        icon: 'users',
+        title: 'No buyers registered',
+        description: 'Add buyer profiles to track their preferences and requirements.',
+        primary_action: {
+            text: 'Add buyer',
+            url: '#',
+            color: 'primary',
+            icon: 'plus',
+            onclick: 'openFormModal("addBuyerModal")'
+        }
+    },
+    
+    error: {
+        icon: 'exclamation-triangle',
+        icon_color: 'warning',
+        title: 'Something went wrong',
+        description: 'We encountered an error while loading your data. Please try again.',
+        primary_action: {
+            text: 'Try again',
+            url: '#',
+            color: 'primary',
+            icon: 'refresh',
+            onclick: 'location.reload()'
+        },
+        secondary_actions: [
+            {
+                text: 'Contact support',
+                url: 'mailto:support@foodxchange.com',
+                color: 'outline-secondary',
+                icon: 'envelope'
+            }
+        ]
+    }
+};
+
+// Function to show predefined empty states
+function showEmptyStateByType(containerId, type) {
+    const config = EmptyStateConfigs[type];
+    if (config) {
+        showEmptyState(containerId, config);
+    }
+}
+</script> 

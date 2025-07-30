@@ -1,0 +1,177 @@
+<!-- StatsCard Component -->
+<div class="card stats-card h-100 {% if hover_effect %}stats-card-hover{% endif %}" 
+     {% if clickable %}onclick="window.location.href='{{ link }}'" style="cursor: pointer;"{% endif %}>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <!-- Main Content -->
+            <div class="flex-grow-1">
+                <!-- Title -->
+                {% if title %}
+                <h6 class="card-title text-muted mb-2">{{ title }}</h6>
+                {% endif %}
+                
+                <!-- Value -->
+                <div class="d-flex align-items-baseline">
+                    {% if prefix %}<span class="text-muted me-1">{{ prefix }}</span>{% endif %}
+                    <h3 class="mb-0 fw-bold {% if value_color %}text-{{ value_color }}{% endif %}">
+                        {% if value_type == 'currency' %}
+                            ${{ "{:,.2f}".format(value) }}
+                        {% elif value_type == 'percentage' %}
+                            {{ "{:.1f}".format(value) }}%
+                        {% elif value_type == 'number' %}
+                            {{ "{:,}".format(value) }}
+                        {% elif value_type == 'decimal' %}
+                            {{ "{:.2f}".format(value) }}
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </h3>
+                    {% if suffix %}<span class="text-muted ms-1">{{ suffix }}</span>{% endif %}
+                </div>
+                
+                <!-- Subtitle/Description -->
+                {% if subtitle %}
+                <p class="text-muted small mb-0 mt-1">{{ subtitle }}</p>
+                {% endif %}
+                
+                <!-- Change Indicator -->
+                {% if change_value is defined %}
+                <div class="mt-2">
+                    <span class="badge {% if change_value >= 0 %}bg-success{% else %}bg-danger{% endif %} me-1">
+                        <i class="fas fa-{% if change_value >= 0 %}arrow-up{% else %}arrow-down{% endif %} me-1"></i>
+                        {{ "{:.1f}".format(change_value|abs) }}%
+                    </span>
+                    <span class="text-muted small">vs last period</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Icon -->
+            {% if icon %}
+            <div class="ms-3">
+                <div class="stats-icon bg-{{ icon_color|default('primary') }} bg-opacity-10 rounded-circle p-3">
+                    <i class="fas fa-{{ icon }} text-{{ icon_color|default('primary') }} fa-lg"></i>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Progress Bar (optional) -->
+        {% if progress is defined %}
+        <div class="mt-3">
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-{{ progress_color|default('primary') }}" 
+                     role="progressbar" 
+                     style="width: {{ progress }}%"
+                     aria-valuenow="{{ progress }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                </div>
+            </div>
+            {% if progress_label %}
+            <small class="text-muted">{{ progress_label }}</small>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Footer Actions -->
+        {% if actions %}
+        <div class="mt-3 pt-2 border-top">
+            <div class="btn-group btn-group-sm w-100" role="group">
+                {% for action in actions %}
+                <button type="button" 
+                        class="btn btn-outline-{{ action.color|default('secondary') }}"
+                        onclick="{{ action.onclick }}"
+                        title="{{ action.title }}">
+                    <i class="fas fa-{{ action.icon }} me-1"></i>
+                    {{ action.text }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.stats-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,.125);
+}
+
+.stats-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    border-color: var(--bs-primary);
+}
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover .stats-icon {
+    transform: scale(1.1);
+}
+
+/* Animation for value changes */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.stats-card.value-changed h3 {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stats-card .card-body {
+        padding: 1rem;
+    }
+    
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .stats-card h3 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+<script>
+// StatsCard JavaScript functionality
+function updateStatsCard(cardId, newValue, animate = true) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    
+    const valueElement = card.querySelector('h3');
+    if (!valueElement) return;
+    
+    if (animate) {
+        valueElement.parentElement.parentElement.classList.add('value-changed');
+        setTimeout(() => {
+            valueElement.parentElement.parentElement.classList.remove('value-changed');
+        }, 600);
+    }
+    
+    // Update the value (you'll need to implement the specific formatting logic)
+    // valueElement.textContent = formatValue(newValue, valueType);
+}
+
+// Auto-refresh functionality (optional)
+function startStatsAutoRefresh(cardId, interval = 30000) {
+    setInterval(() => {
+        // Fetch new data and update card
+        // This would typically make an AJAX call to get updated stats
+        console.log('Auto-refreshing stats for card:', cardId);
+    }, interval);
+}
+</script> 

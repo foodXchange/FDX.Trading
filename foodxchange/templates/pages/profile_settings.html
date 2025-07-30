@@ -1,0 +1,694 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Main Content Column (8 cols) -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h1 class="h3 mb-0 text-dark">
+                            <i class="fas fa-cog me-2 text-primary"></i>Profile Settings
+                        </h1>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success me-2">
+                                <i class="fas fa-check-circle me-1"></i>Profile 85% Complete
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body p-0">
+                    <!-- Settings Navigation -->
+                    <div class="border-bottom">
+                        <nav class="nav nav-tabs nav-fill" id="settingsTabs" role="tablist">
+                            <button class="nav-link active" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                                <i class="fas fa-shield-alt me-2"></i>Security
+                            </button>
+                            <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab">
+                                <i class="fas fa-bell me-2"></i>Notifications
+                            </button>
+                            <button class="nav-link" id="privacy-tab" data-bs-toggle="tab" data-bs-target="#privacy" type="button" role="tab">
+                                <i class="fas fa-lock me-2"></i>Privacy
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <!-- Tab Content -->
+                    <div class="tab-content p-4" id="settingsTabContent">
+                        <!-- Security Tab -->
+                        <div class="tab-pane fade show active" id="security" role="tabpanel">
+                            <div class="row">
+                                <!-- Change Password Card -->
+                                <div class="col-12 mb-4">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-key text-primary me-2"></i>Change Password
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="passwordForm">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="current_password" class="form-label">Current Password</label>
+                                                        <div class="input-group">
+                                                            <input type="password" class="form-control" id="current_password" name="current_password" required>
+                                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('current_password')">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="new_password" class="form-label">New Password</label>
+                                                        <div class="input-group">
+                                                            <input type="password" class="form-control" id="new_password" name="new_password" required minlength="8">
+                                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('new_password')">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <div class="progress" style="height: 4px;">
+                                                                <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%"></div>
+                                                            </div>
+                                                            <small class="text-muted" id="passwordFeedback">Password strength indicator</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                                        <div class="input-group">
+                                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirm_password')">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <small class="text-success" id="passwordMatch" style="display: none;">
+                                                                <i class="fas fa-check-circle me-1"></i>Passwords match
+                                                            </small>
+                                                            <small class="text-danger" id="passwordMismatch" style="display: none;">
+                                                                <i class="fas fa-times-circle me-1"></i>Passwords don't match
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-save me-2"></i>Update Password
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Two-Factor Authentication Card -->
+                                <div class="col-12 mb-4">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-mobile-alt text-primary me-2"></i>Two-Factor Authentication
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-8">
+                                                    <h6 class="mb-2">Add an extra layer of security</h6>
+                                                    <p class="text-muted mb-3">Protect your account with SMS or authenticator app verification</p>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-outline-primary" disabled>
+                                                            <i class="fas fa-sms me-2"></i>SMS Verification
+                                                        </button>
+                                                        <button class="btn btn-outline-primary" disabled>
+                                                            <i class="fas fa-qrcode me-2"></i>Authenticator App
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-center">
+                                                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                                        <i class="fas fa-lock text-muted fa-2x"></i>
+                                                    </div>
+                                                    <p class="text-muted small mt-2">Coming Soon</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Login Sessions Card -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-desktop text-primary me-2"></i>Active Sessions
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Device</th>
+                                                            <th>Location</th>
+                                                            <th>Last Active</th>
+                                                            <th>Status</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <i class="fas fa-laptop me-2"></i>Windows 10 - Chrome
+                                                            </td>
+                                                            <td>New York, US</td>
+                                                            <td>2 minutes ago</td>
+                                                            <td><span class="badge bg-success">Current</span></td>
+                                                            <td>-</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <i class="fas fa-mobile-alt me-2"></i>iPhone - Safari
+                                                            </td>
+                                                            <td>New York, US</td>
+                                                            <td>1 hour ago</td>
+                                                            <td><span class="badge bg-warning">Active</span></td>
+                                                            <td>
+                                                                <button class="btn btn-sm btn-outline-danger">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Notifications Tab -->
+                        <div class="tab-pane fade" id="notifications" role="tabpanel">
+                            <form id="notificationForm">
+                                <!-- Email Notifications Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-envelope text-primary me-2"></i>Email Notifications
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="email_product_updates" name="email_product_updates" checked>
+                                                    <label class="form-check-label" for="email_product_updates">
+                                                        <strong>Product Analysis Updates</strong>
+                                                        <div class="text-muted small">Get notified when AI analysis completes</div>
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="email_rfq_responses" name="email_rfq_responses" checked>
+                                                    <label class="form-check-label" for="email_rfq_responses">
+                                                        <strong>RFQ Responses</strong>
+                                                        <div class="text-muted small">New supplier responses to your requests</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="email_supplier_matches" name="email_supplier_matches" checked>
+                                                    <label class="form-check-label" for="email_supplier_matches">
+                                                        <strong>Supplier Matches</strong>
+                                                        <div class="text-muted small">New suppliers matching your criteria</div>
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="email_weekly_digest" name="email_weekly_digest">
+                                                    <label class="form-check-label" for="email_weekly_digest">
+                                                        <strong>Weekly Digest</strong>
+                                                        <div class="text-muted small">Summary of your weekly activity</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- In-App Notifications Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-bell text-primary me-2"></i>In-App Notifications
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="app_messages" name="app_messages" checked>
+                                                    <label class="form-check-label" for="app_messages">
+                                                        <strong>Direct Messages</strong>
+                                                        <div class="text-muted small">Messages from suppliers and buyers</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="app_system_updates" name="app_system_updates" checked>
+                                                    <label class="form-check-label" for="app_system_updates">
+                                                        <strong>System Updates</strong>
+                                                        <div class="text-muted small">Platform updates and maintenance</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Preferences
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Privacy Tab -->
+                        <div class="tab-pane fade" id="privacy" role="tabpanel">
+                            <form id="privacyForm">
+                                <!-- Profile Visibility Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-user text-primary me-2"></i>Profile Visibility
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="profile_visibility" id="visibility_public" value="public">
+                                                    <label class="form-check-label" for="visibility_public">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-globe text-success me-2"></i>
+                                                            <div>
+                                                                <strong>Public</strong>
+                                                                <div class="text-muted small">Anyone can view your profile</div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="profile_visibility" id="visibility_members" value="members" checked>
+                                                    <label class="form-check-label" for="visibility_members">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-users text-warning me-2"></i>
+                                                            <div>
+                                                                <strong>Members Only</strong>
+                                                                <div class="text-muted small">Only registered users</div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="profile_visibility" id="visibility_private" value="private">
+                                                    <label class="form-check-label" for="visibility_private">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-lock text-danger me-2"></i>
+                                                            <div>
+                                                                <strong>Private</strong>
+                                                                <div class="text-muted small">Only you can view</div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Data Sharing Card -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-share-alt text-primary me-2"></i>Data Sharing
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="share_analytics" name="share_analytics">
+                                                    <label class="form-check-label" for="share_analytics">
+                                                        <strong>Share Analytics Data</strong>
+                                                        <div class="text-muted small">Help improve the platform anonymously</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="show_activity" name="show_activity" checked>
+                                                    <label class="form-check-label" for="show_activity">
+                                                        <strong>Show Activity Status</strong>
+                                                        <div class="text-muted small">Let others see when you're online</div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Settings
+                                </button>
+                            </form>
+                            
+                            <!-- Danger Zone Card -->
+                            <div class="card border-danger mt-5">
+                                <div class="card-header bg-danger text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h6 class="text-danger">Delete Account</h6>
+                                            <p class="text-muted mb-0">Once you delete your account, there is no going back. Please be certain.</p>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <button class="btn btn-outline-danger" onclick="confirmDeleteAccount()">
+                                                <i class="fas fa-trash me-2"></i>Delete Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar Column (4 cols) -->
+        <div class="col-lg-4">
+            <!-- Account Overview Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-user-circle me-2"></i>Account Overview
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                            <i class="fas fa-user text-primary fa-2x"></i>
+                        </div>
+                        <h6 class="mb-1">John Doe</h6>
+                        <span class="badge bg-success">Premium Plan</span>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="border-end">
+                                <h6 class="mb-1">12</h6>
+                                <small class="text-muted">Projects</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-end">
+                                <h6 class="mb-1">85%</h6>
+                                <small class="text-muted">Complete</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <h6 class="mb-1">2.1GB</h6>
+                            <small class="text-muted">Storage</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Score Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-shield-alt text-primary me-2"></i>Security Score
+                    </h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="position-relative d-inline-block mb-3">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#28a745" stroke-width="8" 
+                                    stroke-dasharray="314" stroke-dashoffset="78.5" transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle">
+                            <h4 class="mb-0 text-success">75%</h4>
+                            <small class="text-muted">Good</small>
+                        </div>
+                    </div>
+                    
+                    <div class="text-start">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <small>Strong password</small>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-times-circle text-warning me-2"></i>
+                            <small>2FA not enabled</small>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <small>Recent login activity</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-clock text-primary me-2"></i>Recent Activity
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-sign-in-alt text-white fa-sm"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Login successful</div>
+                                    <div class="text-muted small">New York, US • 2 min ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-cog text-white fa-sm"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Settings updated</div>
+                                    <div class="text-muted small">Notification preferences • 1 hour ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-mobile-alt text-white fa-sm"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold small">Mobile login</div>
+                                    <div class="text-muted small">iPhone • 3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Help & Tips Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-question-circle text-primary me-2"></i>Help & Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="helpAccordion">
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#securityHelp">
+                                    <small>Security Best Practices</small>
+                                </button>
+                            </h2>
+                            <div id="securityHelp" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Use a strong, unique password</li>
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Enable two-factor authentication</li>
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Review active sessions regularly</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#notificationHelp">
+                                    <small>Notification Settings</small>
+                                </button>
+                            </h2>
+                            <div id="notificationHelp" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <p class="small text-muted">Customize your notification preferences to stay informed without being overwhelmed. You can change these settings at any time.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Password visibility toggle
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Password strength checker
+document.getElementById('new_password').addEventListener('input', function() {
+    const password = this.value;
+    const strengthBar = document.getElementById('passwordStrength');
+    const feedback = document.getElementById('passwordFeedback');
+    
+    let strength = 0;
+    let feedbackText = '';
+    
+    if (password.length >= 8) strength += 25;
+    if (/[a-z]/.test(password)) strength += 25;
+    if (/[A-Z]/.test(password)) strength += 25;
+    if (/[0-9!@#$%^&*]/.test(password)) strength += 25;
+    
+    strengthBar.style.width = strength + '%';
+    
+    if (strength < 25) {
+        strengthBar.className = 'progress-bar bg-danger';
+        feedbackText = 'Very weak';
+    } else if (strength < 50) {
+        strengthBar.className = 'progress-bar bg-warning';
+        feedbackText = 'Weak';
+    } else if (strength < 75) {
+        strengthBar.className = 'progress-bar bg-info';
+        feedbackText = 'Good';
+    } else {
+        strengthBar.className = 'progress-bar bg-success';
+        feedbackText = 'Strong';
+    }
+    
+    feedback.textContent = feedbackText;
+});
+
+// Password match checker
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const newPassword = document.getElementById('new_password').value;
+    const confirmPassword = this.value;
+    const matchIndicator = document.getElementById('passwordMatch');
+    const mismatchIndicator = document.getElementById('passwordMismatch');
+    
+    if (confirmPassword === '') {
+        matchIndicator.style.display = 'none';
+        mismatchIndicator.style.display = 'none';
+    } else if (newPassword === confirmPassword) {
+        matchIndicator.style.display = 'block';
+        mismatchIndicator.style.display = 'none';
+    } else {
+        matchIndicator.style.display = 'none';
+        mismatchIndicator.style.display = 'block';
+    }
+});
+
+// Form submissions
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    
+    if (formData.get('new_password') !== formData.get('confirm_password')) {
+        showNotification('New passwords do not match', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/profile/change-password', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Password changed successfully!', 'success');
+            e.target.reset();
+        } else {
+            showNotification(result.message || 'Error changing password', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error changing password', 'error');
+    }
+});
+
+document.getElementById('notificationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showNotification('Notification preferences saved!', 'success');
+});
+
+document.getElementById('privacyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showNotification('Privacy settings saved!', 'success');
+});
+
+// Delete account confirmation
+function confirmDeleteAccount() {
+    if (confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your data. Type "DELETE" to confirm.')) {
+            showNotification('Account deletion requested. Please contact support to complete this process.', 'warning');
+        }
+    }
+}
+
+// Notification function (assuming it exists)
+function showNotification(message, type) {
+    // Implementation depends on your notification system
+    console.log(`${type}: ${message}`);
+    // You can integrate with your existing notification system here
+}
+</script>
+{% endblock %}

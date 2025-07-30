@@ -292,5 +292,15 @@ Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
         )
 
 
-# Singleton instance
-azure_email_service = AzureEmailService()
+# Singleton instance - lazy initialization
+_azure_email_service = None
+
+def get_azure_email_service():
+    """Get or create the Azure Email Service instance"""
+    global _azure_email_service
+    if _azure_email_service is None:
+        _azure_email_service = AzureEmailService()
+    return _azure_email_service
+
+# For backward compatibility
+azure_email_service = get_azure_email_service()

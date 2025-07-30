@@ -1,0 +1,4 @@
+# Ignore all uploaded profile pictures
+*
+# Except this .gitignore file
+!.gitignore

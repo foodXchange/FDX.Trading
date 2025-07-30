@@ -1,49 +1,164 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url_for('landing') }}">
-            <img src="{{ url_for('static', filename='brand/logos/Logo.png') }}" alt="Logo" height="40" class="d-inline-block align-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand" href="/">
+            <img src="/static/brand/logos/Logo.png" alt="FoodXchange Logo" height="35" class="d-inline-block align-top">
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        
+        <!-- Mobile toggle button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        
+        <!-- Navigation items -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <!-- Primary Navigation -->
+            <ul class="navbar-nav me-auto">
+                <!-- Dashboard -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('product_analysis') }}">
-                        <i class="fas fa-robot me-1"></i>AI Analysis
+                    <a class="nav-link" href="/dashboard">
+                        <i class="fas fa-tachometer-alt me-1"></i><span class="nav-text">Dashboard</span>
                     </a>
                 </li>
+                
+                <!-- Projects Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-folder me-1"></i><span class="nav-text">Projects</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/product-analysis/"><i class="fas fa-plus me-2"></i>New Analysis</a></li>
+                        <li><a class="dropdown-item" href="/projects"><i class="fas fa-folder-open me-2"></i>View Projects</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/projects"><i class="fas fa-download me-2"></i>Export Projects</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Project Settings</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Buyers Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-users me-1"></i><span class="nav-text">Buyers</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/buyers"><i class="fas fa-list me-2"></i>All Buyers</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addBuyerModal"><i class="fas fa-plus me-2"></i>Add Buyer</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar me-2"></i>Buyer Analytics</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-import me-2"></i>Import Buyers</a></li>
+                    </ul>
+                </li>
+                
+                <!-- AI Analysis -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('dashboard') }}">
-                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                    <a class="nav-link" href="/product-analysis/">
+                        <i class="fas fa-robot me-1"></i><span class="nav-text">AI Analysis</span>
                     </a>
                 </li>
+                
+                <!-- Suppliers Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-truck me-1"></i><span class="nav-text">Suppliers</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/suppliers"><i class="fas fa-list me-2"></i>All Suppliers</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addSupplierModal"><i class="fas fa-plus me-2"></i>Add Supplier</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-certificate me-2"></i>Verify Supplier</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-chart-line me-2"></i>View Analytics</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Import Data -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('projects') }}">
-                        <i class="fas fa-folder me-1"></i>Projects
+                    <a class="nav-link" href="/import/">
+                        <i class="fas fa-file-import me-1"></i><span class="nav-text">Import Data</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('suppliers') }}">
-                        <i class="fas fa-truck me-1"></i>Suppliers
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('buyers') }}">
-                        <i class="fas fa-users me-1"></i>Buyers
-                    </a>
-                </li>
+                
+                <!-- Contact -->
                 <li class="nav-item">
                     <a class="nav-link" href="mailto:info@foodxchange.com">
-                        <i class="fas fa-envelope me-1"></i>Contact
+                        <i class="fas fa-envelope me-1"></i><span class="nav-text">Contact</span>
                     </a>
                 </li>
+            </ul>
+            
+            <!-- Right Side Navigation -->
+            <ul class="navbar-nav">
+                <!-- Search -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('login_page') }}">
-                        <i class="fas fa-sign-in-alt me-1"></i>Login
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <i class="fas fa-search"></i>
                     </a>
+                </li>
+                
+                <!-- Notifications -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill" style="font-size: 0.6rem;">3</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-check-circle text-success me-2"></i>Analysis completed</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user-plus text-info me-2"></i>New supplier added</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Project deadline approaching</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
+                    </ul>
+                </li>
+                
+                <!-- User Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-1"></i><span class="nav-text">Admin User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('profile_settings') }}"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
                 </li>
             </ul>
         </div>
     </div>
-</nav> 
+</nav>
+
+<!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="searchModalLabel">Search FoodXchange</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search projects, suppliers, buyers..." aria-label="Search">
+                    <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Quick Filters</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary btn-sm">Projects</button>
+                            <button class="btn btn-outline-secondary btn-sm">Suppliers</button>
+                            <button class="btn btn-outline-secondary btn-sm">Buyers</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Recent Searches</h6>
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action">Organic honey analysis</a>
+                            <a href="#" class="list-group-item list-group-item-action">Fresh Foods Co.</a>
+                            <a href="#" class="list-group-item list-group-item-action">Gluten-free pasta</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -30,37 +30,9 @@ async def buyers_page(request: Request):
 async def list_buyers(db: Session = Depends(get_db)):
     """Get list of all buyers"""
     try:
-        # For now, return mock data
-        # In production, this would query from database
-        buyers = [
-            {
-                "id": "1",
-                "name": "John Smith",
-                "company_name": "ABC Foods Ltd",
-                "email": "john@abcfoods.com",
-                "phone": "+1-234-567-8900",
-                "location": "New York, USA",
-                "created_at": "2024-01-15"
-            },
-            {
-                "id": "2",
-                "name": "Sarah Johnson",
-                "company_name": "Global Distributors Inc",
-                "email": "sarah@globaldist.com",
-                "phone": "+1-234-567-8901",
-                "location": "Los Angeles, USA",
-                "created_at": "2024-01-20"
-            },
-            {
-                "id": "3",
-                "name": "David Chen",
-                "company_name": "Asian Market Supply",
-                "email": "david@asianmarket.com",
-                "phone": "+1-234-567-8902",
-                "location": "San Francisco, USA",
-                "created_at": "2024-02-01"
-            }
-        ]
+        # Query buyers from database
+        # TODO: Implement actual database query when models are ready
+        buyers = []
         
         return {
             "success": True,
@@ -111,19 +83,12 @@ async def add_buyer(
 async def get_buyer(buyer_id: str, db: Session = Depends(get_db)):
     """Get buyer details"""
     try:
-        # Mock data for demonstration
-        buyer = {
-            "id": buyer_id,
-            "name": "John Smith",
-            "company_name": "ABC Foods Ltd",
-            "email": "john@abcfoods.com",
-            "phone": "+1-234-567-8900",
-            "location": "New York, USA",
-            "notes": "Interested in organic products",
-            "created_at": "2024-01-15",
-            "projects_count": 5,
-            "last_activity": "2024-03-01"
-        }
+        # Query buyer from database
+        # TODO: Implement actual database query when models are ready
+        buyer = None
+        
+        if not buyer:
+            raise HTTPException(status_code=404, detail="Buyer not found")
         
         return {
             "success": True,

@@ -1,148 +1,291 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard - FoodXchange{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
+    <!-- Welcome Header - Reduced spacing -->
+    <div class="row mb-2">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">Welcome back, Admin!</h1>
+                    <p class="text-muted mb-0">Here's what's happening with your FoodXchange platform today.</p>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-2"></i>Admin User
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards - More compact -->
+    <div class="row mb-2">
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">AI Analysis</h6>
+                            <h3 class="mb-0">24</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +12% this week</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Suppliers</h6>
+                            <h3 class="mb-0">156</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +8% this month</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-info bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Efficiency</h6>
+                            <h3 class="mb-0">87%</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +5% this week</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-2">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Savings</h6>
+                            <h3 class="mb-0">$12.4K</h3>
+                            <small class="text-success"><i class="fas fa-arrow-up"></i> +15% this month</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
     <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2 px-0">
-            <div class="sidebar p-3">
-                <h4 class="text-white mb-4">
-                    <i class="fas fa-exchange-alt me-2"></i>
-                </h4>
-                <nav class="nav flex-column">
-                    <a class="nav-link active" href="{{ url_for('dashboard') }}">
-                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                    </a>
-                    <a class="nav-link" href="{{ url_for('product_analysis') }}">
-                        <i class="fas fa-robot me-2"></i>AI Analysis
-                    </a>
-                    <a class="nav-link" href="{{ url_for('projects') }}">
-                        <i class="fas fa-folder me-2"></i>Projects
-                    </a>
-                    <a class="nav-link" href="{{ url_for('suppliers') }}">
-                        <i class="fas fa-truck me-2"></i>Suppliers
-                    </a>
-                    <a class="nav-link" href="{{ url_for('buyers') }}">
-                        <i class="fas fa-users me-2"></i>Buyers
-                    </a>
-                    <a class="nav-link" href="{{ url_for('landing') }}">
-                        <i class="fas fa-home me-2"></i>Home
-                    </a>
-                </nav>
+        <!-- Left Column -->
+        <div class="col-lg-8">
+            <!-- Quick Actions - More compact -->
+            <div class="card border-0 shadow-sm mb-2">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <a href="/product-analysis/" class="btn btn-primary w-100">
+                                <i class="fas fa-robot me-2"></i>Analyze Product with AI
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <a href="/projects" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-folder me-2"></i>View Projects
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <a href="/suppliers" class="btn btn-outline-success w-100">
+                                <i class="fas fa-truck me-2"></i>Manage Suppliers
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <a href="/buyers" class="btn btn-outline-info w-100">
+                                <i class="fas fa-users me-2"></i>Manage Buyers
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity - More compact -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="activity-item d-flex align-items-center mb-2">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">Organic Dried Cranberries analyzed</h6>
+                            <small class="text-muted">2 hours ago • AI Analysis completed</small>
+                        </div>
+                        <span class="badge bg-success">Completed</span>
+                    </div>
+
+                    <div class="activity-item d-flex align-items-center mb-2">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">New supplier added: Global Foods Inc.</h6>
+                            <small class="text-muted">4 hours ago • Supplier Management</small>
+                        </div>
+                        <span class="badge bg-info">New</span>
+                    </div>
+
+                    <div class="activity-item d-flex align-items-center mb-2">
+                        <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">Product brief generated for Almond Butter</h6>
+                            <small class="text-muted">6 hours ago • Document Generation</small>
+                        </div>
+                        <span class="badge bg-warning">Generated</span>
+                    </div>
+
+                    <div class="activity-item d-flex align-items-center mb-2">
+                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">New buyer registered: Healthy Foods Co.</h6>
+                            <small class="text-muted">1 day ago • Buyer Management</small>
+                        </div>
+                        <span class="badge bg-info">New</span>
+                    </div>
+
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">Monthly report generated</h6>
+                            <small class="text-muted">2 days ago • Analytics</small>
+                        </div>
+                        <span class="badge bg-secondary">Report</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="col-md-9 col-lg-10">
-            <div class="main-content p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Dashboard</h2>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-2"></i>Admin User
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('landing') }}">Logout</a></li>
-                        </ul>
+        <!-- Right Column -->
+        <div class="col-lg-4">
+            <!-- Recent Projects - More compact -->
+            <div class="card border-0 shadow-sm mb-2">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Recent Projects</h5>
+                </div>
+                <div class="card-body">
+                    <div class="project-item mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">Organic Snacks Analysis</h6>
+                                <small class="text-muted">3 products analyzed</small>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                        </div>
+                    </div>
+
+                    <div class="project-item mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">Beverage Sourcing</h6>
+                                <small class="text-muted">12 suppliers contacted</small>
+                            </div>
+                            <span class="badge bg-warning">Pending</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-warning" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <div class="project-item mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">Dairy Products Review</h6>
+                                <small class="text-muted">8 products reviewed</small>
+                            </div>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <a href="/projects" class="btn btn-outline-info btn-sm w-100">
+                        View All Projects
+                    </a>
+                </div>
+            </div>
+
+            <!-- System Status - More prominent -->
+            <div class="card border-0 shadow-sm mb-2">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-server me-2"></i>System Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="status-item d-flex justify-content-between align-items-center mb-2">
+                        <span>AI Analysis Engine</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="status-item d-flex justify-content-between align-items-center mb-2">
+                        <span>Database</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="status-item d-flex justify-content-between align-items-center mb-2">
+                        <span>Email Service</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="status-item d-flex justify-content-between align-items-center">
+                        <span>File Storage</span>
+                        <span class="badge bg-success">Online</span>
                     </div>
                 </div>
+            </div>
 
-                <!-- Stats Cards -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="bg-primary bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fas fa-robot"></i>
-                                </div>
-                                <h5 class="card-title">AI Analysis</h5>
-                                <p class="card-text display-6">0</p>
-                                <small class="text-muted">Products Analyzed</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="bg-success bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fas fa-globe"></i>
-                                </div>
-                                <h5 class="card-title">Global Reach</h5>
-                                <p class="card-text display-6">0</p>
-                                <small class="text-muted">Suppliers Connected</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="bg-info bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                                <h5 class="card-title">Efficiency</h5>
-                                <p class="card-text display-6">0%</p>
-                                <small class="text-muted">Time Saved</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm">
-                            <div class="card-body text-center">
-                                <div class="bg-warning bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 50px; height: 50px;">
-                                    <i class="fas fa-dollar-sign"></i>
-                                </div>
-                                <h5 class="card-title">Savings</h5>
-                                <p class="card-text display-6">$0</p>
-                                <small class="text-muted">Cost Reduction</small>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Quick Tips - More helpful -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Quick Tips</h5>
                 </div>
-
-                <!-- Quick Actions -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <a href="{{ url_for('product_analysis') }}" class="btn btn-primary btn-lg w-100 mb-3">
-                                            <i class="fas fa-robot me-2"></i>Analyze Product with AI
-                                        </a>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <a href="{{ url_for('product_analysis') }}" class="btn btn-outline-primary btn-lg w-100 mb-3">
-                                            <i class="fas fa-search me-2"></i>Search Products
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="card-body">
+                    <div class="tip-item mb-2">
+                        <i class="fas fa-robot text-primary me-2"></i>
+                        <small>Use AI analysis for faster product identification</small>
                     </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center text-muted py-4">
-                                    <i class="fas fa-inbox fa-3x mb-3"></i>
-                                    <p>No recent activity. Start by analyzing your first product!</p>
-                                    <a href="{{ url_for('product_analysis') }}" class="btn btn-success">
-                                        <i class="fas fa-plus me-2"></i>Start Analysis
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="tip-item mb-2">
+                        <i class="fas fa-search text-success me-2"></i>
+                        <small>Search across multiple suppliers simultaneously</small>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-chart-line text-info me-2"></i>
+                        <small>Track your sourcing efficiency over time</small>
                     </div>
                 </div>
             </div>
