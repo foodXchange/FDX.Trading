@@ -1,0 +1,1220 @@
+{% extends "base.html" %}
+
+{% block title %}AI Product Analysis - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 40px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .upload-area:hover {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+    .upload-area.dragover {
+        border-color: #0d6efd;
+        background-color: #e7f3ff;
+    }
+    .analysis-result {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 20px 0;
+    }
+    .brief-card {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 15px 0;
+    }
+    .editable-field {
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
+    .editable-field:hover {
+        background-color: #e9ecef;
+        box-shadow: 0 0 0 2px #0d6efd;
+    }
+    .editable-field.editing {
+        background-color: #fff;
+        box-shadow: 0 0 0 3px #0d6efd;
+    }
+    .field-edit-input {
+        border: none;
+        background: transparent;
+        width: 100%;
+        font-family: inherit;
+        font-size: inherit;
+        padding: 2px;
+    }
+    .field-edit-input:focus {
+        outline: none;
+    }
+    .edit-icon {
+        font-size: 0.8em;
+        opacity: 0.5;
+        margin-left: 4px;
+    }
+    .save-indicator {
+        color: #28a745;
+        font-size: 0.9em;
+        margin-left: 8px;
+        display: none;
+    }
+    .image-preview-card {
+        position: relative;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: 300px;
+    }
+    .image-preview-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .image-preview-card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+    .image-preview-card.expanded {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        width: 80vw;
+        height: 80vh;
+        max-width: 800px;
+        max-height: 600px;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .image-preview-card.expanded img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .image-overlay {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8em;
+    }
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 9998;
+        display: none;
+    }
+    .image-preview-card .remove-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .upload-success {
+        color: #28a745;
+        font-weight: 500;
+    }
+    .upload-success .bi-cloud-upload {
+        color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <h4 class="text-white mb-4">
+                    <i class="fas fa-exchange-alt me-2"></i>
+                </h4>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('product_analysis') }}">
+                            <i class="fas fa-search me-2"></i>
+                            AI Analysis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('projects') }}">
+                            <i class="fas fa-folder me-2"></i>
+                            Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('suppliers') }}">
+                            <i class="fas fa-truck me-2"></i>
+                            Suppliers
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2 font-causten">AI Product Analysis</h1>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="font-causten mb-0">Upload Product Images</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs" id="uploadTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab">
+                                <i class="fas fa-upload me-2"></i>Upload Files
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="url-tab" data-bs-toggle="tab" data-bs-target="#url" type="button" role="tab">
+                                <i class="fas fa-link me-2"></i>Image URLs
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content mt-3" id="uploadTabsContent">
+                        <!-- Upload Files Tab -->
+                        <div class="tab-pane fade show active" id="upload" role="tabpanel">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
+                                <h5 class="font-causten">Drag & Drop Images Here</h5>
+                                <p class="font-roboto-serif text-muted">or click to browse files</p>
+                                <input type="file" id="imageInput" multiple accept="image/*" class="d-none">
+                                <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
+                                    <i class="fas fa-folder-open me-2"></i>Choose Files
+                                </button>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <strong>Pro Tip:</strong> Upload multiple images of the same product for better analysis accuracy
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image URL Tab -->
+                        <div class="tab-pane fade" id="url" role="tabpanel">
+                            <div class="mb-3">
+                                <label class="form-label font-causten">Image URL</label>
+                                <div class="input-group">
+                                    <input type="url" class="form-control" id="imageUrlInput" placeholder="https://example.com/image.jpg">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="addImageUrl()">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <strong>Pro Tip:</strong> Add multiple URLs to analyze different product angles
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- URL List -->
+                            <div id="urlContainer" class="mb-3"></div>
+                            
+                            <!-- URL Form -->
+                            <form id="urlForm">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Analyze Images
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Product Description (Optional) -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <label class="form-label font-causten">Product Description (Optional)</label>
+                            <textarea class="form-control" id="productDescInput" rows="3" 
+                                placeholder="Describe the product, its features, or what you're looking for..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label font-causten">Product Category (Optional)</label>
+                            <input type="text" class="form-control" id="productCategoryInput" 
+                                placeholder="e.g., Snacks, Beverages, Organic Foods...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsArea" class="d-none">
+                <!-- Analyzed Images Display -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Analyzed Images</h5>
+                    </div>
+                    <div class="card-body" id="analyzedImagesContent">
+                        <!-- Images will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Analysis Results -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Analysis Results</h5>
+                    </div>
+                    <div class="card-body" id="analysisContent">
+                        <!-- Basic analysis will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Product Details</h5>
+                    </div>
+                    <div class="card-body" id="productDetailsContent">
+                        <!-- Product details will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Product Characteristics -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Product Characteristics</h5>
+                    </div>
+                    <div class="card-body" id="characteristicsContent">
+                        <!-- Characteristics will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Target Market & Certifications -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Target Market & Certifications</h5>
+                    </div>
+                    <div class="card-body" id="marketContent">
+                        <!-- Market details will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Related Products -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Related Products</h5>
+                    </div>
+                    <div class="card-body" id="relatedProductsContent">
+                        <!-- Related products will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Sourcing Recommendations -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Sourcing Recommendations</h5>
+                    </div>
+                    <div class="card-body" id="sourcingContent">
+                        <!-- Sourcing recommendations will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Document Generation Section -->
+                <div class="card mb-4" id="documentSection">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="font-causten mb-0">Product Brief Documents</h5>
+                        <div>
+                            <button class="btn btn-secondary btn-sm me-2" onclick="toggleMultiProductMode()">
+                                <i class="fas fa-layer-group me-2"></i>Multi-Product Mode
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="showBriefPreview()">
+                                <i class="fas fa-file-alt me-2"></i>Generate Product Brief
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-primary w-100 mb-2" onclick="downloadBrief('docx')">
+                                    <i class="fas fa-file-word me-2"></i>Download as DOCX
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-danger w-100 mb-2" onclick="downloadBrief('pdf')">
+                                    <i class="fas fa-file-pdf me-2"></i>Download as PDF
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-info w-100 mb-2" onclick="showEmailForm()">
+                                    <i class="fas fa-envelope me-2"></i>Email Brief
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Multi-Product Selection -->
+                        <div id="multiProductSection" class="mt-3 d-none">
+                            <h6 class="mb-2">Selected Products for Combined Brief:</h6>
+                            <div id="selectedProductsList" class="border rounded p-2 mb-2" style="min-height: 50px;">
+                                <small class="text-muted">No products selected. Analyze products and add them to the list.</small>
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="generateMultiProductBrief()">
+                                <i class="fas fa-file-export me-2"></i>Generate Combined Brief
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save as Project Section -->
+                <div class="card mb-4" id="saveSection">
+                    <div class="card-header">
+                        <h5 class="font-causten mb-0">Save Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="saveProjectForm" class="d-none">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label font-causten">Project Name *</label>
+                                    <input type="text" class="form-control" id="projectName" name="projectName" 
+                                        placeholder="e.g., Organic Snack Research" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-causten">Associated Buyer</label>
+                                    <select class="form-select" id="projectBuyer" name="projectBuyer">
+                                        <option value="">Select a buyer (optional)</option>
+                                        <option value="new">+ Add New Buyer</option>
+                                        <!-- Buyer options will be loaded dynamically -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-causten">Priority</label>
+                                    <select class="form-select" id="projectPriority" name="projectPriority">
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label font-causten">Description</label>
+                                <textarea class="form-control" id="projectDescription" name="projectDescription" rows="3" 
+                                    placeholder="Brief description of what you're looking for..."></textarea>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success font-causten">
+                                    <i class="bi bi-save me-2"></i>Save Project
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary font-causten" onclick="hideSaveProjectForm()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div id="saveProjectButton" class="text-center">
+                            <button class="btn btn-outline-primary font-causten" onclick="showSaveProjectForm()">
+                                <i class="bi bi-folder-plus me-2"></i>Save This Analysis as Project
+                            </button>
+                        </div>
+                        
+                        <div id="saveProjectSuccess" class="alert alert-success mt-3 d-none">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Project saved successfully! You can view it in your projects dashboard.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="text-center d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="font-causten mt-2">AI is analyzing your product...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Backdrop for Image Expansion -->
+<div class="modal-backdrop" id="modalBackdrop"></div>
+
+<!-- Document Preview Modal -->
+<div class="modal fade" id="briefPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product Brief Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="briefPreviewContent">
+                <!-- Preview content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveBriefEdits()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+                <button type="button" class="btn btn-success" onclick="downloadBrief('docx')">
+                    <i class="fas fa-file-word me-2"></i>Download DOCX
+                </button>
+                <button type="button" class="btn btn-danger" onclick="downloadBrief('pdf')">
+                    <i class="fas fa-file-pdf me-2"></i>Download PDF
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Brief Modal -->
+<div class="modal fade" id="emailBriefModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Email Product Brief</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="emailBriefForm">
+                    <div class="mb-3">
+                        <label class="form-label">Recipient Email(s) *</label>
+                        <input type="text" class="form-control" id="recipientEmails" required
+                            placeholder="email@example.com, another@example.com">
+                        <small class="text-muted">Separate multiple emails with commas</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subject *</label>
+                        <input type="text" class="form-control" id="emailSubject" required
+                            value="Product Brief - FoodXchange">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" id="emailMessage" rows="3"
+                            placeholder="Optional message to include in the email..."></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="includeAttachment" checked>
+                        <label class="form-check-label" for="includeAttachment">
+                            Include product brief as attachment
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="sendEmail()">
+                    <i class="fas fa-paper-plane me-2"></i>Send Email
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden inputs for session management -->
+<input type="hidden" id="sessionId" value="">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // All the JavaScript from the original product_analysis_routes.py will go here
+    // This includes file upload handling, URL handling, analysis functions, etc.
+    
+    // File upload handling
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const resultsArea = document.getElementById('resultsArea');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleImageUpload(files);
+        }
+    });
+
+    imageInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleImageUpload(e.target.files);
+        }
+    });
+
+    // Store current analysis data for feedback
+    let currentAnalysisData = null;
+    let urlList = [];
+    let multiProductMode = false;
+    let selectedProducts = [];
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click handler to backdrop
+        const backdrop = document.getElementById('modalBackdrop');
+        backdrop.onclick = function() {
+            collapseImage();
+        };
+    });
+
+    // Handle image upload
+    async function handleImageUpload(files) {
+        // Show loading spinner
+        loadingSpinner.classList.remove('d-none');
+        resultsArea.classList.add('d-none');
+        
+        try {
+            const formData = new FormData();
+            
+            // Add all files
+            for (let i = 0; i < files.length; i++) {
+                formData.append('images', files[i]);
+            }
+            
+            // Add optional fields
+            const productDesc = document.getElementById('productDescInput').value;
+            const productCategory = document.getElementById('productCategoryInput').value;
+            
+            if (productDesc) formData.append('product_description', productDesc);
+            if (productCategory) formData.append('product_category', productCategory);
+            
+            const response = await fetch('/product-analysis/analyze-multiple-images', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store current analysis data
+                currentAnalysisData = data;
+                displayAnalysisResults(data);
+            } else {
+                alert('Error analyzing images: ' + (data.detail || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error uploading images');
+        } finally {
+            loadingSpinner.classList.add('d-none');
+        }
+    }
+    
+    // Display analysis results
+    function displayAnalysisResults(data) {
+        // Show results area
+        resultsArea.classList.remove('d-none');
+        
+        // Display analyzed images
+        const imagesContent = document.getElementById('analyzedImagesContent');
+        imagesContent.innerHTML = '';
+        
+        if (data.analyzed_images && data.analyzed_images.length > 0) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            
+            data.analyzed_images.forEach((imageUrl, index) => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-3';
+                
+                col.innerHTML = `
+                    <div class="image-preview-card" onclick="expandImage(this)">
+                        <img src="${imageUrl}" alt="Product Image ${index + 1}">
+                        <div class="image-overlay">Image ${index + 1}</div>
+                    </div>
+                `;
+                
+                row.appendChild(col);
+            });
+            
+            imagesContent.appendChild(row);
+        }
+        
+        // Display analysis results
+        const analysisContent = document.getElementById('analysisContent');
+        if (data.analysis) {
+            analysisContent.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Product Name:</strong> ${data.analysis.product_name || 'N/A'}</p>
+                        <p><strong>Brand:</strong> ${data.analysis.brand || 'N/A'}</p>
+                        <p><strong>Category:</strong> ${data.analysis.category || 'N/A'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Confidence:</strong> ${data.analysis.confidence || 'N/A'}%</p>
+                        <p><strong>Language:</strong> ${data.analysis.detected_language || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Display product details (similar pattern for other sections)
+        displayProductDetails(data.brief);
+        displayCharacteristics(data.brief);
+        displayMarketInfo(data.brief);
+        displayRelatedProducts(data.brief);
+        displaySourcingRecommendations(data.analysis);
+    }
+    
+    // Display functions for each section
+    function displayProductDetails(brief) {
+        const content = document.getElementById('productDetailsContent');
+        if (!brief) return;
+        
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Company:</strong> ${brief.producing_company || 'N/A'}</p>
+                    <p><strong>Country of Origin:</strong> ${brief.country_of_origin || 'N/A'}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Packaging Type:</strong> ${brief.packaging_type || 'N/A'}</p>
+                    <p><strong>Product Weight:</strong> ${brief.product_weight || 'N/A'}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    function displayCharacteristics(brief) {
+        const content = document.getElementById('characteristicsContent');
+        if (!brief) return;
+        
+        content.innerHTML = `
+            <p><strong>Appearance:</strong> ${brief.product_appearance || 'N/A'}</p>
+            <p><strong>Storage Conditions:</strong> ${brief.storage_conditions || 'N/A'}</p>
+            <p><strong>Shelf Life:</strong> ${brief.shelf_life || 'N/A'}</p>
+        `;
+    }
+    
+    function displayMarketInfo(brief) {
+        const content = document.getElementById('marketContent');
+        if (!brief) return;
+        
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Target Market:</strong> ${brief.target_market || 'N/A'}</p>
+                    <p><strong>Kosher:</strong> ${brief.kosher || 'N/A'}</p>
+                    <p><strong>Kosher Details:</strong> ${brief.kosher_writings || 'N/A'}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Gluten Free:</strong> ${brief.gluten_free || 'N/A'}</p>
+                    <p><strong>Sugar Free:</strong> ${brief.sugar_free || 'N/A'}</p>
+                    <p><strong>No Sugar Added:</strong> ${brief.no_sugar_added || 'N/A'}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    function displayRelatedProducts(brief) {
+        const content = document.getElementById('relatedProductsContent');
+        if (!brief || !brief.related_products) return;
+        
+        let html = '<div class="row">';
+        brief.related_products.forEach((product, index) => {
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">${product.name || 'Product ' + (index + 1)}</h6>
+                            <p class="card-text">
+                                <small><strong>Weight:</strong> ${product.unit_weight || 'N/A'}</small><br>
+                                <small><strong>Packaging:</strong> ${product.packaging_type || 'N/A'}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        content.innerHTML = html;
+    }
+    
+    function displaySourcingRecommendations(analysis) {
+        const content = document.getElementById('sourcingContent');
+        if (!analysis || !analysis.sourcing_recommendations) return;
+        
+        content.innerHTML = '<p>' + analysis.sourcing_recommendations + '</p>';
+    }
+    
+    // Document generation functions
+    async function showBriefPreview() {
+        if (!currentAnalysisData) {
+            alert('Please analyze a product first');
+            return;
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append('analysis_data', JSON.stringify(currentAnalysisData.analysis));
+            formData.append('brief_data', JSON.stringify(currentAnalysisData.brief));
+            
+            const response = await fetch('/product-analysis/generate-brief-preview', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('briefPreviewContent').innerHTML = data.html_content;
+                const modal = new bootstrap.Modal(document.getElementById('briefPreviewModal'));
+                modal.show();
+            } else {
+                alert('Error generating preview');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error generating preview');
+        }
+    }
+    
+    async function downloadBrief(format) {
+        if (!currentAnalysisData) {
+            alert('Please analyze a product first');
+            return;
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append('analysis_data', JSON.stringify(currentAnalysisData.analysis));
+            formData.append('brief_data', JSON.stringify(currentAnalysisData.brief));
+            formData.append('include_images', 'true');
+            
+            const response = await fetch(`/product-analysis/download-brief/${format}`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `product_brief.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert('Error downloading document');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error downloading document');
+        }
+    }
+    
+    function showEmailForm() {
+        if (!currentAnalysisData) {
+            alert('Please analyze a product first');
+            return;
+        }
+        
+        // Pre-fill subject with product name
+        const productName = currentAnalysisData.brief?.product_name || 'Product';
+        document.getElementById('emailSubject').value = `Product Brief - ${productName}`;
+        
+        const modal = new bootstrap.Modal(document.getElementById('emailBriefModal'));
+        modal.show();
+    }
+    
+    async function sendEmail() {
+        const emails = document.getElementById('recipientEmails').value;
+        const subject = document.getElementById('emailSubject').value;
+        const message = document.getElementById('emailMessage').value;
+        const includeAttachment = document.getElementById('includeAttachment').checked;
+        
+        if (!emails) {
+            alert('Please enter recipient email(s)');
+            return;
+        }
+        
+        try {
+            const emailList = emails.split(',').map(email => email.trim());
+            
+            const formData = new FormData();
+            formData.append('recipient_emails', JSON.stringify(emailList));
+            formData.append('subject', subject);
+            formData.append('message', message);
+            formData.append('analysis_data', JSON.stringify(currentAnalysisData.analysis));
+            formData.append('brief_data', JSON.stringify(currentAnalysisData.brief));
+            formData.append('include_attachments', includeAttachment);
+            
+            const response = await fetch('/product-analysis/email-brief', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Email sent successfully!');
+                bootstrap.Modal.getInstance(document.getElementById('emailBriefModal')).hide();
+            } else {
+                alert('Error sending email: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error sending email');
+        }
+    }
+    
+    function saveBriefEdits() {
+        // Collect edited content from the preview
+        const editableElements = document.querySelectorAll('#briefPreviewContent .editable');
+        const updates = {};
+        
+        editableElements.forEach(el => {
+            const key = el.getAttribute('data-field') || el.closest('tr')?.querySelector('td:first-child')?.textContent;
+            if (key) {
+                updates[key] = el.textContent;
+            }
+        });
+        
+        // Update current analysis data with edits
+        if (currentAnalysisData.brief) {
+            Object.assign(currentAnalysisData.brief, updates);
+        }
+        
+        alert('Changes saved successfully!');
+    }
+    
+    // Image expansion functions
+    function expandImage(imageCard) {
+        imageCard.classList.add('expanded');
+        document.getElementById('modalBackdrop').style.display = 'block';
+    }
+    
+    function collapseImage() {
+        const expandedCard = document.querySelector('.image-preview-card.expanded');
+        if (expandedCard) {
+            expandedCard.classList.remove('expanded');
+        }
+        document.getElementById('modalBackdrop').style.display = 'none';
+    }
+    
+    // URL handling functions
+    function addImageUrl() {
+        const urlInput = document.getElementById('imageUrlInput');
+        const url = urlInput.value.trim();
+        
+        if (url && url.startsWith('http')) {
+            urlList.push(url);
+            updateUrlDisplay();
+            urlInput.value = '';
+        } else {
+            alert('Please enter a valid URL');
+        }
+    }
+    
+    function updateUrlDisplay() {
+        const container = document.getElementById('urlContainer');
+        container.innerHTML = '';
+        
+        urlList.forEach((url, index) => {
+            const div = document.createElement('div');
+            div.className = 'mb-2';
+            div.innerHTML = `
+                <div class="input-group">
+                    <input type="text" class="form-control" value="${url}" readonly>
+                    <button class="btn btn-outline-danger" type="button" onclick="removeUrl(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function removeUrl(index) {
+        urlList.splice(index, 1);
+        updateUrlDisplay();
+    }
+    
+    // Form submission for URLs
+    document.getElementById('urlForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (urlList.length === 0) {
+            alert('Please add at least one image URL');
+            return;
+        }
+        
+        loadingSpinner.classList.remove('d-none');
+        resultsArea.classList.add('d-none');
+        
+        try {
+            const formData = new FormData();
+            formData.append('image_urls', JSON.stringify(urlList));
+            
+            const productDesc = document.getElementById('productDescInput').value;
+            const productCategory = document.getElementById('productCategoryInput').value;
+            
+            if (productDesc) formData.append('product_description', productDesc);
+            if (productCategory) formData.append('product_category', productCategory);
+            
+            const response = await fetch('/product-analysis/analyze-multiple-urls', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                currentAnalysisData = data;
+                displayAnalysisResults(data);
+            } else {
+                alert('Error analyzing URLs: ' + (data.detail || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error analyzing URLs');
+        } finally {
+            loadingSpinner.classList.add('d-none');
+        }
+    });
+    
+    // Save project functions
+    function showSaveProjectForm() {
+        document.getElementById('saveProjectForm').classList.remove('d-none');
+        document.getElementById('saveProjectButton').classList.add('d-none');
+    }
+    
+    function hideSaveProjectForm() {
+        document.getElementById('saveProjectForm').classList.add('d-none');
+        document.getElementById('saveProjectButton').classList.remove('d-none');
+    }
+    
+    // Save project form submission
+    document.getElementById('saveProjectForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!currentAnalysisData) {
+            alert('No analysis data to save');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('name', document.getElementById('projectName').value);
+        formData.append('description', document.getElementById('projectDescription').value);
+        formData.append('buyer_id', document.getElementById('projectBuyer').value);
+        formData.append('priority', document.getElementById('projectPriority').value);
+        formData.append('analysis_data', JSON.stringify(currentAnalysisData));
+        
+        try {
+            const response = await fetch('/product-analysis/save-project', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('saveProjectSuccess').classList.remove('d-none');
+                hideSaveProjectForm();
+                document.getElementById('saveProjectForm').reset();
+            } else {
+                alert('Error saving project');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error saving project');
+        }
+    });
+    
+    // Load buyers for project form
+    async function loadBuyers() {
+        try {
+            const response = await fetch('/buyers/list');
+            const data = await response.json();
+            
+            if (data.success) {
+                const buyerSelect = document.getElementById('projectBuyer');
+                buyerSelect.innerHTML = '<option value="">Select a buyer (optional)</option><option value="new">+ Add New Buyer</option>';
+                
+                data.buyers.forEach(buyer => {
+                    const option = document.createElement('option');
+                    option.value = buyer.id;
+                    option.textContent = `${buyer.name} - ${buyer.company_name}`;
+                    buyerSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading buyers:', error);
+        }
+    }
+    
+    // Load buyers when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadBuyers();
+    });
+    
+    // Multi-product functionality
+    function toggleMultiProductMode() {
+        multiProductMode = !multiProductMode;
+        const multiSection = document.getElementById('multiProductSection');
+        const btn = event.target.closest('button');
+        
+        if (multiProductMode) {
+            multiSection.classList.remove('d-none');
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-warning');
+            
+            // Add current product if available
+            if (currentAnalysisData) {
+                addToMultiProductList(currentAnalysisData);
+            }
+        } else {
+            multiSection.classList.add('d-none');
+            btn.classList.remove('btn-warning');
+            btn.classList.add('btn-secondary');
+        }
+    }
+    
+    function addToMultiProductList(productData) {
+        // Check if product already exists
+        const exists = selectedProducts.some(p => 
+            p.brief?.product_name === productData.brief?.product_name
+        );
+        
+        if (!exists && productData.brief) {
+            selectedProducts.push({
+                analysis: productData.analysis,
+                brief: productData.brief,
+                images: productData.analyzed_images
+            });
+            updateSelectedProductsDisplay();
+        }
+    }
+    
+    function updateSelectedProductsDisplay() {
+        const container = document.getElementById('selectedProductsList');
+        
+        if (selectedProducts.length === 0) {
+            container.innerHTML = '<small class="text-muted">No products selected. Analyze products and add them to the list.</small>';
+            return;
+        }
+        
+        let html = '<div class="list-group">';
+        selectedProducts.forEach((product, index) => {
+            html += `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${product.brief.product_name || 'Product ' + (index + 1)}</strong>
+                        <small class="text-muted ms-2">${product.brief.brand_name || ''}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="removeFromMultiProductList(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function removeFromMultiProductList(index) {
+        selectedProducts.splice(index, 1);
+        updateSelectedProductsDisplay();
+    }
+    
+    async function generateMultiProductBrief() {
+        if (selectedProducts.length === 0) {
+            alert('Please select at least one product');
+            return;
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append('products', JSON.stringify(selectedProducts));
+            formData.append('format', 'docx');
+            
+            const response = await fetch('/product-analysis/generate-multi-brief', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `multi_product_brief_${new Date().getTime()}.docx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert('Error generating multi-product brief');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error generating multi-product brief');
+        }
+    }
+    
+    // Override the display results function to add multi-product support
+    const originalDisplayResults = displayAnalysisResults;
+    displayAnalysisResults = function(data) {
+        originalDisplayResults(data);
+        
+        // Add button to add to multi-product list if in multi-product mode
+        if (multiProductMode && data.brief) {
+            const analysisContent = document.getElementById('analysisContent');
+            const addButton = document.createElement('button');
+            addButton.className = 'btn btn-success btn-sm mt-3';
+            addButton.innerHTML = '<i class="fas fa-plus me-2"></i>Add to Multi-Product List';
+            addButton.onclick = () => addToMultiProductList(data);
+            analysisContent.appendChild(addButton);
+        }
+    };
+</script>
+{% endblock %} 

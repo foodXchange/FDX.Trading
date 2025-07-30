@@ -1,37 +1,56 @@
 # FoodXchange - AI-Powered B2B Food Sourcing Platform
 
-A streamlined, AI-powered B2B food sourcing platform that connects buyers with suppliers through intelligent product analysis and matching.
+An advanced AI-powered platform for B2B food product analysis and sourcing. The system uses Azure Computer Vision and OpenAI to analyze product images, extract detailed information, generate professional documents, and provide intelligent sourcing recommendations.
 
-## 🚀 Features
+## 🚀 Key Features
 
 ### AI Product Analysis
-- **Image Upload & Analysis** - Upload product images for instant AI analysis
-- **Text Search** - Search products by name or description
-- **Product Brief Generation** - Get detailed specifications and requirements
-- **Packaging Suggestions** - AI-recommended packaging options (100g, 250g, 500g, 1kg, etc.)
-- **Supplier Matching** - Find similar products from verified suppliers
+- **🤖 Advanced Image Analysis** - Uses Azure Computer Vision to analyze product images
+- **🌐 Multi-Language Support** - Automatically detects and reads Hebrew, English, and other languages
+- **🧠 Machine Learning** - System learns from user corrections to improve accuracy
+- **✏️ Real-Time Field Editing** - Click any field to edit - AI learns from your corrections
+- **📸 Multi-Image Analysis** - Upload multiple images for comprehensive analysis
+- **🔍 Smart Recommendations** - Suggests related products and sourcing options
 
-### Core Platform
-- **Supplier Management** - Browse and manage supplier network
-- **RFQ System** - Create and manage Requests for Quotes
-- **Quote Comparison** - Compare supplier quotes and pricing
-- **Order Management** - Track orders and deliveries
-- **User Authentication** - Secure login and registration
+### Product Analysis Capabilities
+- **Product Name & Brand Detection** - Accurately identifies products and brands
+- **Company Identification** - Detects producing company information
+- **Packaging Analysis** - Identifies packaging type and weight
+- **Appearance Description** - Detailed product appearance analysis
+- **Kosher Certification** - Detects kosher symbols and Hebrew text
+- **Related Products** - Finds products from the same family
+- **Sourcing Options** - Provides supplier recommendations
+
+### Document Generation
+- **📄 Professional Product Briefs** - Generate DOCX, PDF, or HTML documents
+- **✏️ In-Browser Editing** - Edit product details before finalizing
+- **📦 Multi-Product Briefs** - Combine multiple products in one document
+- **📧 Email Integration** - Send briefs directly to suppliers with Azure Email
+
+### Business Management
+- **👥 Buyer Profiles** - Manage buyer information and preferences
+- **📊 Project Tracking** - Save and organize product analyses
+- **📥 Export Capabilities** - Export data in CSV format
+- **🔍 Search & Filter** - Quickly find buyers and projects
 
 ## 🛠️ Technology Stack
 
-- **Backend**: FastAPI (Python)
-- **Frontend**: Bootstrap 5 + Custom CSS
-- **Database**: PostgreSQL
-- **AI Services**: Azure Computer Vision + OpenAI
-- **Deployment**: Azure App Service
+- **Backend**: FastAPI (Python 3.8+)
+- **Frontend**: Bootstrap 5, Vanilla JavaScript
+- **Database**: SQLAlchemy with SQLite (local)
+- **AI Services**: 
+  - Azure OpenAI (GPT-3.5-Turbo)
+  - Azure Computer Vision (OCR & Image Analysis)
+  - Azure Communication Services (Email)
+- **Document Generation**: python-docx, ReportLab
+- **Current Port**: 8003
 
 ## 📦 Installation
 
 ### Prerequisites
 - Python 3.8+
-- PostgreSQL
-- Azure account (for AI services)
+- Azure OpenAI API Key
+- Azure Computer Vision API Key
 
 ### Setup
 
@@ -49,167 +68,210 @@ A streamlined, AI-powered B2B food sourcing platform that connects buyers with s
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
    ```env
+   # Azure Computer Vision
+   AZURE_VISION_ENDPOINT=https://your-region.api.cognitive.microsoft.com/
+   AZURE_VISION_KEY=your-vision-key
+   
+   # Azure OpenAI
+   AZURE_OPENAI_API_KEY=your-openai-key
+   AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-35-turbo
+   
+   # Azure Communication Services (optional)
+   AZURE_COMMUNICATION_EMAIL_CONNECTION_STRING=your-connection-string
+   AZURE_EMAIL_SENDER_ADDRESS=DoNotReply@your-domain.azurecomm.net
+   
    # Database
-   DATABASE_URL=postgresql://user:password@localhost/foodxchange
-   
-   # Azure AI Services (optional for demo)
-   AZURE_VISION_ENDPOINT=https://your-vision-service.cognitiveservices.azure.com/
-   AZURE_VISION_KEY=your_vision_key
-   AZURE_OPENAI_API_KEY=your_openai_key
-   AZURE_OPENAI_ENDPOINT=https://your-openai-service.openai.azure.com/
-   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4
-   
-   # Security
-   SECRET_KEY=your-secret-key-here
+   DATABASE_URL=sqlite:///./foodxchange.db
    ```
 
-4. **Set up database**
+4. **Start the application**
    ```bash
-   # Run the database setup script
-   python database/setup_database.py
+   # Windows
+   run_server.bat
+   
+   # Or directly with Python
+   python run_server.py
    ```
 
-5. **Start the application**
-   ```bash
-   cd foodxchange
-   python main.py
-   ```
-
-6. **Access the application**
-   - Main App: http://localhost:8000
-   - AI Analysis: http://localhost:8000/product-analysis
-   - API Docs: http://localhost:8000/docs
+5. **Access the application**
+   - Main App: http://localhost:8003
+   - AI Analysis: http://localhost:8003/product-analysis/
+   - Dashboard: http://localhost:8003/dashboard
+   - API Docs: http://localhost:8003/docs
 
 ## 🎯 Quick Start
 
-### Try AI Product Analysis
+### Using AI Product Analysis
 
-1. **Visit the AI Analysis page**: http://localhost:8000/product-analysis
+1. **Visit the AI Analysis page**: http://localhost:8003/product-analysis/
 
-2. **Upload an image** or **search by text**:
-   - Drag & drop a product image
-   - Or search for products like "Organic dried cranberries"
+2. **Choose analysis method**:
+   - **Upload Files**: Drag & drop or select multiple product images
+   - **Image URLs**: Paste direct links to product images
 
-3. **View AI results**:
-   - Product identification and categorization
-   - Detailed specifications and requirements
-   - Packaging suggestions (100g, 250g, 500g, 1kg)
-   - Similar products from suppliers
+3. **Enhance accuracy** (optional):
+   - Add product description for context
+   - Select product category
 
-### Demo Mode
+4. **View AI results**:
+   - Comprehensive product analysis
+   - All fields are editable - click to modify
+   - System learns from your corrections
 
-The system includes a **demo mode** that simulates AI analysis without requiring Azure services. Perfect for testing and demonstrations!
+5. **Generate Documents**:
+   - Click "Generate Product Brief" to preview
+   - Edit any field inline before finalizing
+   - Download as DOCX, PDF, or HTML
+   - Email directly to suppliers
+
+### Multi-Product Brief Generation
+
+1. **Enable Multi-Product Mode** in the document section
+2. **Analyze multiple products** individually
+3. **Add each to your selection** using the "Add to Multi-Product List" button
+4. **Generate combined brief** with all selected products
+
+### Machine Learning Features
+
+The system includes advanced ML capabilities:
+- Learns from every field correction
+- Improves accuracy for similar products
+- Stores feedback for continuous improvement
+- Applies learned patterns to future analyses
 
 ## 📁 Project Structure
 
 ```
 FoodXchange/
 ├── foodxchange/
-│   ├── main.py                 # Main FastAPI application
-│   ├── config.py              # Configuration settings
-│   ├── database.py            # Database connection
-│   ├── routes/                # API route handlers
+│   ├── main.py                 # FastAPI application entry point
+│   ├── config.py               # Configuration settings
+│   ├── database.py             # Database connection (SQLite)
+│   ├── routes/                 # API endpoints
 │   │   ├── product_analysis_routes.py  # AI analysis endpoints
-│   │   ├── supplier_routes.py          # Supplier management
-│   │   ├── product_routes.py           # Product catalog
-│   │   └── ...                # Other route modules
-│   ├── services/              # Business logic
+│   │   └── buyers_routes.py            # Buyer management
+│   ├── services/               # Business logic
 │   │   ├── product_analysis_service.py # AI analysis service
-│   │   └── ...                # Other services
-│   ├── models/                # Database models
-│   └── static/                # Static assets
-│       ├── brand/             # Branding and logos
-│       └── bootstrap/         # Bootstrap framework
-├── database/
-│   ├── sourcing_schema.sql    # Database schema
-│   └── setup_database.py      # Database setup script
-└── README.md
+│   │   ├── ml_improvement_service.py   # Machine learning service
+│   │   ├── openai_service.py           # OpenAI integration
+│   │   ├── document_service.py         # Document generation
+│   │   └── email_service.py            # Email integration
+│   ├── models/                 # Database models
+│   │   ├── feedback.py         # ML feedback models
+│   │   └── user.py             # User model
+│   ├── static/                 # Frontend assets
+│   │   ├── brand/              # Logos and fonts
+│   │   ├── css/                # Stylesheets
+│   │   ├── js/                 # JavaScript files
+│   │   └── bootstrap/          # Bootstrap files
+│   └── templates/              # HTML templates
+│       ├── base.html           # Base template
+│       ├── components/         # Reusable components
+│       └── pages/              # Page templates
+├── run_server.py               # Server startup script
+├── run_server.bat              # Windows batch file
+├── .env                        # Configuration (create this)
+├── AZURE_EMAIL_SETUP.md        # Email setup guide
+└── README.md                   # This file
 ```
 
-## 🔧 Configuration
+## 🔧 Current Status
 
-### Azure AI Services Setup
+✅ **Working Features**:
+- AI product analysis with Azure Computer Vision & OpenAI
+- Hebrew language support with OCR
+- Machine learning from user corrections
+- Multi-image analysis support
+- Real-time field editing
+- Document generation (DOCX, PDF, HTML)
+- Email integration with Azure
+- Multi-product brief generation
+- Buyer management system
+- Project saving and tracking
+- Export capabilities (CSV)
+- Template system (Jinja2)
+- Dashboard and landing pages
+- Product description input for enhanced accuracy
 
-1. **Create Azure resources**:
-   ```bash
-   # Create resource group
-   az group create --name foodxchange-ai-rg --location eastus
-   
-   # Create Computer Vision service
-   az cognitiveservices account create \
-     --name foodxchange-vision \
-     --resource-group foodxchange-ai-rg \
-     --location eastus \
-     --kind ComputerVision \
-     --sku S1
-   
-   # Create OpenAI service
-   az cognitiveservices account create \
-     --name foodxchange-openai \
-     --resource-group foodxchange-ai-rg \
-     --location eastus \
-     --kind OpenAI \
-     --sku S0
-   ```
-
-2. **Get service keys** and update your `.env` file
-
-### Database Setup
-
-The system uses a lean, focused schema optimized for food sourcing:
-
-- **Users** - User accounts and authentication
-- **Suppliers** - Supplier information and ratings
-- **Products** - Product catalog and specifications
-- **RFQs** - Request for Quotes
-- **Quotes** - Supplier quotes and pricing
-- **Orders** - Purchase orders
-- **Product Analyses** - AI analysis results
-- **Product Briefs** - Generated product briefs
+⚙️ **Configuration**:
+- Server runs on port 8003
+- SQLite database (local)
+- No external database required
+- All AI services use real Azure endpoints
 
 ## 🎨 UI/UX Features
 
 - **Modern Bootstrap Design** - Clean, professional interface
-- **Responsive Layout** - Works on all devices
-- **Drag & Drop Upload** - Easy image upload
-- **Real-time Analysis** - Live AI processing feedback
-- **Interactive Results** - Rich, structured analysis display
-
-## 🚀 Deployment
-
-### Local Development
-```bash
-cd foodxchange
-python main.py
-```
-
-### Production Deployment
-The application is designed for Azure App Service deployment with PostgreSQL database.
+- **Responsive Layout** - Works on desktop and mobile
+- **Drag & Drop Upload** - Easy multi-image upload
+- **Tab Interface** - Switch between upload and URL input
+- **Real-time Feedback** - Live saving indicators
+- **Interactive Editing** - Click any field to edit
+- **Visual Indicators** - Confidence scores and ML feedback
 
 ## 📊 API Documentation
 
-- **Interactive API Docs**: http://localhost:8000/docs
-- **ReDoc Documentation**: http://localhost:8000/redoc
+- **Interactive API Docs**: http://localhost:8003/docs
+- **Main Endpoints**:
+  - `POST /product-analysis/analyze-image` - Single image analysis
+  - `POST /product-analysis/analyze-multiple-images` - Multi-image analysis
+  - `POST /product-analysis/analyze-image-url` - URL analysis
+  - `POST /product-analysis/save-field-edit` - Save ML corrections
+  - `POST /product-analysis/submit-feedback` - Submit feedback
+  - `POST /product-analysis/generate-brief-preview` - Generate document preview
+  - `POST /product-analysis/download-brief/{format}` - Download document
+  - `POST /product-analysis/email-brief` - Email product brief
+  - `GET /buyers/list` - List all buyers
+  - `POST /buyers/add` - Add new buyer
 
-## 🤝 Contributing
+## 🚀 Deployment Notes
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+### Local Development
+- Uses SQLite database (foodxchange.db)
+- Uploads stored in local `uploads/` directory
+- All templates use custom `url_for` function
+- Static files served from `foodxchange/static/`
+
+### Environment Variables Required
+```env
+# Required
+AZURE_VISION_ENDPOINT=<required>
+AZURE_VISION_KEY=<required>
+AZURE_OPENAI_API_KEY=<required>
+AZURE_OPENAI_ENDPOINT=<required>
+AZURE_OPENAI_DEPLOYMENT_NAME=<required>
+
+# Optional
+AZURE_COMMUNICATION_EMAIL_CONNECTION_STRING=<optional>
+AZURE_EMAIL_SENDER_ADDRESS=<optional>
+DATABASE_URL=<optional - defaults to sqlite>
+```
+
+## 🐛 Troubleshooting
+
+### Port Issues
+If port 8003 is in use, edit `run_server.py` to change:
+```python
+current_port = 8003  # Change this to your desired port
+```
+
+### Template Errors
+The application uses a custom `url_for` function for Jinja2 templates. If you see template errors, check that all route names match those defined in `main.py`.
+
+### AI Service Errors
+- Ensure Azure credentials are correct in `.env`
+- Check Azure service is not suspended
+- Verify deployment names match your Azure configuration
 
 ## 📞 Support
 
-For questions or issues:
-1. Check the API documentation at `/docs`
-2. Review the code comments for implementation details
-3. Contact the development team
-
-## 📄 License
-
-This project is licensed under the MIT License.
+For issues or questions:
+1. Check server console for error messages
+2. Review `.env` configuration
+3. Ensure all dependencies are installed
+4. Create an issue in the repository
 
 ---
 
-**FoodXchange** - Streamlined AI-Powered B2B Food Sourcing
+**FoodXchange** - Advanced AI-Powered Product Analysis Platform

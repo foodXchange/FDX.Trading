@@ -63,7 +63,19 @@
       "Bash(C:/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe -m uvicorn foodxchange.main:app --reload --port 8000 --host 0.0.0.0)",
       "Bash(mkdir:*)",
       "Bash(find:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git push:*)",
+      "Bash(az account show:*)",
+      "Bash(az group list:*)",
+      "Bash(az cognitiveservices account deployment create:*)",
+      "Bash(az cognitiveservices model list:*)",
+      "Bash(echo:*)",
+      "Bash(git checkout:*)",
+      "Bash(az:*)",
+      "Bash(link_domain.bat)",
+      "Bash(pwsh:*)",
+      "Bash(touch:*)",
+      "Bash(git filter-branch:*)"
     ],
     "deny": []
   }

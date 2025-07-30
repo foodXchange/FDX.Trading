@@ -90,6 +90,14 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
+async def optional_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
+    """Get the current user if authenticated, otherwise return None"""
+    try:
+        return await get_current_user(token, db)
+    except HTTPException:
+        return None
+
+
 # Dependency for routes that require admin access
 async def require_admin(current_user: User = Depends(get_current_active_user)) -> User:
     """Ensure the current user is an admin"""

@@ -3,483 +3,43 @@ Product Analysis Routes for FoodXchange
 AI-powered product analysis and brief generation endpoints
 """
 
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends, Request
 from fastapi.responses import HTMLResponse
-from typing import Optional, Dict, Any
+from fastapi.templating import Jinja2Templates
+from typing import Optional, Dict, Any, List
 import json
 import logging
 from datetime import datetime
+from pathlib import Path
 
 # Local imports
 from ..services.product_analysis_service import product_analysis_service
+from ..services.document_service import document_service
+from ..services.email_service import azure_email_service
 from ..database import get_db
 from sqlalchemy.orm import Session
+from fastapi.responses import StreamingResponse
+import io
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/product-analysis", tags=["Product Analysis"])
 
 @router.get("/", response_class=HTMLResponse)
-async def product_analysis_page():
-    """Product Analysis Dashboard - Bootstrap styled"""
-    return HTMLResponse(content="""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AI Product Analysis - FoodXchange</title>
-        <link rel="icon" type="image/png" href="/static/brand/logos/Favicon.png">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        <link rel="stylesheet" href="/static/brand/fx-fonts.css">
-        <style>
-            .upload-area {
-                border: 2px dashed #dee2e6;
-                border-radius: 10px;
-                padding: 40px;
-                text-align: center;
-                transition: all 0.3s ease;
-            }
-            .upload-area:hover {
-                border-color: #0d6efd;
-                background-color: #f8f9fa;
-            }
-            .upload-area.dragover {
-                border-color: #0d6efd;
-                background-color: #e7f3ff;
-            }
-            .analysis-result {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                border-radius: 15px;
-                padding: 30px;
-                margin: 20px 0;
-            }
-            .brief-card {
-                background: white;
-                border-radius: 10px;
-                padding: 25px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                margin: 15px 0;
-            }
-            .demo-mode {
-                background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-                color: white;
-                border-radius: 10px;
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="/">
-                    <img src="/static/brand/logos/Food Xchange - Logo_Orange-on-White Version-04.png" 
-                        alt="FoodXchange" height="40">
-                    <span class="ms-2 font-causten fw-bold text-primary">FoodXchange</span>
-                </a>
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link font-causten" href="/dashboard">Dashboard</a>
-                    <a class="nav-link font-causten" href="/suppliers">Suppliers</a>
-                    <a class="nav-link font-causten active" href="/product-analysis">AI Analysis</a>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <div class="container mt-4">
-            <div class="row">
-                <div class="col-12">
-                    <h1 class="font-causten fw-bold mb-4">
-                        <i class="bi bi-robot me-2"></i>AI Product Analysis
-                    </h1>
-                    <p class="font-roboto-serif text-muted mb-4">
-                        Upload a product image or search by name to get AI-powered analysis and sourcing recommendations.
-                    </p>
-                    
-                    <!-- Demo Mode Notice -->
-                    <div class="demo-mode">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>Demo Mode:</strong> This is a demonstration of the AI analysis system. 
-                        Upload an image or search for a product to see how it works!
-                    </div>
-                </div>
-            </div>
-
-            <!-- Analysis Methods -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="font-causten mb-0">
-                                <i class="bi bi-camera me-2"></i>Image Analysis
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="upload-area" id="uploadArea">
-                                <i class="bi bi-cloud-upload display-4 text-muted mb-3"></i>
-                                <h5 class="font-causten">Upload Product Image</h5>
-                                <p class="font-roboto-serif text-muted">
-                                    Drag and drop an image here or click to browse
-                                </p>
-                                <input type="file" id="imageInput" accept="image/*" class="d-none">
-                                <button class="btn btn-primary font-causten" onclick="document.getElementById('imageInput').click()">
-                                    Choose Image
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="font-causten mb-0">
-                                <i class="bi bi-search me-2"></i>Text Search
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <form id="searchForm">
-                                <div class="mb-3">
-                                    <label for="searchInput" class="form-label font-causten">Product Name or Description</label>
-                                    <input type="text" class="form-control font-roboto-serif" id="searchInput" 
-                                           placeholder="e.g., Organic dried cranberries, Fresh salmon fillets">
-                                </div>
-                                <button type="submit" class="btn btn-primary font-causten">
-                                    <i class="bi bi-search me-2"></i>Analyze Product
-                                </button>
-                            </form>
-                            
-                            <!-- Quick Examples -->
-                            <div class="mt-3">
-                                <small class="text-muted font-roboto-serif">Try these examples:</small>
-                                <div class="d-flex flex-wrap gap-1 mt-1">
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="setSearchText('Organic dried cranberries')">Cranberries</button>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="setSearchText('Fresh salmon fillets')">Salmon</button>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="setSearchText('Extra virgin olive oil')">Olive Oil</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Results Area -->
-            <div id="resultsArea" class="d-none">
-                <div class="analysis-result">
-                    <h3 class="font-causten mb-3">
-                        <i class="bi bi-lightbulb me-2"></i>AI Analysis Results
-                    </h3>
-                    <div id="analysisContent"></div>
-                </div>
-
-                <div class="brief-card">
-                    <h4 class="font-causten mb-3">
-                        <i class="bi bi-file-text me-2"></i>Product Brief
-                    </h4>
-                    <div id="briefContent"></div>
-                </div>
-
-                <div class="brief-card">
-                    <h4 class="font-causten mb-3">
-                        <i class="bi bi-shop me-2"></i>Sourcing Recommendations
-                    </h4>
-                    <div id="sourcingContent"></div>
-                </div>
-            </div>
-
-            <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="text-center d-none">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="font-causten mt-2">AI is analyzing your product...</p>
-            </div>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            // File upload handling
-            const uploadArea = document.getElementById('uploadArea');
-            const imageInput = document.getElementById('imageInput');
-            const searchForm = document.getElementById('searchForm');
-            const resultsArea = document.getElementById('resultsArea');
-            const loadingSpinner = document.getElementById('loadingSpinner');
-
-            // Drag and drop functionality
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleImageUpload(files[0]);
-                }
-            });
-
-            imageInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    handleImageUpload(e.target.files[0]);
-                }
-            });
-
-            searchForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const searchText = document.getElementById('searchInput').value;
-                if (searchText.trim()) {
-                    handleTextSearch(searchText);
-                }
-            });
-
-            function setSearchText(text) {
-                document.getElementById('searchInput').value = text;
-                handleTextSearch(text);
-            }
-
-            async function handleImageUpload(file) {
-                showLoading();
-                
-                // For demo purposes, simulate AI analysis
-                setTimeout(() => {
-                    const mockResult = {
-                        success: true,
-                        analysis: {
-                            product_name: "Product from Image",
-                            category: "Food Product",
-                            description: "AI analysis of uploaded product image",
-                            tags: ["food", "product", "fresh"],
-                            confidence_score: 0.85
-                        },
-                        brief: {
-                            product_name: "Product from Image",
-                            category: "Food Product",
-                            description: "High-quality food product suitable for B2B sourcing",
-                            specifications: {
-                                "Quality": "Premium Grade",
-                                "Certification": "ISO 22000",
-                                "Shelf Life": "12 months"
-                            },
-                            packaging_options: ["100g", "250g", "500g", "1kg"],
-                            target_market: "B2B Food Industry",
-                            quality_standards: ["ISO 22000", "HACCP"],
-                            estimated_price_range: {"min": 5.0, "max": 15.0, "currency": "USD"},
-                            supplier_requirements: ["Food safety certification", "Quality assurance"],
-                            market_insights: "Growing demand for quality food products"
-                        },
-                        similar_products: [
-                            {
-                                id: 1,
-                                name: "Similar Product 1",
-                                supplier: "Fresh Foods Co",
-                                category: "Food Product",
-                                price: 5.99,
-                                rating: 4.5,
-                                availability: "In Stock"
-                            },
-                            {
-                                id: 2,
-                                name: "Similar Product 2",
-                                supplier: "Organic Farms Ltd",
-                                category: "Food Product",
-                                price: 7.50,
-                                rating: 4.8,
-                                availability: "In Stock"
-                            }
-                        ]
-                    };
-                    displayResults(mockResult);
-                    hideLoading();
-                }, 2000);
-            }
-
-            async function handleTextSearch(searchText) {
-                showLoading();
-
-                // For demo purposes, simulate AI analysis
-                setTimeout(() => {
-                    const mockResult = {
-                        success: true,
-                        analysis: {
-                            product_name: searchText,
-                            category: "Food Product",
-                            description: `AI analysis of "${searchText}" - premium quality food product`,
-                            tags: ["food", "organic", "premium"],
-                            confidence_score: 0.90
-                        },
-                        brief: {
-                            product_name: searchText,
-                            category: "Food Product",
-                            description: `Comprehensive analysis of ${searchText} for B2B sourcing`,
-                            specifications: {
-                                "Quality": "Premium Grade",
-                                "Certification": "Organic Certified",
-                                "Origin": "Global Sourcing",
-                                "Processing": "Minimal Processing"
-                            },
-                            packaging_options: ["100g", "250g", "500g", "1kg", "5kg"],
-                            target_market: "B2B Food Industry",
-                            quality_standards: ["ISO 22000", "HACCP", "Organic"],
-                            estimated_price_range: {"min": 8.0, "max": 25.0, "currency": "USD"},
-                            supplier_requirements: ["Organic certification", "Food safety certification", "Quality assurance"],
-                            market_insights: "High demand for organic and premium food products"
-                        },
-                        similar_products: [
-                            {
-                                id: 1,
-                                name: `Premium ${searchText}`,
-                                supplier: "Organic Farms Ltd",
-                                category: "Food Product",
-                                price: 12.99,
-                                rating: 4.8,
-                                availability: "In Stock"
-                            },
-                            {
-                                id: 2,
-                                name: `Organic ${searchText}`,
-                                supplier: "Fresh Foods Co",
-                                category: "Food Product",
-                                price: 9.50,
-                                rating: 4.5,
-                                availability: "In Stock"
-                            },
-                            {
-                                id: 3,
-                                name: `Bulk ${searchText}`,
-                                supplier: "Global Seafood",
-                                category: "Food Product",
-                                price: 6.75,
-                                rating: 4.2,
-                                availability: "In Stock"
-                            }
-                        ]
-                    };
-                    displayResults(mockResult);
-                    hideLoading();
-                }, 1500);
-            }
-
-            function displayResults(result) {
-                const analysisContent = document.getElementById('analysisContent');
-                const briefContent = document.getElementById('briefContent');
-                const sourcingContent = document.getElementById('sourcingContent');
-
-                // Display analysis results
-                analysisContent.innerHTML = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="font-causten">Product: ${result.analysis.product_name || 'Unknown'}</h5>
-                            <p class="font-roboto-serif">${result.analysis.description || 'No description available'}</p>
-                            <p class="font-roboto-serif"><strong>Category:</strong> ${result.analysis.category || 'Food Product'}</p>
-                            <p class="font-roboto-serif"><strong>Confidence:</strong> ${(result.analysis.confidence_score * 100).toFixed(1)}%</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="font-causten">Tags:</h6>
-                            <div class="d-flex flex-wrap gap-1">
-                                ${(result.analysis.tags || []).map(tag => `<span class="badge bg-light text-dark">${tag}</span>`).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // Display product brief
-                if (result.brief) {
-                    briefContent.innerHTML = `
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 class="font-causten">Specifications:</h6>
-                                <ul class="font-roboto-serif">
-                                    ${Object.entries(result.brief.specifications || {}).map(([key, value]) => 
-                                        `<li><strong>${key}:</strong> ${value}</li>`
-                                    ).join('')}
-                                </ul>
-                                <h6 class="font-causten mt-3">Quality Standards:</h6>
-                                <div class="d-flex flex-wrap gap-1">
-                                    ${(result.brief.quality_standards || []).map(standard => 
-                                        `<span class="badge bg-success">${standard}</span>`
-                                    ).join('')}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="font-causten">Packaging Options:</h6>
-                                <div class="d-flex flex-wrap gap-1 mb-3">
-                                    ${(result.brief.packaging_options || []).map(size => 
-                                        `<span class="badge bg-primary">${size}</span>`
-                                    ).join('')}
-                                </div>
-                                <h6 class="font-causten">Price Range:</h6>
-                                <p class="font-roboto-serif">
-                                    $${result.brief.estimated_price_range?.min || 0} - $${result.brief.estimated_price_range?.max || 0} 
-                                    per ${result.brief.estimated_price_range?.currency || 'USD'}
-                                </p>
-                                <h6 class="font-causten">Target Market:</h6>
-                                <p class="font-roboto-serif">${result.brief.target_market || 'B2B Food Industry'}</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    briefContent.innerHTML = '<p class="font-roboto-serif text-muted">No brief available</p>';
-                }
-
-                // Display sourcing recommendations
-                if (result.similar_products && result.similar_products.length > 0) {
-                    sourcingContent.innerHTML = `
-                        <div class="row">
-                            ${result.similar_products.map(product => `
-                                <div class="col-md-6 col-lg-4 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h6 class="font-causten">${product.name}</h6>
-                                            <p class="font-roboto-serif text-muted mb-1">${product.supplier}</p>
-                                            <p class="font-roboto-serif mb-1"><strong>Price:</strong> $${product.price}</p>
-                                            <p class="font-roboto-serif mb-2"><strong>Rating:</strong> ${product.rating}★</p>
-                                            <span class="badge bg-success">${product.availability}</span>
-                                        </div>
-                                        <div class="card-footer bg-transparent">
-                                            <button class="btn btn-sm btn-primary w-100">Contact Supplier</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                } else {
-                    sourcingContent.innerHTML = '<p class="font-roboto-serif text-muted">No similar products found</p>';
-                }
-
-                resultsArea.classList.remove('d-none');
-            }
-
-            function showLoading() {
-                loadingSpinner.classList.remove('d-none');
-                resultsArea.classList.add('d-none');
-            }
-
-            function hideLoading() {
-                loadingSpinner.classList.add('d-none');
-            }
-
-            function showError(message) {
-                hideLoading();
-                alert(message);
-            }
-        </script>
-    </body>
-    </html>
-    """)
+async def product_analysis_page(request: Request):
+    """Product Analysis Dashboard - Using Jinja2 template"""
+    # Get the directory where this file is located
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    
+    # Configure Jinja2 templates
+    templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+    
+    return templates.TemplateResponse("pages/product_analysis.html", {"request": request})
 
 @router.post("/analyze-image")
 async def analyze_product_image(
     image: UploadFile = File(...),
+    product_description: Optional[str] = Form(None),
+    product_category: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
     """Analyze product image using AI"""
@@ -489,13 +49,19 @@ async def analyze_product_image(
         image_url = f"/uploads/{image.filename}"
         
         # Analyze image using AI service
-        analysis_result = await product_analysis_service.analyze_product_image(image_url)
+        analysis_result = await product_analysis_service.analyze_product_image(image_url, db)
         
         if "error" in analysis_result:
             raise HTTPException(status_code=400, detail=analysis_result["error"])
         
-        # Generate product brief
-        brief_result = await product_analysis_service.generate_product_brief(analysis_result)
+        # Generate product brief with ML improvements
+        user_query = ""
+        if product_description:
+            user_query = f"Additional product information: {product_description}"
+        if product_category:
+            user_query += f" Category: {product_category}"
+        
+        brief_result = await product_analysis_service.generate_product_brief(analysis_result, user_query, db)
         
         # Search for similar products
         similar_products = await product_analysis_service.search_similar_products(
@@ -503,32 +69,142 @@ async def analyze_product_image(
             analysis_result.get("category", "")
         )
         
+        # Convert image to base64 for display
+        import base64
+        image_base64 = base64.b64encode(image_content).decode('utf-8')
+        image_mime_type = image.content_type or 'image/jpeg'
+        data_url = f"data:{image_mime_type};base64,{image_base64}"
+        
         return {
             "success": True,
             "analysis": analysis_result,
             "brief": brief_result,
-            "similar_products": similar_products
+            "similar_products": similar_products,
+            "analyzed_images": [data_url]
         }
         
     except Exception as e:
         logger.error(f"Error analyzing image: {e}")
         raise HTTPException(status_code=500, detail="Failed to analyze image")
 
-@router.post("/analyze-text")
-async def analyze_product_text(
-    search_text: str = Form(...),
+@router.post("/analyze-multiple-images")
+async def analyze_multiple_product_images(
+    images: List[UploadFile] = File(...),
+    product_description: Optional[str] = Form(None),
+    product_category: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
-    """Analyze product text using AI"""
+    """Analyze multiple product images using AI"""
     try:
-        # Analyze text using AI service
-        analysis_result = await product_analysis_service.analyze_text_search(search_text)
+        import os
+        import uuid
+        import base64
+        
+        if not images or len(images) == 0:
+            raise HTTPException(status_code=400, detail="No images provided")
+        
+        # Create uploads directory if it doesn't exist
+        upload_dir = os.path.join(os.getcwd(), "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        analyzed_images = []
+        file_paths = []
+        
+        # Process each image
+        for image in images:
+            # Generate unique filename
+            file_extension = os.path.splitext(image.filename)[1]
+            unique_filename = f"{uuid.uuid4()}{file_extension}"
+            file_path = os.path.join(upload_dir, unique_filename)
+            file_paths.append(file_path)
+            
+            # Save file to disk
+            image_content = await image.read()
+            with open(file_path, "wb") as f:
+                f.write(image_content)
+            
+            # Convert to base64 for display
+            image_base64 = base64.b64encode(image_content).decode('utf-8')
+            image_mime_type = image.content_type or 'image/jpeg'
+            data_url = f"data:{image_mime_type};base64,{image_base64}"
+            analyzed_images.append(data_url)
+        
+        # For now, analyze the first image and return results
+        # In a full implementation, you could analyze all images and combine results
+        analysis_result = await product_analysis_service.analyze_product_image(file_paths[0], db)
         
         if "error" in analysis_result:
             raise HTTPException(status_code=400, detail=analysis_result["error"])
         
-        # Generate product brief
-        brief_result = await product_analysis_service.generate_product_brief(analysis_result)
+        # Generate product brief with ML improvements
+        user_query = ""
+        if product_description:
+            user_query = f"Additional product information: {product_description}"
+        if product_category:
+            user_query += f" Category: {product_category}"
+        
+        brief_result = await product_analysis_service.generate_product_brief(analysis_result, user_query, db)
+        
+        # Search for similar products
+        similar_products = await product_analysis_service.search_similar_products(
+            analysis_result.get("product_name", ""),
+            analysis_result.get("category", "")
+        )
+        
+        # Clean up temporary files
+        for file_path in file_paths:
+            try:
+                os.remove(file_path)
+            except:
+                pass
+        
+        return {
+            "success": True,
+            "analysis": analysis_result,
+            "brief": brief_result,
+            "similar_products": similar_products,
+            "analyzed_images": analyzed_images,
+            "total_images_processed": len(images)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error analyzing multiple images: {e}")
+        # Clean up temporary files on error
+        try:
+            for file_path in file_paths:
+                os.remove(file_path)
+        except:
+            pass
+        raise HTTPException(status_code=500, detail="Failed to analyze images")
+
+@router.post("/analyze-image-url")
+async def analyze_product_image_url(
+    image_url: str = Form(...),
+    product_description: Optional[str] = Form(None),
+    product_category: Optional[str] = Form(None),
+    db: Session = Depends(get_db)
+):
+    """Analyze product image from URL using AI"""
+    try:
+        # Validate URL
+        if not image_url.startswith(('http://', 'https://')):
+            raise HTTPException(status_code=400, detail="Invalid image URL")
+        
+        # Analyze image using AI service with ML improvements
+        analysis_result = await product_analysis_service.analyze_product_image(image_url, db)
+        
+        if "error" in analysis_result:
+            raise HTTPException(status_code=400, detail=analysis_result["error"])
+        
+        # Generate product brief with ML improvements
+        # Combine product description and category for better analysis
+        user_query = ""
+        if product_description:
+            user_query = f"Additional product information: {product_description}"
+        if product_category:
+            user_query += f" Category: {product_category}"
+        
+        brief_result = await product_analysis_service.generate_product_brief(analysis_result, user_query, db)
         
         # Search for similar products
         similar_products = await product_analysis_service.search_similar_products(
@@ -540,12 +216,196 @@ async def analyze_product_text(
             "success": True,
             "analysis": analysis_result,
             "brief": brief_result,
-            "similar_products": similar_products
+            "similar_products": similar_products,
+            "image_url": image_url,
+            "analyzed_images": [image_url]
         }
         
     except Exception as e:
-        logger.error(f"Error analyzing text: {e}")
-        raise HTTPException(status_code=500, detail="Failed to analyze text")
+        logger.error(f"Error analyzing image URL: {e}")
+        raise HTTPException(status_code=500, detail="Failed to analyze image from URL")
+
+@router.post("/analyze-multiple-urls")
+async def analyze_multiple_image_urls(
+    image_urls: str = Form(...),  # JSON array of URLs
+    product_description: Optional[str] = Form(None),
+    product_category: Optional[str] = Form(None),
+    db: Session = Depends(get_db)
+):
+    """Analyze multiple image URLs using AI"""
+    try:
+        # Parse JSON array of URLs
+        urls = json.loads(image_urls)
+        if not urls or len(urls) == 0:
+            raise HTTPException(status_code=400, detail="No URLs provided")
+        
+        # Validate URLs
+        for url in urls:
+            if not url.startswith(('http://', 'https://')):
+                raise HTTPException(status_code=400, detail=f"Invalid URL: {url}")
+        
+        # Analyze first image (in a full implementation, you could analyze all images)
+        analysis_result = await product_analysis_service.analyze_product_image(urls[0], db)
+        
+        if "error" in analysis_result:
+            raise HTTPException(status_code=400, detail=analysis_result["error"])
+        
+        # Generate product brief with ML improvements
+        user_query = ""
+        if product_description:
+            user_query = f"Additional product information: {product_description}"
+        if product_category:
+            user_query += f" Category: {product_category}"
+        
+        brief_result = await product_analysis_service.generate_product_brief(analysis_result, user_query, db)
+        
+        # Search for similar products
+        similar_products = await product_analysis_service.search_similar_products(
+            analysis_result.get("product_name", ""),
+            analysis_result.get("category", "")
+        )
+        
+        return {
+            "success": True,
+            "analysis": analysis_result,
+            "brief": brief_result,
+            "similar_products": similar_products,
+            "analyzed_images": urls,
+            "total_images_processed": len(urls)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error analyzing multiple URLs: {e}")
+        raise HTTPException(status_code=500, detail="Failed to analyze URLs")
+
+@router.post("/save-field-edit")
+async def save_field_edit(
+    sessionId: str = Form(...),
+    fieldName: str = Form(...),
+    section: str = Form(...),
+    oldValue: str = Form(...),
+    newValue: str = Form(...),
+    original_analysis: str = Form(...),
+    original_brief: str = Form(...),
+    product_index: Optional[int] = Form(None),
+    supplier_index: Optional[int] = Form(None),
+    db: Session = Depends(get_db)
+):
+    """Save field edit for ML training"""
+    try:
+        # Parse original data
+        analysis_data = json.loads(original_analysis)
+        brief_data = json.loads(original_brief)
+        
+        # Create feedback record
+        from ..models.feedback import Feedback
+        feedback = Feedback(
+            session_id=sessionId,
+            field_name=fieldName,
+            section=section,
+            old_value=oldValue,
+            new_value=newValue,
+            analysis_data=analysis_data,
+            brief_data=brief_data
+        )
+        
+        # Update the data based on section and field
+        if section == "brief" and fieldName in ["product_name", "producing_company", "brand_name", "country_of_origin", "category", "packaging_type", "product_weight", "product_appearance", "storage_conditions", "target_market", "kosher", "kosher_writings", "gluten_free", "sugar_free", "no_sugar_added"]:
+            feedback.correct_product_name = newValue if fieldName == "product_name" else None
+            feedback.correct_company = newValue if fieldName == "producing_company" else None
+            feedback.correct_brand = newValue if fieldName == "brand_name" else None
+            feedback.correct_category = newValue if fieldName == "category" else None
+            feedback.correct_packaging = newValue if fieldName == "packaging_type" else None
+            feedback.correct_weight = newValue if fieldName == "product_weight" else None
+        elif section == "related_products" and product_index is not None:
+            # Handle related products edits
+            if fieldName in ["name", "unit_weight", "appearance", "packaging_type"]:
+                # Update the related products in the brief data
+                if "related_products" in brief_data and len(brief_data["related_products"]) > product_index:
+                    brief_data["related_products"][product_index][fieldName] = newValue
+                    feedback.feedback_text = f"Related product {product_index + 1} {fieldName} changed from '{oldValue}' to '{newValue}'"
+        elif section == "sourcing" and supplier_index is not None:
+            # Handle sourcing recommendations edits
+            if fieldName in ["name", "supplier", "price", "rating", "availability"]:
+                # Update the similar products in the analysis data
+                if "similar_products" in analysis_data and len(analysis_data["similar_products"]) > supplier_index:
+                    # Remove $ and ★ symbols for editing
+                    cleanOldValue = oldValue.replace('$', '').replace('★', '').strip()
+                    cleanNewValue = newValue.replace('$', '').replace('★', '').strip()
+                    
+                    analysis_data["similar_products"][supplier_index][fieldName] = cleanNewValue
+                    feedback.feedback_text = f"Sourcing recommendation {supplier_index + 1} {fieldName} changed from '{cleanOldValue}' to '{cleanNewValue}'"
+        
+        # Save to database
+        if db:
+            db.add(feedback)
+            db.commit()
+        
+        return {
+            "success": True,
+            "message": "Field edit saved successfully",
+            "feedback_id": feedback.id if hasattr(feedback, 'id') else None
+        }
+        
+    except Exception as e:
+        logger.error(f"Error saving field edit: {e}")
+        if db:
+            db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to save field edit")
+
+@router.post("/submit-feedback")
+async def submit_feedback(
+    sessionId: str = Form(...),
+    feedbackType: str = Form(...),
+    feedbackText: str = Form(...),
+    original_analysis: str = Form(...),
+    original_brief: str = Form(...),
+    correctProductName: Optional[str] = Form(None),
+    correctBrand: Optional[str] = Form(None),
+    correctCompany: Optional[str] = Form(None),
+    correctCategory: Optional[str] = Form(None),
+    correctPackaging: Optional[str] = Form(None),
+    correctWeight: Optional[str] = Form(None),
+    db: Session = Depends(get_db)
+):
+    """Submit user feedback for ML training"""
+    try:
+        # Parse original data
+        analysis_data = json.loads(original_analysis)
+        brief_data = json.loads(original_brief)
+        
+        # Create feedback record
+        from ..models.feedback import Feedback
+        feedback = Feedback(
+            session_id=sessionId,
+            feedback_type=feedbackType,
+            feedback_text=feedbackText,
+            analysis_data=analysis_data,
+            brief_data=brief_data,
+            correct_product_name=correctProductName,
+            correct_brand=correctBrand,
+            correct_company=correctCompany,
+            correct_category=correctCategory,
+            correct_packaging=correctPackaging,
+            correct_weight=correctWeight
+        )
+        
+        # Save to database
+        if db:
+            db.add(feedback)
+            db.commit()
+        
+        return {
+            "success": True,
+            "message": "Feedback submitted successfully",
+            "feedback_id": feedback.id if hasattr(feedback, 'id') else None
+        }
+        
+    except Exception as e:
+        logger.error(f"Error submitting feedback: {e}")
+        if db:
+            db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to submit feedback")
 
 @router.get("/history")
 async def get_analysis_history(db: Session = Depends(get_db)):
@@ -568,3 +428,258 @@ async def get_analysis_history(db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error fetching analysis history: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch history")
+
+@router.post("/save-project")
+async def save_analysis_as_project(
+    name: str = Form(...),
+    description: str = Form(None),
+    buyer_id: Optional[str] = Form(None),
+    priority: str = Form("medium"),
+    search_type: Optional[str] = Form(None),
+    analysis_data: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Save analysis as a project"""
+    try:
+        import os
+        from datetime import datetime
+        
+        # Create projects directory if it doesn't exist
+        projects_dir = os.path.join(os.getcwd(), "projects")
+        os.makedirs(projects_dir, exist_ok=True)
+        
+        # Create project data
+        project_data = {
+            "name": name,
+            "description": description,
+            "buyer_id": buyer_id if buyer_id and buyer_id != "" else None,
+            "priority": priority,
+            "search_type": search_type or "image",
+            "analysis_data": json.loads(analysis_data),
+            "created_at": datetime.now().isoformat()
+        }
+        
+        # Save to file
+        import uuid
+        project_filename = f"project_{uuid.uuid4()}.json"
+        project_path = os.path.join(projects_dir, project_filename)
+        
+        with open(project_path, 'w', encoding='utf-8') as f:
+            json.dump(project_data, f, indent=2, ensure_ascii=False)
+        
+        return {
+            "success": True,
+            "message": "Project saved successfully",
+            "project_filename": project_filename
+        }
+        
+    except Exception as e:
+        logger.error(f"Error saving project: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save project")
+
+@router.post("/generate-brief-preview")
+async def generate_brief_preview(
+    analysis_data: str = Form(...),
+    brief_data: str = Form(...),
+    custom_sections: Optional[str] = Form(None)
+):
+    """Generate HTML preview of product brief"""
+    try:
+        # Parse JSON data
+        analysis = json.loads(analysis_data)
+        brief = json.loads(brief_data)
+        custom = json.loads(custom_sections) if custom_sections else {}
+        
+        # Generate HTML preview
+        html_content = document_service.generate_product_brief_html(
+            analysis_data=analysis,
+            brief_data=brief,
+            custom_sections=custom,
+            editable=True
+        )
+        
+        return {
+            "success": True,
+            "html_content": html_content
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating brief preview: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate preview")
+
+@router.post("/download-brief/{format}")
+async def download_product_brief(
+    format: str,
+    analysis_data: str = Form(...),
+    brief_data: str = Form(...),
+    custom_sections: Optional[str] = Form(None),
+    include_images: Optional[bool] = Form(True)
+):
+    """Download product brief in specified format"""
+    try:
+        # Validate format
+        if format not in ['docx', 'pdf', 'html']:
+            raise HTTPException(status_code=400, detail="Invalid format. Supported formats: docx, pdf, html")
+        
+        # Parse JSON data
+        analysis = json.loads(analysis_data)
+        brief = json.loads(brief_data)
+        custom = json.loads(custom_sections) if custom_sections else {}
+        
+        if format == 'docx':
+            # Generate DOCX
+            doc_buffer = document_service.generate_product_brief_docx(
+                analysis_data=analysis,
+                brief_data=brief,
+                custom_sections=custom,
+                include_images=include_images
+            )
+            
+            filename = f"product_brief_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
+            return StreamingResponse(
+                doc_buffer,
+                media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                headers={"Content-Disposition": f"attachment; filename={filename}"}
+            )
+            
+        elif format == 'pdf':
+            # Generate HTML first
+            html_content = document_service.generate_product_brief_html(
+                analysis_data=analysis,
+                brief_data=brief,
+                custom_sections=custom,
+                editable=False
+            )
+            
+            # Convert to PDF
+            pdf_buffer = document_service.convert_to_pdf(html_content)
+            
+            filename = f"product_brief_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+            return StreamingResponse(
+                pdf_buffer,
+                media_type="application/pdf",
+                headers={"Content-Disposition": f"attachment; filename={filename}"}
+            )
+            
+        else:  # HTML
+            # Generate HTML
+            html_content = document_service.generate_product_brief_html(
+                analysis_data=analysis,
+                brief_data=brief,
+                custom_sections=custom,
+                editable=False
+            )
+            
+            # Create buffer
+            html_buffer = io.BytesIO(html_content.encode('utf-8'))
+            
+            filename = f"product_brief_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+            return StreamingResponse(
+                html_buffer,
+                media_type="text/html",
+                headers={"Content-Disposition": f"attachment; filename={filename}"}
+            )
+            
+    except Exception as e:
+        logger.error(f"Error downloading brief: {e}")
+        raise HTTPException(status_code=500, detail="Failed to download brief")
+
+@router.post("/email-brief")
+async def email_product_brief(
+    recipient_emails: str = Form(...),  # JSON array of emails
+    subject: str = Form(...),
+    message: Optional[str] = Form(None),
+    analysis_data: str = Form(...),
+    brief_data: str = Form(...),
+    custom_sections: Optional[str] = Form(None),
+    include_attachments: Optional[bool] = Form(True)
+):
+    """Email product brief to recipients"""
+    try:
+        # Parse JSON data
+        emails = json.loads(recipient_emails)
+        analysis = json.loads(analysis_data)
+        brief = json.loads(brief_data)
+        custom = json.loads(custom_sections) if custom_sections else {}
+        
+        # Generate email content
+        product_name = brief.get('product_name', 'Product')
+        brief_summary = message or f"Product brief for {product_name}"
+        
+        html_body = azure_email_service.create_product_brief_email_html(
+            recipient_name="Valued Partner",
+            product_name=product_name,
+            brief_summary=brief_summary,
+            sender_name="FoodXchange Team"
+        )
+        
+        text_body = azure_email_service.create_product_brief_email_text(
+            recipient_name="Valued Partner",
+            product_name=product_name,
+            brief_summary=brief_summary,
+            sender_name="FoodXchange Team"
+        )
+        
+        # Prepare attachments
+        attachments = []
+        if include_attachments:
+            # Generate DOCX attachment
+            doc_buffer = document_service.generate_product_brief_docx(
+                analysis_data=analysis,
+                brief_data=brief,
+                custom_sections=custom,
+                include_images=True
+            )
+            
+            attachments.append({
+                'name': f"{product_name.replace(' ', '_')}_Brief.docx",
+                'content': doc_buffer.getvalue(),
+                'content_type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            })
+        
+        # Send email
+        result = await azure_email_service.send_product_brief(
+            recipient_emails=emails,
+            subject=subject,
+            body_html=html_body,
+            body_text=text_body,
+            attachments=attachments
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error emailing brief: {e}")
+        raise HTTPException(status_code=500, detail="Failed to email brief")
+
+@router.post("/generate-multi-brief")
+async def generate_multi_product_brief(
+    products: str = Form(...),  # JSON array of products
+    format: str = Form('docx'),
+    custom_sections: Optional[str] = Form(None)
+):
+    """Generate brief for multiple products"""
+    try:
+        # Parse JSON data
+        product_list = json.loads(products)
+        custom = json.loads(custom_sections) if custom_sections else {}
+        
+        # Generate multi-product brief
+        doc_buffer = document_service.generate_multi_product_brief(
+            products=product_list,
+            format=format,
+            custom_sections=custom
+        )
+        
+        filename = f"multi_product_brief_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{format}"
+        media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document" if format == 'docx' else "application/pdf"
+        
+        return StreamingResponse(
+            doc_buffer,
+            media_type=media_type,
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error generating multi-product brief: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate multi-product brief")

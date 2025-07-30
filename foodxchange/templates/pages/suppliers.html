@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <h4 class="text-white mb-4">
+                    <i class="fas fa-exchange-alt me-2"></i>
+                </h4>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('product_analysis') }}">
+                            <i class="fas fa-search me-2"></i>
+                            AI Analysis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('projects') }}">
+                            <i class="fas fa-folder me-2"></i>
+                            Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('suppliers') }}">
+                            <i class="fas fa-truck me-2"></i>
+                            Suppliers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('buyers') }}">
+                            <i class="fas fa-users me-2"></i>
+                            Buyers
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2 font-causten">Suppliers</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+                        <i class="fas fa-plus me-2"></i>Add Supplier
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-card-body">
+                            <h5 class="stat-card-title">Total Suppliers</h5>
+                            <p class="stat-card-number">0</p>
+                            <small class="text-muted">Active suppliers</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-card-body">
+                            <h5 class="stat-card-title">Verified</h5>
+                            <p class="stat-card-number">0</p>
+                            <small class="text-muted">Certified suppliers</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-card-body">
+                            <h5 class="stat-card-title">Products</h5>
+                            <p class="stat-card-number">0</p>
+                            <small class="text-muted">Available products</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-card-body">
+                            <h5 class="stat-card-title">Rating</h5>
+                            <p class="stat-card-number">0.0</p>
+                            <small class="text-muted">Average rating</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suppliers List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="font-causten mb-0">Supplier Directory</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-5">
+                        <i class="fas fa-truck fa-3x text-muted mb-3"></i>
+                        <h4 class="font-causten text-muted">No suppliers yet</h4>
+                        <p class="font-roboto-serif text-muted">Start building your supplier network</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+                            <i class="fas fa-plus me-2"></i>Add First Supplier
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Supplier Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-causten" id="addSupplierModalLabel">Add New Supplier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSupplierForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="supplierName" class="form-label">Contact Name *</label>
+                                <input type="text" class="form-control" id="supplierName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="companyName" class="form-label">Company Name *</label>
+                                <input type="text" class="form-control" id="companyName" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="supplierEmail" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="supplierEmail" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="supplierPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="supplierPhone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="supplierCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="supplierCountry">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="supplierCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="supplierCity">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="supplierAddress" class="form-label">Address</label>
+                        <textarea class="form-control" id="supplierAddress" rows="2"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="supplierIndustry" class="form-label">Industry</label>
+                                <select class="form-select" id="supplierIndustry">
+                                    <option value="">Select Industry</option>
+                                    <option value="food_beverage">Food & Beverage</option>
+                                    <option value="agriculture">Agriculture</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="packaging">Packaging</option>
+                                    <option value="logistics">Logistics</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="companySize" class="form-label">Company Size</label>
+                                <select class="form-select" id="companySize">
+                                    <option value="">Select Size</option>
+                                    <option value="small">Small (1-50)</option>
+                                    <option value="medium">Medium (51-200)</option>
+                                    <option value="large">Large (200+)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="certifications" class="form-label">Certifications</label>
+                                <select class="form-select" id="certifications" multiple>
+                                    <option value="iso_9001">ISO 9001</option>
+                                    <option value="iso_22000">ISO 22000</option>
+                                    <option value="haccp">HACCP</option>
+                                    <option value="kosher">Kosher</option>
+                                    <option value="halal">Halal</option>
+                                    <option value="organic">Organic</option>
+                                    <option value="gluten_free">Gluten Free</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="paymentTerms" class="form-label">Payment Terms</label>
+                                <select class="form-select" id="paymentTerms">
+                                    <option value="">Select Terms</option>
+                                    <option value="net_30">Net 30</option>
+                                    <option value="net_60">Net 60</option>
+                                    <option value="net_90">Net 90</option>
+                                    <option value="immediate">Immediate</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="minimumOrder" class="form-label">Minimum Order</label>
+                                <input type="text" class="form-control" id="minimumOrder" placeholder="e.g., $1000">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveSupplier()">Save Supplier</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function saveSupplier() {
+    const formData = new FormData();
+    
+    formData.append('name', document.getElementById('supplierName').value);
+    formData.append('company_name', document.getElementById('companyName').value);
+    formData.append('email', document.getElementById('supplierEmail').value);
+    formData.append('phone', document.getElementById('supplierPhone').value);
+    formData.append('country', document.getElementById('supplierCountry').value);
+    formData.append('city', document.getElementById('supplierCity').value);
+    formData.append('address', document.getElementById('supplierAddress').value);
+    formData.append('industry', document.getElementById('supplierIndustry').value);
+    formData.append('company_size', document.getElementById('companySize').value);
+    formData.append('payment_terms', document.getElementById('paymentTerms').value);
+    formData.append('minimum_order', document.getElementById('minimumOrder').value);
+    
+    // Handle multiple certifications
+    const certifications = Array.from(document.getElementById('certifications').selectedOptions).map(option => option.value);
+    formData.append('certifications', JSON.stringify(certifications));
+
+    // Validate required fields
+    if (!formData.get('name') || !formData.get('company_name') || !formData.get('email')) {
+        alert('Please fill in all required fields');
+        return;
+    }
+
+    try {
+        const response = await fetch('/suppliers/create', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
+            modal.hide();
+            
+            // Clear form
+            document.getElementById('addSupplierForm').reset();
+            
+            // Show success message
+            alert('Supplier saved successfully!');
+            
+            // Optionally reload the page to show the new supplier
+            // location.reload();
+        } else {
+            alert('Error saving supplier: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error saving supplier. Please try again.');
+    }
+}
+</script>
+{% endblock %} 
