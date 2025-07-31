@@ -1,24 +1,21 @@
 """
-Notification Service
-This module has been refactored into a package structure.
-Import from the notifications package instead.
+Notification Service Package
+Provides intelligent notification functionality for the FoodXchange platform
 """
 
-# Maintain backward compatibility
-from .notifications import (
-    IntelligentNotificationService,
+from .notification_service import IntelligentNotificationService
+from .models import (
     NotificationType,
     NotificationCategory,
     NotificationPriority,
     NotificationStatus,
     NotificationAction,
-    Notification,
-    NotificationManager,
-    DeliveryService,
-    TemplateEngine
+    Notification
 )
+from .notification_manager import NotificationManager
+from .delivery_service import DeliveryService
+from .template_engine import TemplateEngine
 
-# Export for backward compatibility
 __all__ = [
     'IntelligentNotificationService',
     'NotificationType',
