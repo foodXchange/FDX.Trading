@@ -143,7 +143,8 @@
       "Bash(bash:*)",
       "Bash(fx start:*)",
       "Bash(.fx.bat start)",
-      "Bash(netsh:*)"
+      "Bash(netsh:*)",
+      "Bash(timeout 30 az group wait --deleted --name foodxchange-rg)"
     ],
     "deny": []
   }

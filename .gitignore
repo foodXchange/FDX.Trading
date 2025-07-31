@@ -170,3 +170,8 @@ uploads/
 temp_uploads/
 ai_cache/
 search_cache/
+
+# GitHub secrets (never commit these)
+github-secrets*.txt
+*secrets*.txt
+deploy-clean.ps1

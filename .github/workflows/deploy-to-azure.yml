@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: 'foodxchange-app'
+  AZURE_WEBAPP_NAME: 'foodxchange-deploy-app'
   PYTHON_VERSION: '3.11'
 
 jobs:
