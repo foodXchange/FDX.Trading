@@ -1,23 +1,20 @@
 """
-Search Service
-This module has been refactored into a package structure.
-Import from the search package instead.
+Search Service Package
+Provides intelligent search functionality for the FoodXchange platform
 """
 
-# Maintain backward compatibility
-from .search import (
-    IntelligentSearchService,
+from .search_service import IntelligentSearchService
+from .models import (
     SearchCategory,
     SearchFilterType,
     SearchFilter,
     SearchSuggestion,
-    SearchResult,
-    QueryParser,
-    SuggestionEngine,
-    FilterManager
+    SearchResult
 )
+from .query_parser import QueryParser
+from .suggestion_engine import SuggestionEngine
+from .filters import FilterManager
 
-# Export for backward compatibility
 __all__ = [
     'IntelligentSearchService',
     'SearchCategory',
