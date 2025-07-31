@@ -122,6 +122,42 @@ if check_service("Azure Text Analytics",
 
 print()
 
+# 11. Azure Application Insights
+total_services += 1
+if check_service("Azure Application Insights",
+                 "APPINSIGHTS_INSTRUMENTATIONKEY",
+                 "APPLICATIONINSIGHTS_CONNECTION_STRING"):
+    services_configured += 1
+
+print()
+
+# 12. Azure Key Vault
+total_services += 1
+if check_service("Azure Key Vault",
+                 "AZURE_KEY_VAULT_NAME",
+                 "AZURE_KEY_VAULT_URI"):
+    services_configured += 1
+
+print()
+
+# 13. Azure Monitor Log Analytics
+total_services += 1
+if check_service("Azure Monitor Log Analytics",
+                 "AZURE_LOG_ANALYTICS_WORKSPACE_ID",
+                 "AZURE_LOG_ANALYTICS_WORKSPACE_NAME"):
+    services_configured += 1
+
+print()
+
+# 14. Azure Computer Vision Aliases
+total_services += 1
+if check_service("Azure Computer Vision (Aliases)",
+                 "AZURE_COMPUTER_VISION_ENDPOINT",
+                 "AZURE_COMPUTER_VISION_KEY"):
+    services_configured += 1
+
+print()
+
 # Check for any other potential Azure services
 print("Additional Azure Environment Variables:")
 print("-" * 50)
@@ -135,7 +171,10 @@ configured_vars = [
     "AZURE_STORAGE_CONNECTION_STRING", "AZURE_STORAGE_CONTAINER",
     "AZURE_COMMUNICATION_EMAIL_CONNECTION_STRING", "AZURE_EMAIL_SENDER_ADDRESS",
     "AZURE_EMAIL_CONNECTION_STRING", "AZURE_OPENAI_VISION_DEPLOYMENT",
-    "AZURE_TEXT_ANALYTICS_ENDPOINT", "AZURE_TEXT_ANALYTICS_KEY"
+    "AZURE_TEXT_ANALYTICS_ENDPOINT", "AZURE_TEXT_ANALYTICS_KEY",
+    "APPINSIGHTS_INSTRUMENTATIONKEY", "APPLICATIONINSIGHTS_CONNECTION_STRING",
+    "AZURE_KEY_VAULT_NAME", "AZURE_KEY_VAULT_URI",
+    "AZURE_LOG_ANALYTICS_WORKSPACE_ID", "AZURE_LOG_ANALYTICS_WORKSPACE_NAME"
 ]
 
 additional_vars = [var for var in all_vars if var not in configured_vars]

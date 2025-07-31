@@ -324,12 +324,21 @@ class RecoveryManager:
             # In production, integrate with alerting service
             # For now, just log
             logger.critical(
-                f"SUPPORT ALERT: Critical error {error_details.error_id}\n"
-                f"Type: {error_details.type.value}\n"
-                f"Message: {error_details.technical_message}\n"
-                f"User: {context.get('user_id') if context else 'Unknown'}"
+                f"SUPPORT ALERT: {error_details.error_id}",
+                extra={
+                    "error_details": error_details.to_dict(),
+                    "context": context.__dict__ if hasattr(context, '__dict__') else context
+                }
             )
+            
+            # In production, this would send to:
+            # - PagerDuty
+            # - Slack
+            # - Email
+            # - SMS
+            
             return True
+            
         except Exception as e:
             logger.error(f"Failed to send support alert: {e}")
             return False

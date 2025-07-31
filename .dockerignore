@@ -28,6 +28,8 @@ venv/
 ENV/
 env/
 .venv
+foodxchange-env/
+foodxchange/venv/
 
 # IDE
 .vscode/

@@ -441,6 +441,9 @@ class IntelligentHelpService:
             session_id=session_id,
             user_id=user_id,
             page_url=page_url or "/",
+            help_content_accessed=[],
+            search_queries=[],
+            time_spent=0,
             session_start=datetime.now()
         )
         

@@ -79,14 +79,19 @@ services:
     networks:
       - foodxchange-network
 
-  # Database admin interface (Adminer)
-  adminer:
-    image: adminer:latest
+  # Database admin interface (pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4:latest
     ports:
-      - "8080:8080"
+      - "8080:80"
     environment:
-      ADMINER_DEFAULT_SERVER: postgres
-      ADMINER_DESIGN: pepa-linha
+      PGADMIN_DEFAULT_EMAIL: admin@foodxchange.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin_servers.json:/pgadmin4/servers.json
     depends_on:
       - postgres
     networks:
@@ -117,6 +122,8 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  pgadmin_data:
     driver: local
 
 networks:

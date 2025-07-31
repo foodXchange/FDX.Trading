@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: foodxchange_web_staging
+    command: gunicorn --bind 0.0.0.0:8000 --workers 2 --threads 4 --timeout 120 foodxchange.main:app -k uvicorn.workers.UvicornWorker
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=staging
+      - DEBUG=False
+      - DATABASE_URL=postgresql://foodxchange:${DB_PASSWORD_STAGING}@db:5432/foodxchange_staging
+      - REDIS_URL=redis://:${REDIS_PASSWORD_STAGING}@redis:6379/0
+      - SECRET_KEY=${SECRET_KEY_STAGING}
+    env_file:
+      - .env.staging
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - foodxchange_network
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:15-alpine
+    container_name: foodxchange_db_staging
+    environment:
+      - POSTGRES_USER=foodxchange
+      - POSTGRES_PASSWORD=${DB_PASSWORD_STAGING}
+      - POSTGRES_DB=foodxchange_staging
+    volumes:
+      - postgres-data-staging:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U foodxchange -d foodxchange_staging"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - foodxchange_network
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: foodxchange_redis_staging
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD_STAGING}
+    volumes:
+      - redis-data-staging:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD_STAGING}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - foodxchange_network
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: foodxchange_nginx_staging
+    volumes:
+      - ./nginx/staging.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/app/static:ro
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    networks:
+      - foodxchange_network
+    restart: always
+
+networks:
+  foodxchange_network:
+    driver: bridge
+
+volumes:
+  postgres-data-staging:
+  redis-data-staging:

@@ -20,6 +20,9 @@ from foodxchange.services.help_service import (
     help_service, HelpType, HelpCategory, HelpPriority, UserSkillLevel,
     HelpContent, HelpSuggestion, UserHelpSession
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/help", tags=["Help System"])
 
@@ -134,14 +137,19 @@ async def get_contextual_help(
     request: ContextualHelpRequest
 ) -> List[HelpSuggestionResponse]:
     """Get contextual help suggestions based on current page and context"""
-    suggestions = help_service.get_contextual_help(
-        page_url=request.page_url,
-        target_element=request.target_element,
-        user_id=request.user_id,
-        user_query=request.user_query
-    )
-    
-    return [HelpSuggestionResponse(**suggestion.__dict__) for suggestion in suggestions]
+    try:
+        logger.info(f"Contextual help request: page_url={request.page_url}, user_id={request.user_id}")
+        suggestions = help_service.get_contextual_help(
+            page_url=request.page_url,
+            target_element=request.target_element,
+            user_id=request.user_id,
+            user_query=request.user_query
+        )
+        
+        return [HelpSuggestionResponse(**suggestion.__dict__) for suggestion in suggestions]
+    except Exception as e:
+        logger.error(f"Error getting contextual help: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/search")
@@ -223,11 +231,15 @@ async def start_help_session(
     request: SessionRequest
 ) -> Dict[str, str]:
     """Start a new help session"""
-    session_id = help_service.start_help_session(
-        user_id=request.user_id,
-        page_url=request.page_url
-    )
-    return {"session_id": session_id}
+    try:
+        session_id = help_service.start_help_session(
+            user_id=request.user_id,
+            page_url=request.page_url
+        )
+        return {"session_id": session_id}
+    except Exception as e:
+        logger.error(f"Error starting help session: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/session/{session_id}/end")

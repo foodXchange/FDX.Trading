@@ -140,7 +140,10 @@
       "Bash(set PYTHONIOENCODING=utf-8)",
       "Bash(start_server.bat)",
       "Bash(cmd.exe:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(fx start:*)",
+      "Bash(.fx.bat start)",
+      "Bash(netsh:*)"
     ],
     "deny": []
   }

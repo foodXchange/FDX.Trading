@@ -255,13 +255,13 @@ async def secure_login(
                 # Clear rate limiting attempts on successful login
                 auth_rate_limiter.clear_attempts(f"{email}:{client_ip}")
                 
-                # Store token in secure session
-                request.session["access_token"] = access_token
-                request.session["user_id"] = 1
-                request.session["email"] = email
-                request.session["is_admin"] = True
-                
-                return RedirectResponse(url="/dashboard", status_code=303)
+                # Store token in response headers instead of session
+                response = RedirectResponse(url="/dashboard", status_code=303)
+                response.headers["Set-Cookie"] = f"access_token={access_token}; HttpOnly; Secure; SameSite=Strict"
+                response.headers["X-User-ID"] = "1"
+                response.headers["X-User-Email"] = email
+                response.headers["X-User-Admin"] = "true"
+                return response
             else:
                 auth_rate_limiter.record_attempt(f"{email}:{client_ip}")
                 return RedirectResponse(url="/login?error=invalid_credentials", status_code=303)

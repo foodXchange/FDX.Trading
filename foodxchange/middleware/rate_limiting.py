@@ -59,10 +59,11 @@ class RateLimiter:
                 return f"user:authenticated"
             
             # Try to get user ID from session if available
-            if hasattr(request, 'session'):
-                user_id = request.session.get("user_id")
-                if user_id:
-                    return f"user:{user_id}"
+            # Temporarily disabled due to session deserialization issues
+            # if hasattr(request, 'session'):
+            #     user_id = request.session.get("user_id")
+            #     if user_id:
+            #         return f"user:{user_id}"
         except Exception:
             # Session middleware not available or other error
             pass

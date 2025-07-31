@@ -132,10 +132,38 @@ dmypy.json
 cython_debug/
 
 # Environment variables
+.env
 .env.local
+.env.development
+.env.staging
+.env.production
 .env.development.local
 .env.test.local
 .env.production.local
+!.env.example
+
+# Docker environment overrides
+docker-compose.override.yml
+
+# Database volumes
+pgdata/
+postgres-data/
+redis-data/
+
+# Deployment keys
+*.pem
+*.key
+deploy_key
+deploy_key.pub
+.secrets/
+
+# Monitoring data
+.monitoring/
+prometheus_data/
+grafana_data/
+
+# Session data
+flask_session/
 
 # FoodXchange specific
 uploads/
