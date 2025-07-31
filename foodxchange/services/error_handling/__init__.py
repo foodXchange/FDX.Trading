@@ -1,25 +1,22 @@
 """
-Error Handling Service
-This module has been refactored into a package structure.
-Import from the error_handling package instead.
+Error Handling Service Package
+Provides intelligent error handling for the FoodXchange platform
 """
 
-# Maintain backward compatibility
-from .error_handling import (
-    IntelligentErrorHandler,
+from .error_handler import IntelligentErrorHandler
+from .models import (
     ErrorType,
     ErrorSeverity,
     RecoveryAction,
     ErrorContext,
     ErrorDetails,
     RecoveryOption,
-    ErrorNotification,
-    ErrorAnalyzer,
-    RecoveryManager,
-    ErrorLogger
+    ErrorNotification
 )
+from .error_analyzer import ErrorAnalyzer
+from .recovery_manager import RecoveryManager
+from .error_logger import ErrorLogger
 
-# Export for backward compatibility
 __all__ = [
     'IntelligentErrorHandler',
     'ErrorType',
