@@ -12,7 +12,7 @@ import sys
 from datetime import datetime
 
 # Base URL for the server
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8003"
 
 # Test results tracker
 test_results = {
@@ -24,7 +24,7 @@ test_results = {
 def test_endpoint(method, path, description, data=None, files=None, expected_status=200, headers=None):
     """Test a single endpoint"""
     url = f"{BASE_URL}{path}"
-    print(f"\n🧪 Testing: {description}")
+    print(f"\n[TEST] Testing: {description}")
     print(f"   {method} {url}")
     
     try:
@@ -41,26 +41,26 @@ def test_endpoint(method, path, description, data=None, files=None, expected_sta
         elif method == "DELETE":
             response = requests.delete(url, headers=headers)
         else:
-            print(f"   ❌ Unsupported method: {method}")
+            print(f"   [X] Unsupported method: {method}")
             test_results["failed"] += 1
             return None
         
         # Check status code
         if response.status_code == expected_status:
-            print(f"   ✅ Status: {response.status_code} (expected)")
+            print(f"   [OK] Status: {response.status_code} (expected)")
             test_results["passed"] += 1
             
             # Try to parse JSON response
             try:
                 json_response = response.json()
-                print(f"   📋 Response: {json.dumps(json_response, indent=2)[:200]}...")
+                print(f"   [RESPONSE] {json.dumps(json_response, indent=2)[:200]}...")
             except:
-                print(f"   📋 Response: {response.text[:200]}...")
+                print(f"   [RESPONSE] {response.text[:200]}...")
             
             return response
         else:
-            print(f"   ❌ Status: {response.status_code} (expected {expected_status})")
-            print(f"   📋 Response: {response.text[:200]}...")
+            print(f"   [FAIL] Status: {response.status_code} (expected {expected_status})")
+            print(f"   [RESPONSE] {response.text[:200]}...")
             test_results["failed"] += 1
             test_results["errors"].append({
                 "endpoint": f"{method} {path}",
@@ -72,7 +72,7 @@ def test_endpoint(method, path, description, data=None, files=None, expected_sta
             return response
             
     except requests.exceptions.ConnectionError:
-        print(f"   ❌ Connection Error: Server not responding")
+        print(f"   [ERROR] Connection Error: Server not responding")
         test_results["failed"] += 1
         test_results["errors"].append({
             "endpoint": f"{method} {path}",
@@ -81,7 +81,7 @@ def test_endpoint(method, path, description, data=None, files=None, expected_sta
         })
         return None
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [ERROR] {str(e)}")
         test_results["failed"] += 1
         test_results["errors"].append({
             "endpoint": f"{method} {path}",
@@ -92,7 +92,7 @@ def test_endpoint(method, path, description, data=None, files=None, expected_sta
 
 def run_tests():
     """Run all server tests"""
-    print("🚀 Starting FoodXchange Server Tests")
+    print("[START] Starting FoodXchange Server Tests")
     print("=" * 60)
     print(f"Server URL: {BASE_URL}")
     print(f"Time: {datetime.now().isoformat()}")
@@ -149,14 +149,18 @@ def run_tests():
     
     # Print Summary
     print("\n" + "=" * 60)
-    print("📊 TEST SUMMARY")
+    print("TEST SUMMARY")
     print("=" * 60)
-    print(f"✅ Passed: {test_results['passed']}")
-    print(f"❌ Failed: {test_results['failed']}")
-    print(f"📈 Success Rate: {(test_results['passed'] / (test_results['passed'] + test_results['failed']) * 100):.1f}%")
+    print(f"[PASSED] {test_results['passed']}")
+    print(f"[FAILED] {test_results['failed']}")
+    total_tests = test_results['passed'] + test_results['failed']
+    if total_tests > 0:
+        print(f"[SUCCESS RATE] {(test_results['passed'] / total_tests * 100):.1f}%")
+    else:
+        print("[SUCCESS RATE] No tests run")
     
     if test_results["errors"]:
-        print("\n❌ FAILED TESTS:")
+        print("\n[FAILED TESTS]:")
         for error in test_results["errors"]:
             print(f"\n   Endpoint: {error.get('endpoint', 'Unknown')}")
             print(f"   Description: {error.get('description', 'Unknown')}")
@@ -183,8 +187,8 @@ def check_server_running():
 if __name__ == "__main__":
     # Check if server is running
     if not check_server_running():
-        print("❌ Server is not running!")
-        print(f"Please start the server first: python start_server_fixed.py")
+        print("[ERROR] Server is not running!")
+        print(f"Please start the server first: python -m uvicorn foodxchange.main:app --port 8003")
         sys.exit(1)
     
     # Run the tests

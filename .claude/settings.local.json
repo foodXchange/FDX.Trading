@@ -137,7 +137,10 @@
       "Bash(pkill:*)",
       "WebFetch(domain:status.azure.com)",
       "WebFetch(domain:azure.status.microsoft)",
-      "Bash(set PYTHONIOENCODING=utf-8)"
+      "Bash(set PYTHONIOENCODING=utf-8)",
+      "Bash(start_server.bat)",
+      "Bash(cmd.exe:*)",
+      "Bash(bash:*)"
     ],
     "deny": []
   }

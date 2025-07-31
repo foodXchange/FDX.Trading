@@ -19,6 +19,10 @@ if exist "foodxchange-env\Scripts\activate.bat" (
     call foodxchange-env\Scripts\activate.bat
 )
 
+REM Set Python path
+set PYTHONPATH=%cd%
+
+REM Start the server using the fixed startup script
 python start_server_fixed.py
 
 pause
