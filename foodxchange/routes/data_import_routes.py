@@ -13,6 +13,10 @@ from pathlib import Path
 import io
 import pandas as pd
 import asyncio
+from dotenv import load_dotenv
+
+# Ensure environment variables are loaded
+load_dotenv()
 
 from foodxchange.services.data_import_service import data_import_service
 from foodxchange.services.ai_data_import_service import ai_data_import_service
@@ -259,7 +263,12 @@ async def check_ai_enabled():
     """Check if AI import features are enabled"""
     try:
         # Check if Azure OpenAI is configured
-        has_openai = bool(os.getenv("AZURE_OPENAI_ENDPOINT") and os.getenv("AZURE_OPENAI_API_KEY"))
+        endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        api_key = os.getenv("AZURE_OPENAI_API_KEY")
+        has_openai = bool(endpoint and api_key)
+        
+        # Log for debugging
+        logger.info(f"AI-enabled check - Endpoint: {endpoint[:20] if endpoint else 'Not set'}..., Key: {'Set' if api_key else 'Not set'}")
         
         return {
             "enabled": has_openai,
@@ -271,6 +280,7 @@ async def check_ai_enabled():
             }
         }
     except Exception as e:
+        logger.error(f"Error checking AI status: {e}")
         return {"enabled": False, "error": str(e)}
 
 @router.get("/history")

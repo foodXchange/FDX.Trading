@@ -14,7 +14,7 @@ if os.path.exists('.env.blob'):
 class Settings(BaseSettings):
     # Required settings with defaults for development
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db")
-    secret_key: str = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+    secret_key: str = os.getenv("SECRET_KEY")
     
     # Optional settings with defaults
     algorithm: str = "HS256"
@@ -72,15 +72,15 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings():
     try:
-        return Settings()
+        settings = Settings()
+        # Validate required settings
+        if not settings.secret_key:
+            raise ValueError("SECRET_KEY environment variable is required")
+        return settings
     except Exception as e:
-        # Return settings with defaults if .env file is missing
+        # Log error and re-raise for critical configuration issues
         import logging
-        logging.warning(f"Using default settings: {e}")
-        return Settings(
-            _env_file=None,
-            database_url=os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db"),
-            secret_key=os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
-        )
+        logging.error(f"Critical configuration error: {e}")
+        raise
 
 settings = get_settings() 

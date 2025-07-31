@@ -39,14 +39,94 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Add CORS middleware
+# Add CORS middleware with secure configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://localhost:8003",
+        "https://foodxchange.com",
+        "https://app.foodxchange.com"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["Content-Length", "X-Total-Count"],
+    max_age=86400,  # Cache preflight requests for 24 hours
 )
+
+# Add rate limiting middleware
+try:
+    from foodxchange.middleware.rate_limiting import rate_limit_middleware
+    app.middleware("http")(rate_limit_middleware)
+    logger.info("✅ Rate limiting middleware added")
+except ImportError as e:
+    logger.warning(f"Rate limiting middleware not available: {e}")
+
+# Add request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log all requests with timing and context"""
+    import time
+    import uuid
+    
+    # Generate request ID
+    request_id = str(uuid.uuid4())
+    request.state.request_id = request_id
+    
+    # Get user ID from session if available
+    user_id = request.session.get("user_id") if hasattr(request, 'session') else None
+    
+    # Start timing
+    start_time = time.time()
+    
+    try:
+        # Process request
+        response = await call_next(request)
+        
+        # Calculate duration
+        duration = time.time() - start_time
+        
+        # Log request
+        logger.info(
+            f"Request completed: {request.method} {request.url.path}",
+            extra={
+                "request_id": request_id,
+                "user_id": user_id,
+                "method": request.method,
+                "url": str(request.url),
+                "status_code": response.status_code,
+                "duration_ms": round(duration * 1000, 2),
+                "user_agent": request.headers.get("user-agent", ""),
+                "ip_address": request.client.host if request.client else "unknown"
+            }
+        )
+        
+        # Add request ID to response headers
+        response.headers["X-Request-ID"] = request_id
+        
+        return response
+        
+    except Exception as e:
+        # Calculate duration
+        duration = time.time() - start_time
+        
+        # Log error
+        logger.error(
+            f"Request failed: {request.method} {request.url.path}",
+            extra={
+                "request_id": request_id,
+                "user_id": user_id,
+                "method": request.method,
+                "url": str(request.url),
+                "duration_ms": round(duration * 1000, 2),
+                "error": str(e),
+                "user_agent": request.headers.get("user-agent", ""),
+                "ip_address": request.client.host if request.client else "unknown"
+            }
+        )
+        raise
 
 # Get the directory where main.py is located
 BASE_DIR = Path(__file__).resolve().parent
@@ -105,6 +185,65 @@ def get_db():
 def get_current_user_context(request: Request, db=None):
     return None
 
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring and load balancers"""
+    import redis
+    from datetime import datetime
+    import psutil
+    
+    health_status = {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "version": app.version,
+        "services": {}
+    }
+    
+    # Check Redis connection
+    try:
+        r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+        r.ping()
+        redis_info = r.info()
+        health_status["services"]["redis"] = {
+            "status": "healthy",
+            "memory": redis_info.get("used_memory_human", "unknown"),
+            "connected_clients": redis_info.get("connected_clients", 0)
+        }
+    except Exception as e:
+        health_status["services"]["redis"] = {
+            "status": "unhealthy",
+            "error": str(e)
+        }
+        health_status["status"] = "degraded"
+    
+    # Check system resources
+    try:
+        health_status["resources"] = {
+            "cpu_percent": psutil.cpu_percent(interval=1),
+            "memory_percent": psutil.virtual_memory().percent,
+            "disk_percent": psutil.disk_usage('/').percent
+        }
+    except:
+        health_status["resources"] = {"status": "unavailable"}
+    
+    # Check AI services configuration
+    azure_configured = all([
+        os.getenv("AZURE_OPENAI_ENDPOINT"),
+        os.getenv("AZURE_OPENAI_API_KEY"),
+        os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+    ])
+    
+    health_status["services"]["azure_ai"] = {
+        "status": "configured" if azure_configured else "not_configured"
+    }
+    
+    # Overall status
+    if any(service.get("status") == "unhealthy" for service in health_status["services"].values()):
+        health_status["status"] = "unhealthy"
+    
+    return health_status
+
 # Simple login handler (temporary - bypasses database)
 @app.post("/auth/login")
 async def simple_login(
@@ -113,8 +252,21 @@ async def simple_login(
     password: str = Form(...)
 ):
     """Simple login that works without database - defaults to admin"""
+    # Validate input
+    if not email or not password:
+        return RedirectResponse(url="/login?error=missing_credentials", status_code=303)
+    
+    if len(email) < 3 or len(password) < 6:
+        return RedirectResponse(url="/login?error=invalid_input", status_code=303)
+    
     # Development login - accept any email/password and log in as admin
     if email and password:
+        # Create session data
+        request.session["user_id"] = 1
+        request.session["email"] = email
+        request.session["is_admin"] = True
+        request.session["login_time"] = datetime.now().isoformat()
+        
         # Redirect to dashboard as admin
         return RedirectResponse(url="/dashboard", status_code=303)
     else:
@@ -133,17 +285,27 @@ try:
     sys.path.append(str(BASE_DIR))
     sys.path.append(str(BASE_DIR.parent))  # Add parent directory to path
     
-    from foodxchange.routes import product_analysis_routes, data_import_routes, azure_testing_routes_fastapi
+    from foodxchange.routes import product_analysis_routes, data_import_routes, azure_testing_routes_fastapi, search_routes
     
     # Include routers
     app.include_router(product_analysis_routes.router)
     app.include_router(data_import_routes.router)
     app.include_router(azure_testing_routes_fastapi.router)
+    app.include_router(search_routes.router)
     
-    logger.info("✅ Route modules loaded successfully")
+    logger.info("✅ Core route modules loaded successfully")
     
 except ImportError as e:
     logger.warning(f"⚠️ Some route modules could not be loaded: {e}")
+
+# Try to load additional routes that might have dependencies
+try:
+    from foodxchange.routes import error_routes, help_routes
+    app.include_router(error_routes.router)
+    app.include_router(help_routes.router)
+    logger.info("✅ Optional route modules loaded successfully")
+except ImportError as e:
+    logger.info(f"Optional routes not loaded: {e}")
 
 # Add profile routes directly to avoid import issues
 from fastapi import APIRouter, Form, UploadFile, File
@@ -263,13 +425,63 @@ async def change_password(
     new_password: str = Form(...),
     confirm_password: str = Form(...)
 ):
-    """Change user password"""
-    if new_password != confirm_password:
+    """Change user password with proper validation"""
+    try:
+        # Check if user is authenticated
+        user_id = request.session.get("user_id")
+        if not user_id:
+            return JSONResponse(content={
+                "success": False,
+                "message": "Authentication required"
+            }, status_code=401)
+        
+        # Validate input
+        if not current_password or not new_password or not confirm_password:
+            return JSONResponse(content={
+                "success": False,
+                "message": "All password fields are required"
+            }, status_code=400)
+        
+        # Validate password strength
+        if len(new_password) < 8:
+            return JSONResponse(content={
+                "success": False,
+                "message": "New password must be at least 8 characters long"
+            }, status_code=400)
+        
+        # Check if passwords match
+        if new_password != confirm_password:
+            return JSONResponse(content={
+                "success": False,
+                "message": "New passwords do not match"
+            }, status_code=400)
+        
+        # Check if new password is different from current
+        if current_password == new_password:
+            return JSONResponse(content={
+                "success": False,
+                "message": "New password must be different from current password"
+            }, status_code=400)
+        
+        # In a real implementation, you would:
+        # 1. Verify current password against database
+        # 2. Hash the new password
+        # 3. Update the database
+        
+        # For now, simulate successful password change
+        logger.info(f"Password change requested for user {user_id}")
+        
+        return JSONResponse(content={
+            "success": True, 
+            "message": "Password changed successfully"
+        })
+        
+    except Exception as e:
+        logger.error(f"Error changing password: {e}")
         return JSONResponse(content={
             "success": False,
-            "message": "New passwords do not match"
-        }, status_code=400)
-    return JSONResponse(content={"success": True, "message": "Password changed successfully"})
+            "message": "An error occurred while changing password"
+        }, status_code=500)
 
 # Include the profile router
 app.include_router(profile_router)

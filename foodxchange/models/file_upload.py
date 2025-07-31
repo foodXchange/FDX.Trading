@@ -62,7 +62,7 @@ class FileUpload(Base, TimestampMixin, AuditMixin):
     processing_completed_at = Column(DateTime, nullable=True)
     
     # Additional metadata
-    metadata = Column(JSON, nullable=True)
+    file_metadata = Column(JSON, nullable=True)
     
     def __repr__(self):
         return f"<FileUpload(id={self.id}, filename='{self.filename}', status={self.status})>"

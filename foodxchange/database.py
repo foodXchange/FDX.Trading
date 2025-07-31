@@ -1,11 +1,11 @@
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from sqlalchemy.exc import OperationalError
 import time
 import os
 
-# Import Base from models to re-export it
-from foodxchange.models.base import Base
+# Create Base here to avoid circular imports
+Base = declarative_base()
 
 # Default to SQLite for development if no DATABASE_URL is set
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db")
@@ -15,15 +15,28 @@ if DATABASE_URL.startswith("sqlite"):
     # SQLite specific configuration
     engine = create_engine(
         DATABASE_URL,
-        connect_args={"check_same_thread": False}  # Needed for SQLite
+        connect_args={"check_same_thread": False},  # Needed for SQLite
+        pool_pre_ping=True,
+        pool_size=5,  # Smaller pool for SQLite
+        max_overflow=10,
+        pool_recycle=3600,  # Recycle connections every hour
+        pool_timeout=30,  # Connection timeout
     )
 else:
-    # PostgreSQL/MySQL configuration with pooling
+    # PostgreSQL/MySQL configuration with optimized pooling
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
-        pool_size=10,
-        max_overflow=20,
+        pool_size=20,  # Increased for production
+        max_overflow=30,  # Increased for production
+        pool_recycle=3600,  # Recycle connections every hour
+        pool_timeout=30,  # Connection timeout
+        echo=False,  # Disable SQL logging in production
+        # Additional optimizations for PostgreSQL
+        connect_args={
+            "application_name": "foodxchange_app",
+            "options": "-c timezone=utc"
+        } if "postgresql" in DATABASE_URL else {}
     )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

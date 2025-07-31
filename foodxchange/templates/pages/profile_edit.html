@@ -3,282 +3,519 @@
 {% block title %}Edit Profile - FoodXchange{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">Edit Profile</h1>
-        
-        <form id="profileForm" class="space-y-8">
-            <!-- Profile Picture Section -->
-            <div class="flex items-center gap-6 pb-8 border-b border-gray-200 dark:border-gray-700">
-                <div class="relative">
-                    {% if user.profile_picture %}
-                        <img id="profilePreview" src="{{ user.profile_picture }}" alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-fx-blue">
-                    {% else %}
-                        <div id="profileInitial" class="w-24 h-24 rounded-full bg-fx-blue flex items-center justify-center text-white text-3xl font-bold">
-                            {{ user.name[0].upper() if user.name else 'U' }}
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- Profile Completion Progress -->
+    <div class="mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Profile Completion</h2>
+                <span id="completionPercentage" class="text-2xl font-bold text-fx-blue">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                <div id="completionBar" class="bg-fx-blue h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div id="completionTips" class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                <i class="fas fa-lightbulb mr-2"></i>
+                <span>Complete your profile to increase visibility and networking opportunities</span>
+            </div>
+        </div>
+    </div>
+
+    <form id="profileForm" class="space-y-8">
+        <!-- Two-Column Layout Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Left Column: Profile Picture, Basic Info, Location -->
+            <div class="space-y-8">
+                
+                <!-- Enhanced Profile Picture Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-camera mr-2 text-fx-blue"></i>
+                        Profile Picture
+                    </h3>
+                    
+                    <div class="text-center">
+                        <div id="profileImageContainer" class="relative inline-block">
+                            {% if user.profile_picture %}
+                                <img id="profilePreview" src="{{ user.profile_picture }}" alt="Profile" 
+                                     class="w-32 h-32 rounded-full object-cover border-4 border-fx-blue shadow-lg">
+                            {% else %}
+                                <div id="profileInitial" class="w-32 h-32 rounded-full bg-gradient-to-br from-fx-blue to-blue-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                                    {{ user.name[0].upper() if user.name else 'U' }}
+                                </div>
+                                <img id="profilePreview" src="" alt="Profile" 
+                                     class="w-32 h-32 rounded-full object-cover border-4 border-fx-blue shadow-lg hidden">
+                            {% endif %}
+                            
+                            <!-- Upload Overlay -->
+                            <div id="uploadOverlay" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                                <i class="fas fa-camera text-white text-2xl"></i>
+                            </div>
                         </div>
-                        <img id="profilePreview" src="" alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-fx-blue hidden">
-                    {% endif %}
+                        
+                        <!-- Drag & Drop Area -->
+                        <div id="dragDropArea" class="mt-4 p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-fx-blue transition-colors">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                    Drag and drop your photo here, or
+                                </p>
+                                <label class="btn btn-secondary btn-sm cursor-pointer">
+                                    <i class="fas fa-upload mr-2"></i>Choose File
+                                    <input type="file" id="profilePicture" accept="image/*" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Progress -->
+                        <div id="uploadProgress" class="mt-4 hidden">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div id="progressBar" class="bg-fx-blue h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <p id="progressText" class="text-xs text-gray-600 dark:text-gray-400 mt-1">Uploading...</p>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex justify-center gap-3 mt-4">
+                            {% if user.profile_picture %}
+                            <button type="button" id="removePicture" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash mr-2"></i>Remove
+                            </button>
+                            {% endif %}
+                            <button type="button" id="cropPicture" class="btn btn-outline-secondary btn-sm hidden">
+                                <i class="fas fa-crop mr-2"></i>Crop
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Profile Picture</h3>
-                    <div class="flex gap-3">
-                        <label class="btn btn-secondary btn-sm cursor-pointer">
-                            <i class="fas fa-upload mr-2"></i>Upload Photo
-                            <input type="file" id="profilePicture" accept="image/*" class="hidden">
-                        </label>
-                        {% if user.profile_picture %}
-                        <button type="button" id="removePicture" class="btn btn-secondary btn-sm text-red-600 hover:text-red-700">
-                            <i class="fas fa-trash mr-2"></i>Remove
-                        </button>
-                        {% endif %}
+
+                <!-- Basic Information Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-user mr-2 text-fx-blue"></i>
+                        Basic Information
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Full Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" value="{{ user.name }}" required
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="Enter your full name">
+                            <div class="validation-message text-xs mt-1"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" required
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="your.email@example.com">
+                            <div class="validation-message text-xs mt-1"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Phone Number
+                            </label>
+                            <input type="tel" id="phone" name="phone" value="{{ user.phone or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="+1 (555) 123-4567">
+                            <div class="validation-message text-xs mt-1"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="job_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Job Title
+                            </label>
+                            <input type="text" id="job_title" name="job_title" value="{{ user.job_title or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="e.g., Food Safety Manager, Procurement Specialist"
+                                   list="jobTitles">
+                            <datalist id="jobTitles">
+                                <option value="Food Safety Manager">
+                                <option value="Procurement Specialist">
+                                <option value="Quality Assurance Manager">
+                                <option value="Supply Chain Manager">
+                                <option value="Operations Director">
+                                <option value="Executive Chef">
+                                <option value="Restaurant Manager">
+                                <option value="Food Service Director">
+                                <option value="Commodity Trader">
+                                <option value="Food Technologist">
+                            </datalist>
+                        </div>
+                        
+                        <div>
+                            <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Professional Bio
+                                <span class="text-xs text-gray-500">(Max 500 characters)</span>
+                            </label>
+                            <textarea id="bio" name="bio" rows="4"
+                                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all resize-none"
+                                      placeholder="Tell us about your professional background, expertise, and what you're looking for..."
+                                      maxlength="500">{{ user.bio or '' }}</textarea>
+                            <div class="flex justify-between items-center mt-1">
+                                <div class="validation-message text-xs"></div>
+                                <span id="bioCharCount" class="text-xs text-gray-500">0/500</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Information Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-2 text-fx-blue"></i>
+                        Location
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Country
+                            </label>
+                            <select id="country" name="country" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="">Select Country</option>
+                                <option value="United States" {% if user.country == "United States" %}selected{% endif %}>United States</option>
+                                <option value="Canada" {% if user.country == "Canada" %}selected{% endif %}>Canada</option>
+                                <option value="United Kingdom" {% if user.country == "United Kingdom" %}selected{% endif %}>United Kingdom</option>
+                                <option value="Germany" {% if user.country == "Germany" %}selected{% endif %}>Germany</option>
+                                <option value="France" {% if user.country == "France" %}selected{% endif %}>France</option>
+                                <option value="Spain" {% if user.country == "Spain" %}selected{% endif %}>Spain</option>
+                                <option value="Italy" {% if user.country == "Italy" %}selected{% endif %}>Italy</option>
+                                <option value="Australia" {% if user.country == "Australia" %}selected{% endif %}>Australia</option>
+                                <option value="Japan" {% if user.country == "Japan" %}selected{% endif %}>Japan</option>
+                                <option value="China" {% if user.country == "China" %}selected{% endif %}>China</option>
+                                <option value="India" {% if user.country == "India" %}selected{% endif %}>India</option>
+                                <option value="Brazil" {% if user.country == "Brazil" %}selected{% endif %}>Brazil</option>
+                                <option value="Mexico" {% if user.country == "Mexico" %}selected{% endif %}>Mexico</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                City
+                            </label>
+                            <input type="text" id="city" name="city" value="{{ user.city or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="Enter your city">
+                        </div>
+                        
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Address
+                            </label>
+                            <textarea id="address" name="address" rows="2"
+                                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all resize-none"
+                                      placeholder="Enter your address (optional)">{{ user.address or '' }}</textarea>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Basic Information -->
-            <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Basic Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name *</label>
-                        <input type="text" id="name" name="name" value="{{ user.name }}" required
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address *</label>
-                        <input type="email" id="email" name="email" value="{{ user.email }}" required
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" value="{{ user.phone or '' }}"
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
-                    <div>
-                        <label for="job_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Job Title</label>
-                        <input type="text" id="job_title" name="job_title" value="{{ user.job_title or '' }}"
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+
+            <!-- Right Column: Professional Info, Online Presence, Preferences -->
+            <div class="space-y-8">
+                
+                <!-- Professional Information Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-briefcase mr-2 text-fx-blue"></i>
+                        Professional Information
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="department" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Department
+                            </label>
+                            <input type="text" id="department" name="department" value="{{ user.department or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="e.g., Procurement, Quality Assurance, Operations"
+                                   list="departments">
+                            <datalist id="departments">
+                                <option value="Procurement">
+                                <option value="Quality Assurance">
+                                <option value="Operations">
+                                <option value="Food Safety">
+                                <option value="Supply Chain">
+                                <option value="Sales">
+                                <option value="Marketing">
+                                <option value="Finance">
+                                <option value="Human Resources">
+                                <option value="Research & Development">
+                            </datalist>
+                        </div>
+                        
+                        <div>
+                            <label for="industry" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Industry
+                            </label>
+                            <select id="industry" name="industry" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="">Select Industry</option>
+                                <option value="Food & Beverage" {% if user.industry == "Food & Beverage" %}selected{% endif %}>Food & Beverage</option>
+                                <option value="Agriculture" {% if user.industry == "Agriculture" %}selected{% endif %}>Agriculture</option>
+                                <option value="Hospitality" {% if user.industry == "Hospitality" %}selected{% endif %}>Hospitality</option>
+                                <option value="Retail" {% if user.industry == "Retail" %}selected{% endif %}>Retail</option>
+                                <option value="Manufacturing" {% if user.industry == "Manufacturing" %}selected{% endif %}>Manufacturing</option>
+                                <option value="Distribution" {% if user.industry == "Distribution" %}selected{% endif %}>Distribution</option>
+                                <option value="Food Service" {% if user.industry == "Food Service" %}selected{% endif %}>Food Service</option>
+                                <option value="Restaurant" {% if user.industry == "Restaurant" %}selected{% endif %}>Restaurant</option>
+                                <option value="Catering" {% if user.industry == "Catering" %}selected{% endif %}>Catering</option>
+                                <option value="Other" {% if user.industry == "Other" %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="company_size" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Company Size
+                            </label>
+                            <select id="company_size" name="company_size" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="">Select Size</option>
+                                <option value="1-10" {% if user.company_size == "1-10" %}selected{% endif %}>1-10 employees</option>
+                                <option value="11-50" {% if user.company_size == "11-50" %}selected{% endif %}>11-50 employees</option>
+                                <option value="51-200" {% if user.company_size == "51-200" %}selected{% endif %}>51-200 employees</option>
+                                <option value="201-500" {% if user.company_size == "201-500" %}selected{% endif %}>201-500 employees</option>
+                                <option value="501-1000" {% if user.company_size == "501-1000" %}selected{% endif %}>501-1000 employees</option>
+                                <option value="1000+" {% if user.company_size == "1000+" %}selected{% endif %}>1000+ employees</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="experience_years" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Years of Experience
+                            </label>
+                            <select id="experience_years" name="experience_years" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="">Select Experience</option>
+                                <option value="0-2" {% if user.experience_years == "0-2" %}selected{% endif %}>0-2 years</option>
+                                <option value="3-5" {% if user.experience_years == "3-5" %}selected{% endif %}>3-5 years</option>
+                                <option value="6-10" {% if user.experience_years == "6-10" %}selected{% endif %}>6-10 years</option>
+                                <option value="11-15" {% if user.experience_years == "11-15" %}selected{% endif %}>11-15 years</option>
+                                <option value="15+" {% if user.experience_years == "15+" %}selected{% endif %}>15+ years</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-6">
-                    <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bio</label>
-                    <textarea id="bio" name="bio" rows="4"
-                              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{{ user.bio or '' }}</textarea>
+
+                <!-- Online Presence Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-globe mr-2 text-fx-blue"></i>
+                        Online Presence
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Website
+                            </label>
+                            <input type="url" id="website" name="website" value="{{ user.website or '' }}" 
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="https://example.com">
+                            <div class="validation-message text-xs mt-1"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="linkedin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                LinkedIn Profile
+                            </label>
+                            <input type="url" id="linkedin" name="linkedin" value="{{ user.linkedin or '' }}" 
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="https://linkedin.com/in/username">
+                            <div class="validation-message text-xs mt-1"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="twitter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Twitter/X Profile
+                            </label>
+                            <input type="text" id="twitter" name="twitter" value="{{ user.twitter or '' }}" 
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all"
+                                   placeholder="@username">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-cog mr-2 text-fx-blue"></i>
+                        Preferences
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Timezone
+                            </label>
+                            <select id="timezone" name="timezone" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="UTC" {% if user.timezone == "UTC" %}selected{% endif %}>UTC</option>
+                                <option value="America/New_York" {% if user.timezone == "America/New_York" %}selected{% endif %}>Eastern Time (ET)</option>
+                                <option value="America/Chicago" {% if user.timezone == "America/Chicago" %}selected{% endif %}>Central Time (CT)</option>
+                                <option value="America/Denver" {% if user.timezone == "America/Denver" %}selected{% endif %}>Mountain Time (MT)</option>
+                                <option value="America/Los_Angeles" {% if user.timezone == "America/Los_Angeles" %}selected{% endif %}>Pacific Time (PT)</option>
+                                <option value="Europe/London" {% if user.timezone == "Europe/London" %}selected{% endif %}>London (GMT)</option>
+                                <option value="Europe/Paris" {% if user.timezone == "Europe/Paris" %}selected{% endif %}>Paris (CET)</option>
+                                <option value="Europe/Berlin" {% if user.timezone == "Europe/Berlin" %}selected{% endif %}>Berlin (CET)</option>
+                                <option value="Asia/Tokyo" {% if user.timezone == "Asia/Tokyo" %}selected{% endif %}>Tokyo (JST)</option>
+                                <option value="Asia/Shanghai" {% if user.timezone == "Asia/Shanghai" %}selected{% endif %}>Shanghai (CST)</option>
+                                <option value="Australia/Sydney" {% if user.timezone == "Australia/Sydney" %}selected{% endif %}>Sydney (AEDT)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="language" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Language
+                            </label>
+                            <select id="language" name="language" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="en" {% if user.language == "en" %}selected{% endif %}>English</option>
+                                <option value="es" {% if user.language == "es" %}selected{% endif %}>Spanish</option>
+                                <option value="fr" {% if user.language == "fr" %}selected{% endif %}>French</option>
+                                <option value="de" {% if user.language == "de" %}selected{% endif %}>German</option>
+                                <option value="zh" {% if user.language == "zh" %}selected{% endif %}>Chinese</option>
+                                <option value="ja" {% if user.language == "ja" %}selected{% endif %}>Japanese</option>
+                                <option value="ko" {% if user.language == "ko" %}selected{% endif %}>Korean</option>
+                                <option value="ar" {% if user.language == "ar" %}selected{% endif %}>Arabic</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="notification_preferences" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Notification Preferences
+                            </label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="email_notifications" value="1" 
+                                           {% if user.email_notifications %}checked{% endif %}
+                                           class="mr-3 rounded border-gray-300 text-fx-blue focus:ring-fx-blue">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Email notifications</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="sms_notifications" value="1" 
+                                           {% if user.sms_notifications %}checked{% endif %}
+                                           class="mr-3 rounded border-gray-300 text-fx-blue focus:ring-fx-blue">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">SMS notifications</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="marketing_emails" value="1" 
+                                           {% if user.marketing_emails %}checked{% endif %}
+                                           class="mr-3 rounded border-gray-300 text-fx-blue focus:ring-fx-blue">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Marketing emails</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <i class="fas fa-shield-alt mr-2 text-fx-blue"></i>
+                        Privacy Settings
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="profile_visibility" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Profile Visibility
+                            </label>
+                            <select id="profile_visibility" name="profile_visibility" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="public" {% if user.profile_visibility == "public" %}selected{% endif %}>Public - Anyone can view</option>
+                                <option value="network" {% if user.profile_visibility == "network" %}selected{% endif %}>Network - Only connections can view</option>
+                                <option value="private" {% if user.profile_visibility == "private" %}selected{% endif %}>Private - Only you can view</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="contact_visibility" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Contact Information Visibility
+                            </label>
+                            <select id="contact_visibility" name="contact_visibility" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all">
+                                <option value="public" {% if user.contact_visibility == "public" %}selected{% endif %}>Public</option>
+                                <option value="network" {% if user.contact_visibility == "network" %}selected{% endif %}>Network only</option>
+                                <option value="private" {% if user.contact_visibility == "private" %}selected{% endif %}>Private</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Location Information -->
-            <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Location</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
-                        <input type="text" id="country" name="country" value="{{ user.country or '' }}"
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
-                    <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
-                        <input type="text" id="city" name="city" value="{{ user.city or '' }}"
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>Cancel
+                    </a>
+                    <button type="button" id="previewProfile" class="btn btn-outline-secondary">
+                        <i class="fas fa-eye mr-2"></i>Preview
+                    </button>
                 </div>
-                <div class="mt-6">
-                    <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address</label>
-                    <textarea id="address" name="address" rows="2"
-                              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{{ user.address or '' }}</textarea>
-                </div>
-            </div>
-            
-            <!-- Professional Information -->
-            <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Professional Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="department" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
-                        <input type="text" id="department" name="department" value="{{ user.department or '' }}"
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
-                    <div>
-                        <label for="industry" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Industry</label>
-                        <select id="industry" name="industry" 
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                            <option value="">Select Industry</option>
-                            <option value="Food & Beverage" {% if user.industry == "Food & Beverage" %}selected{% endif %}>Food & Beverage</option>
-                            <option value="Agriculture" {% if user.industry == "Agriculture" %}selected{% endif %}>Agriculture</option>
-                            <option value="Hospitality" {% if user.industry == "Hospitality" %}selected{% endif %}>Hospitality</option>
-                            <option value="Retail" {% if user.industry == "Retail" %}selected{% endif %}>Retail</option>
-                            <option value="Manufacturing" {% if user.industry == "Manufacturing" %}selected{% endif %}>Manufacturing</option>
-                            <option value="Other" {% if user.industry == "Other" %}selected{% endif %}>Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="company_size" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Size</label>
-                        <select id="company_size" name="company_size" 
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                            <option value="">Select Size</option>
-                            <option value="1-10" {% if user.company_size == "1-10" %}selected{% endif %}>1-10 employees</option>
-                            <option value="11-50" {% if user.company_size == "11-50" %}selected{% endif %}>11-50 employees</option>
-                            <option value="51-200" {% if user.company_size == "51-200" %}selected{% endif %}>51-200 employees</option>
-                            <option value="201-500" {% if user.company_size == "201-500" %}selected{% endif %}>201-500 employees</option>
-                            <option value="501-1000" {% if user.company_size == "501-1000" %}selected{% endif %}>501-1000 employees</option>
-                            <option value="1000+" {% if user.company_size == "1000+" %}selected{% endif %}>1000+ employees</option>
-                        </select>
-                    </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button type="button" id="saveDraft" class="btn btn-outline-primary">
+                        <i class="fas fa-save mr-2"></i>Save Draft
+                    </button>
+                    <button type="submit" id="saveChanges" class="btn btn-primary">
+                        <i class="fas fa-check mr-2"></i>Save Changes
+                    </button>
                 </div>
             </div>
-            
-            <!-- Online Presence -->
-            <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Online Presence</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Website</label>
-                        <input type="url" id="website" name="website" value="{{ user.website or '' }}" placeholder="https://example.com"
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
-                    <div>
-                        <label for="linkedin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">LinkedIn Profile</label>
-                        <input type="url" id="linkedin" name="linkedin" value="{{ user.linkedin or '' }}" placeholder="https://linkedin.com/in/username"
-                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                    </div>
+        </div>
+    </form>
+</div>
+
+<!-- Profile Preview Modal -->
+<div id="previewModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Profile Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="profilePreviewContent">
+                    <!-- Preview content will be loaded here -->
                 </div>
             </div>
-            
-            <!-- Preferences -->
-            <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Preferences</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Timezone</label>
-                        <select id="timezone" name="timezone" 
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                            <option value="UTC" {% if user.timezone == "UTC" %}selected{% endif %}>UTC</option>
-                            <option value="America/New_York" {% if user.timezone == "America/New_York" %}selected{% endif %}>Eastern Time</option>
-                            <option value="America/Chicago" {% if user.timezone == "America/Chicago" %}selected{% endif %}>Central Time</option>
-                            <option value="America/Denver" {% if user.timezone == "America/Denver" %}selected{% endif %}>Mountain Time</option>
-                            <option value="America/Los_Angeles" {% if user.timezone == "America/Los_Angeles" %}selected{% endif %}>Pacific Time</option>
-                            <option value="Europe/London" {% if user.timezone == "Europe/London" %}selected{% endif %}>London</option>
-                            <option value="Europe/Paris" {% if user.timezone == "Europe/Paris" %}selected{% endif %}>Paris</option>
-                            <option value="Asia/Tokyo" {% if user.timezone == "Asia/Tokyo" %}selected{% endif %}>Tokyo</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="language" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Language</label>
-                        <select id="language" name="language" 
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fx-blue focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                            <option value="en" {% if user.language == "en" %}selected{% endif %}>English</option>
-                            <option value="es" {% if user.language == "es" %}selected{% endif %}>Spanish</option>
-                            <option value="fr" {% if user.language == "fr" %}selected{% endif %}>French</option>
-                            <option value="de" {% if user.language == "de" %}selected{% endif %}>German</option>
-                            <option value="zh" {% if user.language == "zh" %}selected{% endif %}>Chinese</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Form Actions -->
-            <div class="flex justify-between pt-8 border-t border-gray-200 dark:border-gray-700">
-                <a href="{{ url_for('profile') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left mr-2"></i>Cancel
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save mr-2"></i>Save Changes
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<script>
-// Profile form handling
-document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    
-    try {
-        const response = await fetch('/profile/update', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showNotification('Profile updated successfully!', 'success');
-            setTimeout(() => window.location.href = '/profile/', 1500);
-        } else {
-            showNotification(result.message || 'Error updating profile', 'error');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('Error updating profile', 'error');
-    }
-});
+<!-- Image Crop Modal -->
+<div id="cropModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crop Profile Picture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="cropContainer" class="text-center">
+                    <!-- Crop interface will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="applyCrop" class="btn btn-primary">Apply Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-// Profile picture handling
-document.getElementById('profilePicture').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    // Preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        document.getElementById('profilePreview').src = e.target.result;
-        document.getElementById('profilePreview').classList.remove('hidden');
-        const initial = document.getElementById('profileInitial');
-        if (initial) initial.classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-    
-    // Upload
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    try {
-        const response = await fetch('/profile/upload-picture', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showNotification('Profile picture updated!', 'success');
-        } else {
-            showNotification(result.message || 'Error uploading picture', 'error');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('Error uploading picture', 'error');
-    }
-});
-
-// Remove picture handling
-const removePictureBtn = document.getElementById('removePicture');
-if (removePictureBtn) {
-    removePictureBtn.addEventListener('click', async () => {
-        if (!confirm('Are you sure you want to remove your profile picture?')) return;
-        
-        try {
-            const response = await fetch('/profile/remove-picture', {
-                method: 'POST'
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showNotification('Profile picture removed!', 'success');
-                location.reload();
-            } else {
-                showNotification(result.message || 'Error removing picture', 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification('Error removing picture', 'error');
-        }
-    });
-}
-</script>
+<!-- Load enhanced JavaScript -->
+<script src="{{ url_for('static', filename='js/profile-edit-enhanced.js') }}"></script>
 {% endblock %}

@@ -22,6 +22,18 @@ openpyxl==3.1.2
 python-docx==1.1.0
 reportlab==4.0.7
 html2text==2020.1.16
+redis==5.0.1
+
+# Security and validation dependencies
+python-magic==0.4.27
+email-validator==2.1.0
+pydantic[email]==2.5.0
+
+# Rate limiting
+slowapi==0.1.9
+
+# Monitoring and logging
+structlog==23.2.0
 
 # Azure AI Services for Product Analysis
 azure-cognitiveservices-vision-computervision==0.9.0
@@ -29,6 +41,8 @@ azure-core==1.30.0
 azure-storage-blob==12.19.0
 azure-search-documents==11.4.0
 azure-ai-formrecognizer==3.3.3  # Document Intelligence (formerly Form Recognizer)
+azure-ai-textanalytics==5.3.0  # Text Analytics
+azure-cognitiveservices-language-textanalytics==0.2.0  # Language services
 
 # Azure Monitor dependencies
 opencensus-ext-azure==1.1.12

@@ -1,4 +1,3 @@
 """Base model for all database models"""
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+# Import Base from database to ensure single source of truth
+from foodxchange.database import Base

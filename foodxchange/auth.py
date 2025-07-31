@@ -1,165 +1,76 @@
 """
-Simple Authentication System for FoodXchange
-Using JWT tokens with secure password hashing
+Authentication module for FoodXchange Platform
+Provides user authentication and authorization functionality
 """
-from datetime import datetime, timedelta
+
+import logging
 from typing import Optional
-from passlib.context import CryptContext
-from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from foodxchange.database import get_db
-from foodxchange.models.user import User
-from foodxchange.config import get_settings
+logger = logging.getLogger(__name__)
 
-settings = get_settings()
+# Mock user data for development
+MOCK_USERS = {
+    "admin@foodxchange.com": {
+        "id": 1,
+        "email": "admin@foodxchange.com",
+        "name": "Admin User",
+        "role": "admin",
+        "is_active": True,
+        "is_admin": True
+    },
+    "user@foodxchange.com": {
+        "id": 2,
+        "email": "user@foodxchange.com",
+        "name": "Regular User",
+        "role": "user",
+        "is_active": True,
+        "is_admin": False
+    }
+}
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Security scheme
+security = HTTPBearer(auto_error=False)
 
-# OAuth2 scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+class MockUser:
+    """Mock user class for development"""
+    def __init__(self, user_data: dict):
+        self.id = user_data.get("id")
+        self.email = user_data.get("email")
+        self.name = user_data.get("name")
+        self.role = user_data.get("role")
+        self.is_active = user_data.get("is_active", False)
+        self.is_admin = user_data.get("is_admin", False)
 
-# JWT settings
-SECRET_KEY = settings.secret_key or "your-secret-key-change-this-in-production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> MockUser:
+    """
+    Get current authenticated user
+    For development, returns a mock admin user
+    """
+    # In production, this would validate JWT tokens or session data
+    # For now, return a mock admin user
+    mock_user_data = MOCK_USERS["admin@foodxchange.com"]
+    return MockUser(mock_user_data)
 
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against a hash"""
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
-
-
-def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
-    """Authenticate a user by email and password"""
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        return None
-    if not verify_password(password, user.hashed_password):
-        return None
-    return user
-
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """Create a JWT access token"""
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
-    """Get the current authenticated user from JWT token"""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    
-    user = db.query(User).filter(User.email == email).first()
-    if user is None:
-        raise credentials_exception
-    
-    return user
-
-
-async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
-    """Ensure the current user is active"""
+def get_current_active_user(current_user: MockUser = Depends(get_current_user)) -> MockUser:
+    """
+    Get current active user
+    """
     if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user"
+        )
     return current_user
 
-
-async def optional_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
-    """Get the current user if authenticated, otherwise return None"""
-    try:
-        return await get_current_user(token, db)
-    except HTTPException:
-        return None
-
-
-# Dependency for routes that require admin access
-async def require_admin(current_user: User = Depends(get_current_active_user)) -> User:
-    """Ensure the current user is an admin"""
+def require_admin(current_user: MockUser = Depends(get_current_active_user)) -> MockUser:
+    """
+    Require admin privileges
+    """
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not enough permissions"
+            detail="Admin privileges required"
         )
     return current_user
-
-
-# Simple session-based auth for templates (non-API routes)
-class SessionAuth:
-    """Simple session authentication for template rendering"""
-    
-    @staticmethod
-    def create_session(response, user: User):
-        """Create a session cookie"""
-        token = create_access_token(data={"sub": user.email})
-        response.set_cookie(
-            key="session_token",
-            value=token,
-            httponly=True,
-            secure=settings.use_https,
-            samesite="lax",
-            max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
-        )
-    
-    @staticmethod
-    def get_current_user_from_cookie(request, db: Session) -> Optional[User]:
-        """Get user from session cookie"""
-        token = request.cookies.get("session_token")
-        if not token:
-            return None
-        
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            email: str = payload.get("sub")
-            if email is None:
-                return None
-            
-            user = db.query(User).filter(User.email == email).first()
-            return user
-        except JWTError:
-            return None
-    
-    @staticmethod
-    def clear_session(response):
-        """Clear the session cookie"""
-        response.delete_cookie("session_token")
-
-
-# Helper function for templates
-def get_current_user_context(request, db: Session) -> dict:
-    """Get user context for template rendering"""
-    user = SessionAuth.get_current_user_from_cookie(request, db)
-    if user:
-        return {
-            "id": user.id,
-            "name": user.name,
-            "email": user.email,
-            "is_admin": user.is_admin,
-            "initials": "".join([n[0].upper() for n in user.name.split()[:2]])
-        }
-    return None

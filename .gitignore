@@ -84,4 +84,45 @@ publish_profile.xml
 *.cert
 *.pfx
 secrets/
-credentials/ 
+credentials/
+
+# Test and temporary files
+test_*.py
+*_test.py
+cleanup_*.json
+system_health_*.json
+
+# Azure test files  
+azure_*_test.py
+check_azure_*.py
+azure_setup_*.py
+validate_*.py
+
+# Backup and archive
+backup_*/
+archive/
+old_*/
+
+# Scripts and automation
+*.ps1
+setup_env.*
+run_all_tests.*
+create_*_deployment.sh
+
+# Reports and documentation
+*_REPORT.md
+*_GUIDE.md  
+*_SUMMARY.md
+AI_*.md
+AZURE_*.md
+README_*.md
+
+# Script outputs
+cleanup_report.json
+gitignore_additions.txt
+cleanup_temp_files.bat
+
+# Analysis files
+analyze_*.py
+quick_health_check.py
+complete_*.py 

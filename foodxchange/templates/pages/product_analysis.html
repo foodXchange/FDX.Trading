@@ -401,7 +401,7 @@
                 </div>
                 <div class="card-body">
                     <!-- Upload Area - Reduced size -->
-                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()">
+                    <div class="upload-area" id="uploadArea" data-help-tooltip="product_analysis_upload" onclick="document.getElementById('imageInput').click()">
                         <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
                         <h6>Click to upload or drag & drop</h6>
                         <p class="text-muted mb-2">Support for JPG, PNG, WEBP (Max 10MB each)</p>
@@ -431,6 +431,7 @@
                     <!-- Analysis Button with Tooltip -->
                     <div class="text-center mt-2" id="manualAnalysisSection">
                         <button class="btn btn-primary" onclick="analyzeImages()" id="analyzeBtn" disabled 
+                                data-help-tooltip="product_analysis_ai_button"
                                 data-bs-toggle="tooltip" 
                                 data-bs-placement="bottom" 
                                 title="AI will analyze the product image and auto-fill the form. Please review all fields carefully as AI may make mistakes. You can edit any field to correct the information.">
@@ -1459,11 +1460,32 @@
                 displayAnalysisResults(data);
                 saveAnalysisState(data);
             } else {
-                showNotification('Error analyzing images: ' + (data.detail || 'Unknown error'), 'error');
+                // Use enhanced error handling
+                if (window.enhancedErrorHandler) {
+                    window.enhancedErrorHandler.handleError(
+                        new Error(data.detail || 'Failed to analyze images'),
+                        {
+                            type: 'service_unavailable',
+                            workflow_step: 'image_analysis',
+                            severity: 'medium'
+                        }
+                    );
+                } else {
+                    showNotification('Error analyzing images: ' + (data.detail || 'Unknown error'), 'error');
+                }
             }
         } catch (error) {
             console.error('Error:', error);
-            showNotification('Error analyzing images. Please try again.', 'error');
+            // Use enhanced error handling
+            if (window.enhancedErrorHandler) {
+                window.enhancedErrorHandler.handleError(error, {
+                    type: 'processing',
+                    workflow_step: 'image_analysis',
+                    severity: 'medium'
+                });
+            } else {
+                showNotification('Error analyzing images. Please try again.', 'error');
+            }
         } finally {
             analyzeBtn.disabled = false;
             analyzeBtn.innerHTML = originalText;

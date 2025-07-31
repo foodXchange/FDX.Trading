@@ -1,18 +1,18 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
-        <!-- Logo -->
+        <!-- Brand -->
         <a class="navbar-brand" href="/">
-            <img src="/static/brand/logos/Logo.png" alt="FoodXchange Logo" height="35" class="d-inline-block align-top">
+            <img src="{{ url_for('static', filename='brand/logos/Logo.png') }}" alt="FoodXchange" height="35">
         </a>
         
-        <!-- Mobile toggle button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         
-        <!-- Navigation items -->
+        <!-- Navigation Items -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Primary Navigation -->
+            <!-- Left Side Navigation -->
             <ul class="navbar-nav me-auto">
                 <!-- Dashboard -->
                 <li class="nav-item">
@@ -21,44 +21,37 @@
                     </a>
                 </li>
                 
-                <!-- Projects Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-folder me-1"></i><span class="nav-text">Projects</span>
+                <!-- Projects -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/projects">
+                        <i class="fas fa-project-diagram me-1"></i><span class="nav-text">Projects</span>
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/product-analysis/"><i class="fas fa-plus me-2"></i>New Analysis</a></li>
-                        <li><a class="dropdown-item" href="/projects"><i class="fas fa-folder-open me-2"></i>View Projects</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/projects"><i class="fas fa-download me-2"></i>Export Projects</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Project Settings</a></li>
-                    </ul>
                 </li>
                 
-                <!-- Buyers Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-users me-1"></i><span class="nav-text">Buyers</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/buyers"><i class="fas fa-list me-2"></i>All Buyers</a></li>
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addBuyerModal"><i class="fas fa-plus me-2"></i>Add Buyer</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar me-2"></i>Buyer Analytics</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-import me-2"></i>Import Buyers</a></li>
-                    </ul>
-                </li>
-                
-                <!-- AI Analysis -->
+                <!-- Product Analysis -->
                 <li class="nav-item">
                     <a class="nav-link" href="/product-analysis/">
-                        <i class="fas fa-robot me-1"></i><span class="nav-text">AI Analysis</span>
+                        <i class="fas fa-microscope me-1"></i><span class="nav-text">Product Analysis</span>
                     </a>
                 </li>
                 
-                <!-- Suppliers Dropdown -->
+                <!-- Buyers -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-shopping-cart me-1"></i><span class="nav-text">Buyers</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/buyers/list"><i class="fas fa-list me-2"></i>All Buyers</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addBuyerModal"><i class="fas fa-plus me-2"></i>Add Buyer</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-chart-line me-2"></i>Market Analysis</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-handshake me-2"></i>Connection Requests</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Suppliers -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-truck me-1"></i><span class="nav-text">Suppliers</span>
                     </a>
                     <ul class="dropdown-menu">
@@ -89,7 +82,7 @@
             <ul class="navbar-nav">
                 <!-- Search -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchModal">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#intelligentSearchModal">
                         <i class="fas fa-search"></i>
                     </a>
                 </li>
@@ -119,6 +112,8 @@
                         <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>My Profile</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('profile_settings') }}"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/azure-test/"><i class="fas fa-cloud me-2"></i>Azure Testing</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </li>
@@ -127,38 +122,276 @@
     </div>
 </nav>
 
-<!-- Search Modal -->
-<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<!-- Intelligent Search Modal -->
+<div class="modal fade" id="intelligentSearchModal" tabindex="-1" aria-labelledby="intelligentSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="searchModalLabel">Search FoodXchange</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title" id="intelligentSearchModalLabel">
+                    <i class="fas fa-search-plus me-2"></i>Intelligent Search
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Search projects, suppliers, buyers..." aria-label="Search">
-                    <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>Quick Filters</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-secondary btn-sm">Projects</button>
-                            <button class="btn btn-outline-secondary btn-sm">Suppliers</button>
-                            <button class="btn btn-outline-secondary btn-sm">Buyers</button>
+            <div class="modal-body p-0">
+                <!-- Search Interface -->
+                <div class="search-container">
+                    <!-- Main Search Input -->
+                    <div class="search-input-section p-4 bg-light border-bottom">
+                        <div class="search-input-wrapper position-relative">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control border-start-0 search-input" 
+                                       id="intelligentSearchInput"
+                                       placeholder="Search suppliers, buyers, projects, or use natural language like 'organic suppliers in California'..."
+                                       autocomplete="off"
+                                       aria-label="Intelligent search">
+                                <button class="btn btn-primary search-btn" type="button" id="performSearchBtn">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                            </div>
+                            
+                            <!-- Voice Search Button -->
+                            <button class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-5" 
+                                    type="button" id="voiceSearchBtn" title="Voice Search">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            
+                            <!-- Auto-complete Suggestions -->
+                            <div class="search-suggestions" id="searchSuggestions" style="display: none;">
+                                <div class="suggestions-header">
+                                    <small class="text-muted">Suggestions</small>
+                                </div>
+                                <div class="suggestions-list" id="suggestionsList"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Search Examples -->
+                        <div class="search-examples mt-3">
+                            <small class="text-muted">Try: </small>
+                            <span class="search-example" data-query="kosher certified suppliers">kosher certified suppliers</span>
+                            <span class="search-example" data-query="organic honey from local farmers">organic honey from local farmers</span>
+                            <span class="search-example" data-query="gluten-free pasta manufacturers">gluten-free pasta manufacturers</span>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <h6>Recent Searches</h6>
-                        <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item list-group-item-action">Organic honey analysis</a>
-                            <a href="#" class="list-group-item list-group-item-action">Fresh Foods Co.</a>
-                            <a href="#" class="list-group-item list-group-item-action">Gluten-free pasta</a>
+                    
+                    <!-- Advanced Filters Section -->
+                    <div class="filters-section p-4 border-bottom" id="filtersSection" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Location
+                                </h6>
+                                <select class="form-select form-select-sm" id="locationFilter">
+                                    <option value="">All Locations</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-certificate me-2"></i>Certifications
+                                </h6>
+                                <select class="form-select form-select-sm" id="certificationFilter">
+                                    <option value="">All Certifications</option>
+                                    <option value="kosher">Kosher Certified</option>
+                                    <option value="halal">Halal Certified</option>
+                                    <option value="organic">Organic Certified</option>
+                                    <option value="gluten-free">Gluten-Free</option>
+                                    <option value="vegan">Vegan</option>
+                                    <option value="non-gmo">Non-GMO</option>
+                                    <option value="fair-trade">Fair Trade</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-building me-2"></i>Company Size
+                                </h6>
+                                <select class="form-select form-select-sm" id="companySizeFilter">
+                                    <option value="">All Sizes</option>
+                                    <option value="startup">Startup (1-10)</option>
+                                    <option value="small">Small (11-50)</option>
+                                    <option value="medium">Medium (51-200)</option>
+                                    <option value="large">Large (200+)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-tags me-2"></i>Category
+                                </h6>
+                                <select class="form-select form-select-sm" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="suppliers">Suppliers</option>
+                                    <option value="buyers">Buyers</option>
+                                    <option value="projects">Projects</option>
+                                    <option value="products">Products</option>
+                                </select>
+                            </div>
                         </div>
+                        
+                        <!-- Active Filters -->
+                        <div class="active-filters mt-3" id="activeFilters" style="display: none;">
+                            <small class="text-muted me-2">Active filters:</small>
+                            <div class="filter-tags" id="filterTags"></div>
+                            <button class="btn btn-sm btn-outline-secondary ms-2" id="clearAllFilters">
+                                <i class="fas fa-times me-1"></i>Clear All
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Results Section -->
+                    <div class="results-section" id="resultsSection" style="display: none;">
+                        <!-- Results Header -->
+                        <div class="results-header p-3 bg-white border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Search Results</h6>
+                                    <small class="text-muted" id="resultsCount">0 results found</small>
+                                </div>
+                                <div class="results-actions">
+                                    <button class="btn btn-sm btn-outline-primary" id="saveSearchBtn">
+                                        <i class="fas fa-bookmark me-1"></i>Save Search
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="toggleFiltersBtn">
+                                        <i class="fas fa-filter me-1"></i>Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Results Content -->
+                        <div class="results-content" id="resultsContent">
+                            <!-- Results will be populated here -->
+                        </div>
+                        
+                        <!-- Loading State -->
+                        <div class="loading-state text-center p-5" id="loadingState" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Searching across suppliers, buyers, and projects...</p>
+                        </div>
+                        
+                        <!-- No Results State -->
+                        <div class="no-results text-center p-5" id="noResultsState" style="display: none;">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5>No results found</h5>
+                            <p class="text-muted">Try adjusting your search terms or filters</p>
+                            <button class="btn btn-outline-primary" id="suggestAlternativesBtn">
+                                <i class="fas fa-lightbulb me-1"></i>Suggest Alternatives
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Search History & Trending -->
+                    <div class="search-history-section p-4" id="searchHistorySection">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="section-title">
+                                    <i class="fas fa-history me-2"></i>Recent Searches
+                                </h6>
+                                <div class="recent-searches" id="recentSearches">
+                                    <!-- Recent searches will be populated here -->
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="section-title">
+                                    <i class="fas fa-fire me-2"></i>Trending Searches
+                                </h6>
+                                <div class="trending-searches" id="trendingSearches">
+                                    <!-- Trending searches will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100">
+                    <div class="search-shortcuts">
+                        <small class="text-muted">Keyboard shortcuts: </small>
+                        <kbd>Ctrl</kbd> + <kbd>S</kbd> to search,
+                        <kbd>Esc</kbd> to close
+                    </div>
+                    <div class="search-actions">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="advancedSearchBtn">
+                            <i class="fas fa-cog me-1"></i>Advanced Search
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<!-- Search Result Template (Hidden) -->
+<template id="searchResultTemplate">
+    <div class="search-result-item">
+        <div class="result-card">
+            <div class="result-header">
+                <div class="result-title">
+                    <h6 class="result-name"></h6>
+                    <div class="result-badges"></div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-sm btn-outline-primary save-result-btn">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary contact-btn">
+                        <i class="fas fa-envelope"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="result-content">
+                <p class="result-description"></p>
+                <div class="result-metadata">
+                    <span class="result-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="location-text"></span>
+                    </span>
+                    <span class="result-category">
+                        <i class="fas fa-tag"></i>
+                        <span class="category-text"></span>
+                    </span>
+                    <span class="result-rating">
+                        <i class="fas fa-star"></i>
+                        <span class="rating-text"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="result-footer">
+                <a href="#" class="btn btn-sm btn-primary view-details-btn">
+                    <i class="fas fa-external-link-alt me-1"></i>View Details
+                </a>
+                <span class="relevance-score">
+                    <i class="fas fa-percentage"></i>
+                    <span class="score-text"></span> relevance
+                </span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Suggestion Template (Hidden) -->
+<template id="suggestionTemplate">
+    <div class="suggestion-item">
+        <div class="suggestion-icon">
+            <i class="suggestion-icon-class"></i>
+        </div>
+        <div class="suggestion-content">
+            <div class="suggestion-text"></div>
+            <div class="suggestion-meta">
+                <span class="suggestion-type"></span>
+                <span class="suggestion-category"></span>
+            </div>
+        </div>
+        <div class="suggestion-actions">
+            <button class="btn btn-sm btn-outline-primary use-suggestion-btn">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</template> 

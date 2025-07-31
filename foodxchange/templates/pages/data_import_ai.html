@@ -213,7 +213,7 @@
 // Check AI availability on load
 document.addEventListener('DOMContentLoaded', async function() {
     try {
-        const response = await fetch('/api/import/ai-enabled');
+        const response = await fetch('/import/ai-enabled');
         const data = await response.json();
         
         const alertDiv = document.getElementById('aiStatusAlert');
