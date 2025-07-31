@@ -1,0 +1,125 @@
+{
+  "folders": [
+    {
+      "name": "FoodXchange",
+      "path": "."
+    }
+  ],
+  "settings": {
+    // General editor settings
+    "workbench.startupEditor": "readme",
+    "window.restoreWindows": "one",
+
+    // Docker settings - Professional control
+    "docker.showStartPage": false,
+    "docker.containers.showRunningContainersOnly": true,
+    "docker.containers.description": ["Status", "Image", "Created"],
+    "docker.containers.label": "com.foodxchange.service",
+    "docker.explorerRefreshInterval": 5000,
+
+    // Python settings
+    "python.defaultInterpreterPath": "./foodxchange-env/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true,
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+
+    // Terminal settings
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "terminal.integrated.defaultProfile.windows": "fx-dev",
+    "terminal.integrated.profiles.windows": {
+      "fx-dev": {
+        "path": "cmd.exe",
+        "args": ["/k", "cd /d ${workspaceFolder} && foodxchange-env\\Scripts\\activate.bat && cmd /k"]
+      }
+    },
+
+    // File associations
+    "files.associations": {
+      "docker-compose*.yml": "dockercompose",
+      "Dockerfile*": "dockerfile",
+      "*.redis": "redis"
+    },
+
+    // File exclusions
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/.pytest_cache": true,
+      "**/node_modules": true,
+      "**/.venv": true,
+      "**/logs": true,
+      "**/backups": true,
+      "**/uploads": true,
+      "**/foodxchange.db": true,
+      "**/docker-compose.override.yml": true
+    },
+
+    // Editor settings
+    "editor.formatOnSave": true,
+
+    // Redis configuration
+    "redis.connections": [
+      {
+        "name": "FoodXchange Redis",
+        "host": "localhost",
+        "port": 6379,
+        "db": 0,
+        "password": ""
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-azuretools.vscode-docker",
+      "cweijan.vscode-redis-client",
+      "ms-python.vscode-pylance"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Start FoodXchange",
+        "type": "shell",
+        "command": "./fx.bat",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Start Docker Services",
+        "type": "shell",
+        "command": "docker-compose up -d",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Stop Docker Services",
+        "type": "shell",
+        "command": "docker-compose down",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Docker Logs",
+        "type": "shell",
+        "command": "docker-compose logs -f",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      }
+    ]
+  }
+}

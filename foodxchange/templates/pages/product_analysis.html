@@ -3,6 +3,7 @@
 {% block title %}AI Product Analysis - FoodXchange{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product_analysis.css') }}">
 <style>
     .upload-area {
         border: 2px dashed #dee2e6;
@@ -410,12 +411,12 @@
                         </button>
                     </div>
                     
-                    <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                    <input type="file" id="imageInput" multiple accept="image/*" class="hidden-input" aria-label="Upload product images">
                     
                     <!-- Upload Progress -->
                     <div id="uploadProgress" class="d-none">
                         <div class="progress mb-2">
-                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            <div class="progress-bar" role="progressbar" style="width: 0%" aria-label="Upload progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <small class="text-muted">Uploading...</small>
                     </div>
@@ -449,7 +450,7 @@
                     </div>
                     
                     <!-- Auto-Analysis Status -->
-                    <div class="text-center mt-2" id="autoAnalysisStatus" style="display: none;">
+                    <div class="text-center mt-2 auto-analysis-status" id="autoAnalysisStatus">
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="spinner-border text-primary me-2" role="status">
                                 <span class="visually-hidden">Analyzing...</span>
@@ -461,12 +462,12 @@
             </div>
 
             <!-- Step-by-Step Analysis Form -->
-            <div class="card border-0 shadow-sm" id="analysisCard" style="display: none;">
+            <div class="card border-0 shadow-sm analysis-card" id="analysisCard">
                 <div class="card-header bg-success text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>AI Product Analysis</h5>
                         <div class="d-flex align-items-center">
-                            <div id="imageThumbnail" class="me-3" style="width: 60px; height: 45px; border-radius: 8px; overflow: hidden;">
+                            <div id="imageThumbnail" class="me-3 image-thumbnail">
                                 <!-- Thumbnail will be populated here -->
                             </div>
                             <div class="text-white">
@@ -746,7 +747,7 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="progress mb-3">
-                                                <div class="progress-bar bg-success" role="progressbar" style="width: 85%">85%</div>
+                                                <div class="progress-bar bg-success progress-85" role="progressbar" aria-label="Analysis progress" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
                                             </div>
                                             <div class="status-item mb-2">
                                                 <i class="fas fa-check-circle text-success me-2"></i>
@@ -827,7 +828,7 @@
                                 <button type="button" class="btn btn-secondary me-2" onclick="resetForm()">
                                     <i class="fas fa-undo me-2"></i>Reset
                                 </button>
-                                <button type="submit" class="btn btn-success" id="completeAnalysis" style="display: none;">
+                                <button type="submit" class="btn btn-success complete-analysis-btn" id="completeAnalysis">
                                     <i class="fas fa-check me-2"></i>Complete Analysis
                                 </button>
                             </div>
@@ -857,13 +858,13 @@
         <!-- Right Column - Enhanced Analysis Status -->
         <div class="col-lg-4">
             <!-- Analysis Status -->
-            <div class="card border-0 shadow-sm mb-2" id="analysisStatusCard" style="display: none;">
+            <div class="card border-0 shadow-sm mb-2 analysis-status-card" id="analysisStatusCard">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Analysis Status</h5>
                 </div>
                 <div class="card-body">
                     <div class="progress mb-3">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%">85%</div>
+                        <div class="progress-bar bg-success progress-85" role="progressbar" aria-label="Analysis progress" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
                     </div>
                     <div class="status-item mb-2">
                         <i class="fas fa-check-circle text-success me-2"></i>
@@ -881,7 +882,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="card border-0 shadow-sm mb-2" id="quickActionsCard" style="display: none;">
+            <div class="card border-0 shadow-sm mb-2 quick-actions-card" id="quickActionsCard">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                 </div>
@@ -902,7 +903,7 @@
             </div>
 
             <!-- Need Review -->
-            <div class="card border-0 shadow-sm mb-2" id="needReviewCard" style="display: none;">
+            <div class="card border-0 shadow-sm mb-2 need-review-card" id="needReviewCard">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Need Review</h5>
                 </div>
@@ -1033,7 +1034,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Project Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
             </div>
             <div class="modal-body" id="projectModalContent">
                 <!-- Project details will be populated here -->

@@ -1,0 +1,189 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "FX: Start Development",
+      "type": "shell",
+      "command": "./fx.bat",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "FX: View Logs",
+      "type": "shell",
+      "command": "docker-compose logs -f",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "FX: Redis Stats",
+      "type": "shell",
+      "command": "docker exec -it foodxchange_redis_1 redis-cli info memory",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "FX: Health Check",
+      "type": "shell",
+      "command": "python test_health.py",
+      "group": "test"
+    },
+    {
+      "label": "Docker: Rebuild All",
+      "type": "shell",
+      "command": "docker-compose build --no-cache",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Docker: Start Services",
+      "type": "shell",
+      "command": "docker-compose up -d",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Docker: Stop Services",
+      "type": "shell",
+      "command": "docker-compose down",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Docker: Restart Services",
+      "type": "shell",
+      "command": "docker-compose restart",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Redis: Connect CLI",
+      "type": "shell",
+      "command": "docker exec -it foodxchange_redis_1 redis-cli",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Redis: Monitor",
+      "type": "shell",
+      "command": "docker exec -it foodxchange_redis_1 redis-cli monitor",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Redis: Flush All",
+      "type": "shell",
+      "command": "docker exec -it foodxchange_redis_1 redis-cli flushall",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Python: Install Dependencies",
+      "type": "shell",
+      "command": "pip install -r foodxchange/requirements.txt",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Python: Run Tests",
+      "type": "shell",
+      "command": "python -m pytest -v",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Python: Format Code",
+      "type": "shell",
+      "command": "black foodxchange/",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Python: Lint Code",
+      "type": "shell",
+      "command": "flake8 foodxchange/",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Database: Backup",
+      "type": "shell",
+      "command": "docker exec foodxchange_web_1 python -c \"from foodxchange.database import backup_database; backup_database()\"",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Security: Audit",
+      "type": "shell",
+      "command": "python -m bandit -r foodxchange/",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ]
+} 

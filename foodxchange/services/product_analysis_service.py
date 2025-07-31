@@ -1,7 +1,6 @@
 """
 AI Product Analysis Service for FoodXchange
-Uses Azure Computer Vision and OpenAI for product analysis and brief generation
-With Redis caching to reduce Azure API costs by 90%
+Uses dependency injection for better testability and maintainability
 """
 
 import os
@@ -14,23 +13,19 @@ import aiohttp
 import base64
 from urllib.parse import urlparse
 
-from .azure_ai_vision_service import azure_ai_vision_service
-from .redis_service import get_redis_service
+from ..core.interfaces import AIClient, CacheProvider
+from ..core.providers import ServiceResult
 
 logger = logging.getLogger(__name__)
 
 class ProductAnalysisService:
     """Service for AI-powered product analysis and brief generation"""
     
-    def __init__(self):
-        """Initialize service"""
-        self.is_azure_configured = False
-        self.vision_endpoint = None
-        self.vision_key = None
-        self.openai_endpoint = None
-        self.openai_key = None
-        self.openai_deployment = None
-        self._initialize_services()
+    def __init__(self, ai_client: AIClient, cache_provider: CacheProvider):
+        """Initialize service with dependency injection"""
+        self._ai_client = ai_client
+        self._cache = cache_provider
+        self.is_azure_configured = True  # Assume configured if dependencies are provided
     
     def _initialize_services(self):
         """Initialize Azure AI services if configured"""

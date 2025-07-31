@@ -228,7 +228,8 @@ class CostMonitoringService:
         
     def _evaluate_alert(self, alert: CostAlert) -> Optional[AlertEvent]:
         """Evaluate if alert should be triggered"""
-        history = self.azure_testing_service.usage_history
+        # Create a copy to avoid dictionary iteration issues
+        history = list(self.azure_testing_service.usage_history)
         
         if alert.type == AlertType.COST_THRESHOLD:
             return self._check_cost_threshold(alert, history)

@@ -12,7 +12,7 @@ if os.path.exists('.env.blob'):
     load_dotenv('.env.blob', override=True)
 
 class Settings(BaseSettings):
-    # Required settings with defaults for development
+    # Required settings with validation
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db")
     secret_key: str = os.getenv("SECRET_KEY")
     
@@ -20,8 +20,37 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     environment: str = os.getenv("ENVIRONMENT", "development")
-    debug: bool = os.getenv("DEBUG", "True").lower() == "true"
+    debug: bool = os.getenv("DEBUG", "False").lower() == "true"  # Default to False for security
     use_https: bool = os.getenv("USE_HTTPS", "False").lower() == "true"
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._validate_secret_key()
+        self._validate_production_settings()
+    
+    def _validate_secret_key(self):
+        """Validate SECRET_KEY meets security requirements"""
+        if not self.secret_key:
+            if self.environment == "production":
+                raise ValueError("SECRET_KEY is required in production environment")
+            else:
+                # Generate a development key if not provided
+                import secrets
+                self.secret_key = secrets.token_urlsafe(32)
+                print(f"WARNING: Using generated SECRET_KEY for development: {self.secret_key}")
+        
+        if len(self.secret_key) < 32:
+            raise ValueError("SECRET_KEY must be at least 32 characters long")
+    
+    def _validate_production_settings(self):
+        """Validate settings for production environment"""
+        if self.environment == "production":
+            if self.debug:
+                raise ValueError("DEBUG must be False in production")
+            if not self.use_https:
+                print("WARNING: HTTPS is recommended for production")
+            if "sqlite" in self.database_url.lower():
+                print("WARNING: SQLite is not recommended for production")
     
     # Azure OpenAI settings (optional)
     azure_openai_api_key: Optional[str] = os.getenv("AZURE_OPENAI_API_KEY")
@@ -50,8 +79,8 @@ class Settings(BaseSettings):
     smtp_username: Optional[str] = os.getenv("SMTP_USERNAME")
     smtp_password: Optional[str] = os.getenv("SMTP_PASSWORD")
     
-    # Redis (optional)
-    redis_url: Optional[str] = os.getenv("REDIS_URL")
+    # Redis (optional - not required for development)
+    redis_url: Optional[str] = os.getenv("REDIS_URL", "redis://localhost:6379" if os.getenv("ENVIRONMENT") == "production" else None)
     
     # Sentry settings (optional)
     sentry_dsn: Optional[str] = os.getenv("SENTRY_DSN")

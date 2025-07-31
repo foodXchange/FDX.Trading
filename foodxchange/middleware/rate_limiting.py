@@ -24,11 +24,11 @@ class RateLimiter:
         # Initialize Redis if available
         if self.settings.redis_url:
             try:
-                self.redis_client = redis.from_url(self.settings.redis_url)
+                self.redis_client = redis.from_url(self.settings.redis_url, socket_connect_timeout=1)
                 self.redis_client.ping()
                 logger.info("✅ Rate limiter using Redis")
             except Exception as e:
-                logger.warning(f"Redis not available for rate limiting, using memory: {e}")
+                logger.info(f"Redis not available, using in-memory rate limiting (OK for development): {e}")
                 self.redis_client = None
         else:
             logger.info("Rate limiter using in-memory storage")
@@ -49,10 +49,23 @@ class RateLimiter:
     
     def _get_user_identifier(self, request: Request) -> str:
         """Get unique identifier for rate limiting"""
-        # Try to get user ID from session
-        user_id = request.session.get("user_id")
-        if user_id:
-            return f"user:{user_id}"
+        # Try to get user ID from JWT token or session if available
+        try:
+            # Check for JWT token in authorization header
+            auth_header = request.headers.get("authorization", "")
+            if auth_header.startswith("Bearer "):
+                # For now, use a generic authenticated user identifier
+                # In production, you would decode the JWT token to get user_id
+                return f"user:authenticated"
+            
+            # Try to get user ID from session if available
+            if hasattr(request, 'session'):
+                user_id = request.session.get("user_id")
+                if user_id:
+                    return f"user:{user_id}"
+        except Exception:
+            # Session middleware not available or other error
+            pass
         
         # Fallback to IP address
         return f"ip:{self._get_client_ip(request)}"

@@ -42,36 +42,17 @@ async def testing_dashboard(request: Request):
 @router.get("/api/status")
 async def get_service_status():
     """Get current Azure services status and limits"""
-    try:
-        # Check service configuration
-        services_config = {
-            'openai': bool(os.getenv('AZURE_OPENAI_ENDPOINT') and os.getenv('AZURE_OPENAI_API_KEY')),
+    # Simple status response without any complex logic
+    return JSONResponse({
+        'success': True,
+        'services_configured': {
+            'openai': bool(os.getenv('AZURE_OPENAI_ENDPOINT')),
             'document_intelligence': bool(os.getenv('AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT')),
             'translator': bool(os.getenv('AZURE_TRANSLATOR_KEY')),
             'computer_vision': bool(os.getenv('AZURE_VISION_ENDPOINT'))
-        }
-        
-        # Get current limits status
-        limits_status = azure_testing_service.get_current_limits_status()
-        
-        # Get usage summary
-        usage_summary = azure_testing_service.get_usage_summary(days=30)
-        
-        # Check for alerts
-        alerts = monitoring_service.check_alerts()
-        
-        return JSONResponse({
-            'success': True,
-            'services_configured': services_config,
-            'limits_status': limits_status,
-            'usage_summary': usage_summary,
-            'active_alerts': len(alerts),
-            'timestamp': datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        logger.error(f"Error getting service status: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        },
+        'timestamp': datetime.now().isoformat()
+    })
 
 @router.post("/api/test/product-image")
 async def test_product_image(file: UploadFile = File(...)):
@@ -226,7 +207,8 @@ async def get_usage_history(days: int = 7, service: Optional[str] = None):
     """Get detailed usage history"""
     try:
         cutoff_date = datetime.now() - timedelta(days=days)
-        history = azure_testing_service.usage_history
+        # Create a copy to avoid dictionary changed size during iteration
+        history = list(azure_testing_service.usage_history)
         
         # Filter by date
         filtered = [h for h in history if h.timestamp > cutoff_date]
@@ -269,7 +251,8 @@ async def export_usage_data(days: int = 30):
         cutoff_date = datetime.now() - timedelta(days=days)
         
         # Prepare data for export
-        history = azure_testing_service.usage_history
+        # Create a copy to avoid dictionary changed size during iteration
+        history = list(azure_testing_service.usage_history)
         filtered = [h for h in history if h.timestamp > cutoff_date]
         
         # Create CSV

@@ -1,5 +1,45 @@
 /* Main CSS for FoodXchange Platform - Optimized for better UX */
 
+/* Utility classes for removed inline styles */
+.auto-analysis-status {
+    display: none;
+}
+
+.analysis-card {
+    display: none;
+}
+
+.image-thumbnail {
+    width: 60px;
+    height: 45px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hidden-input {
+    display: none;
+}
+
+.progress-85 {
+    width: 85%;
+}
+
+.complete-analysis-btn {
+    display: none;
+}
+
+.analysis-status-card {
+    display: none;
+}
+
+.quick-actions-card {
+    display: none;
+}
+
+.need-review-card {
+    display: none;
+}
+
 /* Global spacing optimizations */
 .container-fluid {
     padding: 0 !important; /* Remove container padding */

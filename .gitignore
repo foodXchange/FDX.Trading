@@ -5,26 +5,31 @@ __pycache__/
 *.so
 .Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
+.installed.cfg
 *.egg
 
 # Virtual environments
-venv/
-env/
-ENV/
-
-# Environment variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.blob
-.env.alternative
-.env.complete
-.env.final
-.env.working
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+foodxchange-env/
+.venv/
 
 # IDE
 .vscode/
@@ -48,13 +53,31 @@ logs/
 
 # Database
 *.db
+*.sqlite
 *.sqlite3
+
+# Backup files
+backup_*/
+*.bak
+*.backup
 
 # Temporary files
 *.tmp
 *.temp
 temp/
 tmp/
+
+# Azure
+.azure/
+
+# Docker
+.dockerignore
+
+# Redis
+dump.rdb
+
+# Node modules (if any)
+node_modules/
 
 # Coverage reports
 htmlcov/
@@ -68,6 +91,32 @@ coverage.xml
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
 # mypy
 .mypy_cache/
 .dmypy.json
@@ -76,53 +125,20 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Sensitive files
-azure_blob_config.json
-publish_profile.xml
-*.key
-*.pem
-*.cert
-*.pfx
-secrets/
-credentials/
+# pytype static type analyzer
+.pytype/
 
-# Test and temporary files
-test_*.py
-*_test.py
-cleanup_*.json
-system_health_*.json
+# Cython debug symbols
+cython_debug/
 
-# Azure test files  
-azure_*_test.py
-check_azure_*.py
-azure_setup_*.py
-validate_*.py
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Backup and archive
-backup_*/
-archive/
-old_*/
-
-# Scripts and automation
-*.ps1
-setup_env.*
-run_all_tests.*
-create_*_deployment.sh
-
-# Reports and documentation
-*_REPORT.md
-*_GUIDE.md  
-*_SUMMARY.md
-AI_*.md
-AZURE_*.md
-README_*.md
-
-# Script outputs
-cleanup_report.json
-gitignore_additions.txt
-cleanup_temp_files.bat
-
-# Analysis files
-analyze_*.py
-quick_health_check.py
-complete_*.py 
+# FoodXchange specific
+uploads/
+temp_uploads/
+ai_cache/
+search_cache/

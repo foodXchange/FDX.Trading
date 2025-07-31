@@ -13,11 +13,6 @@ from dataclasses import dataclass, asdict
 import aiohttp
 from azure.core.exceptions import AzureError
 from azure.ai.formrecognizer import DocumentAnalysisClient
-try:
-    from azure.cognitiveservices.vision.computervision import ComputerVisionClient
-except ImportError:
-    ComputerVisionClient = None
-    logger.warning("Azure Computer Vision SDK not available")
 # from azure.ai.translation.text import TextTranslationClient  # Not available in current SDK
 from azure.core.credentials import AzureKeyCredential
 from msrest.authentication import CognitiveServicesCredentials
@@ -25,6 +20,12 @@ import pandas as pd
 from io import BytesIO
 
 logger = logging.getLogger(__name__)
+
+try:
+    from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+except ImportError:
+    ComputerVisionClient = None
+    logger.warning("Azure Computer Vision SDK not available")
 
 @dataclass
 class UsageMetrics:
@@ -121,9 +122,11 @@ class AzureTestingService:
     def _save_usage_history(self):
         """Save usage history to file"""
         try:
+            # Create a copy to avoid dictionary changed size during iteration error
+            usage_history_copy = list(self.usage_history)
             data = [
                 {**asdict(metric), 'timestamp': metric.timestamp.isoformat()}
-                for metric in self.usage_history
+                for metric in usage_history_copy
             ]
             with open(self.usage_file, 'w') as f:
                 json.dump(data, f, indent=2)
@@ -139,11 +142,14 @@ class AzureTestingService:
         """Check if we're within free tier limits"""
         now = datetime.now()
         
+        # Create a copy of usage_history to avoid iteration issues
+        usage_history_copy = list(self.usage_history)
+        
         if service == 'openai':
             # Check tokens per minute
             minute_ago = now - timedelta(minutes=1)
             recent_tokens = sum(
-                m.tokens_used for m in self.usage_history
+                m.tokens_used for m in usage_history_copy
                 if m.service == 'openai' and m.timestamp > minute_ago
             )
             if recent_tokens >= self.limits.openai_tokens_per_minute:
@@ -151,7 +157,7 @@ class AzureTestingService:
                 
             # Check requests per minute
             recent_requests = sum(
-                1 for m in self.usage_history
+                1 for m in usage_history_copy
                 if m.service == 'openai' and m.timestamp > minute_ago
             )
             if recent_requests >= self.limits.openai_requests_per_minute:
@@ -161,7 +167,7 @@ class AzureTestingService:
             # Check monthly page limit
             month_start = now.replace(day=1, hour=0, minute=0, second=0)
             monthly_pages = sum(
-                m.api_calls for m in self.usage_history
+                m.api_calls for m in usage_history_copy
                 if m.service == 'document_intelligence' and m.timestamp > month_start
             )
             if monthly_pages >= self.limits.document_pages_per_month:
@@ -171,7 +177,7 @@ class AzureTestingService:
             # Check monthly character limit
             month_start = now.replace(day=1, hour=0, minute=0, second=0)
             monthly_chars = sum(
-                m.characters_processed for m in self.usage_history
+                m.characters_processed for m in usage_history_copy
                 if m.service == 'translator' and m.timestamp > month_start
             )
             if monthly_chars >= self.limits.translator_characters_per_month:
@@ -181,7 +187,7 @@ class AzureTestingService:
             # Check monthly transaction limit
             month_start = now.replace(day=1, hour=0, minute=0, second=0)
             monthly_transactions = sum(
-                m.api_calls for m in self.usage_history
+                m.api_calls for m in usage_history_copy
                 if m.service == 'computer_vision' and m.timestamp > month_start
             )
             if monthly_transactions >= self.limits.vision_transactions_per_month:
@@ -528,7 +534,9 @@ Format as JSON."""
     def get_usage_summary(self, days: int = 30) -> Dict[str, Any]:
         """Get usage summary for the specified period"""
         cutoff_date = datetime.now() - timedelta(days=days)
-        recent_usage = [m for m in self.usage_history if m.timestamp > cutoff_date]
+        # Create a copy to avoid dictionary iteration issues
+        usage_history_copy = list(self.usage_history)
+        recent_usage = [m for m in usage_history_copy if m.timestamp > cutoff_date]
         
         summary = {
             'period_days': days,
@@ -574,36 +582,39 @@ Format as JSON."""
         minute_ago = now - timedelta(minutes=1)
         month_start = now.replace(day=1, hour=0, minute=0, second=0)
         
+        # Create a copy of usage_history to avoid iteration issues
+        usage_history_copy = list(self.usage_history)
+        
         status = {
             'openai': {
                 'tokens_used_per_minute': sum(
-                    m.tokens_used for m in self.usage_history
+                    m.tokens_used for m in usage_history_copy
                     if m.service == 'openai' and m.timestamp > minute_ago
                 ),
                 'tokens_limit_per_minute': self.limits.openai_tokens_per_minute,
                 'requests_used_per_minute': sum(
-                    1 for m in self.usage_history
+                    1 for m in usage_history_copy
                     if m.service == 'openai' and m.timestamp > minute_ago
                 ),
                 'requests_limit_per_minute': self.limits.openai_requests_per_minute
             },
             'document_intelligence': {
                 'pages_used_this_month': sum(
-                    m.api_calls for m in self.usage_history
+                    m.api_calls for m in usage_history_copy
                     if m.service == 'document_intelligence' and m.timestamp > month_start
                 ),
                 'pages_limit_per_month': self.limits.document_pages_per_month
             },
             'translator': {
                 'characters_used_this_month': sum(
-                    m.characters_processed for m in self.usage_history
+                    m.characters_processed for m in usage_history_copy
                     if m.service == 'translator' and m.timestamp > month_start
                 ),
                 'characters_limit_per_month': self.limits.translator_characters_per_month
             },
             'computer_vision': {
                 'transactions_used_this_month': sum(
-                    m.api_calls for m in self.usage_history
+                    m.api_calls for m in usage_history_copy
                     if m.service == 'computer_vision' and m.timestamp > month_start
                 ),
                 'transactions_limit_per_month': self.limits.vision_transactions_per_month
@@ -613,7 +624,9 @@ Format as JSON."""
         # Add percentage used
         for service in status:
             service_data = status[service]
-            for metric in service_data:
+            # Create a list of metrics to avoid modifying dict during iteration
+            metrics_to_process = list(service_data.keys())
+            for metric in metrics_to_process:
                 if metric.endswith('_limit_per_minute') or metric.endswith('_limit_per_month'):
                     used_metric = metric.replace('_limit', '_used')
                     if used_metric in service_data:

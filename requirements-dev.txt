@@ -1,0 +1,33 @@
+# Development and debugging tools for Cursor IDE
+debugpy==1.8.0
+ipdb==0.13.13
+black==23.12.1
+flake8==7.0.0
+pytest==7.4.4
+pytest-asyncio==0.23.5
+pytest-cov==4.1.0
+bandit==1.7.5
+mypy==1.8.0
+pre-commit==3.6.0
+
+# Additional development tools
+jupyter==1.0.0
+ipython==8.18.1
+rich==13.7.0
+click==8.1.7
+
+# Testing and monitoring
+locust==2.17.0
+coverage==7.4.1
+pytest-mock==3.12.0
+pytest-xdist==3.5.0
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+myst-parser==2.0.0
+
+# Code quality
+isort==5.13.2
+autoflake==2.2.1
+pylint==3.0.3 

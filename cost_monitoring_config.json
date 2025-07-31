@@ -6,7 +6,9 @@
       "type": "cost_threshold",
       "threshold": 5.0,
       "period": "daily",
-      "services": ["all"],
+      "services": [
+        "all"
+      ],
       "enabled": true,
       "last_triggered": null,
       "notification_email": null,
@@ -18,7 +20,9 @@
       "type": "budget_exceeded",
       "threshold": 50.0,
       "period": "monthly",
-      "services": ["all"],
+      "services": [
+        "all"
+      ],
       "enabled": true,
       "last_triggered": null,
       "notification_email": null,
@@ -30,7 +34,9 @@
       "type": "limit_warning",
       "threshold": 80.0,
       "period": "realtime",
-      "services": ["openai"],
+      "services": [
+        "openai"
+      ],
       "enabled": true,
       "last_triggered": null,
       "notification_email": null,
@@ -42,7 +48,9 @@
       "type": "anomaly_detected",
       "threshold": 3.0,
       "period": "hourly",
-      "services": ["all"],
+      "services": [
+        "all"
+      ],
       "enabled": true,
       "last_triggered": null,
       "notification_email": null,

@@ -1,0 +1,36 @@
+# Development overrides for docker-compose.yml
+# This file is automatically loaded by docker-compose
+
+version: '3.8'
+
+services:
+  # Override Redis with custom config
+  redis:
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: always
+
+  # Development optimizations for web service
+  web:
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - DEVELOPMENT=true
+      - LOG_LEVEL=DEBUG
+    volumes:
+      # Mount entire project for hot reload
+      - .:/app
+      - /app/__pycache__
+      - /app/.pytest_cache
+      - /app/foodxchange/__pycache__
+    # Faster startup in development
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/foodxchange
+
+  # Auto-restart services in development
+  postgres:
+    restart: always
+  
+  # Disable health check service in development (runs on demand instead)
+  azure-health:
+    command: echo "Health check disabled in development"

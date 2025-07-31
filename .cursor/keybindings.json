@@ -1,0 +1,18 @@
+[
+  {
+    "key": "ctrl+shift+d ctrl+r",
+    "command": "docker-explorer.refreshExplorer"
+  },
+  {
+    "key": "ctrl+shift+d ctrl+l", 
+    "command": "docker.logs.show"
+  },
+  {
+    "key": "ctrl+shift+r ctrl+s",
+    "command": "redis.refresh"
+  },
+  {
+    "key": "ctrl+shift+t ctrl+n",
+    "command": "thunder-client.new-request"
+  }
+] 

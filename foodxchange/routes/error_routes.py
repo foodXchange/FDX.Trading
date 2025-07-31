@@ -11,8 +11,11 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from foodxchange.services.error_handling_service import (
-    error_handler, ErrorContext, ErrorType, ErrorSeverity
+    IntelligentErrorHandler, ErrorContext, ErrorType, ErrorSeverity
 )
+
+# Initialize the error handler
+error_handler = IntelligentErrorHandler()
 # Temporarily commented out to avoid circular imports
 # from foodxchange.models.user import User
 # from foodxchange.auth import get_current_user

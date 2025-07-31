@@ -1,0 +1,70 @@
+/* Product Analysis Page Styles */
+
+/* Progress bar width classes */
+.progress-bar.progress-0 { width: 0%; }
+.progress-bar.progress-85 { width: 85%; }
+
+/* Hidden input for file upload */
+.hidden-input {
+    display: none;
+}
+
+/* Analysis status card */
+.analysis-status-card {
+    position: sticky;
+    top: 20px;
+}
+
+/* Result sections */
+.analysis-results {
+    display: none;
+}
+
+/* Preview images */
+.preview-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Status items */
+.status-item {
+    display: flex;
+    align-items: center;
+}
+
+/* Card animations */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Custom badge styles */
+.badge-organic {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-non-gmo {
+    background-color: #17a2b8;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .analysis-status-card {
+        position: relative;
+        margin-bottom: 20px;
+    }
+}

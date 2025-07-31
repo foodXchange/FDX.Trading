@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Azure Testing Dashboard - FoodXchange{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/azure_testing.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid px-4">
     <!-- Header -->
@@ -159,15 +163,15 @@
                                     <p class="text-muted small">Test GPT-4 Vision for product label extraction</p>
                                     
                                     <div class="mb-3">
-                                        <label class="form-label">Upload Product Image</label>
-                                        <input type="file" class="form-control" id="productImageFile" accept=".jpg,.jpeg,.png">
+                                        <label for="productImageFile" class="form-label">Upload Product Image</label>
+                                        <input type="file" class="form-control" id="productImageFile" accept=".jpg,.jpeg,.png" aria-label="Upload Product Image">
                                     </div>
                                     
                                     <button class="btn btn-primary btn-sm" onclick="testProductImage()">
                                         <i class="fas fa-play me-1"></i>Run Test
                                     </button>
                                     
-                                    <div id="productImageResult" class="mt-3" style="display: none;">
+                                    <div id="productImageResult" class="mt-3 test-result">
                                         <hr>
                                         <div class="result-content"></div>
                                     </div>
@@ -185,14 +189,14 @@
                                     <p class="text-muted small">Test multilingual CSV translation</p>
                                     
                                     <div class="mb-3">
-                                        <label class="form-label">Upload CSV File</label>
-                                        <input type="file" class="form-control" id="csvTranslationFile" accept=".csv">
+                                        <label for="csvTranslationFile" class="form-label">Upload CSV File</label>
+                                        <input type="file" class="form-control" id="csvTranslationFile" accept=".csv" aria-label="Upload CSV File">
                                     </div>
                                     
                                     <div class="row mb-3">
                                         <div class="col-6">
-                                            <label class="form-label">Source Language</label>
-                                            <select class="form-select form-select-sm" id="sourceLang">
+                                            <label for="sourceLang" class="form-label">Source Language</label>
+                                            <select class="form-select form-select-sm" id="sourceLang" aria-label="Source Language">
                                                 <option value="he">Hebrew</option>
                                                 <option value="ar">Arabic</option>
                                                 <option value="ru">Russian</option>
@@ -200,8 +204,8 @@
                                             </select>
                                         </div>
                                         <div class="col-6">
-                                            <label class="form-label">Target Language</label>
-                                            <select class="form-select form-select-sm" id="targetLang">
+                                            <label for="targetLang" class="form-label">Target Language</label>
+                                            <select class="form-select form-select-sm" id="targetLang" aria-label="Target Language">
                                                 <option value="en">English</option>
                                                 <option value="he">Hebrew</option>
                                                 <option value="fr">French</option>
@@ -214,7 +218,7 @@
                                         <i class="fas fa-play me-1"></i>Run Test
                                     </button>
                                     
-                                    <div id="csvTranslationResult" class="mt-3" style="display: none;">
+                                    <div id="csvTranslationResult" class="mt-3 test-result">
                                         <hr>
                                         <div class="result-content"></div>
                                     </div>
@@ -232,15 +236,15 @@
                                     <p class="text-muted small">Test Document Intelligence for PDF/invoice extraction</p>
                                     
                                     <div class="mb-3">
-                                        <label class="form-label">Upload Document</label>
-                                        <input type="file" class="form-control" id="documentFile" accept=".pdf,.jpg,.jpeg,.png">
+                                        <label for="documentFile" class="form-label">Upload Document</label>
+                                        <input type="file" class="form-control" id="documentFile" accept=".pdf,.jpg,.jpeg,.png" aria-label="Upload Document">
                                     </div>
                                     
                                     <button class="btn btn-success btn-sm" onclick="testDocumentAnalysis()">
                                         <i class="fas fa-play me-1"></i>Run Test
                                     </button>
                                     
-                                    <div id="documentAnalysisResult" class="mt-3" style="display: none;">
+                                    <div id="documentAnalysisResult" class="mt-3 test-result">
                                         <hr>
                                         <div class="result-content"></div>
                                     </div>
@@ -320,7 +324,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Test Result</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="modalResultContent">
                 <!-- Result content will be loaded here -->

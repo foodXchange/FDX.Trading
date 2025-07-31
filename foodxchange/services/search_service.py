@@ -18,6 +18,9 @@ from .search import (
 )
 
 # Export for backward compatibility
+
+# Create default instance
+search_service = IntelligentSearchService()
 __all__ = [
     'IntelligentSearchService',
     'SearchCategory',
