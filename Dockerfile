@@ -46,12 +46,12 @@ ENV PATH=/home/appuser/.local/bin:$PATH
 # Switch to non-root user
 USER appuser
 
-# Azure expects port 80
-EXPOSE 80
+# Azure expects port 8000 (non-privileged port for non-root user)
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:80/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
-# Production server with Gunicorn on port 80 for Azure
-CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "4", "--threads", "2", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "foodxchange.main:app", "-k", "uvicorn.workers.UvicornWorker"]
+# Production server with Gunicorn on port 8000 for Azure
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "foodxchange.main:app", "-k", "uvicorn.workers.UvicornWorker"]
