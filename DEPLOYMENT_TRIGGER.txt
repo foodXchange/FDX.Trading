@@ -1,0 +1,5 @@
+Deployment trigger file
+Created: 2025-08-01 13:20:00 UTC
+Purpose: Trigger GitHub Actions deployment after adding AZURE_CREDENTIALS secret
+
+This file can be deleted after successful deployment.
