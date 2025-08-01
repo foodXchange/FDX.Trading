@@ -53,7 +53,7 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: 'Deploy to Azure Web App'
-      uses: azure/webapps-deploy@v2
+      uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
@@ -65,6 +65,7 @@ jobs:
         curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || echo "Health check failed"
 
     - name: 'Configure production settings'
+      continue-on-error: true
       uses: azure/CLI@v1
       with:
         azcliversion: 2.30.0
