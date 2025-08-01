@@ -62,8 +62,8 @@ async def security_headers_middleware(request: Request, call_next):
     
     # Remove server header if present
     try:
-        if "server" in response.headers:
-            del response.headers["server"]
+        if "Server" in response.headers:
+            del response.headers["Server"]
     except:
         pass  # Some response types don't support header deletion
     
