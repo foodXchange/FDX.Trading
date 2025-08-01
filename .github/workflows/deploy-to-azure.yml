@@ -52,22 +52,29 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: |
-          {
-            "clientId": "${{ secrets.AZUREAPPSERVICE_CLIENTID_4B1775FDD2034EFA9CE58403665C630D }}",
-            "clientSecret": "${{ secrets.AZURE_REGISTRY_PASSWORD }}",
-            "subscriptionId": "${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_493477D657AB49C48229A99C4425C65A }}",
-            "tenantId": "${{ secrets.AZUREAPPSERVICE_TENANTID_9960A9C9DAB845D18B7E9C272DA67C6A }}"
-          }
-
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        images: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/foodxchange:${{ github.sha }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+    - name: Login to Azure for configuration
+      uses: azure/login@v1
+      with:
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+    - name: 'Configure container settings'
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az webapp config container set \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --docker-custom-image-name ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/foodxchange:${{ github.sha }} \
+            --docker-registry-server-url https://${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }} \
+            --docker-registry-server-user ${{ secrets.AZURE_REGISTRY_USERNAME }} \
+            --docker-registry-server-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
     - name: 'Verify deployment'
       run: |
