@@ -26,31 +26,32 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Python dependencies from builder
-COPY --from=builder /root/.local /root/.local
+# Create non-root user for security first
+RUN useradd -m -u 1000 appuser
+
+# Copy Python dependencies from builder to appuser's home
+COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
 
 # Copy application code
-COPY foodxchange/ ./foodxchange/
-COPY requirements.txt ./
+COPY --chown=appuser:appuser foodxchange/ ./foodxchange/
+COPY --chown=appuser:appuser requirements.txt ./
 
-# Create necessary directories
-RUN mkdir -p logs uploads temp static/errors projects
+# Create necessary directories with correct ownership
+RUN mkdir -p logs uploads temp static/errors projects && \
+    chown -R appuser:appuser /app
 
-# Create non-root user for security
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-
-# Add local pip packages to PATH
-ENV PATH=/root/.local/bin:$PATH
+# Add local pip packages to PATH for appuser
+ENV PATH=/home/appuser/.local/bin:$PATH
 
 # Switch to non-root user
 USER appuser
 
-# Expose port 9000 to match your local setup
-EXPOSE 9000
+# Azure expects port 80
+EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:9000/health || exit 1
+    CMD curl -f http://localhost:80/health || exit 1
 
-# Production server with Gunicorn on port 9000
-CMD ["gunicorn", "--bind", "0.0.0.0:9000", "--workers", "4", "--threads", "2", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "foodxchange.main:app", "-k", "uvicorn.workers.UvicornWorker"]
+# Production server with Gunicorn on port 80 for Azure
+CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "4", "--threads", "2", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "foodxchange.main:app", "-k", "uvicorn.workers.UvicornWorker"]
