@@ -86,3 +86,19 @@ temp/
 *.bak
 *.backup
 nul
+
+# Deployment and setup scripts
+azure_*.py
+dns_*.py
+check_*.py
+debug_*.py
+fix_*.py
+setup_*.py
+simple_*.py
+test_*.py
+add_*.py
+update_*.py
+database_manager.py
+namecheap-config.js
+production.env
+Dockerfile.production

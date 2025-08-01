@@ -32,8 +32,6 @@ COPY --from=builder /root/.local /root/.local
 # Copy application code
 COPY foodxchange/ ./foodxchange/
 COPY requirements.txt ./
-COPY .env ./ 2>/dev/null || true
-COPY projects/ ./projects/ 2>/dev/null || true
 
 # Create necessary directories
 RUN mkdir -p logs uploads temp static/errors projects
