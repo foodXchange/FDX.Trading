@@ -1,27 +1,24 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container">
         <a class="navbar-brand" href="/">
-            <div class="logo">
-                <span class="logo-food">FOOD</span>
-                <span class="logo-xchange">XCHANGE</span>
-            </div>
+            <img src="/static/brand/logos/Favicon.png" alt="FoodXchange Logo" class="navbar-logo">
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                    <a class="nav-link" href="/#how-it-works">How It Works</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#benefits">Benefits</a>
+                    <a class="nav-link" href="/#benefits">Benefits</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#workflow">Workflow</a>
+                    <a class="nav-link" href="/#workflow">Workflow</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#about">About Us</a>
+                    <a class="nav-link" href="/#about">About Us</a>
                 </li>
                 <!-- Authentication-based navigation -->
                 {% if current_user %}
@@ -37,11 +34,11 @@
                         <li><a class="dropdown-item" href="/buyers"><i class="fas fa-shopping-cart me-2"></i>Buyers</a></li>
                         <li><a class="dropdown-item" href="/suppliers"><i class="fas fa-truck me-2"></i>Suppliers</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('profile_settings') }}"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/profile/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form action="/logout" method="get" style="margin: 0;">
+                            <form action="/logout" method="get" class="m-0">
                                 <button type="submit" class="dropdown-item">
                                     <i class="fas fa-sign-out-alt me-2"></i>Logout
                                 </button>

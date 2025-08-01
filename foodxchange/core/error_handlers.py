@@ -6,7 +6,7 @@ import logging
 import traceback
 from typing import Union
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from pydantic import ValidationError
@@ -55,9 +55,35 @@ async def foodxchange_exception_handler(request: Request, exc: FoodXchangeError)
     )
 
 
-async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+async def http_exception_handler(request: Request, exc: HTTPException) -> Union[JSONResponse, HTMLResponse]:
     """Handle FastAPI HTTP exceptions"""
+    from fastapi.responses import HTMLResponse
     request_id = getattr(request.state, 'request_id', None)
+    
+    # Special handling for 401 on product-analysis page
+    if (exc.status_code == 401 and 
+        request.url.path == "/product-analysis/" and
+        request.method == "GET"):
+        
+        accept_header = request.headers.get("accept", "")
+        is_browser = "text/html" in accept_header or not accept_header.startswith("application/json")
+        
+        if is_browser:
+            logger.info("Returning HTML redirect for unauthenticated product-analysis access")
+            return HTMLResponse(content="""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Redirecting to Login...</title>
+                <meta http-equiv="refresh" content="0; url=/login?next=/product-analysis/">
+                <script>window.location.href = '/login?next=/product-analysis/';</script>
+            </head>
+            <body>
+                <p>You need to be logged in to access this page. Redirecting to login...</p>
+                <p>If you are not redirected, <a href="/login?next=/product-analysis/">click here</a>.</p>
+            </body>
+            </html>
+            """, status_code=200)  # Use 200 to ensure browser processes the redirect
     
     logger.warning(
         f"HTTP exception: {exc.status_code} - {exc.detail}",

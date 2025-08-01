@@ -22,12 +22,17 @@ def get_current_user(request: Request) -> Optional[TokenData]:
     try:
         # Get token from cookie
         access_token = request.cookies.get("access_token")
+        logger.info(f"Checking authentication for path: {request.url.path}")
+        logger.info(f"Access token present: {access_token is not None}")
+        
         if not access_token:
+            logger.info("No access token found - user not authenticated")
             return None
         
         # Verify token
         jwt_manager = get_jwt_manager()
         token_data = jwt_manager.verify_token(access_token)
+        logger.info(f"Token verified successfully for user: {token_data.username if token_data else 'None'}")
         return token_data
         
     except AuthenticationError as e:
@@ -71,7 +76,7 @@ def require_admin(func):
     async def wrapper(request: Request, *args, **kwargs):
         user = get_current_user(request)
         if not user:
-            if request.url.path.startswith("/api/"):
+            if request.url.path.startswith("/api/") or request.url.path.startswith("/product-analysis/"):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Authentication required"
@@ -79,7 +84,7 @@ def require_admin(func):
             return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
         
         if not user.is_admin:
-            if request.url.path.startswith("/api/"):
+            if request.url.path.startswith("/api/") or request.url.path.startswith("/product-analysis/"):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Admin access required"
@@ -109,7 +114,7 @@ def require_role(allowed_roles: list):
                 return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
             
             if user.role not in allowed_roles and not user.is_admin:
-                if request.url.path.startswith("/api/"):
+                if request.url.path.startswith("/api/") or request.url.path.startswith("/product-analysis/"):
                     raise HTTPException(
                         status_code=status.HTTP_403_FORBIDDEN,
                         detail=f"Access denied. Required roles: {', '.join(allowed_roles)}"

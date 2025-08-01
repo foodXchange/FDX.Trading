@@ -21,6 +21,7 @@ early_logger.info(f".env exists: {env_path.exists()}")
 from fastapi import FastAPI, Request, Form, Depends, HTTPException, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from foodxchange.middleware.static_headers import StaticFilesWithHeaders
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 # SessionMiddleware not needed - we use JWT tokens
@@ -162,8 +163,8 @@ async def log_requests(request: Request, call_next):
 # Get the directory where main.py is located
 BASE_DIR = Path(__file__).resolve().parent
 
-# Mount static files
-app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+# Mount static files with proper headers
+app.mount("/static", StaticFilesWithHeaders(directory=str(BASE_DIR / "static")), name="static")
 
 # Configure Jinja2 templates with custom functions
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -623,7 +624,7 @@ async def landing(request: Request):
                 "role": user.role,
                 "is_admin": user.is_admin
             }
-        return templates.TemplateResponse("pages/landing.html", context)
+        return templates.TemplateResponse("pages/index.html", context)
     except Exception as e:
         logger.error(f"Template error: {e}")
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
@@ -631,7 +632,7 @@ async def landing(request: Request):
 @app.get("/dashboard")
 @app.head("/dashboard")
 async def dashboard(request: Request):
-    """Dashboard page using Jinja2 template"""
+    """Dashboard page - requires authentication"""
     from foodxchange.core.auth import get_current_user
     
     # Check authentication
@@ -745,7 +746,12 @@ async def signup(
 
 @app.get("/support")
 async def support_page(request: Request):
+    """Support page - requires authentication"""
     from foodxchange.core.auth import get_current_user
+    
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
     
     # Check authentication
     user = get_current_user(request)
@@ -764,8 +770,12 @@ async def support_page(request: Request):
 
 @app.get("/support/admin")
 async def support_admin_page(request: Request):
-    """Support admin dashboard page"""
+    """Support admin page - requires authentication"""
     from foodxchange.core.auth import get_current_user
+    
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
     
     # Check authentication
     user = get_current_user(request)
@@ -784,8 +794,12 @@ async def support_admin_page(request: Request):
 
 @app.get("/suppliers")
 async def suppliers_page(request: Request):
-    """Suppliers page"""
+    """Suppliers page - requires authentication"""
     from foodxchange.core.auth import get_current_user
+    
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
     
     # Check authentication
     user = get_current_user(request)
@@ -808,8 +822,12 @@ async def suppliers_page(request: Request):
 
 @app.get("/buyers")
 async def buyers_page(request: Request):
-    """Buyers page"""
+    """Buyers page - requires authentication"""
     from foodxchange.core.auth import get_current_user
+    
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
     
     # Check authentication - Admin/Operator only
     user = get_current_user(request)
@@ -937,8 +955,12 @@ async def create_supplier(request: Request):
 
 @app.get("/projects")
 async def projects_page(request: Request):
-    """Projects page to view saved analysis projects"""
+    """Projects page - requires authentication"""
     from foodxchange.core.auth import get_current_user
+    
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
     
     # Check authentication
     user = get_current_user(request)

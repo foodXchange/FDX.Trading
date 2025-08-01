@@ -20,11 +20,13 @@ load_dotenv()
 
 from foodxchange.services.data_import_service import data_import_service
 from foodxchange.services.ai_data_import_service import ai_data_import_service
+from foodxchange.core.auth import get_current_user, require_auth
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/import", tags=["Data Import"])
 
 @router.get("/", response_class=HTMLResponse)
+@require_auth
 async def import_page(request: Request):
     """Data Import page - Always use AI template with fallback mode"""
     from foodxchange.main import templates

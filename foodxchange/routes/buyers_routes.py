@@ -14,6 +14,7 @@ from datetime import datetime
 
 from ..database import get_db
 from ..models.buyer import Buyer
+from foodxchange.core.auth import get_current_user, require_auth
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/buyers", tags=["Buyers"])
@@ -23,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 @router.get("/", response_class=HTMLResponse)
+@require_auth
 async def buyers_page(request: Request):
     """Buyers management page"""
     return templates.TemplateResponse("pages/buyers.html", {"request": request})

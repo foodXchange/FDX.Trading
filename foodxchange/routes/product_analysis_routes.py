@@ -3,7 +3,7 @@ Product Analysis Routes for FoodXchange
 AI-powered product analysis and brief generation endpoints
 """
 
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Request
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from typing import Optional, Dict, Any, List
@@ -12,13 +12,51 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+from foodxchange.core.auth import get_current_user, require_auth
+
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/product-analysis", tags=["Product Analysis"])
+
+@router.get("/test-redirect")
+async def test_redirect():
+    """Test endpoint to verify redirects work"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/login?test=working", status_code=303)
 
 @router.get("/", response_class=HTMLResponse)
 @router.head("/", response_class=HTMLResponse)
 async def product_analysis_page(request: Request):
     """Product Analysis Dashboard - Using Jinja2 template"""
+    # Manual authentication check with redirect
+    from fastapi.responses import RedirectResponse
+    user = get_current_user(request)
+    if not user:
+        # Check if this is a browser request
+        accept_header = request.headers.get("accept", "")
+        is_browser = "text/html" in accept_header or "*/*" in accept_header
+        
+        if is_browser and request.method == "GET":
+            # Return HTML with auto-redirect for browsers
+            logger.info("No user found, returning HTML redirect page")
+            return HTMLResponse(content="""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Redirecting to Login...</title>
+                <meta http-equiv="refresh" content="0; url=/login?next=/product-analysis/">
+                <script>window.location.href = '/login?next=/product-analysis/';</script>
+            </head>
+            <body>
+                <p>You need to be logged in to access this page. Redirecting to login...</p>
+                <p>If you are not redirected, <a href="/login?next=/product-analysis/">click here</a>.</p>
+            </body>
+            </html>
+            """, status_code=401)
+        else:
+            # For HEAD requests or API calls, return redirect
+            logger.info("No user found, redirecting to login")
+            return RedirectResponse(url="/login?next=/product-analysis/", status_code=303)
+    
     try:
         from pathlib import Path
         from fastapi.templating import Jinja2Templates
@@ -74,11 +112,21 @@ async def product_analysis_page(request: Request):
 
 @router.post("/analyze-image")
 async def analyze_product_image(
+    request: Request,
     image: UploadFile = File(...),
     product_description: Optional[str] = Form(None),
     product_category: Optional[str] = Form(None)
 ):
     """Analyze product image using AI - Simplified version"""
+    # Check authentication manually
+    from foodxchange.core.auth import get_current_user
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Please log in to use this feature."
+        )
+    
     try:
         # Analyze product image using AI services
         # AI analysis implementation will be added when Azure services are fully configured
@@ -149,11 +197,20 @@ async def analyze_product_image(
 
 @router.post("/analyze-multiple-images")
 async def analyze_multiple_images(
+    request: Request,
     images: List[UploadFile] = File(...),
     product_description: Optional[str] = Form(None),
     product_category: Optional[str] = Form(None)
 ):
     """Analyze multiple product images using AI"""
+    # Check authentication manually
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Please log in to use this feature."
+        )
+    
     try:
         if not images:
             raise HTTPException(status_code=400, detail="No images provided")
@@ -245,6 +302,7 @@ async def analyze_multiple_images(
 
 @router.post("/save-project")
 async def save_analysis_as_project(
+    request: Request,
     name: str = Form(...),
     description: str = Form(None),
     buyer_id: Optional[str] = Form(None),
@@ -252,6 +310,13 @@ async def save_analysis_as_project(
     search_type: Optional[str] = Form(None),
     analysis_data: str = Form(...)
 ):
+    # Check authentication manually
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Please log in to use this feature."
+        )
     """Save analysis as a project and create enhanced project with stages"""
     try:
         import os

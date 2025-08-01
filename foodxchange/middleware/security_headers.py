@@ -22,8 +22,9 @@ async def security_headers_middleware(request: Request, call_next):
     # Prevent MIME type sniffing
     response.headers["X-Content-Type-Options"] = "nosniff"
     
-    # Enable XSS filter in browsers
-    response.headers["X-XSS-Protection"] = "1; mode=block"
+    # X-XSS-Protection is deprecated in modern browsers
+    # Modern browsers use CSP instead
+    # response.headers["X-XSS-Protection"] = "1; mode=block"
     
     # Control referrer information
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"

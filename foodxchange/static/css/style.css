@@ -1,5 +1,10 @@
 /* FoodXchange Modern CSS Styles */
 
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
 :root {
     --primary-color: #667eea;
     --secondary-color: #764ba2;
@@ -8,6 +13,7 @@
     --danger-color: #dc3545;
     --dark-color: #212529;
     --light-color: #f8f9fa;
+    --teal-accent: #00a8e8;
     --gray-100: #f8f9fa;
     --gray-200: #e9ecef;
     --gray-300: #dee2e6;
@@ -36,6 +42,58 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: 1rem;
+}
+
+/* Icon circles - replace inline styles */
+.icon-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.icon-circle-sm {
+    width: 32px;
+    height: 32px;
+}
+
+.icon-circle-md {
+    width: 45px;
+    height: 45px;
+}
+
+.icon-circle-lg {
+    width: 50px;
+    height: 50px;
+}
+
+/* Hidden elements */
+.hidden {
+    display: none;
+}
+
+/* Form improvements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+select,
+textarea {
+    /* Ensure all form fields have consistent styling */
+}
+
+/* Fix text-size-adjust for better mobile compatibility */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Fix text-align compatibility */
+.text-align-inherit {
+    text-align: inherit;
+    text-align: match-parent;
 }
 
 .section-title {
@@ -94,6 +152,30 @@ body {
     color: var(--secondary-color);
 }
 
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
+    display: block;
+    max-width: 100%;
+}
+
+.navbar-logo:hover {
+    transform: scale(1.05);
+}
+
+.footer-logo {
+    height: 50px;
+    width: auto;
+    transition: transform 0.3s ease;
+    display: block;
+    max-width: 100%;
+}
+
+.footer-logo:hover {
+    transform: scale(1.05);
+}
+
 .nav-link {
     color: var(--gray-700) !important;
     font-weight: 500;
@@ -149,7 +231,7 @@ body {
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, var(--light-color) 0%, var(--gray-300) 100%);
     padding-top: 5rem;
 }
 
@@ -368,7 +450,7 @@ body {
 
 /* AI Section */
 .ai-section {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, var(--light-color) 0%, var(--gray-300) 100%);
 }
 
 .ai-features {
@@ -453,8 +535,8 @@ body {
 
 /* Footer */
 .footer {
-    background-color: #2b2b2b;
-    color: #b0b0b0;
+    background-color: var(--dark-color);
+    color: var(--gray-400);
     padding: 60px 0 30px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -468,25 +550,25 @@ body {
 }
 
 .footer-brand .logo-food {
-    color: #00a8e8;
+    color: var(--teal-accent);
     font-size: 1.8rem;
     font-weight: 700;
 }
 
 .footer-brand .logo-xchange {
-    color: #ffffff;
+    color: white;
     font-size: 1.8rem;
     font-weight: 700;
 }
 
 .footer-brand p {
-    color: #b0b0b0;
+    color: var(--gray-400);
     font-size: 0.9rem;
     margin-bottom: 1.5rem;
 }
 
 .footer h5 {
-    color: #ffffff;
+    color: white;
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1.25rem;
@@ -502,14 +584,14 @@ body {
 }
 
 .footer-links a {
-    color: #b0b0b0;
+    color: var(--gray-400);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-    color: #00a8e8;
+    color: var(--teal-accent);
 }
 
 .footer-contact {
@@ -522,12 +604,12 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #b0b0b0;
+    color: var(--gray-400);
     font-size: 0.9rem;
 }
 
 .footer-contact i {
-    color: #00a8e8;
+    color: var(--teal-accent);
     font-size: 1rem;
 }
 
@@ -543,7 +625,7 @@ body {
     justify-content: center;
     width: 40px;
     height: 40px;
-    background-color: #3d3d3d;
+    background-color: var(--gray-700);
     color: white;
     border-radius: 50%;
     transition: all 0.3s ease;
@@ -580,11 +662,21 @@ body {
 
 .social-links a i {
     font-size: 1.2rem;
+    color: white !important;
+}
+
+/* X logo styling */
+.social-links a[aria-label="X (Twitter)"] img {
+    transition: all 0.3s ease;
+}
+
+.social-links a[aria-label="X (Twitter)"]:hover img {
+    transform: scale(1.1);
 }
 
 /* Footer CTA Banner */
 .footer-cta-banner {
-    background: linear-gradient(135deg, #00a8e8 0%, #0090c8 100%);
+    background: linear-gradient(135deg, var(--teal-accent) 0%, var(--primary-color) 100%);
     padding: 2rem;
     border-radius: 15px;
     color: white;
@@ -608,55 +700,55 @@ body {
 
 /* Newsletter Mini */
 .newsletter-mini input {
-    border: 1px solid #444;
-    background: #333;
+    border: 1px solid var(--gray-600);
+    background: var(--gray-800);
     color: white;
 }
 
 .newsletter-mini input::placeholder {
-    color: #999;
+    color: var(--gray-500);
 }
 
 .newsletter-mini input:focus {
-    background: #404040;
-    border-color: #00a8e8;
+    background: var(--gray-700);
+    border-color: var(--teal-accent);
     color: white;
 }
 
 /* Footer Stats */
 .footer-stats {
     padding: 2rem 0;
-    border-top: 1px solid #444;
-    border-bottom: 1px solid #444;
+    border-top: 1px solid var(--gray-600);
+    border-bottom: 1px solid var(--gray-600);
 }
 
 .stat-number {
-    color: #00a8e8;
+    color: var(--teal-accent);
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .stat-label {
-    color: #999;
+    color: var(--gray-500);
     font-size: 0.9rem;
     margin-bottom: 0;
 }
 
 .copyright {
-    color: #999;
+    color: var(--gray-500);
     margin-bottom: 0;
     font-size: 0.9rem;
 }
 
 .copyright a {
-    color: #b0b0b0;
+    color: var(--gray-400);
     text-decoration: none;
     margin: 0 0.5rem;
 }
 
 .copyright a:hover {
-    color: #00a8e8;
+    color: var(--teal-accent);
 }
 
 /* Footer Responsive */
@@ -682,12 +774,12 @@ body {
     height: 60px;
     bottom: 30px;
     right: 30px;
-    background-color: #25d366;
+    background-color: var(--success-color);
     color: white;
     border-radius: 50px;
     text-align: center;
     font-size: 30px;
-    box-shadow: 2px 2px 3px #999;
+    box-shadow: 2px 2px 3px var(--gray-500);
     z-index: 100;
     display: flex;
     align-items: center;
@@ -697,7 +789,7 @@ body {
 }
 
 .whatsapp-float:hover {
-    background-color: #1ebe57;
+    background-color: var(--success-color);
     transform: scale(1.1);
     color: white;
     text-decoration: none;
@@ -761,9 +853,9 @@ body {
     border-radius: 50%;
 }
 
-.control.red { background: #ff5f56; }
-.control.yellow { background: #ffbd2e; }
-.control.green { background: #27ca3f; }
+.control.red { background: var(--danger-color); }
+.control.yellow { background: var(--warning-color); }
+.control.green { background: var(--success-color); }
 
 .window-title {
     font-weight: 600;
@@ -817,7 +909,7 @@ body {
 
 .progress-bar {
     height: 6px;
-    background: #e9ecef;
+    background: var(--gray-200);
     border-radius: 3px;
     overflow: hidden;
 }
@@ -843,7 +935,7 @@ body {
     font-size: 0.8rem;
     color: var(--gray-600);
     padding: 0.25rem 0.5rem;
-    background: #f8f9fa;
+    background: var(--light-color);
     border-radius: 4px;
     text-align: center;
 }
@@ -886,7 +978,7 @@ body {
 }
 
 .feature-tab {
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--gray-200);
     transition: all 0.3s ease;
 }
 
@@ -895,7 +987,7 @@ body {
 }
 
 .feature-tab.active {
-    background: #f8f9fa;
+    background: var(--light-color);
 }
 
 .tab-header {
@@ -908,7 +1000,7 @@ body {
 }
 
 .tab-header:hover {
-    background: #f8f9fa;
+    background: var(--light-color);
 }
 
 .tab-header i {
@@ -962,7 +1054,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 300px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     border-radius: 20px;
     overflow: hidden;
 }

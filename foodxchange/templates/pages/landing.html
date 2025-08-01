@@ -11,7 +11,7 @@
         </h1>
         <p class="lead mb-3">Transform your food procurement with intelligent product analysis and global supplier matching</p>
         <div class="d-flex justify-content-center gap-2">
-            <a href="/product-analysis/" class="btn btn-primary btn-lg">
+            <a href="/product-analysis/" class="btn btn-primary btn-lg" onclick="return checkAuthAndRedirect(event)">
                 <i class="fas fa-robot me-2"></i>Start AI Analysis
             </a>
             <a href="/dashboard" class="btn btn-outline-secondary btn-lg">
@@ -61,31 +61,31 @@
             <div class="col-md-4">
                 <div class="card feature-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-3">
-                        <div class="bg-primary bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                        <div class="bg-primary bg-gradient text-white icon-circle icon-circle-lg mb-2">
                             <i class="fas fa-camera fa-lg"></i>
                         </div>
                         <h5 class="card-title">1. Upload Product Image</h5>
                         <p class="card-text small">Simply upload a photo of the food product you're looking for, or describe it in detail.</p>
-                        <a href="/product-analysis/" class="btn btn-sm btn-outline-primary">Try Upload</a>
+                        <a href="/product-analysis/" class="btn btn-sm btn-outline-primary" onclick="return checkAuthAndRedirect(event)">Try Upload</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card feature-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-3">
-                        <div class="bg-success bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                        <div class="bg-success bg-gradient text-white icon-circle icon-circle-lg mb-2">
                             <i class="fas fa-brain fa-lg"></i>
                         </div>
                         <h5 class="card-title">2. AI Analysis</h5>
                         <p class="card-text small">Our AI analyzes the product, identifies key characteristics, and generates detailed specifications.</p>
-                        <a href="/product-analysis/" class="btn btn-sm btn-outline-success">Get Started</a>
+                        <a href="/product-analysis/" class="btn btn-sm btn-outline-success" onclick="return checkAuthAndRedirect(event)">Get Started</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card feature-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-3">
-                        <div class="bg-info bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                        <div class="bg-info bg-gradient text-white icon-circle icon-circle-lg mb-2">
                             <i class="fas fa-globe fa-lg"></i>
                         </div>
                         <h5 class="card-title">3. Global Sourcing</h5>
@@ -108,7 +108,7 @@
         <h3 class="mb-2">Ready to Transform Your Sourcing?</h3>
         <p class="lead mb-3">Join thousands of food businesses using AI to streamline their procurement process</p>
         <div class="d-flex justify-content-center gap-2">
-            <a href="/product-analysis/" class="btn btn-light btn-lg">
+            <a href="/product-analysis/" class="btn btn-light btn-lg" onclick="return checkAuthAndRedirect(event)">
                 <i class="fas fa-rocket me-2"></i>Start AI Analysis Now
             </a>
             <a href="/dashboard" class="btn btn-outline-light btn-lg">
@@ -117,4 +117,50 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function checkAuthAndRedirect(event) {
+    event.preventDefault();
+    
+    // For now, let's use a simpler approach - try to fetch with GET and handle the response
+    fetch('/product-analysis/', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            'Accept': 'text/html'
+        }
+    })
+    .then(async response => {
+        if (response.status === 401) {
+            // Check if it's JSON response
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                // We got a JSON 401 response, redirect to login
+                window.location.href = '/login?next=/product-analysis/';
+            } else {
+                // Try to navigate anyway
+                window.location.href = '/product-analysis/';
+            }
+        } else if (response.ok) {
+            // User is authenticated, proceed
+            window.location.href = '/product-analysis/';
+        } else if (response.status === 303 || response.status === 302) {
+            // Being redirected, follow the redirect
+            window.location.href = '/product-analysis/';
+        } else {
+            // Some other response, still try to navigate
+            window.location.href = '/product-analysis/';
+        }
+    })
+    .catch(error => {
+        console.error('Error checking authentication:', error);
+        // On error, redirect to login to be safe
+        window.location.href = '/login?next=/product-analysis/';
+    });
+    
+    return false;
+}
+</script>
 {% endblock %} 

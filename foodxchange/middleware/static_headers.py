@@ -96,8 +96,12 @@ class StaticFilesWithHeaders(StaticFiles):
                 response.headers['x-content-type-options'] = 'nosniff'
                 
                 # Remove unnecessary headers
-                response.headers.pop('x-xss-protection', None)
-                response.headers.pop('content-security-policy', None)
-                response.headers.pop('expires', None)
+                # Use del instead of pop for MutableHeaders compatibility
+                if 'x-xss-protection' in response.headers:
+                    del response.headers['x-xss-protection']
+                if 'content-security-policy' in response.headers:
+                    del response.headers['content-security-policy']
+                if 'expires' in response.headers:
+                    del response.headers['expires']
             
         return response
