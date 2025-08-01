@@ -31,11 +31,12 @@ COPY --from=builder /root/.local /root/.local
 
 # Copy application code
 COPY foodxchange/ ./foodxchange/
-COPY static/ ./static/ 2>/dev/null || echo "No static directory"
-COPY templates/ ./templates/ 2>/dev/null || echo "No templates directory"
+COPY requirements.txt ./
+COPY .env ./ 2>/dev/null || true
+COPY projects/ ./projects/ 2>/dev/null || true
 
 # Create necessary directories
-RUN mkdir -p logs uploads temp static/errors
+RUN mkdir -p logs uploads temp static/errors projects
 
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
