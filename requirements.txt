@@ -88,3 +88,4 @@ opencensus-ext-azure==1.1.12
 opencensus-ext-fastapi==0.1.0
 opencensus-ext-logging==0.1.0
 opencensus-ext-requests==0.1.0
+aiofiles==23.2.1
