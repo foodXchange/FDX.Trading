@@ -1,0 +1,19 @@
+name: Simple Deploy to Azure
+
+on:
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: 'foodxchange-deploy-app'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 'Deploy to Azure Web App'
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: 'foodxchangeregistry.azurecr.io/foodxchange:latest'
