@@ -52,11 +52,21 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: |
+          {
+            "clientId": "${{ secrets.AZUREAPPSERVICE_CLIENTID_4B1775FDD2034EFA9CE58403665C630D }}",
+            "clientSecret": "${{ secrets.AZURE_REGISTRY_PASSWORD }}",
+            "subscriptionId": "${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_493477D657AB49C48229A99C4425C65A }}",
+            "tenantId": "${{ secrets.AZUREAPPSERVICE_TENANTID_9960A9C9DAB845D18B7E9C272DA67C6A }}"
+          }
+
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         images: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/foodxchange:${{ github.sha }}
 
     - name: 'Verify deployment'
