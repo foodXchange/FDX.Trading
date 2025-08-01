@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company_name }} - {{ tagline }}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Transform your food trading operations with FoodXchange's AI-powered platform. Streamline sourcing, ensure compliance, and connect with global suppliers instantly.">
+    <meta name="keywords" content="food trading, B2B marketplace, AI sourcing, supply chain, food compliance">
+    <meta name="author" content="FoodXchange">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fdx.trading/">
+    <meta property="og:title" content="{{ company_name }} - {{ tagline }}">
+    <meta property="og:description" content="Transform your food trading operations with AI-powered sourcing and compliance automation.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-white shadow-sm">
+        <div class="container-fluid px-5">
+            <a class="navbar-brand" href="#home">
+                <span class="logo-food">FOOD</span><span class="logo-x">X</span><span class="logo-change">CHANGE</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#workflow">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#benefits">Benefits</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#ai-innovation">AI Innovation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cta">Contact</a></li>
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-primary" href="#demo" data-bs-toggle="modal" data-bs-target="#demoModal">Request Demo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">
+                        Transform Your Global Food Sourcing with 
+                        <span class="text-primary">Intelligent Automation</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Replace fragmented emails, spreadsheets, and WhatsApp chaos with one unified platform. 
+                        {{ company_name }} is the operating system that makes international food trade faster, smarter, and surprisingly enjoyable.
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <h3>{{ stats.faster_sourcing }}%</h3>
+                            <p>Faster Sourcing</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>{{ stats.error_reduction }}%</h3>
+                            <p>Error Reduction</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>€{{ "{:,}".format(stats.annual_savings) }}+</h3>
+                            <p>Saved Annually</p>
+                        </div>
+                    </div>
+                    <div class="hero-cta">
+                        <a href="#demo" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#demoModal">Request Demo</a>
+                        <a href="#workflow" class="btn btn-outline-primary btn-lg">See How It Works</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-dashboard">
+                        <div class="dashboard-window">
+                            <div class="window-header">
+                                <div class="window-controls">
+                                    <span class="control red"></span>
+                                    <span class="control yellow"></span>
+                                    <span class="control green"></span>
+                                </div>
+                                <div class="window-title">FoodXchange Platform</div>
+                            </div>
+                            <div class="dashboard-content">
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h5>Active RFQs</h5>
+                                        <span class="badge">12</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h5>Supplier Matches</h5>
+                                        <span class="badge success">47</span>
+                                    </div>
+                                    <div class="metric-grid">
+                                        <div class="metric">✓ Verified</div>
+                                        <div class="metric">⚡ Fast Response</div>
+                                        <div class="metric">🌍 Global</div>
+                                        <div class="metric">📋 Compliant</div>
+                                    </div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h5>Recent Activity</h5>
+                                    </div>
+                                    <div class="activity-list">
+                                        <div class="activity-item">
+                                            <div class="activity-dot"></div>
+                                            <span>New offer received</span>
+                                        </div>
+                                        <div class="activity-item">
+                                            <div class="activity-dot"></div>
+                                            <span>Compliance check passed</span>
+                                        </div>
+                                        <div class="activity-item">
+                                            <div class="activity-dot"></div>
+                                            <span>Sample shipped</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Solution Section -->
+    <section class="problem-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">The €595 Billion Problem We're Solving</h2>
+                    <p class="section-subtitle">Global food trade still runs on broken workflows</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h4>Lost in Email Chaos</h4>
+                        <p>Critical details buried in endless threads, version confusion, and missed communications cost millions annually.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon">
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                        <h4>Spreadsheet Nightmares</h4>
+                        <p>Outdated data, conflicting versions, and manual errors compound throughout the supply chain.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h4>Scattered Communications</h4>
+                        <p>WhatsApp groups, phone calls, and informal chats create dangerous information silos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="workflow-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">Your Journey to Smarter Sourcing</h2>
+                    <p class="section-subtitle">From RFQ to delivery in {{ workflow_steps|length }} intelligent steps</p>
+                </div>
+            </div>
+            <div class="workflow-path">
+                {% for step in workflow_steps %}
+                <div class="workflow-step" data-step="{{ step.number }}">
+                    <div class="step-icon">
+                        <i class="fas {{ step.icon }}"></i>
+                    </div>
+                    <h4>{{ step.title }}</h4>
+                    <p>{{ step.description }}</p>
+                </div>
+                {% if not loop.last %}
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">Transform Your Trading Experience</h2>
+                    <p class="section-subtitle">See why leading enterprises choose {{ company_name }}</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="benefit-card buyer-benefit">
+                        <h3><i class="fas fa-shopping-cart"></i> For Buyers</h3>
+                        <ul class="benefit-list">
+                            {% for benefit in benefits.buyers %}
+                            <li>{{ benefit }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="benefit-card seller-benefit">
+                        <h3><i class="fas fa-industry"></i> For Suppliers</h3>
+                        <ul class="benefit-list">
+                            {% for benefit in benefits.sellers %}
+                            <li>{{ benefit }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Innovation Section -->
+    <section id="ai-innovation" class="ai-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title">Powered by Intelligent Automation</h2>
+                    <p class="lead">
+                        Our AI doesn't just digitize your workflow—it transforms it. Experience the difference when every step is enhanced by smart technology.
+                    </p>
+                    <div class="ai-features">
+                        {% for feature in ai_features %}
+                        <div class="ai-feature">
+                            <h5><i class="fas {{ feature.icon }}"></i> {{ feature.title }}</h5>
+                            <p>{{ feature.description }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ai-visualization">
+                        <div class="ai-brain">
+                            <div class="brain-core">
+                                <div class="neural-network">
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                </div>
+                                <div class="ai-pulse"></div>
+                            </div>
+                            <div class="ai-insights">
+                                <div class="insight-card">
+                                    <div class="insight-icon">🎯</div>
+                                    <div class="insight-text">Match Score: 97%</div>
+                                </div>
+                                <div class="insight-card">
+                                    <div class="insight-icon">📊</div>
+                                    <div class="insight-text">Price Trend: ↗ 3.2%</div>
+                                </div>
+                                <div class="insight-card">
+                                    <div class="insight-icon">⚡</div>
+                                    <div class="insight-text">Response: 2.3 min</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transformation Section -->
+    <section class="transformation-section py-5 bg-primary text-white">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-title mb-4">From Friction to Flow</h2>
+                <p class="lead mb-5">See how {{ company_name }} transforms your daily operations</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="transformation-card">
+                        <h4 class="mb-3">{{ transformation.before.title }}</h4>
+                        <ul class="list-unstyled">
+                            {% for point in transformation.before.points %}
+                            <li><i class="fas fa-times me-2"></i>{{ point }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="transformation-card">
+                        <h4 class="mb-3">{{ transformation.after.title }}</h4>
+                        <ul class="list-unstyled">
+                            {% for point in transformation.after.points %}
+                            <li><i class="fas fa-check me-2"></i>{{ point }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">About {{ company_name }}</h2>
+                    <p class="section-subtitle">Building the future of global food trade</p>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3>Our Mission</h3>
+                    <p class="lead">
+                        We're transforming the €595 billion global food trade industry by replacing chaos with clarity, friction with flow, and uncertainty with intelligence.
+                    </p>
+                    <p>
+                        Founded by industry veterans who've lived the pain of international food sourcing, {{ company_name }} is built from real-world experience. We know that a single spec error can cost millions, that compliance complexity kills deals, and that time wasted on manual processes is opportunity lost.
+                    </p>
+                    <p>
+                        That's why we've created more than just software—we've built the operating system for modern food trade.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <h4>{{ about_stats.years_experience }}</h4>
+                            <p>Years of Industry Experience</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>{{ about_stats.addressable_market }}</h4>
+                            <p>Addressable Market</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>{{ about_stats.active_partners }}</h4>
+                            <p>Active Trading Partners</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>{{ about_stats.annual_growth }}</h4>
+                            <p>Annual Market Growth</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="cta" class="cta-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="cta-title">Ready to Transform Your Food Trading?</h2>
+                    <p class="cta-subtitle">Join leading enterprises already saving millions with {{ company_name }}</p>
+                    <div class="cta-buttons">
+                        <a href="#demo" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#demoModal">Schedule a Demo</a>
+                        <a href="#contact" class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#contactModal">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="mb-3">
+                        <span class="logo-food">FOOD</span><span class="logo-x">X</span><span class="logo-change">CHANGE</span>
+                    </h5>
+                    <p class="text-muted">The AI-powered B2B food trading platform transforming how enterprises buy and sell food globally.</p>
+                </div>
+                <div class="col-lg-2">
+                    <h6 class="mb-3">Platform</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#workflow" class="text-muted">How It Works</a></li>
+                        <li><a href="#benefits" class="text-muted">For Buyers</a></li>
+                        <li><a href="#benefits" class="text-muted">For Sellers</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6 class="mb-3">Company</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#about" class="text-muted">About Us</a></li>
+                        <li><a href="#cta" class="text-muted">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6 class="mb-3">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted">Privacy Policy</a></li>
+                        <li><a href="#" class="text-muted">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6 class="mb-3">Connect</h6>
+                    <div class="social-links">
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary">
+            <div class="text-center text-muted">
+                <p>&copy; {{ current_year }} {{ company_name }}. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Demo Modal -->
+    <div class="modal fade" id="demoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Request a Demo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="demoForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="mb-3">
+                            <label for="demoName" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="demoName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="demoEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="demoEmail" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="demoCompany" class="form-label">Company *</label>
+                            <input type="text" class="form-control" id="demoCompany" name="company" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="demoPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="demoPhone" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="demoTime" class="form-label">Preferred Time</label>
+                            <select class="form-select" id="demoTime" name="preferred_time">
+                                <option value="">Select preferred time</option>
+                                <option value="morning">Morning (9AM-12PM)</option>
+                                <option value="afternoon">Afternoon (12PM-5PM)</option>
+                                <option value="evening">Evening (5PM-8PM)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="demoForm" class="btn btn-primary">Request Demo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contact Us</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contactForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="mb-3">
+                            <label for="contactName" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="contactName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="contactEmail" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactCompany" class="form-label">Company</label>
+                            <input type="text" class="form-control" id="contactCompany" name="company">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactMessage" class="form-label">Message *</label>
+                            <textarea class="form-control" id="contactMessage" name="message" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="contactForm" class="btn btn-primary">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

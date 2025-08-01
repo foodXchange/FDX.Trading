@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company_name }} - {{ tagline }}</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Transform your food trading operations with FoodXchange's AI-powered platform. Streamline sourcing, ensure compliance, and connect with global suppliers instantly.">
+    <meta name="keywords" content="food trading, B2B marketplace, AI sourcing, supply chain, food compliance">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">
+                        Transform Your Global Food Sourcing with 
+                        <span class="text-primary">Intelligent Automation</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Replace fragmented emails, spreadsheets, and WhatsApp chaos with one unified platform. 
+                        FoodXchange is the operating system that makes international food trade faster, smarter, and surprisingly enjoyable.
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <h3>70%</h3>
+                            <p>Faster Sourcing</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>95%</h3>
+                            <p>Error Reduction</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>€2M+</h3>
+                            <p>Saved Annually</p>
+                        </div>
+                    </div>
+                    <div class="hero-cta">
+                        <a href="#demo" class="btn btn-primary btn-lg">Request Demo</a>
+                        <a href="#workflow" class="btn btn-outline-primary btn-lg">See How It Works</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-dashboard">
+                        <div class="dashboard-window">
+                            <div class="window-header">
+                                <div class="window-controls">
+                                    <span class="control red"></span>
+                                    <span class="control yellow"></span>
+                                    <span class="control green"></span>
+                                </div>
+                                <div class="window-title">FoodXchange Platform</div>
+                            </div>
+                            <div class="dashboard-content">
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h5>Active RFQs</h5>
+                                        <span class="badge">12</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h5>Supplier Matches</h5>
+                                        <span class="badge success">47</span>
+                                    </div>
+                                    <div class="metric-grid">
+                                        <div class="metric">✓ Verified</div>
+                                        <div class="metric">⚡ Fast Response</div>
+                                        <div class="metric">🌍 Global</div>
+                                        <div class="metric">📋 Compliant</div>
+                                    </div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h5>Recent Activity</h5>
+                                    </div>
+                                    <div class="activity-list">
+                                        <div class="activity-item">
+                                            <div class="activity-dot"></div>
+                                            <span>New offer received</span>
+                                        </div>
+                                        <div class="activity-item">
+                                            <div class="activity-dot"></div>
+                                            <span>Compliance check passed</span>
+                                        </div>
+                                        <div class="activity-item">
+                                            <div class="activity-dot"></div>
+                                            <span>Sample shipped</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">The €595 Billion Problem We're Solving</h2>
+                    <p class="section-subtitle">Global food trade still runs on broken workflows</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h4>Lost in Email Chaos</h4>
+                        <p>Critical details buried in endless threads, version confusion, and missed communications cost millions annually.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon">
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                        <h4>Spreadsheet Nightmares</h4>
+                        <p>Outdated data, conflicting versions, and manual errors compound throughout the supply chain.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="problem-card">
+                        <div class="problem-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h4>Scattered Communications</h4>
+                        <p>WhatsApp groups, phone calls, and informal chats create dangerous information silos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution-section py-5" id="how-it-works">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title">One Platform. <br>All Together.</h2>
+                    <p class="lead">
+                        FoodXchange brings structure to chaos. Our AI-powered platform unifies every step of international food sourcing into one intelligent workspace.
+                    </p>
+                    <div class="solution-features">
+                        <div class="feature-item">
+                            <i class="fas fa-search-dollar"></i>
+                            <div>
+                                <h5>Smart Sourcing</h5>
+                                <p>AI matches you with verified suppliers in minutes, not months</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>
+                                <h5>Automated Compliance</h5>
+                                <p>Real-time regulatory checks across all target markets</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-tags"></i>
+                            <div>
+                                <h5>Intelligent Labeling</h5>
+                                <p>Error-free specifications and packaging automation</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-truck"></i>
+                            <div>
+                                <h5>Seamless Logistics</h5>
+                                <p>End-to-end shipment tracking and documentation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="platform-preview">
+                        <div class="feature-showcase">
+                            <div class="feature-tab active">
+                                <div class="tab-header">
+                                    <i class="fas fa-search-dollar"></i>
+                                    <span>Smart Sourcing</span>
+                                </div>
+                                <div class="tab-content">
+                                    <div class="sourcing-flow">
+                                        <div class="flow-step">
+                                            <div class="step-icon">📝</div>
+                                            <div class="step-text">Create RFQ</div>
+                                            <div class="step-arrow">→</div>
+                                        </div>
+                                        <div class="flow-step">
+                                            <div class="step-icon">🤖</div>
+                                            <div class="step-text">AI Matches</div>
+                                            <div class="step-arrow">→</div>
+                                        </div>
+                                        <div class="flow-step">
+                                            <div class="step-icon">✅</div>
+                                            <div class="step-text">Get Offers</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="feature-tab">
+                                <div class="tab-header">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Compliance Check</span>
+                                </div>
+                            </div>
+                            <div class="feature-tab">
+                                <div class="tab-header">
+                                    <i class="fas fa-tags"></i>
+                                    <span>Smart Labeling</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow-section py-5" id="workflow">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">Your Journey to Smarter Sourcing</h2>
+                    <p class="section-subtitle">From RFQ to delivery in 6 intelligent steps</p>
+                </div>
+            </div>
+            <div class="workflow-path">
+                <div class="workflow-step" data-step="1">
+                    <div class="step-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h4>Submit Smart RFQ</h4>
+                    <p>AI-assisted request forms capture every requirement perfectly</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step" data-step="2">
+                    <div class="step-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Receive Matched Offers</h4>
+                    <p>Verified suppliers automatically matched to your needs</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step" data-step="3">
+                    <div class="step-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h4>Compare & Select</h4>
+                    <p>Side-by-side comparisons with intelligent recommendations</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step" data-step="4">
+                    <div class="step-icon">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                    <h4>Track Samples</h4>
+                    <p>Real-time sample management with automated reminders</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step" data-step="5">
+                    <div class="step-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h4>Ensure Compliance</h4>
+                    <p>Automated checks for kosher, organic, and regulatory standards</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="workflow-step" data-step="6">
+                    <div class="step-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4>Complete Deal</h4>
+                    <p>Digital contracts and seamless logistics coordination</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section py-5" id="benefits">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">Transform Your Trading Experience</h2>
+                    <p class="section-subtitle">See why leading enterprises choose FoodXchange</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="benefit-card buyer-benefit">
+                        <h3><i class="fas fa-shopping-cart"></i> For Buyers</h3>
+                        <ul class="benefit-list">
+                            <li><strong>70% Faster Sourcing:</strong> Find verified suppliers in minutes, not months</li>
+                            <li><strong>Zero Compliance Risk:</strong> Automated checks ensure every product meets standards</li>
+                            <li><strong>Complete Visibility:</strong> Track every sample, document, and shipment in real-time</li>
+                            <li><strong>Smarter Decisions:</strong> AI-powered insights help you choose the best suppliers</li>
+                            <li><strong>Unified Workspace:</strong> Replace 10+ tools with one intelligent platform</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="benefit-card seller-benefit">
+                        <h3><i class="fas fa-industry"></i> For Suppliers</h3>
+                        <ul class="benefit-list">
+                            <li><strong>Global Reach:</strong> Connect with verified international buyers instantly</li>
+                            <li><strong>Win More Deals:</strong> AI helps match you with perfect opportunities</li>
+                            <li><strong>Showcase Excellence:</strong> Digital catalog with certifications and capabilities</li>
+                            <li><strong>Faster Payments:</strong> Streamlined processes mean quicker deal closure</li>
+                            <li><strong>Build Trust:</strong> Performance ratings and verified credentials</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Innovation Section -->
+    <section class="ai-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title">Powered by Intelligent Automation</h2>
+                    <p class="lead">
+                        Our AI doesn't just digitize your workflow—it transforms it. Experience the difference when every step is enhanced by smart technology.
+                    </p>
+                    <div class="ai-features">
+                        <div class="ai-feature">
+                            <h5><i class="fas fa-brain"></i> Smart Matching</h5>
+                            <p>AI analyzes requirements and instantly connects you with the most suitable partners</p>
+                        </div>
+                        <div class="ai-feature">
+                            <h5><i class="fas fa-robot"></i> Compliance Automation</h5>
+                            <p>Automatic validation of certifications, labels, and regulatory requirements</p>
+                        </div>
+                        <div class="ai-feature">
+                            <h5><i class="fas fa-chart-line"></i> Predictive Insights</h5>
+                            <p>Anticipate delays, price changes, and quality issues before they happen</p>
+                        </div>
+                        <div class="ai-feature">
+                            <h5><i class="fas fa-language"></i> Multi-Language Support</h5>
+                            <p>Seamless communication across borders with intelligent translation</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ai-visualization">
+                        <div class="ai-brain">
+                            <div class="brain-core">
+                                <div class="neural-network">
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                    <div class="neuron"></div>
+                                </div>
+                                <div class="ai-pulse"></div>
+                            </div>
+                            <div class="ai-insights">
+                                <div class="insight-card">
+                                    <div class="insight-icon">🎯</div>
+                                    <div class="insight-text">Match Score: 97%</div>
+                                </div>
+                                <div class="insight-card">
+                                    <div class="insight-icon">📊</div>
+                                    <div class="insight-text">Price Trend: ↗ 3.2%</div>
+                                </div>
+                                <div class="insight-card">
+                                    <div class="insight-icon">⚡</div>
+                                    <div class="insight-text">Response: 2.3 min</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section py-5" id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-5">
+                    <h2 class="section-title">About FoodXchange</h2>
+                    <p class="section-subtitle">Building the future of global food trade</p>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3>Our Mission</h3>
+                    <p class="lead">
+                        We're on a mission to transform the €595 billion global food trade industry by replacing chaos with clarity, friction with flow, and uncertainty with intelligence.
+                    </p>
+                    <p>
+                        Founded by industry veterans who've lived the pain of international food sourcing, FoodXchange is built from real-world experience. We know that a single spec error can cost millions, that compliance complexity kills deals, and that time wasted on manual processes is opportunity lost.
+                    </p>
+                    <p>
+                        That's why we've created more than just software—we've built the operating system for modern food trade.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <h4>20+</h4>
+                            <p>Years of Industry Experience</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>€30B</h4>
+                            <p>Addressable Market</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>500+</h4>
+                            <p>Active Trading Partners</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>15%</h4>
+                            <p>Annual Market Growth</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="cta-title">Ready to Transform Your Food Sourcing?</h2>
+                    <p class="cta-subtitle">Join leading enterprises already saving millions with FoodXchange</p>
+                    <div class="cta-buttons">
+                        <a href="#demo" class="btn btn-primary btn-lg">Schedule a Demo</a>
+                        <a href="#contact" class="btn btn-outline-light btn-lg">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// FDX Homepage Interactive Elements
+// Following FoodXchange system standards
+
+(function() {
+    'use strict';
+    
+    // Error logging helper following FDX patterns
+    function logError(context, error) {
+        console.error(`[FDX Homepage] ${context}:`, error);
+        // In production, this would send to your error tracking service
+    }
+    
+    // Initialize page when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+            // Initialize FDX Homepage interactive elements
+            const navbar = document.querySelector('.navbar');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            const workflowSteps = document.querySelectorAll('.workflow-step');
+    
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            navbar.classList.add('shadow-sm');
+            navbar.style.padding = '0.5rem 0';
+        } else {
+            navbar.classList.remove('shadow-sm');
+            navbar.style.padding = '1rem 0';
+        }
+        
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.clientHeight;
+            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.getAttribute('href').startsWith('#')) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+                document.querySelector('.navbar-collapse').classList.remove('show');
+            }
+        });
+    });
+    
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, observerOptions);
+    
+    workflowSteps.forEach(step => {
+        observer.observe(step);
+    });
+    
+    const statBoxes = document.querySelectorAll('.stat-box h3');
+    const animateValue = (obj, start, end, duration) => {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start) + (obj.innerHTML.includes('%') ? '%' : '');
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    };
+    
+    const statObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                const value = parseInt(entry.target.innerText);
+                animateValue(entry.target, 0, value, 2000);
+                entry.target.classList.add('animated');
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    statBoxes.forEach(box => {
+        statObserver.observe(box);
+    });
+    
+    const benefitCards = document.querySelectorAll('.benefit-card');
+    const problemItems = document.querySelectorAll('.problem-item');
+    const solutionItems = document.querySelectorAll('.solution-item');
+    
+    const fadeInObserver = new IntersectionObserver(function(entries) {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, index * 100);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    benefitCards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'all 0.6s ease';
+        fadeInObserver.observe(card);
+    });
+    
+    problemItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-30px)';
+        item.style.transition = 'all 0.6s ease';
+        setTimeout(() => {
+            fadeInObserver.observe(item);
+        }, index * 100);
+    });
+    
+    solutionItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(30px)';
+        item.style.transition = 'all 0.6s ease';
+        setTimeout(() => {
+            fadeInObserver.observe(item);
+        }, index * 100);
+    });
+    
+    const ctaButtons = document.querySelectorAll('.btn-primary');
+    ctaButtons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+
+    // Enhanced dashboard and feature interactions
+    const dashboardCards = document.querySelectorAll('.dashboard-card');
+    dashboardCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 500 + (index * 200));
+    });
+
+    const featureTabs = document.querySelectorAll('.feature-tab');
+    featureTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            featureTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // AI brain neural network animation
+    const neurons = document.querySelectorAll('.neuron');
+    if (neurons.length > 0) {
+        setInterval(() => {
+            const randomNeuron = neurons[Math.floor(Math.random() * neurons.length)];
+            randomNeuron.style.boxShadow = '0 0 30px rgba(255,255,255,0.8)';
+            setTimeout(() => {
+                randomNeuron.style.boxShadow = '';
+            }, 500);
+        }, 1500);
+    }
+
+    // Progress bar and activity animations
+    const progressBars = document.querySelectorAll('.progress-fill');
+    const progressObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'progress-animation 2s ease-in-out';
+            }
+        });
+    }, { threshold: 0.5 });
+
+    progressBars.forEach(bar => {
+        progressObserver.observe(bar);
+    });
+
+            // Activity dots animation
+            const activityDots = document.querySelectorAll('.activity-dot');
+            activityDots.forEach((dot, index) => {
+                setTimeout(() => {
+                    dot.style.animation = 'pulse 2s ease-in-out infinite';
+                }, index * 500);
+            });
+            
+        } catch (error) {
+            logError('Page initialization', error);
+        }
+    });
+    
+    // Export for debugging in development
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        window.FDXHomepage = {
+            version: '1.0.0',
+            initialized: true
+        };
+    }
+    
+})();
+</script>
+{% endblock %}
