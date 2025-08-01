@@ -23,7 +23,12 @@ class ErrorHandler {
         // Set up global error handler
         window.addEventListener('unhandledrejection', event => {
             console.error('Unhandled promise rejection:', event.reason);
-            this.showError('An unexpected error occurred. Please try again.');
+            // Only show error for critical issues, not backend communication problems
+            if (event.reason && event.reason.message && 
+                !event.reason.message.includes('fetch') && 
+                !event.reason.message.includes('network')) {
+                this.showError('An unexpected error occurred. Please try again.');
+            }
             event.preventDefault();
         });
     }

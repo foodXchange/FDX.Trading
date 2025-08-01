@@ -28,6 +28,8 @@ import json
 import logging
 from pathlib import Path
 from typing import Optional
+import bcrypt
+import sqlite3
 from datetime import datetime
 
 # Configure logging
@@ -55,6 +57,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:8000",
         "http://localhost:8003",
+        "http://localhost:9000",
         "https://foodxchange.com",
         "https://app.foodxchange.com"
     ],
@@ -66,6 +69,14 @@ app.add_middleware(
 )
 
 # Session middleware not needed - we use JWT tokens for authentication
+
+# Add security headers middleware
+try:
+    from foodxchange.middleware.security_headers import security_headers_middleware
+    app.middleware("http")(security_headers_middleware)
+    logger.info("✅ Security headers middleware added")
+except ImportError as e:
+    logger.warning(f"Security headers middleware not available: {e}")
 
 # Add rate limiting middleware
 try:
@@ -216,8 +227,11 @@ async def health_check():
 from foodxchange.core.security import get_jwt_manager, get_password_manager, AuthRateLimiter
 from foodxchange.core.exceptions import AuthenticationError
 
-# Initialize rate limiter
-auth_rate_limiter = AuthRateLimiter(max_attempts=5, window_minutes=15)
+# Initialize rate limiter for production
+auth_rate_limiter = AuthRateLimiter(
+    max_attempts=5,     # 5 attempts allowed
+    window_minutes=15   # 15-minute window
+)
 
 @app.post("/auth/login")
 async def secure_login(
@@ -238,37 +252,59 @@ async def secure_login(
         return RedirectResponse(url="/login?error=missing_credentials", status_code=303)
     
     try:
-        # In production, validate against database
-        # For now, only allow specific test credentials
-        if os.getenv("ENVIRONMENT", "production").lower() == "development":
-            if email == "admin@foodxchange.com" and password == "Admin123!":
-                # Create JWT token
-                jwt_manager = get_jwt_manager()
-                token_data = {
-                    "user_id": 1,
-                    "email": email,
-                    "role": "admin",
-                    "is_admin": True
+        # Connect to database
+        conn = sqlite3.connect('foodxchange.db')
+        cursor = conn.cursor()
+        
+        # Check for user in database first
+        cursor.execute("SELECT id, name, email, hashed_password, role, is_admin FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        
+        authenticated = False
+        user_data = None
+        
+        if user:
+            # Verify password against database
+            user_id, name, db_email, hashed_password, role, is_admin = user
+            if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+                authenticated = True
+                user_data = {
+                    "user_id": user_id,
+                    "email": db_email,
+                    "role": role,
+                    "is_admin": bool(is_admin)
                 }
-                access_token = jwt_manager.create_access_token(token_data)
-                
-                # Clear rate limiting attempts on successful login
-                auth_rate_limiter.clear_attempts(f"{email}:{client_ip}")
-                
-                # Store token in response headers instead of session
-                response = RedirectResponse(url="/dashboard", status_code=303)
-                response.headers["Set-Cookie"] = f"access_token={access_token}; HttpOnly; Secure; SameSite=Strict"
-                response.headers["X-User-ID"] = "1"
-                response.headers["X-User-Email"] = email
-                response.headers["X-User-Admin"] = "true"
-                return response
-            else:
-                auth_rate_limiter.record_attempt(f"{email}:{client_ip}")
-                return RedirectResponse(url="/login?error=invalid_credentials", status_code=303)
+        
+        conn.close()
+        
+        if authenticated and user_data:
+            # Create JWT token
+            jwt_manager = get_jwt_manager()
+            access_token = jwt_manager.create_access_token(user_data)
+            
+            # Clear rate limiting attempts on successful login
+            auth_rate_limiter.clear_attempts(f"{email}:{client_ip}")
+            
+            # Create response with redirect
+            response = RedirectResponse(url="/dashboard", status_code=303)
+            
+            # Set secure cookie with JWT token
+            secure_cookie = os.getenv("ENVIRONMENT", "production").lower() == "production"
+            response.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                secure=secure_cookie,
+                samesite="strict",
+                max_age=1800  # 30 minutes
+            )
+            
+            logger.info(f"Successful login for user: {email}")
+            return response
         else:
-            # Production login would validate against database
             auth_rate_limiter.record_attempt(f"{email}:{client_ip}")
-            return RedirectResponse(url="/login?error=not_implemented", status_code=303)
+            logger.warning(f"Failed login attempt for email: {email} from IP: {client_ip}")
+            return RedirectResponse(url="/login?error=invalid_credentials", status_code=303)
             
     except Exception as e:
         logger.error(f"Login error: {e}")
@@ -276,6 +312,15 @@ async def secure_login(
         return RedirectResponse(url="/login?error=server_error", status_code=303)
 
 # REMOVED INSECURE ADMIN ENDPOINT FOR SECURITY
+
+@app.post("/auth/logout")
+@app.get("/logout")
+async def logout(request: Request):
+    """Logout endpoint that clears the JWT token"""
+    response = RedirectResponse(url="/login?success=logged_out", status_code=303)
+    response.delete_cookie("access_token")
+    logger.info("User logged out successfully")
+    return response
 
 # Import and include route modules
 try:
@@ -301,10 +346,17 @@ try:
     
     try:
         from foodxchange.routes import azure_testing_routes_fastapi
-        app.include_router(azure_testing_routes_fastapi.router)
+        app.include_router(azure_testing_routes_fastapi.azure_testing_router)
         logger.info("✅ Azure testing routes loaded")
     except ImportError as e:
         logger.warning(f"⚠️ Azure testing routes not loaded: {e}")
+    
+    try:
+        from foodxchange.routes import ai_import_routes_fastapi
+        app.include_router(ai_import_routes_fastapi.ai_import_router)
+        logger.info("✅ AI import routes loaded")
+    except ImportError as e:
+        logger.warning(f"⚠️ AI import routes not loaded: {e}")
     
     # Skip search_routes for now due to import issues
     try:
@@ -340,6 +392,27 @@ try:
     logger.info("✅ Help routes loaded")
 except ImportError as e:
     logger.warning(f"⚠️ Help routes not loaded: {e}")
+
+try:
+    from foodxchange.routes import support_routes
+    app.include_router(support_routes.router)
+    logger.info("✅ Support routes loaded")
+except ImportError as e:
+    logger.warning(f"⚠️ Support routes not loaded: {e}")
+
+try:
+    from foodxchange.routes import error_tracking_routes
+    app.include_router(error_tracking_routes.router, prefix="/errors")
+    logger.info("✅ Error tracking routes loaded with prefix /errors")
+except ImportError as e:
+    logger.warning(f"⚠️ Error tracking routes not loaded: {e}")
+
+try:
+    from foodxchange.routes import project_routes
+    app.include_router(project_routes.router)
+    logger.info("✅ Enhanced project routes loaded")
+except ImportError as e:
+    logger.warning(f"⚠️ Enhanced project routes not loaded: {e}")
 
 logger.info("✅ Optional route modules loaded successfully")
 
@@ -528,8 +601,21 @@ app.include_router(profile_router)
 @app.get("/")
 async def landing(request: Request):
     """Landing page using Jinja2 template"""
+    from foodxchange.core.auth import get_current_user
+    
+    # Get current user if logged in (for navbar)
+    user = get_current_user(request)
+    
     try:
-        return templates.TemplateResponse("pages/landing.html", {"request": request})
+        context = {"request": request}
+        if user:
+            context["current_user"] = {
+                "id": user.user_id,
+                "email": user.email,
+                "role": user.role,
+                "is_admin": user.is_admin
+            }
+        return templates.TemplateResponse("pages/landing.html", context)
     except Exception as e:
         logger.error(f"Template error: {e}")
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
@@ -538,22 +624,176 @@ async def landing(request: Request):
 @app.head("/dashboard")
 async def dashboard(request: Request):
     """Dashboard page using Jinja2 template"""
+    from foodxchange.core.auth import get_current_user
+    
+    # Check authentication
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
+    
     try:
-        return templates.TemplateResponse("pages/dashboard.html", {"request": request})
+        return templates.TemplateResponse("pages/dashboard.html", {
+            "request": request,
+            "current_user": {
+                "id": user.user_id,
+                "email": user.email,
+                "role": user.role,
+                "is_admin": user.is_admin
+            }
+        })
     except Exception as e:
         logger.error(f"Template error: {e}")
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
 
 @app.get("/login")
 async def login_page(request: Request):
-    """Login page using Jinja2 template"""
     return templates.TemplateResponse("pages/login.html", {"request": request})
+
+
+@app.get("/debug-routes")
+async def debug_routes():
+    """Debug endpoint to show all registered routes"""
+    routes = []
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            routes.append({
+                "path": route.path,
+                "methods": list(route.methods) if hasattr(route, 'methods') else [],
+                "name": route.name if hasattr(route, 'name') else None
+            })
+    return {"routes": sorted(routes, key=lambda x: x['path'])}
+
+@app.get("/signup")
+async def signup_page(request: Request):
+    return templates.TemplateResponse("pages/signup.html", {"request": request})
+
+@app.post("/auth/signup")
+async def signup(
+    request: Request,
+    firstName: str = Form(...),
+    lastName: str = Form(...),
+    email: str = Form(...),
+    company: str = Form(...),
+    password: str = Form(...),
+    confirmPassword: str = Form(...),
+    terms: bool = Form(False)
+):
+    """Handle user registration"""
+    try:
+        # Validate terms acceptance
+        if not terms:
+            return RedirectResponse(url="/signup?error=terms_required", status_code=303)
+        
+        # Validate passwords match
+        if password != confirmPassword:
+            return RedirectResponse(url="/signup?error=password_mismatch", status_code=303)
+        
+        # Validate password strength
+        if len(password) < 8:
+            return RedirectResponse(url="/signup?error=weak_password", status_code=303)
+        
+        # Check if user already exists
+        conn = sqlite3.connect('foodxchange.db')
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+        if cursor.fetchone():
+            conn.close()
+            return RedirectResponse(url="/signup?error=email_exists", status_code=303)
+        
+        # Hash password
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        # Create user
+        full_name = f"{firstName} {lastName}"
+        cursor.execute("""
+            INSERT INTO users (name, email, hashed_password, company, role, created_at)
+            VALUES (?, ?, ?, ?, 'user', datetime('now'))
+        """, (full_name, email, password_hash, company))
+        
+        user_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        
+        # Create session
+        from foodxchange.core.auth import create_user_session
+        session_token = create_user_session(user_id, email, 'user')
+        
+        # Redirect to dashboard
+        response = RedirectResponse(url="/dashboard", status_code=303)
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=30 * 24 * 60 * 60  # 30 days
+        )
+        return response
+        
+    except Exception as e:
+        print(f"Signup error: {str(e)}")
+        return RedirectResponse(url="/signup?error=registration_failed", status_code=303)
+
+@app.get("/support")
+async def support_page(request: Request):
+    from foodxchange.core.auth import get_current_user
+    
+    # Check authentication
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
+    
+    return templates.TemplateResponse("pages/support_admin.html", {
+        "request": request,
+        "current_user": {
+            "id": user.user_id,
+            "email": user.email,
+            "role": user.role,
+            "is_admin": user.is_admin
+        }
+    })
+
+@app.get("/support/admin")
+async def support_admin_page(request: Request):
+    """Support admin dashboard page"""
+    from foodxchange.core.auth import get_current_user
+    
+    # Check authentication
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
+    
+    return templates.TemplateResponse("pages/support_admin.html", {
+        "request": request,
+        "current_user": {
+            "id": user.user_id,
+            "email": user.email,
+            "role": user.role,
+            "is_admin": user.is_admin
+        }
+    })
 
 @app.get("/suppliers")
 async def suppliers_page(request: Request):
     """Suppliers page"""
+    from foodxchange.core.auth import get_current_user
+    
+    # Check authentication
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
+    
     try:
-        return templates.TemplateResponse("pages/suppliers.html", {"request": request})
+        return templates.TemplateResponse("pages/suppliers.html", {
+            "request": request,
+            "current_user": {
+                "id": user.user_id,
+                "email": user.email,
+                "role": user.role,
+                "is_admin": user.is_admin
+            }
+        })
     except Exception as e:
         logger.error(f"Template error: {e}")
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
@@ -561,8 +801,26 @@ async def suppliers_page(request: Request):
 @app.get("/buyers")
 async def buyers_page(request: Request):
     """Buyers page"""
+    from foodxchange.core.auth import get_current_user
+    
+    # Check authentication - Admin/Operator only
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
+    
+    if user.role not in ["admin", "operator"] and not user.is_admin:
+        return RedirectResponse(url="/dashboard?error=unauthorized", status_code=303)
+    
     try:
-        return templates.TemplateResponse("pages/buyers.html", {"request": request})
+        return templates.TemplateResponse("pages/buyers.html", {
+            "request": request,
+            "current_user": {
+                "id": user.user_id,
+                "email": user.email,
+                "role": user.role,
+                "is_admin": user.is_admin
+            }
+        })
     except Exception as e:
         logger.error(f"Template error: {e}")
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
@@ -672,6 +930,13 @@ async def create_supplier(request: Request):
 @app.get("/projects")
 async def projects_page(request: Request):
     """Projects page to view saved analysis projects"""
+    from foodxchange.core.auth import get_current_user
+    
+    # Check authentication
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
+    
     try:
         # Get list of saved projects
         projects_dir = os.path.join(os.getcwd(), "projects")
@@ -698,17 +963,30 @@ async def projects_page(request: Request):
         # Sort projects by creation date (newest first)
         projects.sort(key=lambda x: x.get('created_at', ''), reverse=True)
         
-        return templates.TemplateResponse("pages/projects.html", {
+        return templates.TemplateResponse("pages/projects_enhanced.html", {
             "request": request,
-            "projects": projects
+            "projects": projects,
+            "current_user": {
+                "id": user.user_id,
+                "email": user.email,
+                "role": user.role,
+                "is_admin": user.is_admin
+            }
         })
     except Exception as e:
         logger.error(f"Template error: {e}")
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
 
 @app.get("/projects/{filename}")
-async def get_project(filename: str):
+async def get_project(filename: str, request: Request):
     """Get individual project details"""
+    from foodxchange.core.auth import get_current_user
+    
+    # Check authentication
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
+    
     try:
         projects_dir = os.path.join(os.getcwd(), "projects")
         project_path = os.path.join(projects_dir, filename)
@@ -719,19 +997,24 @@ async def get_project(filename: str):
         with open(project_path, 'r', encoding='utf-8') as f:
             project_data = json.loads(f.read())
         
-        return {
-            "success": True,
-            "project": project_data
-        }
+        # Render project detail template
+        return templates.TemplateResponse("pages/project_detail.html", {
+            "request": request,
+            "project": project_data,
+            "filename": filename,
+            "current_user": {
+                "id": user.user_id,
+                "email": user.email,
+                "role": user.role,
+                "is_admin": user.is_admin
+            }
+        })
     except Exception as e:
         logger.error(f"Error reading project {filename}: {e}")
-        return {
-            "success": False,
-            "message": "Error reading project"
-        }
+        return HTMLResponse(content=f"Error reading project: {str(e)}", status_code=500)
 
-@app.delete("/projects/{filename}")
-async def delete_project(filename: str):
+# @app.delete("/projects/{filename}")
+# async def delete_project(filename: str):
     """Delete a project"""
     try:
         projects_dir = os.path.join(os.getcwd(), "projects")
@@ -753,8 +1036,8 @@ async def delete_project(filename: str):
             "message": "Error deleting project"
         }
 
-@app.put("/projects/{filename}")
-async def update_project(filename: str, request: Request):
+# @app.put("/projects/{filename}")
+# async def update_project(filename: str, request: Request):
     """Update a project"""
     try:
         projects_dir = os.path.join(os.getcwd(), "projects")
@@ -810,4 +1093,4 @@ async def favicon_png():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("foodxchange.main:app", host="0.0.0.0", port=8003, reload=True) 
+    uvicorn.run("foodxchange.main:app", host="0.0.0.0", port=9000, reload=True) 

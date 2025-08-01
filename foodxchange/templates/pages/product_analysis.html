@@ -416,7 +416,7 @@
                     <!-- Upload Progress -->
                     <div id="uploadProgress" class="d-none">
                         <div class="progress mb-2">
-                            <div class="progress-bar" role="progressbar" style="width: 0%" aria-label="Upload progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar upload-progress-bar" role="progressbar" aria-label="Upload progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <small class="text-muted">Uploading...</small>
                     </div>
@@ -1278,14 +1278,31 @@
 
     // Notification function
     function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
+        // Map notification types to Bootstrap alert classes
+        const typeMap = {
+            'info': 'alert-info',
+            'success': 'alert-success',
+            'error': 'alert-danger',
+            'warning': 'alert-warning'
+        };
         
+        // Create alert element
+        const alert = document.createElement('div');
+        alert.className = `alert ${typeMap[type] || 'alert-info'} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+        alert.style.zIndex = '9999';
+        alert.style.minWidth = '300px';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        document.body.appendChild(alert);
+        
+        // Auto-dismiss after 5 seconds
         setTimeout(() => {
-            notification.remove();
-        }, 3000);
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 150);
+        }, 5000);
     }
 
     // File upload handling
@@ -1422,13 +1439,16 @@
 
     async function analyzeImages() {
         console.log('Starting automatic AI analysis...');
-        const files = window.selectedFiles || document.getElementById('imageInput').files;
-        console.log('Files found:', files);
-        console.log('Selected files:', window.selectedFiles);
-        console.log('Input files:', document.getElementById('imageInput').files);
+        console.log('window.selectedFiles:', window.selectedFiles);
+        console.log('imageInput element:', document.getElementById('imageInput'));
+        console.log('imageInput files:', document.getElementById('imageInput')?.files);
+        
+        const files = window.selectedFiles || document.getElementById('imageInput')?.files;
+        console.log('Files to analyze:', files);
         
         if (!files || files.length === 0) {
             showNotification('Please select at least one image to analyze', 'error');
+            console.error('No files found. window.selectedFiles:', window.selectedFiles, 'input files:', document.getElementById('imageInput')?.files);
             return;
         }
 
@@ -1454,6 +1474,12 @@
                 body: formData
             });
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server response:', response.status, errorText);
+                throw new Error(`Server error: ${response.status}`);
+            }
+
             const data = await response.json();
 
             if (data.success) {
@@ -1476,7 +1502,18 @@
                 }
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error analyzing images:', error);
+            console.error('Error details:', error.message, error.stack);
+            
+            // Log the error to our error tracking system
+            if (window.logError) {
+                window.logError(error, {
+                    context: 'product_analysis',
+                    action: 'analyze_images',
+                    files_count: files?.length || 0
+                });
+            }
+            
             // Use enhanced error handling
             if (window.enhancedErrorHandler) {
                 window.enhancedErrorHandler.handleError(error, {
@@ -1485,7 +1522,7 @@
                     severity: 'medium'
                 });
             } else {
-                showNotification('Error analyzing images. Please try again.', 'error');
+                showNotification(`Error analyzing images: ${error.message}`, 'error');
             }
         } finally {
             analyzeBtn.disabled = false;

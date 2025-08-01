@@ -27,7 +27,7 @@
     <!-- Stats Cards - More compact -->
     <div class="row mb-2">
         <div class="col-xl-3 col-md-6 mb-2">
-            <div class="card stat-card border-0 shadow-sm h-100">
+            <div class="card stat-card border-0 shadow-sm h-100 clickable-stat" data-stat="ai-analysis" style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-2">
-            <div class="card stat-card border-0 shadow-sm h-100">
+            <div class="card stat-card border-0 shadow-sm h-100 clickable-stat" data-stat="suppliers" style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="bg-success bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-2">
-            <div class="card stat-card border-0 shadow-sm h-100">
+            <div class="card stat-card border-0 shadow-sm h-100 clickable-stat" data-stat="efficiency" style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="bg-info bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
@@ -75,7 +75,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-2">
-            <div class="card stat-card border-0 shadow-sm h-100">
+            <div class="card stat-card border-0 shadow-sm h-100 clickable-stat" data-stat="savings" style="cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="bg-warning bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
@@ -101,7 +101,7 @@
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body quick-actions">
                     <div class="row">
                         <div class="col-md-6 mb-2">
                             <a href="/product-analysis/" class="btn btn-primary w-100">
@@ -199,44 +199,50 @@
                     <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Recent Projects</h5>
                 </div>
                 <div class="card-body">
-                    <div class="project-item mb-2">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="mb-1">Organic Snacks Analysis</h6>
-                                <small class="text-muted">3 products analyzed</small>
+                    <a href="/projects/organic_snacks_analysis.json" class="text-decoration-none">
+                        <div class="project-item mb-2 clickable-project" style="cursor: pointer; transition: all 0.3s ease;">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1 text-dark">Organic Snacks Analysis</h6>
+                                    <small class="text-muted">3 products analyzed</small>
+                                </div>
+                                <span class="badge bg-success">Active</span>
                             </div>
-                            <span class="badge bg-success">Active</span>
+                            <div class="progress mt-2" style="height: 4px;">
+                                <div class="progress-bar bg-success" style="width: 75%"></div>
+                            </div>
                         </div>
-                        <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-success" style="width: 75%"></div>
-                        </div>
-                    </div>
+                    </a>
 
-                    <div class="project-item mb-2">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="mb-1">Beverage Sourcing</h6>
-                                <small class="text-muted">12 suppliers contacted</small>
+                    <a href="/projects/beverage_sourcing.json" class="text-decoration-none">
+                        <div class="project-item mb-2 clickable-project" style="cursor: pointer; transition: all 0.3s ease;">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1 text-dark">Beverage Sourcing</h6>
+                                    <small class="text-muted">12 suppliers contacted</small>
+                                </div>
+                                <span class="badge bg-warning">Pending</span>
                             </div>
-                            <span class="badge bg-warning">Pending</span>
+                            <div class="progress mt-2" style="height: 4px;">
+                                <div class="progress-bar bg-warning" style="width: 45%"></div>
+                            </div>
                         </div>
-                        <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-warning" style="width: 45%"></div>
-                        </div>
-                    </div>
+                    </a>
 
-                    <div class="project-item mb-2">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="mb-1">Dairy Products Review</h6>
-                                <small class="text-muted">8 products reviewed</small>
+                    <a href="/projects/dairy_products_review.json" class="text-decoration-none">
+                        <div class="project-item mb-2 clickable-project" style="cursor: pointer; transition: all 0.3s ease;">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1 text-dark">Dairy Products Review</h6>
+                                    <small class="text-muted">8 products reviewed</small>
+                                </div>
+                                <span class="badge bg-success">Completed</span>
                             </div>
-                            <span class="badge bg-success">Completed</span>
+                            <div class="progress mt-2" style="height: 4px;">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
                         </div>
-                        <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-success" style="width: 100%"></div>
-                        </div>
-                    </div>
+                    </a>
 
                     <a href="/projects" class="btn btn-outline-info btn-sm w-100">
                         View All Projects
@@ -292,4 +298,644 @@
         </div>
     </div>
 </div>
+
+<!-- Stats Data Modals -->
+<!-- AI Analysis Modal -->
+<div class="modal fade" id="aiAnalysisModal" tabindex="-1" aria-labelledby="aiAnalysisModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="aiAnalysisModalLabel">
+                    <i class="fas fa-robot me-2"></i>AI Analysis Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-primary mb-0">24</h3>
+                                <p class="text-muted mb-0">Total Analyses</p>
+                                <small class="text-success"><i class="fas fa-arrow-up"></i> +12% this week</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-success mb-0">18</h3>
+                                <p class="text-muted mb-0">Successful</p>
+                                <small class="text-success">75% success rate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4 mb-3"><i class="fas fa-chart-bar me-2"></i>Recent Analyses</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Organic Dried Cranberries</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>2 hours ago</td>
+                                <td>94%</td>
+                            </tr>
+                            <tr>
+                                <td>Almond Butter</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>6 hours ago</td>
+                                <td>87%</td>
+                            </tr>
+                            <tr>
+                                <td>Greek Yogurt</td>
+                                <td><span class="badge bg-warning">Processing</span></td>
+                                <td>1 day ago</td>
+                                <td>--</td>
+                            </tr>
+                            <tr>
+                                <td>Quinoa Seeds</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>2 days ago</td>
+                                <td>91%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/product-analysis/" class="btn btn-primary">
+                    <i class="fas fa-robot me-2"></i>New Analysis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Suppliers Modal -->
+<div class="modal fade" id="suppliersModal" tabindex="-1" aria-labelledby="suppliersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="suppliersModalLabel">
+                    <i class="fas fa-globe me-2"></i>Suppliers Overview
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-success mb-0">156</h3>
+                                <p class="text-muted mb-0">Total</p>
+                                <small class="text-success"><i class="fas fa-arrow-up"></i> +8% this month</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-primary mb-0">142</h3>
+                                <p class="text-muted mb-0">Active</p>
+                                <small class="text-success">91% active rate</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-warning mb-0">14</h3>
+                                <p class="text-muted mb-0">Pending</p>
+                                <small class="text-warning">9% pending</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-info mb-0">23</h3>
+                                <p class="text-muted mb-0">Countries</p>
+                                <small class="text-info">Global reach</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4 mb-3"><i class="fas fa-star me-2"></i>Top Suppliers</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Supplier</th>
+                                <th>Category</th>
+                                <th>Rating</th>
+                                <th>Products</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Global Foods Inc.</td>
+                                <td>Organic</td>
+                                <td><i class="fas fa-star text-warning"></i> 4.8</td>
+                                <td>45</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Fresh Harvest Co.</td>
+                                <td>Dairy</td>
+                                <td><i class="fas fa-star text-warning"></i> 4.7</td>
+                                <td>32</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Natural Valley</td>
+                                <td>Grains</td>
+                                <td><i class="fas fa-star text-warning"></i> 4.6</td>
+                                <td>28</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Organic Plus</td>
+                                <td>Beverages</td>
+                                <td><i class="fas fa-star text-warning"></i> 4.5</td>
+                                <td>19</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/suppliers" class="btn btn-success">
+                    <i class="fas fa-truck me-2"></i>Manage Suppliers
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Efficiency Modal -->
+<div class="modal fade" id="efficiencyModal" tabindex="-1" aria-labelledby="efficiencyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="efficiencyModalLabel">
+                    <i class="fas fa-chart-line me-2"></i>Efficiency Metrics
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-info mb-0">87%</h3>
+                                <p class="text-muted mb-0">Overall</p>
+                                <small class="text-success"><i class="fas fa-arrow-up"></i> +5% this week</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-success mb-0">92%</h3>
+                                <p class="text-muted mb-0">AI Accuracy</p>
+                                <small class="text-success">+3% improvement</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-warning mb-0">78%</h3>
+                                <p class="text-muted mb-0">Response Time</p>
+                                <small class="text-warning">Needs improvement</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4 mb-3"><i class="fas fa-tachometer-alt me-2"></i>Performance Breakdown</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">AI Analysis Speed</label>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 92%">92%</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Supplier Response Rate</label>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" style="width: 87%">87%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Data Accuracy</label>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" style="width: 89%">89%</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">User Satisfaction</label>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: 78%">78%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info">
+                    <i class="fas fa-chart-bar me-2"></i>View Full Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Savings Modal -->
+<div class="modal fade" id="savingsModal" tabindex="-1" aria-labelledby="savingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="savingsModalLabel">
+                    <i class="fas fa-dollar-sign me-2"></i>Cost Savings Analysis
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-warning mb-0">$12.4K</h3>
+                                <p class="text-muted mb-0">Total Saved</p>
+                                <small class="text-success"><i class="fas fa-arrow-up"></i> +15% this month</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-success mb-0">$8.2K</h3>
+                                <p class="text-muted mb-0">Procurement</p>
+                                <small class="text-success">Better pricing</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-info mb-0">$2.8K</h3>
+                                <p class="text-muted mb-0">Time Saved</p>
+                                <small class="text-info">Automation</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <h3 class="text-primary mb-0">$1.4K</h3>
+                                <p class="text-muted mb-0">Quality</p>
+                                <small class="text-primary">Better products</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4 mb-3"><i class="fas fa-chart-pie me-2"></i>Savings by Category</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="savingsChart" width="300" height="200"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Organic Products</td>
+                                        <td>$5.2K</td>
+                                        <td>42%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dairy & Eggs</td>
+                                        <td>$3.8K</td>
+                                        <td>31%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Grains & Cereals</td>
+                                        <td>$2.1K</td>
+                                        <td>17%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Beverages</td>
+                                        <td>$1.3K</td>
+                                        <td>10%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning">
+                    <i class="fas fa-download me-2"></i>Export Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Enhanced Quick Actions Button Styling */
+.quick-actions .btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+}
+
+.quick-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+}
+
+.quick-actions .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.quick-actions .btn:hover::before {
+    left: 100%;
+}
+
+/* Card hover effects */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Activity item hover effects */
+.activity-item {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.activity-item:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transform: translateX(4px);
+}
+
+/* Project item hover effects */
+.project-item {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.project-item:hover {
+    background-color: rgba(23, 162, 184, 0.05);
+    transform: translateX(4px);
+}
+
+/* Status item styling */
+.status-item {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    padding: 6px;
+}
+
+.status-item:hover {
+    background-color: rgba(40, 167, 69, 0.05);
+}
+
+/* Tip item styling */
+.tip-item {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    padding: 6px;
+}
+
+.tip-item:hover {
+    background-color: rgba(255, 193, 7, 0.05);
+    transform: translateX(4px);
+}
+
+/* Clickable Stats Cards */
+.clickable-stat {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.clickable-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.clickable-stat:active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.clickable-stat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.clickable-stat:hover::before {
+    left: 100%;
+}
+
+.clickable-stat::after {
+    content: 'Click for details';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-size: 0.7rem;
+    color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.clickable-stat:hover::after {
+    opacity: 1;
+}
+
+/* Modal enhancements */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-footer {
+    border-radius: 0 0 12px 12px;
+}
+
+/* Clickable Project Items */
+.clickable-project {
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.clickable-project:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.clickable-project:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.clickable-project:hover h6 {
+    color: #0d6efd !important;
+}
+
+.clickable-project:hover .progress-bar {
+    animation: progressPulse 1s ease-in-out;
+}
+
+@keyframes progressPulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+</style>
+
+<script>
+// Stats Cards Click Handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click event listeners to all clickable stat cards
+    const statCards = document.querySelectorAll('.clickable-stat');
+    
+    statCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const statType = this.getAttribute('data-stat');
+            showStatModal(statType);
+        });
+    });
+});
+
+function showStatModal(statType) {
+    let modalId = '';
+    
+    switch(statType) {
+        case 'ai-analysis':
+            modalId = 'aiAnalysisModal';
+            break;
+        case 'suppliers':
+            modalId = 'suppliersModal';
+            break;
+        case 'efficiency':
+            modalId = 'efficiencyModal';
+            break;
+        case 'savings':
+            modalId = 'savingsModal';
+            break;
+        default:
+            console.error('Unknown stat type:', statType);
+            return;
+    }
+    
+    // Show the modal using Bootstrap
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.show();
+}
+
+// Add keyboard navigation support
+document.addEventListener('keydown', function(e) {
+    // ESC key to close modals
+    if (e.key === 'Escape') {
+        const openModals = document.querySelectorAll('.modal.show');
+        openModals.forEach(modal => {
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        });
+    }
+});
+
+// Add touch support for mobile devices
+document.addEventListener('touchstart', function(e) {
+    const statCard = e.target.closest('.clickable-stat');
+    if (statCard) {
+        statCard.style.transform = 'translateY(-2px)';
+    }
+});
+
+document.addEventListener('touchend', function(e) {
+    const statCard = e.target.closest('.clickable-stat');
+    if (statCard) {
+        statCard.style.transform = '';
+    }
+});
+</script>
+
 {% endblock %} 

@@ -1,0 +1,1038 @@
+<!-- Quick Help Content Modals -->
+<!-- Getting Started Guide Modal -->
+<div class="modal fade" id="gettingStartedModal" tabindex="-1" aria-labelledby="gettingStartedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="gettingStartedModalLabel">
+                    <i class="fas fa-book me-2"></i>Getting Started Guide
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="content-area">
+                            <h4>Welcome to FoodXchange!</h4>
+                            <p class="lead">Your comprehensive platform for food industry sourcing and analysis.</p>
+                            
+                            <div class="guide-section mb-4">
+                                <h5><i class="fas fa-rocket text-primary me-2"></i>Quick Start in 5 Steps</h5>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <ol>
+                                            <li><strong>Upload Product Images</strong> - Take a photo or upload an image of the food product you want to source</li>
+                                            <li><strong>AI Analysis</strong> - Our GPT-4 Vision analyzes ingredients, nutritional info, and product characteristics</li>
+                                            <li><strong>Supplier Matching</strong> - FDX.trading automatically matches you with verified suppliers worldwide</li>
+                                            <li><strong>Request Quotes</strong> - Send RFQs to multiple suppliers with one click</li>
+                                            <li><strong>Track Progress</strong> - Monitor your sourcing project through our 5-stage lifecycle system</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="guide-section mb-4">
+                                <h5><i class="fas fa-cogs text-success me-2"></i>Key Features</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="feature-card card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-robot text-primary me-2"></i>GPT-4 Vision AI</h6>
+                                                <p class="small">Advanced AI that reads labels, identifies products, and extracts all relevant information from images</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-card card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-globe text-success me-2"></i>B2B Food Network</h6>
+                                                <p class="small">Access 10,000+ verified food suppliers, manufacturers, and distributors globally</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-card card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-chart-line text-info me-2"></i>5-Stage Lifecycle</h6>
+                                                <p class="small">Track projects through: Buyer Request → Supplier Search → Portfolio → Proposals → Decision</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-card card mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-shield-alt text-warning me-2"></i>Secure Platform</h6>
+                                                <p class="small">Enterprise-grade security with Azure cloud infrastructure and data protection</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="sidebar">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Pro Tips</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Take clear photos of product labels for best AI results</li>
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Use batch upload for multiple products</li>
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Set price alerts for your regular purchases</li>
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Compare suppliers side-by-side</li>
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Track shipments in real-time</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="startTutorial()">
+                    <i class="fas fa-play me-2"></i>Start Interactive Tutorial
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Tutorials Modal -->
+<div class="modal fade" id="videoTutorialsModal" tabindex="-1" aria-labelledby="videoTutorialsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="videoTutorialsModalLabel">
+                    <i class="fas fa-video me-2"></i>Video Tutorials
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="video-player-area">
+                            <div class="video-container bg-dark rounded mb-3" style="height: 400px; display: flex; align-items: center; justify-content: center;">
+                                <div class="text-center text-white">
+                                    <i class="fas fa-play-circle fa-3x mb-3"></i>
+                                    <p>Select a video to start watching</p>
+                                </div>
+                            </div>
+                            <h4 id="videoTitle">Choose a Tutorial</h4>
+                            <p id="videoDescription">Select a video from the playlist to get started.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="video-playlist">
+                            <h6 class="mb-3">Tutorial Playlist</h6>
+                            <div class="list-group">
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('getting-started', 'Getting Started with FDX.trading', 'Complete walkthrough of the FDX.trading platform')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-primary text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Platform Overview</h6>
+                                            <small class="text-muted">5:23</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('ai-analysis', 'GPT-4 Vision Product Analysis', 'How to use AI to analyze food products from images')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-success text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">AI Product Analysis</h6>
+                                            <small class="text-muted">8:45</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('5-stages', '5-Stage Sourcing Lifecycle', 'Understanding the complete sourcing process')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-warning text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">5-Stage Process</h6>
+                                            <small class="text-muted">10:30</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('supplier-network', 'B2B Supplier Network', 'Finding and connecting with global food suppliers')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-info text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Supplier Network</h6>
+                                            <small class="text-muted">12:18</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('project-management', 'Project Management', 'Managing multiple sourcing projects efficiently')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-secondary text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Project Management</h6>
+                                            <small class="text-muted">15:42</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('mobile-app', 'Mobile App Tutorial', 'Using FDX.trading on mobile devices')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-danger text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Mobile App Guide</h6>
+                                            <small class="text-muted">7:15</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('advanced-features', 'Advanced Features', 'Power user tips and tricks')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-dark text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Advanced Features</h6>
+                                            <small class="text-muted">20:00</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="playVideo('api-integration', 'API Integration', 'Integrating FDX.trading with your systems')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="video-thumbnail bg-purple text-white rounded me-3" style="width: 60px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: #6f42c1;">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">API Integration</h6>
+                                            <small class="text-muted">25:30</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="downloadVideo()">
+                    <i class="fas fa-download me-2"></i>Download Video
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Documentation Modal -->
+<div class="modal fade" id="documentationModal" tabindex="-1" aria-labelledby="documentationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="documentationModalLabel">
+                    <i class="fas fa-file-alt me-2"></i>Documentation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="doc-sidebar">
+                            <h6 class="mb-3">Documentation Sections</h6>
+                            <div class="list-group">
+                                <div class="list-group-item list-group-item-action active" onclick="showDocSection('api')">
+                                    <i class="fas fa-code me-2"></i>API Reference
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="showDocSection('user-guide')">
+                                    <i class="fas fa-user me-2"></i>User Guide
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="showDocSection('admin')">
+                                    <i class="fas fa-cog me-2"></i>Admin Guide
+                                </div>
+                                <div class="list-group-item list-group-item-action" onclick="showDocSection('troubleshooting')">
+                                    <i class="fas fa-tools me-2"></i>Troubleshooting
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="doc-content">
+                            <div id="api-section" class="doc-section">
+                                <h4>FDX.trading API Reference</h4>
+                                <p>Complete API documentation for integrating FDX.trading with your systems.</p>
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6>Authentication</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <pre><code>POST /api/auth/login
+  Body: { "email": "user@example.com", "password": "pass123" }
+  Returns: { "token": "jwt_token", "user": {...} }
+
+POST /api/auth/register
+  Body: { "email": "user@example.com", "password": "pass123", "company": "Company Name" }
+  Returns: { "success": true, "message": "Registration successful" }
+
+GET /api/auth/logout
+  Headers: { "Authorization": "Bearer jwt_token" }
+  Returns: { "success": true }</code></pre>
+                                    </div>
+                                </div>
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6>Product Analysis</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <pre><code>POST /api/analyze/product
+  Headers: { "Authorization": "Bearer jwt_token" }
+  Body: FormData with image file
+  Returns: {
+    "product_name": "Organic Honey",
+    "ingredients": ["100% Pure Honey"],
+    "nutritional_info": {...},
+    "certifications": ["USDA Organic", "Fair Trade"]
+  }</code></pre>
+                                    </div>
+                                </div>
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6>Supplier Management</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <pre><code>GET /api/suppliers
+  Query: ?category=honey&location=usa&certified=true
+  Returns: { "suppliers": [...], "total": 150 }
+
+POST /api/suppliers/rfq
+  Body: { "supplier_ids": [1,2,3], "product": "Organic Honey", "quantity": 5000 }
+  Returns: { "rfq_id": "RFQ-2024-001", "status": "sent" }</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="user-guide-section" class="doc-section" style="display: none;">
+                                <h4>FDX.trading User Guide</h4>
+                                <p>Complete guide for using the FDX.trading platform effectively.</p>
+                                <div class="accordion" id="userGuideAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#userGuide1">
+                                                1. Getting Started with FDX.trading
+                                            </button>
+                                        </h2>
+                                        <div id="userGuide1" class="accordion-collapse collapse show" data-bs-parent="#userGuideAccordion">
+                                            <div class="accordion-body">
+                                                <h6>Account Setup</h6>
+                                                <ol>
+                                                    <li>Register with your business email</li>
+                                                    <li>Verify your email address</li>
+                                                    <li>Complete your company profile</li>
+                                                    <li>Upload business verification documents</li>
+                                                </ol>
+                                                <h6>First Product Analysis</h6>
+                                                <ol>
+                                                    <li>Click "Analyze Product" on the dashboard</li>
+                                                    <li>Upload a clear image of the product</li>
+                                                    <li>Review AI-generated analysis</li>
+                                                    <li>Create sourcing project from analysis</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#userGuide2">
+                                                2. Using GPT-4 Vision AI
+                                            </button>
+                                        </h2>
+                                        <div id="userGuide2" class="accordion-collapse collapse" data-bs-parent="#userGuideAccordion">
+                                            <div class="accordion-body">
+                                                <h6>Best Practices for Product Images</h6>
+                                                <ul>
+                                                    <li>Ensure good lighting and focus</li>
+                                                    <li>Include all sides of packaging</li>
+                                                    <li>Capture nutritional labels clearly</li>
+                                                    <li>Include certification marks</li>
+                                                </ul>
+                                                <h6>AI Analysis Results</h6>
+                                                <p>The AI extracts:</p>
+                                                <ul>
+                                                    <li>Product name and brand</li>
+                                                    <li>Ingredients list</li>
+                                                    <li>Nutritional information</li>
+                                                    <li>Allergen warnings</li>
+                                                    <li>Certifications (Organic, Kosher, etc.)</li>
+                                                    <li>Storage requirements</li>
+                                                    <li>Shelf life information</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#userGuide3">
+                                                3. 5-Stage Sourcing Process
+                                            </button>
+                                        </h2>
+                                        <div id="userGuide3" class="accordion-collapse collapse" data-bs-parent="#userGuideAccordion">
+                                            <div class="accordion-body">
+                                                <h6>Stage 1: Buyer Request</h6>
+                                                <p>Upload product images and specify requirements</p>
+                                                <h6>Stage 2: Supplier Search</h6>
+                                                <p>AI matches you with relevant suppliers</p>
+                                                <h6>Stage 3: Products in Portfolio</h6>
+                                                <p>Review matched products and alternatives</p>
+                                                <h6>Stage 4: Proposals & Samples</h6>
+                                                <p>Receive quotes and request samples</p>
+                                                <h6>Stage 5: Project Decision</h6>
+                                                <p>Compare offers and make final selection</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="admin-section" class="doc-section" style="display: none;">
+                                <h4>Admin Guide</h4>
+                                <p>Administration and management features for FDX.trading.</p>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>Admin features require elevated permissions.
+                                </div>
+                                <h6>User Management</h6>
+                                <ul>
+                                    <li>Add/remove team members</li>
+                                    <li>Set role permissions</li>
+                                    <li>Monitor user activity</li>
+                                    <li>Manage API access keys</li>
+                                </ul>
+                                <h6>Supplier Verification</h6>
+                                <ul>
+                                    <li>Review supplier applications</li>
+                                    <li>Verify business documents</li>
+                                    <li>Set supplier ratings</li>
+                                    <li>Manage supplier categories</li>
+                                </ul>
+                            </div>
+                            <div id="troubleshooting-section" class="doc-section" style="display: none;">
+                                <h4>Troubleshooting Guide</h4>
+                                <p>Common issues and solutions for FDX.trading platform.</p>
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6>Image Analysis Issues</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Problem:</strong> AI cannot read product information</p>
+                                        <p><strong>Solutions:</strong></p>
+                                        <ul>
+                                            <li>Ensure image is clear and well-lit</li>
+                                            <li>Upload higher resolution images (min 1024x768)</li>
+                                            <li>Avoid blurry or angled photos</li>
+                                            <li>Try multiple angles if needed</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6>Login Issues</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Problem:</strong> Cannot access account</p>
+                                        <p><strong>Solutions:</strong></p>
+                                        <ul>
+                                            <li>Check email verification status</li>
+                                            <li>Use password reset if forgotten</li>
+                                            <li>Clear browser cache and cookies</li>
+                                            <li>Contact support if account is locked</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" onclick="exportDocumentation()">
+                    <i class="fas fa-file-pdf me-2"></i>Export as PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQs Modal -->
+<div class="modal fade" id="faqsModal" tabindex="-1" aria-labelledby="faqsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="faqsModalLabel">
+                    <i class="fas fa-question me-2"></i>Frequently Asked Questions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="accordion" id="faqAccordion">
+                    <!-- General FAQs -->
+                    <h6 class="mt-3 mb-2 text-muted">General Questions</h6>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                What is FDX.trading and how does it work?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                FDX.trading is an AI-powered B2B food sourcing platform that connects buyers with suppliers globally. Upload product images, get AI analysis, match with suppliers, and manage sourcing projects through our 5-stage lifecycle process.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How accurate is the GPT-4 Vision AI analysis?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Our GPT-4 Vision AI has 95%+ accuracy in reading product labels, identifying ingredients, nutritional information, and certifications. For best results, upload clear, well-lit images of all product sides.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                What types of food products can I source?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                FDX.trading supports all food categories including: packaged goods, fresh produce, frozen foods, beverages, ingredients, supplements, organic products, specialty foods, and private label products.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Supplier FAQs -->
+                    <h6 class="mt-4 mb-2 text-muted">Supplier Questions</h6>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                How are suppliers verified on FDX.trading?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                All suppliers undergo verification including: business registration check, certification validation, reference verification, and quality standards assessment. Look for the "Verified Supplier" badge.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                Can I request samples before ordering?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! In Stage 4 (Proposals & Samples), you can request product samples from shortlisted suppliers. Sample policies and costs vary by supplier.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pricing FAQs -->
+                    <h6 class="mt-4 mb-2 text-muted">Pricing & Payments</h6>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                                How much does FDX.trading cost?
+                            </button>
+                        </h2>
+                        <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                FDX.trading offers flexible pricing: Free tier (5 product analyses/month), Professional ($99/month unlimited analyses), Enterprise (custom pricing with API access and dedicated support).
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+                                How are payments handled?
+                            </button>
+                        </h2>
+                        <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                FDX.trading facilitates connections between buyers and suppliers. Actual transactions are handled directly between parties using their preferred payment terms (LC, T/T, escrow, etc.).
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Technical FAQs -->
+                    <h6 class="mt-4 mb-2 text-muted">Technical Questions</h6>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">
+                                Can I integrate FDX.trading with my ERP system?
+                            </button>
+                        </h2>
+                        <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! We offer REST API integration for Enterprise customers. Connect with SAP, Oracle, Microsoft Dynamics, or custom systems. See our API documentation for details.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9">
+                                Is my data secure on FDX.trading?
+                            </button>
+                        </h2>
+                        <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Absolutely! We use enterprise-grade security with Azure cloud infrastructure, SSL encryption, SOC 2 compliance, GDPR compliance, and regular security audits. Your data is encrypted at rest and in transit.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Support FAQs -->
+                    <h6 class="mt-4 mb-2 text-muted">Support & Training</h6>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq10">
+                                What support options are available?
+                            </button>
+                        </h2>
+                        <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Support varies by plan: Free (community forum), Professional (email support, 24hr response), Enterprise (dedicated account manager, phone support, 1hr response time).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="submitFAQ()">
+                    <i class="fas fa-plus me-2"></i>Submit New Question
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Help Editor Modal -->
+<div class="modal fade" id="quickHelpEditorModal" tabindex="-1" aria-labelledby="quickHelpEditorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="quickHelpEditorModalLabel">
+                    <i class="fas fa-edit me-2"></i>Edit Quick Help Content
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="nav flex-column nav-pills">
+                            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#getting-started-editor">
+                                <i class="fas fa-book me-2"></i>Getting Started
+                            </button>
+                            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#video-tutorials-editor">
+                                <i class="fas fa-video me-2"></i>Video Tutorials
+                            </button>
+                            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#documentation-editor">
+                                <i class="fas fa-file-alt me-2"></i>Documentation
+                            </button>
+                            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#faqs-editor">
+                                <i class="fas fa-question me-2"></i>FAQs
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="getting-started-editor">
+                                <h6>Getting Started Guide Content</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Title</label>
+                                    <input type="text" class="form-control" value="Welcome to FoodXchange!">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Content</label>
+                                    <textarea class="form-control" rows="10">Your comprehensive platform for food industry sourcing and analysis...</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Upload Images</label>
+                                    <input type="file" class="form-control" accept="image/*" multiple>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="video-tutorials-editor">
+                                <h6>Video Tutorials Management</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Upload New Video</label>
+                                    <input type="file" class="form-control" accept="video/*">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Video Title</label>
+                                    <input type="text" class="form-control" placeholder="Enter video title">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" rows="3" placeholder="Enter video description"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select">
+                                        <option>Getting Started</option>
+                                        <option>AI Analysis</option>
+                                        <option>Supplier Management</option>
+                                        <option>Advanced Features</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="documentation-editor">
+                                <h6>Documentation Editor</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Section</label>
+                                    <select class="form-select">
+                                        <option>API Reference</option>
+                                        <option>User Guide</option>
+                                        <option>Admin Guide</option>
+                                        <option>Troubleshooting</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Content</label>
+                                    <textarea class="form-control" rows="15" placeholder="Enter documentation content..."></textarea>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="faqs-editor">
+                                <h6>FAQ Management</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Question</label>
+                                    <input type="text" class="form-control" placeholder="Enter question">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Answer</label>
+                                    <textarea class="form-control" rows="5" placeholder="Enter answer"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select">
+                                        <option>General</option>
+                                        <option>Technical</option>
+                                        <option>Billing</option>
+                                        <option>Features</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuickHelpContent()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Edit Button (visible only to admins) -->
+{% if current_user and current_user.is_admin %}
+<div class="position-fixed" style="bottom: 80px; right: 20px; z-index: 1050;">
+    <button class="btn btn-primary btn-lg rounded-circle shadow" data-bs-toggle="modal" data-bs-target="#quickHelpEditorModal" title="Edit Help Content">
+        <i class="fas fa-edit"></i>
+    </button>
+</div>
+{% endif %}
+
+<!-- Styles for Quick Help Modals -->
+<style>
+    .feature-card {
+        transition: transform 0.2s;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .video-playlist .list-group-item {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .video-playlist .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .doc-sidebar .list-group-item {
+        cursor: pointer;
+        border: none;
+        border-radius: 0.25rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .doc-sidebar .list-group-item.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .doc-section {
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: var(--primary-color);
+    }
+    
+    pre code {
+        display: block;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        overflow-x: auto;
+    }
+    
+    .nav-pills .nav-link {
+        color: #495057;
+        border-radius: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color);
+    }
+    
+    /* Video container responsive */
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0 !important;
+        overflow: hidden;
+    }
+    
+    .video-container iframe,
+    .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<!-- JavaScript for Quick Help functionality -->
+<script>
+// Initialize help system
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user needs onboarding
+    if (!localStorage.getItem('fdx_onboarding_complete')) {
+        // Show getting started modal for new users
+        setTimeout(() => {
+            const gettingStartedModal = document.getElementById('gettingStartedModal');
+            if (gettingStartedModal) {
+                const modal = new bootstrap.Modal(gettingStartedModal);
+                modal.show();
+            }
+        }, 2000);
+    }
+});
+
+// Start interactive tutorial
+function startTutorial() {
+    // Close the modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('gettingStartedModal'));
+    if (modal) modal.hide();
+    
+    // Start tutorial (you can implement a step-by-step guide here)
+    showNotification('Interactive tutorial starting...', 'info');
+    localStorage.setItem('fdx_onboarding_complete', 'true');
+}
+
+// Play video function
+function playVideo(videoId, title, description) {
+    document.getElementById('videoTitle').textContent = title;
+    document.getElementById('videoDescription').textContent = description;
+    
+    // Update video container (in production, load actual video)
+    const videoContainer = document.querySelector('.video-container');
+    videoContainer.innerHTML = `
+        <div class="text-center text-white">
+            <i class="fas fa-play-circle fa-5x mb-3"></i>
+            <p>Loading video: ${title}</p>
+            <small>Video ID: ${videoId}</small>
+        </div>
+    `;
+    
+    // Mark video as playing
+    document.querySelectorAll('.video-playlist .list-group-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+}
+
+// Download video
+function downloadVideo() {
+    showNotification('Video download started...', 'info');
+}
+
+// Show documentation section
+function showDocSection(section) {
+    // Hide all sections
+    document.querySelectorAll('.doc-section').forEach(sec => {
+        sec.style.display = 'none';
+    });
+    
+    // Show selected section
+    const sectionId = section + '-section';
+    const selectedSection = document.getElementById(sectionId);
+    if (selectedSection) {
+        selectedSection.style.display = 'block';
+    }
+    
+    // Update active state in sidebar
+    document.querySelectorAll('.doc-sidebar .list-group-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+}
+
+// Export documentation
+function exportDocumentation() {
+    showNotification('Preparing documentation export...', 'info');
+    // In production, generate and download PDF
+}
+
+// Submit new FAQ
+function submitFAQ() {
+    const question = prompt('What is your question?');
+    if (question) {
+        showNotification('Thank you! Your question has been submitted.', 'success');
+        // In production, send to backend
+    }
+}
+
+// Save quick help content (admin only)
+function saveQuickHelpContent() {
+    const activeTab = document.querySelector('.tab-pane.active');
+    const tabId = activeTab.id;
+    
+    // Collect data based on active tab
+    let data = {};
+    
+    switch(tabId) {
+        case 'getting-started-editor':
+            data = {
+                type: 'getting-started',
+                title: activeTab.querySelector('input[type="text"]').value,
+                content: activeTab.querySelector('textarea').value
+            };
+            break;
+        case 'video-tutorials-editor':
+            data = {
+                type: 'video',
+                title: activeTab.querySelectorAll('input[type="text"]')[0].value,
+                description: activeTab.querySelector('textarea').value,
+                category: activeTab.querySelector('select').value
+            };
+            break;
+        case 'documentation-editor':
+            data = {
+                type: 'documentation',
+                section: activeTab.querySelector('select').value,
+                content: activeTab.querySelector('textarea').value
+            };
+            break;
+        case 'faqs-editor':
+            data = {
+                type: 'faq',
+                question: activeTab.querySelector('input[type="text"]').value,
+                answer: activeTab.querySelector('textarea').value,
+                category: activeTab.querySelector('select').value
+            };
+            break;
+    }
+    
+    // Send to backend
+    fetch('/api/admin/help-content', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showNotification('Help content updated successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('quickHelpEditorModal')).hide();
+        } else {
+            showNotification('Error updating content: ' + result.message, 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error saving content: ' + error.message, 'error');
+    });
+}
+
+// Quick help search functionality
+function searchHelp(query) {
+    // Search through all help content
+    const searchResults = [];
+    
+    // Search in FAQs
+    document.querySelectorAll('#faqAccordion .accordion-item').forEach(item => {
+        const question = item.querySelector('.accordion-button').textContent;
+        const answer = item.querySelector('.accordion-body').textContent;
+        
+        if (question.toLowerCase().includes(query.toLowerCase()) || 
+            answer.toLowerCase().includes(query.toLowerCase())) {
+            searchResults.push({
+                type: 'FAQ',
+                title: question,
+                content: answer.substring(0, 100) + '...'
+            });
+        }
+    });
+    
+    return searchResults;
+}
+
+// Notification helper
+function showNotification(message, type = 'info') {
+    // Use the enhanced error handler if available
+    if (window.errorHandler) {
+        const methodMap = {
+            'success': 'showSuccess',
+            'error': 'showError',
+            'warning': 'showWarning',
+            'info': 'showInfo'
+        };
+        const method = methodMap[type] || 'showInfo';
+        window.errorHandler[method](message);
+    } else {
+        // Fallback
+        console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+}
+</script> 

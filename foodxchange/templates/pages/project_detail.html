@@ -1,0 +1,619 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+        transform: translateX(-50%);
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+    }
+    
+    .timeline-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        width: calc(50% - 30px);
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content {
+        margin-left: auto;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: 50%;
+        top: 20px;
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 3px solid #dee2e6;
+        border-radius: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        z-index: 1;
+    }
+    
+    .timeline-marker.completed {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    
+    .timeline-marker.in-progress {
+        background: #ffc107;
+        color: white;
+        border-color: #ffc107;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+    }
+    
+    .stage-card {
+        border: none;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .stage-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stage-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-radius: 10px 10px 0 0;
+        cursor: pointer;
+    }
+    
+    .stage-header.completed {
+        background: #d4edda;
+    }
+    
+    .stage-header.in-progress {
+        background: #fff3cd;
+    }
+    
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    
+    .progress-ring-circle {
+        stroke-dasharray: 251.2;
+        stroke-dashoffset: 251.2;
+        animation: progress 1s ease-out forwards;
+    }
+    
+    @keyframes progress {
+        to {
+            stroke-dashoffset: calc(251.2 - (251.2 * var(--progress) / 100));
+        }
+    }
+    
+    .activity-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .data-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .data-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    .data-card-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    .data-card-label {
+        font-size: 14px;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    
+    @media (max-width: 768px) {
+        .timeline::before {
+            left: 30px;
+        }
+        
+        .timeline-content {
+            width: calc(100% - 60px);
+            margin-left: 60px !important;
+        }
+        
+        .timeline-marker {
+            left: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/projects">Projects</a></li>
+                    <li class="breadcrumb-item active">{{ project.project_id }}</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold mb-2">{{ project.name }}</h2>
+            <p class="text-muted">
+                <i class="fas fa-building me-2"></i>{{ project.buyer_company }}
+                <span class="mx-2">•</span>
+                <i class="fas fa-calendar me-2"></i>Created {{ project.created_at }}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group">
+                <button class="btn btn-outline-secondary" onclick="editProject()">
+                    <i class="fas fa-edit me-2"></i>Edit
+                </button>
+                <button class="btn btn-outline-secondary" onclick="exportProject()">
+                    <i class="fas fa-file-export me-2"></i>Export
+                </button>
+                <button class="btn btn-primary" onclick="completeStage()">
+                    <i class="fas fa-check me-2"></i>Complete Stage
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Project Overview -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Project Overview</h5>
+                    
+                    <!-- Progress Overview -->
+                    <div class="row align-items-center mb-4">
+                        <div class="col-md-3 text-center">
+                            <svg width="120" height="120">
+                                <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="10"/>
+                                <circle class="progress-ring-circle" cx="60" cy="60" r="40" fill="none" 
+                                        stroke="var(--primary-color)" stroke-width="10"
+                                        style="--progress: {{ project.completion_percentage }}"/>
+                            </svg>
+                            <h3 class="mt-2">{{ project.completion_percentage }}%</h3>
+                            <p class="text-muted mb-0">Complete</p>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Status:</strong> 
+                                        <span class="badge bg-primary">{{ project.status }}</span>
+                                    </p>
+                                    <p class="mb-2"><strong>Priority:</strong> 
+                                        <span class="badge bg-warning">{{ project.priority }}</span>
+                                    </p>
+                                    <p class="mb-2"><strong>Current Stage:</strong> {{ project.current_stage }}/5</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Target Date:</strong> {{ project.target_completion_date }}</p>
+                                    <p class="mb-2"><strong>Budget Range:</strong> 
+                                        ${{ "{:,.0f}".format(project.budget_range.min) }} - ${{ "{:,.0f}".format(project.budget_range.max) }}
+                                    </p>
+                                    <p class="mb-2"><strong>Products:</strong> {{ project.approved_products }}/{{ project.total_products }} approved</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    {% if project.description %}
+                    <div class="mb-4">
+                        <h6>Description</h6>
+                        <p class="text-muted">{{ project.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Stage Progress Visualization -->
+                    <h6 class="mb-3">Stage Progress</h6>
+                    <div class="timeline d-none d-md-block">
+                        {% for stage in project.stages %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if stage.status == 'Completed' %}completed{% elif stage.status == 'In Progress' %}in-progress{% endif %}">
+                                {{ stage.stage_number }}
+                            </div>
+                            <div class="timeline-content">
+                                <h6>{{ stage.stage_name }}</h6>
+                                <p class="text-muted mb-1">{{ stage.status }}</p>
+                                {% if stage.start_date %}
+                                <small class="text-muted">
+                                    Started: {{ stage.start_date }}
+                                    {% if stage.completion_date %}
+                                    <br>Completed: {{ stage.completion_date }}
+                                    {% endif %}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Mobile Stage View -->
+                    <div class="d-md-none">
+                        {% for stage in project.stages %}
+                        <div class="stage-card card">
+                            <div class="stage-header {% if stage.status == 'Completed' %}completed{% elif stage.status == 'In Progress' %}in-progress{% endif %}"
+                                 data-bs-toggle="collapse" data-bs-target="#stage{{ stage.stage_number }}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        <span class="badge bg-secondary me-2">{{ stage.stage_number }}</span>
+                                        {{ stage.stage_name }}
+                                    </h6>
+                                    <span class="badge bg-light text-dark">{{ stage.status }}</span>
+                                </div>
+                            </div>
+                            <div id="stage{{ stage.stage_number }}" class="collapse">
+                                <div class="card-body">
+                                    <!-- Stage specific data will go here -->
+                                    <pre>{{ stage.data | tojson(indent=2) }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stage Details -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Stage Details</h5>
+                    
+                    {% for stage in project.stages %}
+                    <div class="stage-section mb-4" id="stageDetail{{ stage.stage_number }}">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6>
+                                <span class="badge bg-secondary me-2">{{ stage.stage_number }}</span>
+                                {{ stage.stage_name }}
+                            </h6>
+                            {% if stage.status == 'In Progress' %}
+                            <button class="btn btn-sm btn-primary" onclick="updateStageData({{ stage.stage_number }})">
+                                <i class="fas fa-edit me-1"></i>Update
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        {% if stage.stage_number == 1 and stage.data %}
+                        <div class="data-grid">
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.product_images|length }}</div>
+                                <div class="data-card-label">Product Images</div>
+                            </div>
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.quantity_required }}</div>
+                                <div class="data-card-label">Quantity Required</div>
+                            </div>
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.quality_standards|length }}</div>
+                                <div class="data-card-label">Quality Standards</div>
+                            </div>
+                        </div>
+                        {% elif stage.stage_number == 2 and stage.data %}
+                        <div class="data-grid">
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.suppliers_contacted }}</div>
+                                <div class="data-card-label">Suppliers Contacted</div>
+                            </div>
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.suppliers_shortlisted|length }}</div>
+                                <div class="data-card-label">Shortlisted</div>
+                            </div>
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.response_rate }}%</div>
+                                <div class="data-card-label">Response Rate</div>
+                            </div>
+                        </div>
+                        {% elif stage.stage_number == 3 and stage.data %}
+                        <div class="data-grid">
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.products_matched|length }}</div>
+                                <div class="data-card-label">Products Matched</div>
+                            </div>
+                            <div class="data-card">
+                                <div class="data-card-value">{{ stage.data.alternative_options|length }}</div>
+                                <div class="data-card-label">Alternatives</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Quick Actions</h5>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="advanceStage()">
+                            <i class="fas fa-forward me-2"></i>Advance to Next Stage
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="addNote()">
+                            <i class="fas fa-sticky-note me-2"></i>Add Note
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="uploadDocument()">
+                            <i class="fas fa-paperclip me-2"></i>Attach Document
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="flagIssue()">
+                            <i class="fas fa-flag me-2"></i>Flag Issue
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Log -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Recent Activity</h5>
+                    <div class="activity-log">
+                        {% for activity in project.activity_log[:5] %}
+                        <div class="activity-item">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ activity.timestamp }}</small>
+                                <small class="text-muted">{{ activity.user.split('@')[0] }}</small>
+                            </div>
+                            <p class="mb-0">{{ activity.action }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a href="#" class="btn btn-link btn-sm p-0 mt-2">View All Activity</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update stage data
+function updateStageData(stageNumber) {
+    // Open modal or inline editor for stage data update
+    const newData = prompt(`Update data for stage ${stageNumber}:`);
+    if (newData) {
+        fetch(`/projects/{{ project.project_id }}/stage/${stageNumber}/data`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ data: newData })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Stage data updated successfully', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showNotification('Error: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Error updating stage data: ' + error.message, 'error');
+        });
+    }
+}
+
+// Advance to next stage
+async function advanceStage() {
+    if (confirm('Are you sure you want to advance to the next stage?')) {
+        try {
+            const response = await fetch(`/projects/{{ project.project_id }}/advance`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('Project advanced to next stage!', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showNotification('Error: ' + data.message, 'error');
+            }
+        } catch (error) {
+            showNotification('Error advancing stage: ' + error.message, 'error');
+        }
+    }
+}
+
+// Add note
+async function addNote() {
+    const note = prompt('Add a note to this project:');
+    if (note) {
+        try {
+            const response = await fetch(`/projects/{{ project.project_id }}/note`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ note: note })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('Note added successfully!', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showNotification('Error: ' + data.message, 'error');
+            }
+        } catch (error) {
+            showNotification('Error adding note: ' + error.message, 'error');
+        }
+    }
+}
+
+// Upload document
+async function uploadDocument() {
+    // Create file input element
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // For now, just simulate upload since we need FormData support
+            try {
+                const response = await fetch(`/projects/{{ project.project_id }}/document`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filename: file.name })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('Document uploaded successfully!', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error uploading document: ' + error.message, 'error');
+            }
+        }
+    };
+    
+    input.click();
+}
+
+// Flag issue
+async function flagIssue() {
+    const issue = prompt('Describe the issue:');
+    if (issue) {
+        try {
+            const response = await fetch(`/projects/{{ project.project_id }}/flag`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ issue: issue })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('Issue flagged successfully!', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showNotification('Error: ' + data.message, 'error');
+            }
+        } catch (error) {
+            showNotification('Error flagging issue: ' + error.message, 'error');
+        }
+    }
+}
+
+// Edit project
+function editProject() {
+    // For now, redirect to an edit page or open modal
+    showNotification('Edit functionality coming soon!', 'info');
+}
+
+// Export project
+async function exportProject(format = 'json') {
+    try {
+        window.open(`/projects/{{ project.project_id }}/export?format=${format}`, '_blank');
+        showNotification('Exporting project data...', 'info');
+    } catch (error) {
+        showNotification('Error exporting project: ' + error.message, 'error');
+    }
+}
+
+// Complete current stage
+async function completeStage() {
+    const currentStage = {{ project.current_stage }};
+    if (confirm(`Are you sure you want to mark stage ${currentStage} as completed?`)) {
+        try {
+            const response = await fetch(`/projects/{{ project.project_id }}/stage/${currentStage}/complete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('Stage marked as completed!', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showNotification('Error: ' + data.message, 'error');
+            }
+        } catch (error) {
+            showNotification('Error completing stage: ' + error.message, 'error');
+        }
+    }
+}
+
+// Notification helper
+function showNotification(message, type = 'info') {
+    // Use the error handler if available
+    if (window.errorHandler) {
+        const methodMap = {
+            'success': 'showSuccess',
+            'error': 'showError',
+            'warning': 'showWarning',
+            'info': 'showInfo'
+        };
+        const method = methodMap[type] || 'showInfo';
+        window.errorHandler[method](message);
+    } else {
+        // Fallback to alert
+        alert(message);
+    }
+}
+</script>
+{% endblock %}

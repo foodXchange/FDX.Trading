@@ -36,4 +36,5 @@ class User(Base):
     
     # Relationships
     notifications = relationship("Notification", back_populates="user")
-    activity_logs = relationship("ActivityLog", back_populates="user") 
+    activity_logs = relationship("ActivityLog", back_populates="user")
+    support_tickets = relationship("SupportTicket", foreign_keys="SupportTicket.user_id", back_populates="user") 

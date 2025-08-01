@@ -1,4 +1,4 @@
-name: Deploy FoodXchange to Azure
+name: Deploy FoodXchange to fdx.trading
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: 'foodxchange-deploy-app'
   PYTHON_VERSION: '3.11'
+  DOMAIN: 'www.fdx.trading'
 
 jobs:
   build-and-deploy:
@@ -63,11 +64,19 @@ jobs:
         sleep 30
         curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || echo "Health check failed"
 
-    - name: 'Update app settings'
+    - name: 'Configure production settings'
       uses: azure/CLI@v1
       with:
         azcliversion: 2.30.0
         inlineScript: |
+          # Core app settings
           az webapp config appsettings set --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings WEBSITES_PORT=9000
           az webapp config appsettings set --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings ENVIRONMENT=production
           az webapp config appsettings set --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings DEBUG=False
+          # Domain and security
+          az webapp config appsettings set --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings DOMAIN=fdx.trading
+          az webapp config appsettings set --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings BASE_URL=https://www.fdx.trading
+          # Database (start with SQLite, can upgrade later)
+          az webapp config appsettings set --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings DATABASE_URL=sqlite:///production.db
+          # Security settings
+          az webapp config appsettings set --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings SECURE_SSL_REDIRECT=True

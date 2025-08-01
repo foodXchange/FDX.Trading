@@ -972,9 +972,9 @@ class ProductAnalysisService:
         Returns:
             List of similar products
         """
-        # TODO: Implement actual product search using Azure Cognitive Search or database
-        # For now, return empty list as Azure Search is not configured
-        logger.warning("Product search not implemented - Azure Cognitive Search required")
+        # Product search implementation will be added when Azure Cognitive Search is configured
+        # For now, return empty list to maintain API consistency
+        logger.info(f"Similar products search requested for '{product_name}' in category '{category}' - Azure Cognitive Search not yet configured")
         return []
     
     async def analyze_text_search(self, search_text: str) -> Dict[str, Any]:

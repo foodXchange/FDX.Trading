@@ -144,7 +144,21 @@
       "Bash(fx start:*)",
       "Bash(.fx.bat start)",
       "Bash(netsh:*)",
-      "Bash(timeout 30 az group wait --deleted --name foodxchange-rg)"
+      "Bash(timeout 30 az group wait --deleted --name foodxchange-rg)",
+      "Bash(nslookup:*)",
+      "Bash(namecheap:*)",
+      "Bash(nc:*)",
+      "Bash(npm install:*)",
+      "Bash(npx namecheap-cli:*)",
+      "Bash(node:*)",
+      "Bash(sed:*)",
+      "Bash(chcp 65001)",
+      "Bash(timeout:*)",
+      "Bash(if [ -f \"logs.zip\" ])",
+      "Bash(then rm logs.zip)",
+      "Bash(if [ -f \"nul\" ])",
+      "Bash(then rm nul)",
+      "Bash(Remove-Item \"C:\\Users\\foodz\\Desktop\\FoodXchange\\foodxchange\\templates\\pages\\login_new.html\")"
     ],
     "deny": []
   }

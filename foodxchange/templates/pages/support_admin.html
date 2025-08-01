@@ -1,0 +1,764 @@
+{% extends "base.html" %}
+
+{% block title %}Support Admin Dashboard - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-dashboard {
+        background: #f8f9fa;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .stats-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .ticket-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .ticket-card.high-priority {
+        border-left-color: #dc3545;
+    }
+    
+    .ticket-card.critical-priority {
+        border-left-color: #dc3545;
+        background: #fff5f5;
+    }
+    
+    .ticket-card.medium-priority {
+        border-left-color: #ffc107;
+    }
+    
+    .ticket-card.low-priority {
+        border-left-color: #28a745;
+    }
+    
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .priority-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .filter-section {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .analytics-chart {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        color: #6c757d;
+        border-radius: 0;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        background: none;
+    }
+    
+    .error-log-item {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #6c757d;
+    }
+    
+    .error-log-item.critical {
+        border-left-color: #dc3545;
+        background: #fff5f5;
+    }
+    
+    .error-log-item.high {
+        border-left-color: #fd7e14;
+        background: #fff8f0;
+    }
+    
+    .error-log-item.medium {
+        border-left-color: #ffc107;
+        background: #fffbf0;
+    }
+    
+    .error-log-item.low {
+        border-left-color: #28a745;
+        background: #f0fff4;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1><i class="fas fa-headset"></i> Support Admin Dashboard</h1>
+                    <div>
+                        <button class="btn btn-primary" onclick="refreshData()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-success" onclick="exportData()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-icon text-primary">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="stats-number" id="totalTickets">-</div>
+                    <div class="stats-label">Total Tickets</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-icon text-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stats-number" id="openTickets">-</div>
+                    <div class="stats-label">Open Tickets</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-icon text-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stats-number" id="resolvedTickets">-</div>
+                    <div class="stats-label">Resolved</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-icon text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stats-number" id="criticalErrors">-</div>
+                    <div class="stats-label">Critical Errors</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tickets-tab" data-bs-toggle="tab" data-bs-target="#tickets" type="button" role="tab">
+                            <i class="fas fa-ticket-alt"></i> Tickets
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="errors-tab" data-bs-toggle="tab" data-bs-target="#errors" type="button" role="tab">
+                            <i class="fas fa-exclamation-triangle"></i> Error Logs
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                            <i class="fas fa-chart-bar"></i> Analytics
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="adminTabContent">
+                    <!-- Tickets Tab -->
+                    <div class="tab-pane fade show active" id="tickets" role="tabpanel">
+                        <div class="filter-section">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" id="statusFilter" title="Filter tickets by status">
+                                        <option value="">All Statuses</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" id="categoryFilter" title="Filter tickets by category">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Priority</label>
+                                    <select class="form-select" id="priorityFilter" title="Filter tickets by priority">
+                                        <option value="">All Priorities</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" for="assigneeFilter">Assigned To</label>
+                                    <select class="form-select" id="assigneeFilter" aria-label="Filter by assignee">
+                                        <option value="">All Users</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="ticketsList">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Errors Tab -->
+                    <div class="tab-pane fade" id="errors" role="tabpanel">
+                        <div class="filter-section">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="form-label" for="severityFilter">Severity</label>
+                                    <select class="form-select" id="severityFilter" aria-label="Filter by severity">
+                                        <option value="">All Severities</option>
+                                        <option value="critical">Critical</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" for="errorCategoryFilter">Category</label>
+                                    <select class="form-select" id="errorCategoryFilter" aria-label="Filter by error category">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" for="resolvedFilter">Resolved</label>
+                                    <select class="form-select" id="resolvedFilter" aria-label="Filter by resolved status">
+                                        <option value="">All</option>
+                                        <option value="true">Resolved</option>
+                                        <option value="false">Unresolved</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary mt-4" onclick="loadErrorLogs()">
+                                        <i class="fas fa-search"></i> Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="errorLogsList">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Tab -->
+                    <div class="tab-pane fade" id="analytics" role="tabpanel">
+                        <div class="filter-section">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="form-label" for="timePeriod">Time Period</label>
+                                    <select class="form-select" id="timePeriod" aria-label="Select time period">
+                                        <option value="7">Last 7 days</option>
+                                        <option value="30" selected>Last 30 days</option>
+                                        <option value="90">Last 90 days</option>
+                                        <option value="365">Last year</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary mt-4" onclick="loadAnalytics()">
+                                        <i class="fas fa-chart-bar"></i> Load Analytics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="analytics-chart">
+                                    <h5>Tickets by Category</h5>
+                                    <canvas id="categoryChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="analytics-chart">
+                                    <h5>Tickets by Priority</h5>
+                                    <canvas id="priorityChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="analytics-chart">
+                                    <h5>Resolution Time Trends</h5>
+                                    <canvas id="resolutionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket Detail Modal -->
+<div class="modal fade" id="ticketDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-ticket-alt"></i> Ticket Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" title="Close modal"></button>
+            </div>
+            <div class="modal-body" id="ticketDetailContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Admin Dashboard JavaScript
+let categoryChart, priorityChart, resolutionChart;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    loadFilters();
+    
+    // Initialize charts
+    initializeCharts();
+});
+
+function loadDashboardData() {
+    loadAnalytics();
+    loadTickets();
+    loadErrorLogs();
+}
+
+function loadFilters() {
+    // Load statuses
+    fetch('/api/support/statuses')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('statusFilter');
+                data.statuses.forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status.value;
+                    option.textContent = status.label;
+                    select.appendChild(option);
+                });
+            }
+        });
+    
+    // Load categories
+    fetch('/api/support/categories')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const selects = ['categoryFilter', 'errorCategoryFilter'];
+                selects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    if (select) {
+                        data.categories.forEach(category => {
+                            const option = document.createElement('option');
+                            option.value = category.value;
+                            option.textContent = category.label;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+            }
+        });
+    
+    // Load priorities
+    fetch('/api/support/priorities')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const select = document.getElementById('priorityFilter');
+                data.priorities.forEach(priority => {
+                    const option = document.createElement('option');
+                    option.value = priority.value;
+                    option.textContent = priority.label;
+                    select.appendChild(option);
+                });
+            }
+        });
+}
+
+function loadAnalytics() {
+    const days = document.getElementById('timePeriod').value;
+    
+    fetch(`/api/support/admin/analytics?days=${days}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateStats(data.analytics);
+                updateCharts(data.analytics);
+            }
+        })
+        .catch(error => console.error('Error loading analytics:', error));
+}
+
+function updateStats(analytics) {
+    document.getElementById('totalTickets').textContent = analytics.total_tickets;
+    document.getElementById('openTickets').textContent = analytics.new_tickets;
+    document.getElementById('resolvedTickets').textContent = analytics.resolved_tickets;
+    document.getElementById('criticalErrors').textContent = analytics.critical_errors;
+}
+
+function initializeCharts() {
+    // Category Chart
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    categoryChart = new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                    '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Priority Chart
+    const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+    priorityChart = new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Tickets',
+                data: [],
+                backgroundColor: [
+                    '#28a745', '#ffc107', '#fd7e14', '#dc3545'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Resolution Chart
+    const resolutionCtx = document.getElementById('resolutionChart').getContext('2d');
+    resolutionChart = new Chart(resolutionCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Average Resolution Time (hours)',
+                data: [],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function updateCharts(analytics) {
+    // Update category chart
+    const categoryLabels = Object.keys(analytics.tickets_by_category);
+    const categoryData = Object.values(analytics.tickets_by_category);
+    
+    categoryChart.data.labels = categoryLabels;
+    categoryChart.data.datasets[0].data = categoryData;
+    categoryChart.update();
+    
+    // Update priority chart
+    const priorityLabels = Object.keys(analytics.tickets_by_priority);
+    const priorityData = Object.values(analytics.tickets_by_priority);
+    
+    priorityChart.data.labels = priorityLabels;
+    priorityChart.data.datasets[0].data = priorityData;
+    priorityChart.update();
+}
+
+function loadTickets() {
+    const status = document.getElementById('statusFilter').value;
+    const category = document.getElementById('categoryFilter').value;
+    const priority = document.getElementById('priorityFilter').value;
+    const assignedTo = document.getElementById('assigneeFilter').value;
+    
+    let url = '/api/support/admin/tickets?limit=50';
+    if (status) url += `&status=${status}`;
+    if (category) url += `&category=${category}`;
+    if (priority) url += `&priority=${priority}`;
+    if (assignedTo) url += `&assigned_to=${assignedTo}`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayTickets(data.tickets);
+            }
+        })
+        .catch(error => console.error('Error loading tickets:', error));
+}
+
+function displayTickets(tickets) {
+    const container = document.getElementById('ticketsList');
+    
+    if (tickets.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">No tickets found.</div>';
+        return;
+    }
+    
+    const html = tickets.map(ticket => `
+        <div class="ticket-card ${ticket.priority}-priority" onclick="showTicketDetail('${ticket.ticket_id}')">
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="mb-1">${ticket.title}</h6>
+                    <p class="text-muted mb-2">${ticket.description.substring(0, 100)}...</p>
+                    <small class="text-muted">Created: ${new Date(ticket.created_at).toLocaleDateString()}</small>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-${getStatusColor(ticket.status)} status-badge">${ticket.status}</span>
+                    <span class="badge bg-${getPriorityColor(ticket.priority)} priority-badge">${ticket.priority}</span>
+                    <br>
+                    <small class="text-muted">${ticket.category}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = html;
+}
+
+function loadErrorLogs() {
+    const severity = document.getElementById('severityFilter').value;
+    const category = document.getElementById('errorCategoryFilter').value;
+    const resolved = document.getElementById('resolvedFilter').value;
+    
+    let url = '/api/support/admin/errors?limit=50';
+    if (severity) url += `&severity=${severity}`;
+    if (category) url += `&category=${category}`;
+    if (resolved) url += `&resolved=${resolved}`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayErrorLogs(data.logs);
+            }
+        })
+        .catch(error => console.error('Error loading error logs:', error));
+}
+
+function displayErrorLogs(logs) {
+    const container = document.getElementById('errorLogsList');
+    
+    if (logs.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">No error logs found.</div>';
+        return;
+    }
+    
+    const html = logs.map(log => `
+        <div class="error-log-item ${log.severity}">
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="mb-1">${log.error_type}</h6>
+                    <p class="text-muted mb-2">${log.error_message}</p>
+                    <small class="text-muted">
+                        ${log.url_path} | ${log.http_method} | ${log.status_code || 'N/A'}
+                    </small>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-${getSeverityColor(log.severity)}">${log.severity}</span>
+                    <span class="badge bg-${log.resolved ? 'success' : 'warning'}">${log.resolved ? 'Resolved' : 'Unresolved'}</span>
+                    <br>
+                    <small class="text-muted">${new Date(log.created_at).toLocaleDateString()}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = html;
+}
+
+function showTicketDetail(ticketId) {
+    fetch(`/api/support/tickets/${ticketId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const ticket = data.ticket;
+                const content = `
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4>${ticket.title}</h4>
+                            <p class="text-muted">${ticket.description}</p>
+                            
+                            <h6>Status History</h6>
+                            <div class="mb-3">
+                                ${ticket.status_history.map(history => `
+                                    <div class="border-start ps-3 mb-2">
+                                        <strong>${history.status}</strong> - ${new Date(history.created_at).toLocaleString()}
+                                        <br><small class="text-muted">${history.notes}</small>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <h6>Responses</h6>
+                            <div class="mb-3">
+                                ${ticket.responses.map(response => `
+                                    <div class="border-start ps-3 mb-2">
+                                        <strong>${response.is_internal ? 'Internal Note' : 'Response'}</strong> - ${new Date(response.created_at).toLocaleString()}
+                                        <br>${response.message}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Ticket Information</h6>
+                                    <p><strong>ID:</strong> ${ticket.ticket_id}</p>
+                                    <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(ticket.status)}">${ticket.status}</span></p>
+                                    <p><strong>Priority:</strong> <span class="badge bg-${getPriorityColor(ticket.priority)}">${ticket.priority}</span></p>
+                                    <p><strong>Category:</strong> ${ticket.category}</p>
+                                    <p><strong>Created:</strong> ${new Date(ticket.created_at).toLocaleString()}</p>
+                                    ${ticket.resolved_at ? `<p><strong>Resolved:</strong> ${new Date(ticket.resolved_at).toLocaleString()}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('ticketDetailContent').innerHTML = content;
+                const modal = new bootstrap.Modal(document.getElementById('ticketDetailModal'));
+                modal.show();
+            }
+        })
+        .catch(error => console.error('Error loading ticket details:', error));
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'new': 'primary',
+        'acknowledged': 'info',
+        'investigating': 'warning',
+        'in_progress': 'warning',
+        'testing': 'info',
+        'resolved': 'success',
+        'closed': 'secondary'
+    };
+    return colors[status] || 'secondary';
+}
+
+function getPriorityColor(priority) {
+    const colors = {
+        'low': 'success',
+        'medium': 'warning',
+        'high': 'danger',
+        'critical': 'danger'
+    };
+    return colors[priority] || 'secondary';
+}
+
+function getSeverityColor(severity) {
+    const colors = {
+        'critical': 'danger',
+        'high': 'warning',
+        'medium': 'info',
+        'low': 'success'
+    };
+    return colors[severity] || 'secondary';
+}
+
+function refreshData() {
+    loadDashboardData();
+}
+
+function exportData() {
+    // Implementation for data export
+    alert('Export functionality will be implemented here');
+}
+
+// Event listeners for filters
+document.getElementById('statusFilter').addEventListener('change', loadTickets);
+document.getElementById('categoryFilter').addEventListener('change', loadTickets);
+document.getElementById('priorityFilter').addEventListener('change', loadTickets);
+document.getElementById('assigneeFilter').addEventListener('change', loadTickets);
+document.getElementById('timePeriod').addEventListener('change', loadAnalytics);
+</script>
+{% endblock %} 

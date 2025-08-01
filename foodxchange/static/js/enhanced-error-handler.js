@@ -107,8 +107,13 @@ class EnhancedErrorHandler {
             // Display error
             this.displayError(errorNotification);
 
-            // Send to backend for processing
-            await this.sendErrorToBackend(errorNotification);
+            // Send to backend for processing (don't fail if this doesn't work)
+            try {
+                await this.sendErrorToBackend(errorNotification);
+            } catch (backendError) {
+                console.warn('Backend error reporting failed:', backendError);
+                // Don't show this error to the user
+            }
 
             // Attempt automatic recovery
             await this.attemptAutomaticRecovery(errorNotification);
@@ -117,7 +122,10 @@ class EnhancedErrorHandler {
 
         } catch (handlingError) {
             console.error('Error in error handler:', handlingError);
-            this.showFallbackError(error);
+            // Only show fallback error for critical errors, not backend communication issues
+            if (error && error.message && !error.message.includes('fetch')) {
+                this.showFallbackError(error);
+            }
         }
     }
 
@@ -141,27 +149,32 @@ class EnhancedErrorHandler {
             userFriendlyMessage = "The image file is too large. Please reduce it to under 10MB.";
         }
         // Network connectivity errors
-        else if (this.matchesPattern(errorString, ['connection.*failed', 'network.*error', 'timeout', 'connection.*refused'])) {
+        else if (this.matchesPattern(errorString, ['connection.*failed', 'network.*error', 'timeout', 'connection.*refused', 'fetch', 'network'])) {
             errorType = 'network_connectivity';
             severity = 'high';
             userFriendlyMessage = "We're having trouble connecting to our services. Please check your internet connection.";
         }
         // Service unavailable errors
-        else if (this.matchesPattern(errorString, ['service.*unavailable', 'azure.*service.*error', 'api.*unavailable'])) {
+        else if (this.matchesPattern(errorString, ['service.*unavailable', 'azure.*service.*error', 'api.*unavailable', '500', '502', '503', '504'])) {
             errorType = 'service_unavailable';
             severity = 'high';
             userFriendlyMessage = "Our AI analysis service is temporarily unavailable. We're working to restore it.";
         }
         // Quota limit errors
-        else if (this.matchesPattern(errorString, ['quota.*exceeded', 'rate.*limit', 'daily.*limit'])) {
+        else if (this.matchesPattern(errorString, ['quota.*exceeded', 'rate.*limit', 'daily.*limit', '429'])) {
             errorType = 'quota_limit';
             userFriendlyMessage = "You've reached your daily analysis limit. Please try again tomorrow or upgrade your plan.";
         }
         // Authentication errors
-        else if (this.matchesPattern(errorString, ['unauthorized', 'authentication.*failed', 'invalid.*token'])) {
+        else if (this.matchesPattern(errorString, ['unauthorized', 'authentication.*failed', 'invalid.*token', '401', '403'])) {
             errorType = 'authentication';
             severity = 'high';
             userFriendlyMessage = "Please log in again to continue.";
+        }
+        // Generic API errors
+        else if (this.matchesPattern(errorString, ['api', 'request', 'response', 'http', 'server'])) {
+            errorType = 'api_error';
+            userFriendlyMessage = "We're experiencing technical difficulties. Please try again in a moment.";
         }
 
         return {
@@ -309,6 +322,27 @@ class EnhancedErrorHandler {
                 );
                 break;
 
+            case 'api_error':
+                options.push(
+                    {
+                        action: 'retry',
+                        label: 'Try Again',
+                        description: 'Retry the operation',
+                        icon: 'fas fa-redo',
+                        color: 'primary',
+                        requiresConfirmation: true
+                    },
+                    {
+                        action: 'contact_support',
+                        label: 'Contact Support',
+                        description: 'Get help from our support team',
+                        icon: 'fas fa-headset',
+                        color: 'warning',
+                        requiresConfirmation: true
+                    }
+                );
+                break;
+
             default:
                 options.push(
                     {
@@ -439,6 +473,7 @@ class EnhancedErrorHandler {
             'quota_limit': 'fas fa-chart-line',
             'authentication': 'fas fa-user-lock',
             'authorization': 'fas fa-ban',
+            'api_error': 'fas fa-exclamation-circle',
             'unknown': 'fas fa-exclamation-triangle'
         };
         return iconMap[errorType] || iconMap['unknown'];
@@ -453,6 +488,7 @@ class EnhancedErrorHandler {
             'quota_limit': 'Usage Limit Reached',
             'authentication': 'Authentication Required',
             'authorization': 'Access Denied',
+            'api_error': 'Technical Issue',
             'unknown': 'Unexpected Error'
         };
         return titleMap[errorType] || titleMap['unknown'];
@@ -825,10 +861,16 @@ class EnhancedErrorHandler {
             });
 
             if (!response.ok) {
-                console.warn('Failed to send error to backend');
+                console.warn('Failed to send error to backend:', response.status);
+                // Don't show error to user - just log it
+                return false;
             }
+            
+            return true;
         } catch (error) {
             console.warn('Failed to send error to backend:', error);
+            // Don't show error to user - just log it
+            return false;
         }
     }
 

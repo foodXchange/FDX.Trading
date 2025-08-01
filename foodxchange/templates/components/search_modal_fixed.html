@@ -1,0 +1,400 @@
+<!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="searchModalLabel">
+                    <i class="fas fa-search me-2"></i>Smart Search
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body p-0">
+                <div class="search-container">
+                    <!-- Search Input Section -->
+                    <div class="search-input-section p-4 bg-light">
+                        <div class="position-relative">
+                            <input type="text" class="form-control form-control-lg search-input" 
+                                   id="mainSearchInput" 
+                                   placeholder="Search for suppliers, buyers, products, or projects..." 
+                                   autocomplete="off">
+                            
+                            <!-- Search Button -->
+                            <div class="search-btn-container position-absolute top-50 end-0 translate-middle-y me-2">
+                                <button class="btn btn-primary" type="button" id="searchButton">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+
+                            <!-- Voice Search Button -->
+                            <button class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-5"
+                                    type="button" id="voiceSearchBtn" title="Voice Search">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+
+                            <!-- Auto-complete Suggestions -->
+                            <div class="search-suggestions" id="searchSuggestions" style="display: none;">
+                                <div class="suggestions-header">
+                                    <small class="text-muted">Suggestions</small>
+                                </div>
+                                <div class="suggestions-list" id="suggestionsList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Search Examples -->
+                        <div class="search-examples mt-3">
+                            <small class="text-muted">Try: </small>
+                            <span class="search-example" data-query="kosher certified suppliers">kosher certified suppliers</span>
+                            <span class="search-example" data-query="organic honey from local farmers">organic honey from local farmers</span>
+                            <span class="search-example" data-query="gluten-free pasta manufacturers">gluten-free pasta manufacturers</span>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Filters Section -->
+                    <div class="filters-section p-4 border-bottom" id="filtersSection" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Location
+                                </h6>
+                                <select class="form-select form-select-sm" id="locationFilter">
+                                    <option value="">All Locations</option>
+                                    <option value="usa">United States</option>
+                                    <option value="uk">United Kingdom</option>
+                                    <option value="canada">Canada</option>
+                                    <option value="australia">Australia</option>
+                                    <option value="israel">Israel</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-certificate me-2"></i>Certifications
+                                </h6>
+                                <select class="form-select form-select-sm" id="certificationFilter">
+                                    <option value="">All Certifications</option>
+                                    <option value="kosher">Kosher Certified</option>
+                                    <option value="halal">Halal Certified</option>
+                                    <option value="organic">Organic Certified</option>
+                                    <option value="gluten-free">Gluten-Free</option>
+                                    <option value="vegan">Vegan</option>
+                                    <option value="non-gmo">Non-GMO</option>
+                                    <option value="fair-trade">Fair Trade</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-building me-2"></i>Company Size
+                                </h6>
+                                <select class="form-select form-select-sm" id="companySizeFilter">
+                                    <option value="">All Sizes</option>
+                                    <option value="startup">Startup (1-10)</option>
+                                    <option value="small">Small (11-50)</option>
+                                    <option value="medium">Medium (51-200)</option>
+                                    <option value="large">Large (200+)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-tags me-2"></i>Category
+                                </h6>
+                                <select class="form-select form-select-sm" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="suppliers">Suppliers</option>
+                                    <option value="buyers">Buyers</option>
+                                    <option value="projects">Projects</option>
+                                    <option value="products">Products</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Active Filters -->
+                        <div class="active-filters mt-3" id="activeFilters" style="display: none;">
+                            <small class="text-muted me-2">Active filters:</small>
+                            <div class="filter-tags d-inline" id="filterTags"></div>
+                            <button class="btn btn-sm btn-outline-secondary ms-2" id="clearAllFilters">
+                                <i class="fas fa-times me-1"></i>Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Results Section -->
+                    <div class="results-section" id="resultsSection" style="display: none;">
+                        <!-- Results Header -->
+                        <div class="results-header p-3 bg-white border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Search Results</h6>
+                                    <small class="text-muted" id="resultsCount">0 results found</small>
+                                </div>
+                                <div class="results-actions">
+                                    <button class="btn btn-sm btn-outline-primary" id="saveSearchBtn">
+                                        <i class="fas fa-bookmark me-1"></i>Save Search
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="toggleFiltersBtn">
+                                        <i class="fas fa-filter me-1"></i>Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Content -->
+                        <div class="results-content" id="resultsContent">
+                            <!-- Results will be populated here -->
+                        </div>
+
+                        <!-- Loading State -->
+                        <div class="loading-state text-center p-5" id="loadingState" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Searching across suppliers, buyers, and projects...</p>
+                        </div>
+
+                        <!-- No Results State -->
+                        <div class="no-results text-center p-5" id="noResultsState" style="display: none;">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5>No results found</h5>
+                            <p class="text-muted">Try adjusting your search terms or filters</p>
+                            <button class="btn btn-outline-primary" id="suggestAlternativesBtn">
+                                <i class="fas fa-lightbulb me-1"></i>Suggest Alternatives
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search History & Trending -->
+                    <div class="search-history-section p-4" id="searchHistorySection">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="section-title">
+                                    <i class="fas fa-history me-2"></i>Recent Searches
+                                </h6>
+                                <div class="recent-searches" id="recentSearches">
+                                    <!-- Recent searches will be populated here -->
+                                    <div class="text-muted small">No recent searches</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="section-title">
+                                    <i class="fas fa-fire me-2"></i>Trending Searches
+                                </h6>
+                                <div class="trending-searches" id="trendingSearches">
+                                    <!-- Trending searches will be populated here -->
+                                    <div class="text-muted small">No trending searches</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100">
+                    <div class="search-shortcuts">
+                        <small class="text-muted">Keyboard shortcuts: </small>
+                        <kbd>Ctrl</kbd> + <kbd>S</kbd> to search,
+                        <kbd>Esc</kbd> to close
+                    </div>
+                    <div class="search-actions">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="advancedSearchBtn">
+                            <i class="fas fa-cog me-1"></i>Advanced Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Result Template (Hidden) -->
+<template id="searchResultTemplate">
+    <div class="search-result-item p-3 border-bottom">
+        <div class="result-card">
+            <div class="result-header d-flex justify-content-between align-items-start mb-2">
+                <div class="result-title">
+                    <h6 class="result-name mb-1"></h6>
+                    <div class="result-badges"></div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-sm btn-outline-primary save-result-btn me-1" title="Save">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary contact-btn" title="Contact">
+                        <i class="fas fa-envelope"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="result-content">
+                <p class="result-description text-muted mb-2"></p>
+                <div class="result-metadata d-flex gap-3">
+                    <span class="result-location text-muted small">
+                        <i class="fas fa-map-marker-alt me-1"></i>
+                        <span class="location-text"></span>
+                    </span>
+                    <span class="result-category text-muted small">
+                        <i class="fas fa-tag me-1"></i>
+                        <span class="category-text"></span>
+                    </span>
+                    <span class="result-type text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span class="type-text"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Custom CSS for Search Modal -->
+<style>
+    .search-input {
+        padding-right: 120px;
+    }
+
+    .search-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 0.25rem 0.25rem;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .suggestions-header {
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .suggestions-list {
+        padding: 0.5rem 0;
+    }
+
+    .suggestion-item {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .search-examples {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-example {
+        cursor: pointer;
+        color: #0d6efd;
+        text-decoration: underline;
+        font-size: 0.875rem;
+    }
+
+    .search-example:hover {
+        color: #0a53be;
+    }
+
+    .filter-section-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+
+    .filter-tags {
+        display: inline-flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        background-color: #e9ecef;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+    }
+
+    .filter-tag .remove-filter {
+        margin-left: 0.25rem;
+        cursor: pointer;
+        color: #6c757d;
+    }
+
+    .filter-tag .remove-filter:hover {
+        color: #495057;
+    }
+
+    .search-result-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .result-badges {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+        margin-top: 0.25rem;
+    }
+
+    .result-badges .badge {
+        font-size: 0.75rem;
+        font-weight: normal;
+    }
+
+    .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+
+    .recent-searches,
+    .trending-searches {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .search-history-item {
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        transition: background-color 0.2s;
+    }
+
+    .search-history-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    @media (max-width: 768px) {
+        .modal-dialog {
+            margin: 0;
+            max-width: 100%;
+            height: 100%;
+        }
+
+        .modal-content {
+            height: 100%;
+            border-radius: 0;
+        }
+
+        .search-shortcuts {
+            display: none;
+        }
+    }
+</style>

@@ -31,7 +31,8 @@ COPY --from=builder /root/.local /root/.local
 
 # Copy application code
 COPY foodxchange/ ./foodxchange/
-COPY static/ ./static/
+COPY static/ ./static/ 2>/dev/null || echo "No static directory"
+COPY templates/ ./templates/ 2>/dev/null || echo "No templates directory"
 
 # Create necessary directories
 RUN mkdir -p logs uploads temp static/errors

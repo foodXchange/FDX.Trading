@@ -1,43 +1,48 @@
 """
-Enhanced AI Import Routes with Azure Integration
+Enhanced AI Import Routes with Azure Integration - FastAPI Version
 Handles intelligent file analysis and processing
 """
 
-from flask import Blueprint, request, jsonify, current_app
-from werkzeug.utils import secure_filename
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Request
+from fastapi.responses import JSONResponse
+from typing import Optional, List
 import os
 import json
 import asyncio
 import pandas as pd
 from datetime import datetime
 import logging
+from pathlib import Path
 
 from foodxchange.services.ai_data_import_service import ai_data_import_service
 from foodxchange.services.data_import_service import data_import_service
 
 logger = logging.getLogger(__name__)
 
-# Create blueprint
-ai_import_bp = Blueprint('ai_import', __name__, url_prefix='/api/import')
+# Create FastAPI router
+ai_import_router = APIRouter(prefix="/api/import", tags=["AI Import"])
 
 # Configure upload settings
 UPLOAD_FOLDER = 'temp_uploads'
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
-def allowed_file(filename):
+def allowed_file(filename: str) -> bool:
     """Check if file extension is allowed"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def validate_file_size(file):
+async def validate_file_size(file: UploadFile) -> bool:
     """Validate file size"""
-    file.seek(0, os.SEEK_END)
-    size = file.tell()
-    file.seek(0)
-    return size <= MAX_FILE_SIZE
+    # Read file content to check size
+    content = await file.read()
+    await file.seek(0)  # Reset file pointer
+    return len(content) <= MAX_FILE_SIZE
 
-@ai_import_bp.route('/analyze-ai', methods=['POST'])
-async def analyze_file_with_ai():
+@ai_import_router.post("/analyze-ai")
+async def analyze_file_with_ai(
+    file: UploadFile = File(...),
+    data_type: str = Form("suppliers")
+):
     """
     Analyze uploaded file with AI for intelligent field mapping
     
@@ -46,42 +51,40 @@ async def analyze_file_with_ai():
     - data_type: Type of data (suppliers, buyers, products)
     """
     try:
-        # Validate request
-        if 'file' not in request.files:
-            return jsonify({'success': False, 'error': 'No file provided'}), 400
-        
-        file = request.files['file']
-        data_type = request.form.get('data_type', 'suppliers')
-        
         # Validate file
-        if file.filename == '':
-            return jsonify({'success': False, 'error': 'No file selected'}), 400
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No file selected")
         
         if not allowed_file(file.filename):
-            return jsonify({'success': False, 'error': 'Invalid file type. Allowed: CSV, XLSX, XLS'}), 400
+            raise HTTPException(
+                status_code=400, 
+                detail="Invalid file type. Allowed: CSV, XLSX, XLS"
+            )
         
-        if not validate_file_size(file):
-            return jsonify({'success': False, 'error': 'File too large. Maximum size: 10MB'}), 400
+        if not await validate_file_size(file):
+            raise HTTPException(
+                status_code=400, 
+                detail="File too large. Maximum size: 10MB"
+            )
         
         # Create upload directory if needed
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
         
         # Save file temporarily
-        filename = secure_filename(file.filename)
+        filename = file.filename
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         temp_filename = f"{timestamp}_{filename}"
         temp_path = os.path.join(UPLOAD_FOLDER, temp_filename)
         
-        file.save(temp_path)
+        # Save uploaded file
+        content = await file.read()
+        with open(temp_path, 'wb') as f:
+            f.write(content)
         
         try:
-            # Read file for analysis
-            with open(temp_path, 'rb') as f:
-                file_data = f.read()
-            
             # Analyze with AI
             analysis_result = await ai_data_import_service.analyze_import_file(
-                file_data=file_data,
+                file_data=content,
                 file_name=filename,
                 entity_type=data_type
             )
@@ -101,12 +104,12 @@ async def analyze_file_with_ai():
                         'file_type': filename.rsplit('.', 1)[1].lower()
                     }
                 
-                return jsonify(analysis_result)
+                return analysis_result
             else:
                 # Clean up on error
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
-                return jsonify(analysis_result), 400
+                raise HTTPException(status_code=400, detail=analysis_result.get('error', 'Analysis failed'))
                 
         except Exception as e:
             # Clean up on error
@@ -114,15 +117,17 @@ async def analyze_file_with_ai():
                 os.remove(temp_path)
             raise
             
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error in AI analysis: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': f'Analysis failed: {str(e)}'
-        }), 500
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Analysis failed: {str(e)}"
+        )
 
-@ai_import_bp.route('/process-ai', methods=['POST'])
-async def process_import_with_ai():
+@ai_import_router.post("/process-ai")
+async def process_import_with_ai(request: Request):
     """
     Process import with AI assistance using confirmed mappings
     
@@ -133,10 +138,10 @@ async def process_import_with_ai():
     - user_confirmations: User-confirmed field mappings
     """
     try:
-        data = request.get_json()
+        data = await request.json()
         
         if not data:
-            return jsonify({'success': False, 'error': 'No data provided'}), 400
+            raise HTTPException(status_code=400, detail="No data provided")
         
         file_path = data.get('file_path')
         data_type = data.get('data_type')
@@ -145,13 +150,13 @@ async def process_import_with_ai():
         
         # Validate required fields
         if not file_path or not os.path.exists(file_path):
-            return jsonify({'success': False, 'error': 'File not found'}), 400
+            raise HTTPException(status_code=400, detail="File not found")
         
         if not data_type:
-            return jsonify({'success': False, 'error': 'Data type not specified'}), 400
+            raise HTTPException(status_code=400, detail="Data type not specified")
         
         if not analysis:
-            return jsonify({'success': False, 'error': 'Analysis data not provided'}), 400
+            raise HTTPException(status_code=400, detail="Analysis data not provided")
         
         try:
             # Read file data
@@ -176,28 +181,30 @@ async def process_import_with_ai():
                     'mapping_coverage': analysis.get('mapping_coverage', 0)
                 }
                 
-                return jsonify({
+                return {
                     'success': True,
                     'data': result['data'],
                     'message': 'Data processed successfully'
-                })
+                }
             else:
-                return jsonify(result), 400
+                raise HTTPException(status_code=400, detail=result.get('error', 'Processing failed'))
                 
         finally:
             # Always clean up temp file after processing
             if os.path.exists(file_path):
                 os.remove(file_path)
                 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error processing import: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': f'Processing failed: {str(e)}'
-        }), 500
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Processing failed: {str(e)}"
+        )
 
-@ai_import_bp.route('/finalize', methods=['POST'])
-async def finalize_import():
+@ai_import_router.post("/finalize")
+async def finalize_import(request: Request):
     """
     Finalize the import and save data to database
     
@@ -207,14 +214,14 @@ async def finalize_import():
     - import_metadata: Metadata about the import
     """
     try:
-        data = request.get_json()
+        data = await request.json()
         
         cleaned_data = data.get('cleaned_data', [])
         data_type = data.get('data_type')
         import_metadata = data.get('import_metadata', {})
         
         if not cleaned_data:
-            return jsonify({'success': False, 'error': 'No data to import'}), 400
+            raise HTTPException(status_code=400, detail="No data to import")
         
         # Add timestamps
         timestamp = datetime.now().isoformat()
@@ -225,22 +232,19 @@ async def finalize_import():
             record['import_batch_id'] = import_metadata.get('batch_id', timestamp)
         
         # Save to database/file
-        output_dir = os.path.join(current_app.root_path, '..', 'data', data_type)
-        os.makedirs(output_dir, exist_ok=True)
+        output_dir = Path('data') / data_type
+        output_dir.mkdir(parents=True, exist_ok=True)
         
-        output_file = os.path.join(
-            output_dir,
-            f'{data_type}_ai_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
-        )
+        output_file = output_dir / f'{data_type}_ai_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
         
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(cleaned_data, f, indent=2, ensure_ascii=False)
         
         # Merge with existing data
-        main_file = os.path.join(output_dir, f'{data_type}.json')
+        main_file = output_dir / f'{data_type}.json'
         existing_data = []
         
-        if os.path.exists(main_file):
+        if main_file.exists():
             with open(main_file, 'r', encoding='utf-8') as f:
                 existing_data = json.load(f)
         
@@ -251,23 +255,25 @@ async def finalize_import():
         with open(main_file, 'w', encoding='utf-8') as f:
             json.dump(all_data, f, indent=2, ensure_ascii=False)
         
-        return jsonify({
+        return {
             'success': True,
             'imported_count': len(cleaned_data),
             'total_count': len(all_data),
             'message': f'Successfully imported {len(cleaned_data)} {data_type}',
-            'import_file': output_file
-        })
+            'import_file': str(output_file)
+        }
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error finalizing import: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': f'Import failed: {str(e)}'
-        }), 500
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Import failed: {str(e)}"
+        )
 
-@ai_import_bp.route('/validate-mapping', methods=['POST'])
-async def validate_mapping():
+@ai_import_router.post("/validate-mapping")
+async def validate_mapping(request: Request):
     """
     Validate a specific field mapping suggestion
     
@@ -277,7 +283,7 @@ async def validate_mapping():
     - sample_values: Sample values from the source field
     """
     try:
-        data = request.get_json()
+        data = await request.json()
         
         source_field = data.get('source_field')
         target_field = data.get('target_field')
@@ -307,20 +313,20 @@ async def validate_mapping():
                 validation_result['confidence'] = 0.7
                 validation_result['suggestions'].append("Some phone numbers may need formatting")
         
-        return jsonify({
+        return {
             'success': True,
             'validation': validation_result
-        })
+        }
         
     except Exception as e:
         logger.error(f"Error validating mapping: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': f'Validation failed: {str(e)}'
-        }), 500
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Validation failed: {str(e)}"
+        )
 
-@ai_import_bp.route('/ai-status', methods=['GET'])
-def check_ai_status():
+@ai_import_router.get("/ai-status")
+async def check_ai_status():
     """Check if AI features are properly configured"""
     try:
         status = {
@@ -333,33 +339,16 @@ def check_ai_status():
         
         all_configured = all(status.values())
         
-        return jsonify({
+        return {
             'success': True,
             'ai_enabled': all_configured,
             'services': status,
             'message': 'All AI services configured' if all_configured else 'Some AI services not configured'
-        })
+        }
         
     except Exception as e:
         logger.error(f"Error checking AI status: {str(e)}")
-        return jsonify({
-            'success': False,
-            'ai_enabled': False,
-            'error': str(e)
-        }), 500
-
-# Error handler for the blueprint
-@ai_import_bp.errorhandler(413)
-def request_entity_too_large(error):
-    return jsonify({
-        'success': False,
-        'error': 'File too large. Maximum size is 10MB'
-    }), 413
-
-@ai_import_bp.errorhandler(Exception)
-def handle_exception(error):
-    logger.error(f"Unhandled exception in AI import: {str(error)}")
-    return jsonify({
-        'success': False,
-        'error': 'An unexpected error occurred'
-    }), 500
+        raise HTTPException(
+            status_code=500, 
+            detail=str(e)
+        ) 

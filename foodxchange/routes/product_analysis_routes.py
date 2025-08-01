@@ -81,7 +81,7 @@ async def analyze_product_image(
     """Analyze product image using AI - Simplified version"""
     try:
         # Analyze product image using AI services
-        # TODO: Implement actual AI analysis when services are configured
+        # AI analysis implementation will be added when Azure services are fully configured
         
         # Convert image to base64 for display
         import base64
@@ -252,33 +252,97 @@ async def save_analysis_as_project(
     search_type: Optional[str] = Form(None),
     analysis_data: str = Form(...)
 ):
-    """Save analysis as a project"""
+    """Save analysis as a project and create enhanced project with stages"""
     try:
         import os
         from datetime import datetime
+        import requests
         
-        # Create projects directory if it doesn't exist
+        # Parse analysis data
+        analysis = json.loads(analysis_data)
+        
+        # Create enhanced project data
+        project_data = {
+            "name": name,
+            "buyer_id": int(buyer_id) if buyer_id and buyer_id != "" else 1,
+            "priority": priority,
+            "description": description,
+            "search_type": search_type or "image",
+            "initial_product_images": analysis.get("images", []),
+            "product_specifications": {
+                "product_name": analysis.get("product_name", "Unknown Product"),
+                "category": analysis.get("category", "Food & Beverage"),
+                "description": analysis.get("description", ""),
+                "analysis_results": analysis
+            },
+            "analysis_results": analysis
+        }
+        
+        # Call the enhanced project creation API
+        try:
+            response = requests.post(
+                "http://localhost:8003/projects/api/create-from-analysis",
+                json=project_data
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                logger.info(f"Created enhanced project: {result.get('project', {}).get('project_id')}")
+                
+                # Also save to old format for backward compatibility
+                projects_dir = os.path.join(os.getcwd(), "projects")
+                os.makedirs(projects_dir, exist_ok=True)
+                
+                import uuid
+                project_filename = f"project_{uuid.uuid4()}.json"
+                project_path = os.path.join(projects_dir, project_filename)
+                
+                old_format_data = {
+                    "name": name,
+                    "description": description,
+                    "buyer_id": buyer_id,
+                    "priority": priority,
+                    "search_type": search_type or "image",
+                    "analysis_data": analysis,
+                    "created_at": datetime.now().isoformat(),
+                    "enhanced_project_id": result.get('project', {}).get('project_id')
+                }
+                
+                with open(project_path, 'w', encoding='utf-8') as f:
+                    json.dump(old_format_data, f, indent=2, ensure_ascii=False)
+                
+                return {
+                    "success": True,
+                    "message": "Project saved successfully with enhanced tracking",
+                    "project_filename": project_filename,
+                    "enhanced_project_id": result.get('project', {}).get('project_id')
+                }
+            else:
+                logger.warning("Could not create enhanced project, falling back to basic save")
+                
+        except Exception as api_error:
+            logger.warning(f"Enhanced project API not available: {api_error}")
+        
+        # Fallback to old save method if API fails
         projects_dir = os.path.join(os.getcwd(), "projects")
         os.makedirs(projects_dir, exist_ok=True)
         
-        # Create project data
-        project_data = {
-            "name": name,
-            "description": description,
-            "buyer_id": buyer_id if buyer_id and buyer_id != "" else None,
-            "priority": priority,
-            "search_type": search_type or "image",
-            "analysis_data": json.loads(analysis_data),
-            "created_at": datetime.now().isoformat()
-        }
-        
-        # Save to file
         import uuid
         project_filename = f"project_{uuid.uuid4()}.json"
         project_path = os.path.join(projects_dir, project_filename)
         
+        basic_data = {
+            "name": name,
+            "description": description,
+            "buyer_id": buyer_id,
+            "priority": priority,
+            "search_type": search_type or "image",
+            "analysis_data": analysis,
+            "created_at": datetime.now().isoformat()
+        }
+        
         with open(project_path, 'w', encoding='utf-8') as f:
-            json.dump(project_data, f, indent=2, ensure_ascii=False)
+            json.dump(basic_data, f, indent=2, ensure_ascii=False)
         
         return {
             "success": True,

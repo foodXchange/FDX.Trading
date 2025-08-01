@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - FoodXchange</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        .auth-visual {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .auth-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .logo-section {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-name {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-tagline {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .benefits-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .benefits-list li {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .benefits-list li::before {
+            content: '⭐';
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .auth-form {
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .social-login {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-btn.google:hover {
+            border-color: #ea4335;
+        }
+
+        .social-btn.microsoft:hover {
+            border-color: #0078d4;
+        }
+
+        .social-btn.linkedin {
+            grid-column: 1 / -1;
+        }
+
+        .social-btn.linkedin:hover {
+            border-color: #0a66c2;
+        }
+
+        .social-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .divider::before {
+            margin-right: 16px;
+        }
+
+        .divider::after {
+            margin-left: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .password-input {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .name-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-options {
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            color: #374151;
+        }
+
+        .checkbox-group a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .signin-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .signin-link p {
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .signin-link a {
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signin-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-danger {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .auth-visual {
+                display: none;
+            }
+
+            .auth-form {
+                padding: 30px 20px;
+            }
+
+            .social-login {
+                grid-template-columns: 1fr;
+            }
+
+            .social-btn.linkedin {
+                grid-column: 1;
+            }
+
+            .name-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-visual">
+            <div class="logo-section">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <path d="M20 8L32 14V26L20 32L8 26V14L20 8Z" fill="white" opacity="0.9"/>
+                        <path d="M20 12L28 16V24L20 28L12 24V16L20 12Z" fill="rgba(255,255,255,0.7)"/>
+                    </svg>
+                </div>
+                <h1 class="brand-name">FOOD<span style="color: #fbbf24;">X</span>CHANGE</h1>
+                <p class="brand-tagline">Join the Future of Food Sourcing</p>
+                
+                <ul class="benefits-list">
+                    <li>Access to 10,000+ verified suppliers</li>
+                    <li>AI-powered product matching</li>
+                    <li>Real-time price comparisons</li>
+                    <li>Automated RFQ management</li>
+                    <li>Free trial for 30 days</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="auth-form">
+            <h2 class="form-title">Create Your Account</h2>
+            <p class="form-subtitle">Join thousands of food businesses worldwide</p>
+
+            {% if request.query_params.get('error') %}
+                <div class="alert alert-danger">
+                    {% if request.query_params.get('error') == 'terms_required' %}
+                        Please accept the terms and conditions.
+                    {% elif request.query_params.get('error') == 'password_mismatch' %}
+                        Passwords do not match.
+                    {% elif request.query_params.get('error') == 'weak_password' %}
+                        Password must be at least 8 characters long.
+                    {% elif request.query_params.get('error') == 'email_exists' %}
+                        An account with this email already exists.
+                    {% elif request.query_params.get('error') == 'registration_failed' %}
+                        Registration failed. Please try again.
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="social-login">
+                <a href="#" class="social-btn google" onclick="socialLogin('google')">
+                    <svg class="social-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Google
+                </a>
+                <a href="#" class="social-btn microsoft" onclick="socialLogin('microsoft')">
+                    <svg class="social-icon" viewBox="0 0 24 24">
+                        <path fill="#00BCF2" d="M11.4 24H0V12.6h11.4V24z"/>
+                        <path fill="#00BCF2" d="M24 24H12.6V12.6H24V24z"/>
+                        <path fill="#00BCF2" d="M11.4 11.4H0V0h11.4v11.4z"/>
+                        <path fill="#00BCF2" d="M24 11.4H12.6V0H24v11.4z"/>
+                    </svg>
+                    Microsoft
+                </a>
+                <a href="#" class="social-btn linkedin" onclick="socialLogin('linkedin')">
+                    <svg class="social-icon" viewBox="0 0 24 24">
+                        <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    Continue with LinkedIn
+                </a>
+            </div>
+
+            <div class="divider">or sign up with email</div>
+
+            <form action="/auth/signup" method="post">
+                <div class="name-group">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-input" name="firstName" placeholder="John" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-input" name="lastName" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-input" name="company" placeholder="Your Company Ltd." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Business Email</label>
+                    <input type="email" class="form-input" name="email" placeholder="john@company.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="password-input">
+                        <input type="password" class="form-input" name="password" id="password" placeholder="Create a strong password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <div class="password-input">
+                        <input type="password" class="form-input" name="confirmPassword" id="confirmPassword" placeholder="Confirm your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Create Account</button>
+            </form>
+
+            <div class="signin-link">
+                <p>Already have an account?</p>
+                <a href="/login">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        function socialLogin(provider) {
+            // Simulate social login - replace with actual OAuth integration
+            alert(`${provider} signup coming soon!`);
+            
+            // In real implementation, redirect to OAuth provider:
+            // window.location.href = `/auth/${provider}`;
+        }
+
+        // Password validation
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+
+        function validatePasswords() {
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity("Passwords don't match");
+            } else {
+                confirmPassword.setCustomValidity('');
+            }
+        }
+
+        password.addEventListener('change', validatePasswords);
+        confirmPassword.addEventListener('keyup', validatePasswords);
+
+        // Add some interactive feedback
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

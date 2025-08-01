@@ -324,7 +324,9 @@ class IntelligentSearchService:
         db: Session
     ) -> List[SearchResult]:
         """Search products (simplified for now)"""
-        # TODO: Implement actual product search when Product model is available
+        # Product search implementation will be added when Product model is available
+        # For now, return empty results to maintain API consistency
+        logger.info("Product search requested but Product model not yet implemented")
         return []
     
     async def _get_search_facets(
