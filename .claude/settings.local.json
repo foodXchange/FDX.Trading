@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(git add:*)",
@@ -158,7 +159,28 @@
       "Bash(then rm logs.zip)",
       "Bash(if [ -f \"nul\" ])",
       "Bash(then rm nul)",
-      "Bash(Remove-Item \"C:\\Users\\foodz\\Desktop\\FoodXchange\\foodxchange\\templates\\pages\\login_new.html\")"
+      "Bash(Remove-Item \"C:\\Users\\foodz\\Desktop\\FoodXchange\\foodxchange\\templates\\pages\\login_new.html\")",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh secret set:*)",
+      "Bash(gh workflow run:*)",
+      "Bash(gh run watch:*)",
+      "Bash(tasklist)",
+      "Bash(restart_server_9000.bat)",
+      "Bash(foodxchange-envScriptspython.exe -m uvicorn foodxchange.main:app --host 0.0.0.0 --port 9000 --reload)",
+      "Bash(./foodxchange-env/Scripts/python.exe -m uvicorn foodxchange.main:app --host 0.0.0.0 --port 9000 --reload)",
+      "Bash(./restart_server_9000.bat)",
+      "Bash(foodxchange-envScriptspip install flask)",
+      "Bash(\"foodxchange-env\\Scripts\\pip\" install flask)",
+      "Bash(C:UsersfoodzDesktopFoodXchangefoodxchange-envScriptspython.exe -m pip install flask)",
+      "Bash(foodxchange-envScriptspython.exe start_server_dev.py)",
+      "Bash(./foodxchange-env/Scripts/python.exe start_server_dev.py)",
+      "Bash(gh secret:*)",
+      "Bash(foodxchange-envScriptspython.exe -m pip --version)",
+      "Bash(install_requirements.bat)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:docs.microsoft.com)",
+      "Bash(foodxchange-env\\Scripts\\python.exe start_server_dev.py)"
     ],
     "deny": []
   }

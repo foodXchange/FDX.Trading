@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .blog-hero {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .blog-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .blog-hero h2 {
+        color: #00a8e8;
+        font-size: 1.5rem;
+        font-weight: 400;
+    }
+
+    .featured-article {
+        background: linear-gradient(135deg, #00a8e8 0%, #0090c8 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .featured-article::before {
+        content: "FEATURED";
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        background: #ff8c00;
+        color: white;
+        padding: 0.25rem 3rem;
+        transform: rotate(45deg);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .featured-article h2 {
+        color: white;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .featured-article .meta {
+        opacity: 0.9;
+        margin-bottom: 1rem;
+    }
+
+    .featured-article .excerpt {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .featured-article .read-more {
+        display: inline-block;
+        background: white;
+        color: #00a8e8;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .featured-article .read-more:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+    }
+
+    .article-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .article-image {
+        height: 200px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #ddd;
+    }
+
+    .article-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .article-category {
+        color: #00a8e8;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .article-title {
+        color: #333;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-decoration: none;
+        display: block;
+    }
+
+    .article-title:hover {
+        color: #00a8e8;
+        text-decoration: none;
+    }
+
+    .article-meta {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .article-excerpt {
+        color: #666;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+
+    .read-more-link {
+        color: #00a8e8;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .read-more-link:hover {
+        transform: translateX(5px);
+        text-decoration: none;
+    }
+
+    .read-more-link i {
+        margin-left: 0.5rem;
+        transition: all 0.3s;
+    }
+
+    .categories-sidebar {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .categories-sidebar h3 {
+        margin-bottom: 1rem;
+    }
+
+    .category-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .category-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .category-list li:last-child {
+        border-bottom: none;
+    }
+
+    .category-list a {
+        color: #333;
+        text-decoration: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .category-list a:hover {
+        color: #00a8e8;
+        transform: translateX(5px);
+    }
+
+    .category-count {
+        background: #00a8e8;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+
+    .newsletter-box {
+        background: linear-gradient(135deg, #ff8c00 0%, #e67e00 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+    }
+
+    .newsletter-box h3 {
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+    }
+
+    .newsletter-button {
+        background: white;
+        color: #ff8c00;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .newsletter-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+    }
+
+    .pagination {
+        justify-content: center;
+        margin-top: 3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="blog-hero">
+    <div class="container text-center">
+        <h1>FoodXchange Blog</h1>
+        <h2>Insights on Global Food Sourcing</h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Featured Article -->
+            <div class="featured-article">
+                <h2>How AI is Transforming Food Sourcing</h2>
+                <div class="meta">January 15, 2025 • 5 min read</div>
+                <p class="excerpt">Discover how artificial intelligence is making global food trade more efficient and accessible for businesses of all sizes. From automated matching to predictive analytics, AI is revolutionizing how we source food products.</p>
+                <a href="#" class="read-more">Read Full Article →</a>
+            </div>
+
+            <!-- Article Grid -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="article-card">
+                        <div class="article-image">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="article-content">
+                            <div class="article-category">Industry Insights</div>
+                            <a href="#" class="article-title">The Future of Global Food Supply Chains</a>
+                            <div class="article-meta">January 10, 2025</div>
+                            <p class="article-excerpt">Expert insights on emerging trends and technologies shaping the future of food distribution worldwide.</p>
+                            <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="article-card">
+                        <div class="article-image">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="article-content">
+                            <div class="article-category">How-To Guides</div>
+                            <a href="#" class="article-title">5 Tips for Finding Reliable Food Suppliers</a>
+                            <div class="article-meta">January 5, 2025</div>
+                            <p class="article-excerpt">Practical advice from industry experts on vetting and selecting the best suppliers for your business.</p>
+                            <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="article-card">
+                        <div class="article-image">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="article-content">
+                            <div class="article-category">Success Stories</div>
+                            <a href="#" class="article-title">Restaurant Chain Saves 30% on Sourcing</a>
+                            <div class="article-meta">December 28, 2024</div>
+                            <p class="article-excerpt">How a major restaurant chain transformed their procurement process using FoodXchange's AI platform.</p>
+                            <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="article-card">
+                        <div class="article-image">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="article-content">
+                            <div class="article-category">Technology & AI</div>
+                            <a href="#" class="article-title">Blockchain in Food Supply Chain Security</a>
+                            <div class="article-meta">December 20, 2024</div>
+                            <p class="article-excerpt">Understanding how blockchain technology is enhancing transparency and trust in food sourcing.</p>
+                            <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="article-card">
+                        <div class="article-image">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="article-content">
+                            <div class="article-category">Supplier Spotlights</div>
+                            <a href="#" class="article-title">Meet Our Supplier: Mediterranean Olives Co.</a>
+                            <div class="article-meta">December 15, 2024</div>
+                            <p class="article-excerpt">Get to know one of our premium olive suppliers and their journey to international success.</p>
+                            <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="article-card">
+                        <div class="article-image">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="article-content">
+                            <div class="article-category">How-To Guides</div>
+                            <a href="#" class="article-title">Complete Guide to Food Import Regulations</a>
+                            <div class="article-meta">December 10, 2024</div>
+                            <p class="article-excerpt">Everything you need to know about importing food products across different countries and regions.</p>
+                            <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Blog pagination">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Categories -->
+            <div class="categories-sidebar">
+                <h3>Categories</h3>
+                <ul class="category-list">
+                    <li>
+                        <a href="#">
+                            <span>Industry Insights</span>
+                            <span class="category-count">12</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span>Technology & AI</span>
+                            <span class="category-count">8</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span>Supplier Spotlights</span>
+                            <span class="category-count">15</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span>Success Stories</span>
+                            <span class="category-count">10</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span>How-To Guides</span>
+                            <span class="category-count">20</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="newsletter-box">
+                <h3>Subscribe to Newsletter</h3>
+                <p>Get the latest insights on global food sourcing delivered to your inbox</p>
+                <form class="newsletter-form">
+                    <input type="email" class="newsletter-input" placeholder="Your email" required>
+                    <button type="submit" class="newsletter-button">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

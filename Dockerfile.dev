@@ -1,39 +1,40 @@
 FROM python:3.11-slim
 
-WORKDIR /app
-
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
+    libpq-dev \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
+# Create non-root user
+RUN groupadd --gid 1000 vscode \
+    && useradd --uid 1000 --gid vscode --shell /bin/bash --create-home vscode
+
+# Set working directory
+WORKDIR /workspace
+
 # Copy requirements first for better caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements-dev.txt ./
 
-# Development-specific packages
-RUN pip install --no-cache-dir \
-    watchdog \
-    pytest \
-    pytest-cov \
-    pytest-asyncio \
-    black \
-    flake8 \
-    mypy
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir -r requirements-dev.txt
 
-# Copy application code
+# Copy project files
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p logs uploads temp
+# Set ownership to vscode user
+RUN chown -R vscode:vscode /workspace
 
-# Development user (non-root)
-RUN useradd -m -u 1000 devuser && chown -R devuser:devuser /app
-USER devuser
+# Switch to vscode user
+USER vscode
 
-EXPOSE 8003
+# Expose port
+EXPOSE 9000
 
-# Development server with hot reload
-CMD ["python", "-m", "uvicorn", "foodxchange.main:app", "--host", "0.0.0.0", "--port", "8003", "--reload"]
+# Default command (will be overridden by dev container)
+CMD ["python", "-m", "uvicorn", "foodxchange.main:app", "--host", "0.0.0.0", "--port", "9000", "--reload"]

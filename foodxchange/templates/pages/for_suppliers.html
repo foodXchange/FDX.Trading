@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+
+{% block title %}For Suppliers - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .suppliers-hero {
+        background: linear-gradient(135deg, #ff8c00 0%, #e67e00 100%);
+        color: white;
+        padding: 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .suppliers-hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E") repeat;
+    }
+
+    .suppliers-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .suppliers-hero h2 {
+        font-size: 1.8rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+    }
+
+    .hero-cta {
+        display: inline-block;
+        background: white;
+        color: #ff8c00;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-right: 1rem;
+    }
+
+    .hero-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        color: #ff8c00;
+        text-decoration: none;
+    }
+
+    .hero-cta-secondary {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+    }
+
+    .hero-cta-secondary:hover {
+        background: white;
+        color: #ff8c00;
+    }
+
+    .opportunity-section {
+        padding: 4rem 0;
+        background: #f8f9fa;
+    }
+
+    .opportunity-stat {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .opportunity-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #00a8e8;
+        display: block;
+    }
+
+    .opportunity-label {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .how-it-works {
+        padding: 4rem 0;
+    }
+
+    .step-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s;
+    }
+
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .step-icon {
+        font-size: 3rem;
+        color: #ff8c00;
+        margin-bottom: 1rem;
+    }
+
+    .step-number {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        background: #00a8e8;
+        color: white;
+        border-radius: 50%;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .benefits-grid {
+        padding: 4rem 0;
+        background: #1a1a1a;
+        color: white;
+    }
+
+    .benefit-card {
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .benefit-icon {
+        font-size: 3rem;
+        color: #ff8c00;
+        margin-bottom: 1rem;
+    }
+
+    .benefit-card h4 {
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .benefit-card p {
+        color: #ccc;
+    }
+
+    .pricing-section {
+        padding: 4rem 0;
+    }
+
+    .supplier-pricing-card {
+        background: white;
+        border: 2px solid #eee;
+        border-radius: 15px;
+        padding: 2.5rem;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s;
+    }
+
+    .supplier-pricing-card:hover {
+        border-color: #ff8c00;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(255,140,0,0.1);
+    }
+
+    .supplier-pricing-card.featured {
+        border-color: #ff8c00;
+        transform: scale(1.05);
+    }
+
+    .price-tag {
+        font-size: 2.5rem;
+        color: #ff8c00;
+        font-weight: 700;
+        margin: 1rem 0;
+    }
+
+    .success-stories {
+        background: #f8f9fa;
+        padding: 4rem 0;
+    }
+
+    .story-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+
+    .story-metric {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #00a8e8;
+        display: block;
+    }
+
+    .cta-banner {
+        background: linear-gradient(135deg, #00a8e8 0%, #0090c8 100%);
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
+    }
+
+    .faq-accordion .accordion-button {
+        background: white;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .faq-accordion .accordion-button:not(.collapsed) {
+        background: #f8f9fa;
+        color: #00a8e8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="suppliers-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1>Reach Global Buyers Instantly</h1>
+                <h2>Expand Your Business Without the Complexity</h2>
+                <a href="/signup" class="hero-cta">Join as a Supplier</a>
+                <a href="#how-it-works" class="hero-cta hero-cta-secondary">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Opportunity Section -->
+<div class="opportunity-section">
+    <div class="container">
+        <h2 class="text-center mb-5">The Opportunity</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="opportunity-stat">
+                    <span class="opportunity-number">10,000+</span>
+                    <span class="opportunity-label">Active Buyers Daily</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="opportunity-stat">
+                    <span class="opportunity-number">100+</span>
+                    <span class="opportunity-label">Countries Reached</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="opportunity-stat">
+                    <span class="opportunity-number">$0</span>
+                    <span class="opportunity-label">Marketing Costs</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="opportunity-stat">
+                    <span class="opportunity-number">24hrs</span>
+                    <span class="opportunity-label">To First Lead</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <p class="lead">Direct access to international markets without expensive trade shows or travel</p>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="how-it-works" id="how-it-works">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>Create Your Profile</h3>
+                    <p>List your products with photos, specifications, certifications, prices, and MOQs. Takes less than 30 minutes.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Get Matched Automatically</h3>
+                    <p>Our AI connects you with buyers looking for your products. Receive qualified leads daily without cold calling.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Close Deals Faster</h3>
+                    <p>Communicate directly with decision makers. Secure payment terms. Simplified export documentation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Benefits Grid -->
+<div class="benefits-grid">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Suppliers Choose Us</h2>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h4>Qualified Leads Only</h4>
+                    <p>No tire kickers. Every lead is a serious buyer with specific requirements matching your products.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🌐</div>
+                    <h4>Global Reach</h4>
+                    <p>Export to 100+ countries without leaving your office. We handle language barriers and time zones.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">💼</div>
+                    <h4>Zero Marketing Cost</h4>
+                    <p>We bring qualified buyers to you. No need for expensive ads, trade shows, or sales teams.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">📊</div>
+                    <h4>Market Intelligence</h4>
+                    <p>Understand demand trends, pricing insights, and buyer preferences to optimize your offerings.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔒</div>
+                    <h4>Payment Security</h4>
+                    <p>Guaranteed transactions with escrow protection. Get paid on time, every time.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🚀</div>
+                    <h4>Scale Effortlessly</h4>
+                    <p>Handle more buyers without adding staff. Our platform automates repetitive tasks.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div class="pricing-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Simple, Transparent Pricing for Suppliers</h2>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="supplier-pricing-card">
+                    <h3>Basic Listing</h3>
+                    <div class="price-tag">Free</div>
+                    <p class="text-muted">Get started with no risk</p>
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-2">✓ List up to 10 products</li>
+                        <li class="mb-2">✓ Basic company profile</li>
+                        <li class="mb-2">✓ Receive buyer inquiries</li>
+                        <li class="mb-2">✓ Standard support</li>
+                    </ul>
+                    <a href="/signup" class="btn btn-outline-primary btn-lg mt-3">Start Free</a>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="supplier-pricing-card featured">
+                    <h3>Premium Visibility</h3>
+                    <div class="price-tag">$49/month</div>
+                    <p class="text-muted">Maximize your exposure</p>
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-2">✓ Unlimited products</li>
+                        <li class="mb-2">✓ Priority in search results</li>
+                        <li class="mb-2">✓ Featured supplier badge</li>
+                        <li class="mb-2">✓ Advanced analytics</li>
+                        <li class="mb-2">✓ Dedicated support</li>
+                    </ul>
+                    <a href="/signup" class="btn btn-primary btn-lg mt-3">Go Premium</a>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="supplier-pricing-card">
+                    <h3>Transaction Fee</h3>
+                    <div class="price-tag">2.5%</div>
+                    <p class="text-muted">Only on successful orders</p>
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-2">✓ No setup fees</li>
+                        <li class="mb-2">✓ No hidden charges</li>
+                        <li class="mb-2">✓ Payment protection</li>
+                        <li class="mb-2">✓ Dispute resolution</li>
+                    </ul>
+                    <a href="/contact" class="btn btn-outline-primary btn-lg mt-3">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Stories -->
+<div class="success-stories">
+    <div class="container">
+        <h2 class="text-center mb-5">Supplier Success Stories</h2>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="story-card">
+                    <span class="story-metric">300%</span>
+                    <h4>Export Growth</h4>
+                    <p>"We tripled our international sales in 6 months. The platform opened doors we never knew existed."</p>
+                    <small class="text-muted">- Olive Oil Producer, Spain</small>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="story-card">
+                    <span class="story-metric">50+</span>
+                    <h4>New Markets</h4>
+                    <p>"From selling locally to exporting to 50 countries. FoodXchange made global expansion simple."</p>
+                    <small class="text-muted">- Spice Manufacturer, India</small>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="story-card">
+                    <span class="story-metric">$2M+</span>
+                    <h4>Annual Sales</h4>
+                    <p>"The quality of buyers is exceptional. We've built lasting relationships with major chains."</p>
+                    <small class="text-muted">- Seafood Supplier, Vietnam</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+    
+    <div class="accordion faq-accordion" id="supplierFAQ">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                    How quickly will I receive my first lead?
+                </button>
+            </h2>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#supplierFAQ">
+                <div class="accordion-body">
+                    Most suppliers receive their first qualified lead within 24-48 hours of completing their profile. The more detailed your product listings, the better the match quality.
+                </div>
+            </div>
+        </div>
+        
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                    What documents do I need to get verified?
+                </button>
+            </h2>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#supplierFAQ">
+                <div class="accordion-body">
+                    Basic verification requires business registration, tax ID, and product certifications. For premium verification, we may request additional documents like export licenses or quality certificates.
+                </div>
+            </div>
+        </div>
+        
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                    How does payment protection work?
+                </button>
+            </h2>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#supplierFAQ">
+                <div class="accordion-body">
+                    We offer escrow services where buyer funds are held securely until you ship the products and they're received satisfactorily. This protects both parties and ensures smooth transactions.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Banner -->
+<div class="cta-banner">
+    <div class="container">
+        <h2 class="mb-4">Ready to Grow Your Export Business?</h2>
+        <p class="lead mb-4">Join 500+ suppliers already reaching global buyers</p>
+        <a href="/signup" class="btn btn-light btn-lg me-3">Start Free Today</a>
+        <a href="/contact" class="btn btn-outline-light btn-lg">Schedule a Demo</a>
+    </div>
+</div>
+{% endblock %}

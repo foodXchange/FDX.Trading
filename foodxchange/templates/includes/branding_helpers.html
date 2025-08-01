@@ -1,0 +1,77 @@
+{# Branding Helper Macros for Jinja2 Templates #}
+
+{# Macro to display company name with proper branding #}
+{% macro company_name() -%}
+    <span class="logo-food">{{ company.logo_text.primary if company else 'FDX' }}</span><span class="logo-xchange">{{ company.logo_text.secondary if company else '.TRADING' }}</span>
+{%- endmacro %}
+
+{# Macro to display social media links #}
+{% macro social_links(class="") -%}
+    <div class="social-links {{ class }}">
+        {% if social_media %}
+            <a href="{{ social_media.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="{{ social_media.facebook }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="{{ social_media.twitter }}" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="{{ social_media.instagram }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="{{ social_media.youtube }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <i class="fab fa-youtube"></i>
+            </a>
+        {% endif %}
+    </div>
+{%- endmacro %}
+
+{# Macro to display trust badges #}
+{% macro trust_badges() -%}
+    {% if trust_badges %}
+        <div class="trust-badges">
+            {% for badge in trust_badges %}
+                <span class="badge bg-{{ badge.color }} me-2">
+                    <i class="{{ badge.icon }}"></i> {{ badge.name }}
+                </span>
+            {% endfor %}
+        </div>
+    {% endif %}
+{%- endmacro %}
+
+{# Macro to display statistics #}
+{% macro platform_stats() -%}
+    {% if stats %}
+        <div class="row text-center">
+            <div class="col-6 col-md-3">
+                <h4 class="stat-number">{{ stats.suppliers }}</h4>
+                <p class="stat-label">Verified Suppliers</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h4 class="stat-number">{{ stats.countries }}</h4>
+                <p class="stat-label">Countries</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h4 class="stat-number">{{ stats.products_analyzed }}</h4>
+                <p class="stat-label">Products Analyzed</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h4 class="stat-number">{{ stats.success_rate }}</h4>
+                <p class="stat-label">Success Rate</p>
+            </div>
+        </div>
+    {% endif %}
+{%- endmacro %}
+
+{# Macro for CTA buttons #}
+{% macro cta_button(type="primary", size="lg", href="/signup") -%}
+    <a href="{{ href }}" class="btn btn-{{ type }} btn-{{ size }}">
+        {% if cta_messages %}
+            {{ cta_messages.get('trial', 'Start Free Trial') }}
+        {% else %}
+            Start Free Trial
+        {% endif %}
+    </a>
+{%- endmacro %}

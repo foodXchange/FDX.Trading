@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}For Buyers - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .buyers-hero {
+        background: linear-gradient(135deg, #00a8e8 0%, #0090c8 100%);
+        color: white;
+        padding: 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .buyers-hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    }
+
+    .buyers-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .buyers-hero h2 {
+        font-size: 1.8rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+    }
+
+    .hero-cta {
+        display: inline-block;
+        background: #ff8c00;
+        color: white;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-right: 1rem;
+    }
+
+    .hero-cta:hover {
+        background: #e67e00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,140,0,0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .hero-cta-secondary {
+        background: transparent;
+        border: 2px solid white;
+    }
+
+    .hero-cta-secondary:hover {
+        background: white;
+        color: #00a8e8;
+    }
+
+    .problem-section {
+        background: #f8f9fa;
+        padding: 4rem 0;
+    }
+
+    .solution-steps {
+        padding: 4rem 0;
+    }
+
+    .step-card {
+        text-align: center;
+        padding: 2rem;
+        height: 100%;
+    }
+
+    .step-number {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        background: #00a8e8;
+        color: white;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .step-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .benefits-section {
+        background: #1a1a1a;
+        color: white;
+        padding: 4rem 0;
+    }
+
+    .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+
+    .benefit-icon {
+        font-size: 2rem;
+        color: #00a8e8;
+        margin-right: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .benefit-content h4 {
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .benefit-content p {
+        color: #ccc;
+        margin-bottom: 0;
+    }
+
+    .testimonial-section {
+        padding: 4rem 0;
+    }
+
+    .testimonial-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        height: 100%;
+    }
+
+    .testimonial-text {
+        font-size: 1.1rem;
+        font-style: italic;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .testimonial-author {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .testimonial-company {
+        color: #00a8e8;
+    }
+
+    .stats-banner {
+        background: linear-gradient(135deg, #ff8c00 0%, #e67e00 100%);
+        color: white;
+        padding: 3rem 0;
+        text-align: center;
+    }
+
+    .stat-item {
+        margin-bottom: 2rem;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+    }
+
+    .process-visual {
+        text-align: center;
+        padding: 3rem 0;
+    }
+
+    .process-arrow {
+        display: inline-block;
+        font-size: 2rem;
+        color: #00a8e8;
+        margin: 0 1rem;
+    }
+
+    .process-step {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: #f8f9fa;
+        border-radius: 50px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .final-cta {
+        background: #f8f9fa;
+        padding: 4rem 0;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="buyers-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1>Source Food Products 10x Faster</h1>
+                <h2>Stop wasting weeks finding suppliers. Start sourcing in minutes.</h2>
+                <a href="/signup" class="hero-cta">Start Sourcing Now - It's Free</a>
+                <a href="#how-it-works" class="hero-cta hero-cta-secondary">See How It Works</a>
+            </div>
+            <div class="col-lg-5">
+                <!-- Could add an illustration here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Problem Section -->
+<div class="problem-section">
+    <div class="container">
+        <h2 class="text-center mb-4">The Problem We Solve</h2>
+        <p class="lead text-center mb-5">Finding reliable food suppliers is time-consuming and risky. You need to:</p>
+        
+        <div class="row">
+            <div class="col-md-4 text-center mb-3">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4>Research Multiple Suppliers</h4>
+                <p>Hours spent searching and comparing</p>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+                <i class="fas fa-shield-alt fa-3x text-muted mb-3"></i>
+                <h4>Verify Credibility</h4>
+                <p>Risk of unreliable or fraudulent suppliers</p>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+                <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+                <h4>Handle Complex Negotiations</h4>
+                <p>Time-consuming back-and-forth communications</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Solution Steps -->
+<div class="solution-steps" id="how-it-works">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        
+        <div class="process-visual">
+            <span class="process-step">Upload</span>
+            <span class="process-arrow">→</span>
+            <span class="process-step">Analyze</span>
+            <span class="process-arrow">→</span>
+            <span class="process-step">Match</span>
+            <span class="process-arrow">→</span>
+            <span class="process-step">Order</span>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Upload a Product Image</h3>
+                    <p>Take a photo of any food product. Our AI identifies specifications instantly.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Get Matched with Suppliers</h3>
+                    <p>See verified suppliers who have your product. Compare prices, MOQs, and delivery times.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Communicate Directly</h3>
+                    <p>Chat with suppliers, negotiate terms, and get all your questions answered.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Order with Confidence</h3>
+                    <p>Secure payment protection, quality assurance, and real-time tracking.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Benefits Section -->
+<div class="benefits-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Benefits for Your Business</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="benefit-item">
+                    <div class="benefit-icon">⏱️</div>
+                    <div class="benefit-content">
+                        <h4>Save 90% of Sourcing Time</h4>
+                        <p>What used to take weeks now takes hours. Focus on growing your business.</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">💰</div>
+                    <div class="benefit-content">
+                        <h4>Reduce Costs by 15-30%</h4>
+                        <p>Access competitive pricing from multiple suppliers. No middleman markups.</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">🌍</div>
+                    <div class="benefit-content">
+                        <h4>Access Global Suppliers</h4>
+                        <p>Connect with 500+ verified suppliers from 50+ countries instantly.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="benefit-item">
+                    <div class="benefit-icon">✅</div>
+                    <div class="benefit-content">
+                        <h4>Eliminate Middlemen</h4>
+                        <p>Deal directly with manufacturers and primary suppliers.</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">📈</div>
+                    <div class="benefit-content">
+                        <h4>Scale Your Operations</h4>
+                        <p>Handle more suppliers and orders without adding staff.</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">🔒</div>
+                    <div class="benefit-content">
+                        <h4>Secure Transactions</h4>
+                        <p>Payment protection and quality guarantees on every order.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Banner -->
+<div class="stats-banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">10,000+</span>
+                    <span class="stat-label">Products Analyzed</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Verified Suppliers</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Countries Served</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label">Customer Satisfaction</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials -->
+<div class="testimonial-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Success Stories</h2>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"We reduced our sourcing time from 2 weeks to 2 days. The AI matching is incredibly accurate."</p>
+                    <div class="testimonial-author">Sarah Chen</div>
+                    <div class="testimonial-company">Restaurant Chain Owner</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Found suppliers 30% cheaper than our previous sources. Game-changer for our margins."</p>
+                    <div class="testimonial-author">Michael Rodriguez</div>
+                    <div class="testimonial-company">Food Distributor</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The platform eliminated language barriers. We now source globally with confidence."</p>
+                    <div class="testimonial-author">Emma Thompson</div>
+                    <div class="testimonial-company">Grocery Chain Buyer</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Final CTA -->
+<div class="final-cta">
+    <div class="container">
+        <h2 class="mb-4">Ready to Transform Your Food Sourcing?</h2>
+        <p class="lead mb-4">Join thousands of buyers who've already simplified their supply chain</p>
+        <a href="/signup" class="btn btn-primary btn-lg">Start Sourcing Now - It's Free</a>
+        <p class="mt-3">No credit card required • 5 free AI analyses • Cancel anytime</p>
+    </div>
+</div>
+{% endblock %}

@@ -414,6 +414,14 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Enhanced project routes not loaded: {e}")
 
+# Add footer pages routes
+try:
+    from foodxchange.routes import footer_routes
+    app.include_router(footer_routes.router)
+    logger.info("✅ Footer pages routes loaded")
+except ImportError as e:
+    logger.warning(f"⚠️ Footer pages routes not loaded: {e}")
+
 logger.info("✅ Optional route modules loaded successfully")
 
 # Add profile routes directly to avoid import issues

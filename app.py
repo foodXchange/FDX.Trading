@@ -326,6 +326,55 @@ Submitted at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
             'version': '1.0.0'
         })
     
+    # Footer pages routes
+    @app.route('/features')
+    def features():
+        return render_template('pages/features.html')
+    
+    @app.route('/pricing')
+    def pricing():
+        return render_template('pages/pricing.html')
+    
+    @app.route('/security')
+    def security():
+        return render_template('pages/security.html')
+    
+    @app.route('/api-page')
+    def api_page():
+        return render_template('pages/api.html')
+    
+    @app.route('/for-buyers')
+    def for_buyers():
+        return render_template('pages/for_buyers.html')
+    
+    @app.route('/for-suppliers')
+    def for_suppliers():
+        return render_template('pages/for_suppliers.html')
+    
+    @app.route('/for-brokers')
+    def for_brokers():
+        return render_template('pages/for_brokers.html')
+    
+    @app.route('/enterprise')
+    def enterprise():
+        return render_template('pages/enterprise.html')
+    
+    @app.route('/about')
+    def about():
+        return render_template('pages/about.html')
+    
+    @app.route('/careers')
+    def careers():
+        return render_template('pages/careers.html')
+    
+    @app.route('/blog')
+    def blog():
+        return render_template('pages/blog.html')
+    
+    @app.route('/contact-page')
+    def contact_page():
+        return render_template('pages/contact.html')
+    
     @app.errorhandler(404)
     def not_found(error):
         return render_template('404.html'), 404
@@ -341,8 +390,12 @@ app = create_app()
 
 if __name__ == '__main__':
     logger.info("Starting FDX Trading Platform...")
+    port = int(os.environ.get('PORT', 9000))  # Default to port 9000 for dev
+    debug = os.environ.get('FLASK_ENV') == 'development' or os.environ.get('FLASK_DEBUG') == '1'
+    
+    logger.info(f"Server starting on port {port} with debug={debug}")
     app.run(
         host='0.0.0.0',
-        port=int(os.environ.get('PORT', 5000)),
-        debug=os.environ.get('FLASK_ENV') == 'development'
+        port=port,
+        debug=debug
     )

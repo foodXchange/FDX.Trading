@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}Security - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .security-hero {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .security-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .security-hero h2 {
+        color: #00a8e8;
+        font-size: 1.5rem;
+        font-weight: 400;
+    }
+
+    .security-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .security-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .security-icon {
+        font-size: 3rem;
+        color: #00a8e8;
+        margin-bottom: 1rem;
+    }
+
+    .security-card h3 {
+        color: #333;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .security-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .security-list li {
+        padding: 0.75rem 0;
+        padding-left: 2rem;
+        position: relative;
+        color: #666;
+    }
+
+    .security-list li:before {
+        content: "🔒";
+        position: absolute;
+        left: 0;
+    }
+
+    .certification-badges {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin: 3rem 0;
+        flex-wrap: wrap;
+    }
+
+    .badge-item {
+        text-align: center;
+    }
+
+    .badge-icon {
+        width: 100px;
+        height: 100px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+        color: #00a8e8;
+    }
+
+    .security-stats {
+        background: #f8f9fa;
+        padding: 3rem;
+        border-radius: 15px;
+        margin: 3rem 0;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #00a8e8;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .trust-section {
+        background: linear-gradient(135deg, #00a8e8 0%, #0090c8 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .trust-section h2 {
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .trust-button {
+        display: inline-block;
+        background: #ff8c00;
+        color: white;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+
+    .trust-button:hover {
+        background: #e67e00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,140,0,0.3);
+        color: white;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="security-hero">
+    <div class="container text-center">
+        <h1>Your Security is Our Priority</h1>
+        <h2>How we protect your business</h2>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Security Features Grid -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="security-card text-center">
+                <div class="security-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Data Protection</h3>
+                <ul class="security-list text-left">
+                    <li>256-bit SSL encryption for all data</li>
+                    <li>GDPR compliant data handling</li>
+                    <li>ISO 27001 certified hosting</li>
+                    <li>Regular third-party security audits</li>
+                    <li>Encrypted data at rest and in transit</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="security-card text-center">
+                <div class="security-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Transaction Security</h3>
+                <ul class="security-list text-left">
+                    <li>PCI DSS compliant payment processing</li>
+                    <li>Escrow payment protection</li>
+                    <li>Advanced fraud detection systems</li>
+                    <li>Verified supplier network</li>
+                    <li>Secure payment gateway integration</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="security-card text-center">
+                <div class="security-icon">
+                    <i class="fas fa-file-shield"></i>
+                </div>
+                <h3>Document Safety</h3>
+                <ul class="security-list text-left">
+                    <li>Encrypted file storage on secure servers</li>
+                    <li>Secure document sharing protocols</li>
+                    <li>Access control management</li>
+                    <li>Complete audit trails</li>
+                    <li>Automatic backup systems</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="security-card text-center">
+                <div class="security-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h3>Business Protection</h3>
+                <ul class="security-list text-left">
+                    <li>Rigorous supplier verification process</li>
+                    <li>Quality assurance protocols</li>
+                    <li>Fair dispute resolution system</li>
+                    <li>Business insurance options</li>
+                    <li>Contract protection services</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Stats -->
+    <div class="security-stats">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime SLA</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Security Monitoring</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">256-bit</div>
+                    <div class="stat-label">SSL Encryption</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Data Privacy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Section -->
+    <h2 class="text-center mb-4">Compliance & Certifications</h2>
+    <div class="certification-badges">
+        <div class="badge-item">
+            <div class="badge-icon">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <h4>ISO 27001</h4>
+            <p>Information Security</p>
+        </div>
+        <div class="badge-item">
+            <div class="badge-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h4>GDPR</h4>
+            <p>Data Protection</p>
+        </div>
+        <div class="badge-item">
+            <div class="badge-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <h4>PCI DSS</h4>
+            <p>Payment Security</p>
+        </div>
+        <div class="badge-item">
+            <div class="badge-icon">
+                <i class="fas fa-globe"></i>
+            </div>
+            <h4>SOC 2</h4>
+            <p>Security & Availability</p>
+        </div>
+    </div>
+
+    <!-- Additional Security Measures -->
+    <div class="security-card">
+        <h3 class="text-center mb-4">🔍 Additional Security Measures</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Infrastructure Security</h4>
+                <ul class="security-list">
+                    <li>Multi-region data centers for redundancy</li>
+                    <li>DDoS protection and mitigation</li>
+                    <li>Regular penetration testing</li>
+                    <li>Automated security updates</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h4>Access Control</h4>
+                <ul class="security-list">
+                    <li>Two-factor authentication (2FA)</li>
+                    <li>Role-based access control</li>
+                    <li>Session management</li>
+                    <li>IP whitelisting options</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trust CTA -->
+    <div class="trust-section">
+        <h2>Trade with Confidence</h2>
+        <p class="lead">Join thousands of businesses who trust FoodXchange for secure global food sourcing</p>
+        <a href="/signup" class="trust-button">Start Secure Trading</a>
+    </div>
+</div>
+{% endblock %}

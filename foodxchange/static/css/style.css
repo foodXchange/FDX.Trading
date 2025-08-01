@@ -53,10 +53,26 @@ h1, h2, h3, h4, h5, h6 {
 /* Navigation */
 .navbar {
     background-color: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     padding: 1rem 0;
     transition: all 0.3s ease;
+}
+
+/* Main content spacing for fixed navbar */
+main {
+    padding-top: 80px; /* Adjust based on navbar height */
+}
+
+/* Additional spacing for pages with minimal content */
+.container.py-5 {
+    padding-top: 2rem !important;
+}
+
+/* Ensure proper spacing for all page content */
+body {
+    padding-top: 0; /* Remove any default body padding */
 }
 
 .navbar-brand {
@@ -437,17 +453,43 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Footer */
 .footer {
-    background-color: var(--gray-900);
-    color: var(--gray-300);
+    background-color: #2b2b2b;
+    color: #b0b0b0;
+    padding: 60px 0 30px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .footer-brand {
     margin-bottom: 2rem;
 }
 
+.footer-brand .logo {
+    margin-bottom: 0.5rem;
+}
+
+.footer-brand .logo-food {
+    color: #00a8e8;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.footer-brand .logo-xchange {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.footer-brand p {
+    color: #b0b0b0;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
 .footer h5 {
-    color: white;
-    margin-bottom: 1rem;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
 }
 
 .footer-links {
@@ -456,17 +498,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .footer-links li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .footer-links a {
-    color: var(--gray-300);
+    color: #b0b0b0;
     text-decoration: none;
+    font-size: 0.9rem;
     transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-    color: var(--primary-color);
+    color: #00a8e8;
 }
 
 .footer-contact {
@@ -475,48 +518,204 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .footer-contact li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #b0b0b0;
+    font-size: 0.9rem;
 }
 
 .footer-contact i {
-    margin-right: 0.5rem;
-    color: var(--primary-color);
+    color: #00a8e8;
+    font-size: 1rem;
 }
 
 .social-links {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
 }
 
 .social-links a {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 40px;
     height: 40px;
-    background-color: var(--gray-800);
+    background-color: #3d3d3d;
     color: white;
-    text-align: center;
-    line-height: 40px;
     border-radius: 50%;
-    margin-right: 0.5rem;
     transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
 }
 
 .social-links a:hover {
-    background-color: var(--primary-color);
     transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-.copyright {
-    color: var(--gray-500);
+/* Brand-specific hover colors */
+.social-links a[aria-label="LinkedIn"]:hover {
+    background-color: #0077b5;
+}
+
+.social-links a[aria-label="Facebook"]:hover {
+    background-color: #1877f2;
+}
+
+.social-links a[aria-label="X (Twitter)"]:hover {
+    background-color: #000000;
+}
+
+.social-links a[aria-label="Instagram"]:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-links a[aria-label="YouTube"]:hover {
+    background-color: #ff0000;
+}
+
+.social-links a i {
+    font-size: 1.2rem;
+}
+
+/* Footer CTA Banner */
+.footer-cta-banner {
+    background: linear-gradient(135deg, #00a8e8 0%, #0090c8 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    color: white;
+}
+
+.footer-cta-banner h3 {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.footer-cta-banner p {
+    opacity: 0.9;
+}
+
+/* Trust Badges */
+.trust-badges .badge {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+/* Newsletter Mini */
+.newsletter-mini input {
+    border: 1px solid #444;
+    background: #333;
+    color: white;
+}
+
+.newsletter-mini input::placeholder {
+    color: #999;
+}
+
+.newsletter-mini input:focus {
+    background: #404040;
+    border-color: #00a8e8;
+    color: white;
+}
+
+/* Footer Stats */
+.footer-stats {
+    padding: 2rem 0;
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+}
+
+.stat-number {
+    color: #00a8e8;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #999;
+    font-size: 0.9rem;
     margin-bottom: 0;
 }
 
+.copyright {
+    color: #999;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
 .copyright a {
-    color: var(--gray-400);
+    color: #b0b0b0;
     text-decoration: none;
+    margin: 0 0.5rem;
 }
 
 .copyright a:hover {
-    color: var(--primary-color);
+    color: #00a8e8;
+}
+
+/* Footer Responsive */
+@media (max-width: 768px) {
+    .footer-cta-banner {
+        text-align: center;
+    }
+    
+    .footer-stats .col-6 {
+        margin-bottom: 1.5rem;
+    }
+    
+    .copyright {
+        text-align: center;
+        margin-bottom: 1rem !important;
+    }
+}
+
+/* WhatsApp Floating Button */
+.whatsapp-float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 30px;
+    right: 30px;
+    background-color: #25d366;
+    color: white;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2px 2px 3px #999;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-float:hover {
+    background-color: #1ebe57;
+    transform: scale(1.1);
+    color: white;
+    text-decoration: none;
+}
+
+.whatsapp-float i {
+    margin: 0;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .whatsapp-float {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 25px;
+    }
 }
 
 /* Hero Dashboard Styles */
@@ -853,6 +1052,7 @@ h1, h2, h3, h4, h5, h6 {
     gap: 0.5rem;
     font-size: 0.8rem;
     color: var(--gray-700);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     animation: insight-slide 0.5s ease-out;
 }

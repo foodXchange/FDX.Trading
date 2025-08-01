@@ -1,64 +1,62 @@
 {
-  "name": "FoodXchange Development (Simple)",
-  "image": "python:3.9-slim",
-  "workspaceFolder": "/workspace",
-  
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.linting.enabled": true,
-        "python.linting.pylintEnabled": true,
-        "python.formatting.provider": "black",
-        "python.testing.pytestArgs": [
-          "tests"
-        ],
-        "python.testing.unittestEnabled": false,
-        "python.testing.pytestEnabled": true,
-        "editor.formatOnSave": true,
-        "files.insertFinalNewline": true,
-        "files.trimTrailingWhitespace": true,
-        "[python]": {
-          "editor.codeActionsOnSave": {
-            "source.organizeImports": true
-          }
+    "name": "FoodXchange Development",
+    "dockerComposeFile": "../docker-compose.dev.yml",
+    "service": "foodxchange-dev",
+    "workspaceFolder": "/workspace",
+    "forwardPorts": [9000, 5432, 6379],
+    "portsAttributes": {
+        "9000": {
+            "label": "FoodXchange App",
+            "onAutoForward": "notify"
+        },
+        "5432": {
+            "label": "PostgreSQL Database"
+        },
+        "6379": {
+            "label": "Redis Cache"
         }
-      },
-      
-      "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-azuretools.vscode-docker",
-        "cweijan.vscode-redis-client",
-        "ms-vscode.azurecli",
-        "ms-toolsai.jupyter",
-        "mtxr.sqltools",
-        "mtxr.sqltools-driver-pg",
-        "redhat.vscode-yaml",
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "ms-vscode.azure-account",
-        "ms-azuretools.vscode-azurefunctions",
-        "eamodio.gitlens",
-        "mhutchie.git-graph",
-        "donjayamanne.githistory",
-        "github.copilot",
-        "rangav.vscode-thunder-client"
-      ]
-    }
-  },
-  
-  "forwardPorts": [8003, 5432, 6379, 8080],
-  
-  "postCreateCommand": "apt-get update && apt-get install -y gcc g++ curl libpq-dev && pip install -r requirements-dev.txt",
-  
-  "postStartCommand": "echo '🚀 FoodXchange development container ready!'",
-  
-  "remoteUser": "root",
-  
-  "features": {
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/azure-cli:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  }
+    },
+    "postCreateCommand": "pip install -r requirements.txt && pip install -r requirements-dev.txt",
+    "postStartCommand": "echo 'Dev container ready! Run: python -m uvicorn foodxchange.main:app --host 0.0.0.0 --port 9000 --reload'",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.flake8",
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "ms-toolsai.jupyter",
+                "ms-azuretools.vscode-docker",
+                "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode",
+                "ms-vscode.vscode-json",
+                "redhat.vscode-yaml",
+                "ms-vscode.powershell"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.flake8Enabled": true,
+                "python.formatting.provider": "black",
+                "python.formatting.blackArgs": ["--line-length", "88"],
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": true
+                },
+                "files.exclude": {
+                    "**/__pycache__": true,
+                    "**/*.pyc": true,
+                    "**/.pytest_cache": true
+                }
+            }
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.11"
+        },
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "remoteUser": "vscode"
 } 

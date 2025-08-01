@@ -24,17 +24,17 @@ if __name__ == "__main__":
     
     print("Starting FoodXchange Development Server...")
     print("Project root:", project_root)
-    print("Server will be available at: http://localhost:8003")
-    print("Health check: http://localhost:8003/health")
-    print("Dashboard: http://localhost:8003/dashboard")
-    print("Product Analysis: http://localhost:8003/product-analysis/")
-    print("Search API: http://localhost:8003/api/search/")
+    print("Server will be available at: http://localhost:9000")
+    print("Health check: http://localhost:9000/health")
+    print("Dashboard: http://localhost:9000/dashboard")
+    print("Product Analysis: http://localhost:9000/product-analysis/")
+    print("Search API: http://localhost:9000/api/search/")
     print("\nPress Ctrl+C to stop the server\n")
     
     uvicorn.run(
         "foodxchange.main:app",
         host="127.0.0.1",  # Localhost only for development
-        port=8003,
+        port=9000,
         reload=True,
         log_level="info"
     )

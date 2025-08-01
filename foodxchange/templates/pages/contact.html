@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .contact-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .contact-hero h2 {
+        color: #00a8e8;
+        font-size: 1.5rem;
+        font-weight: 400;
+    }
+
+    .contact-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    .contact-icon {
+        font-size: 3rem;
+        color: #00a8e8;
+        margin-bottom: 1rem;
+    }
+
+    .contact-form {
+        background: #f8f9fa;
+        padding: 3rem;
+        border-radius: 15px;
+        margin-top: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #00a8e8;
+        box-shadow: 0 0 0 0.2rem rgba(0,168,232,0.25);
+    }
+
+    .form-select {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+
+    .btn-submit {
+        background: #ff8c00;
+        color: white;
+        padding: 1rem 3rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background: #e67e00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,140,0,0.3);
+    }
+
+    .quick-contact {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .quick-contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-contact-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .quick-contact-icon {
+        font-size: 1.5rem;
+        color: #00a8e8;
+        margin-right: 1rem;
+        width: 30px;
+    }
+
+    .support-boxes {
+        margin-top: 3rem;
+    }
+
+    .support-box {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        height: 100%;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+
+    .support-box:hover {
+        border-color: #00a8e8;
+        transform: translateY(-5px);
+    }
+
+    .support-box h4 {
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .support-box a {
+        display: inline-block;
+        color: #00a8e8;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1rem;
+        transition: all 0.3s;
+    }
+
+    .support-box a:hover {
+        transform: translateX(5px);
+    }
+
+    .faq-section {
+        background: #1a1a1a;
+        color: white;
+        padding: 4rem 0;
+        margin-top: 4rem;
+    }
+
+    .faq-item {
+        background: rgba(255,255,255,0.05);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .faq-question {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .faq-answer {
+        color: #ccc;
+    }
+
+    .office-hours {
+        background: #00a8e8;
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .map-container {
+        height: 400px;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-hero">
+    <div class="container text-center">
+        <h1>Contact Us</h1>
+        <h2>We're Here to Help</h2>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Quick Contact Info -->
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="contact-card text-center">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Email Us</h3>
+                <div class="quick-contact">
+                    <div class="quick-contact-item">
+                        <i class="fas fa-paper-plane quick-contact-icon"></i>
+                        <div>
+                            <strong>General Inquiries</strong><br>
+                            <a href="mailto:info@fdx.trading">info@fdx.trading</a>
+                        </div>
+                    </div>
+                    <div class="quick-contact-item">
+                        <i class="fas fa-headset quick-contact-icon"></i>
+                        <div>
+                            <strong>Support</strong><br>
+                            <a href="mailto:support@fdx.trading">support@fdx.trading</a>
+                        </div>
+                    </div>
+                    <div class="quick-contact-item">
+                        <i class="fas fa-briefcase quick-contact-icon"></i>
+                        <div>
+                            <strong>Sales</strong><br>
+                            <a href="mailto:sales@fdx.trading">sales@fdx.trading</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="contact-card text-center">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <h3>Call Us</h3>
+                <div class="quick-contact">
+                    <div class="quick-contact-item">
+                        <i class="fas fa-phone-alt quick-contact-icon"></i>
+                        <div>
+                            <strong>Phone</strong><br>
+                            <a href="tel:+972525222291">+972-52-5222291</a>
+                        </div>
+                    </div>
+                    <div class="office-hours">
+                        <strong>Office Hours</strong><br>
+                        Sunday-Thursday<br>
+                        9:00 AM - 6:00 PM IST
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="contact-card text-center">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Visit Us</h3>
+                <div class="quick-contact">
+                    <div class="quick-contact-item">
+                        <i class="fas fa-building quick-contact-icon"></i>
+                        <div>
+                            <strong>Headquarters</strong><br>
+                            Tel Aviv, Israel
+                        </div>
+                    </div>
+                    <p class="mt-3">Meeting by appointment only</p>
+                    <a href="#map" class="btn btn-outline-primary">View Map</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="contact-form">
+                <h2 class="text-center mb-4">Send Us a Message</h2>
+                
+                <form id="contactForm" method="POST" action="/contact">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" class="form-control" name="first_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" name="last_name" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" name="phone">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Company</label>
+                        <input type="text" class="form-control" name="company">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">I am a:</label>
+                        <select class="form-select" name="user_type">
+                            <option value="">Select...</option>
+                            <option value="buyer">Buyer</option>
+                            <option value="supplier">Supplier</option>
+                            <option value="broker">Broker</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Subject *</label>
+                        <input type="text" class="form-control" name="subject" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Message *</label>
+                        <textarea class="form-control" name="message" rows="5" required></textarea>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn-submit">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Support Boxes -->
+    <div class="support-boxes">
+        <h2 class="text-center mb-4">Quick Support</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="support-box">
+                    <i class="fas fa-user-tie fa-3x text-primary mb-3"></i>
+                    <h4>For Buyers</h4>
+                    <p>Need help sourcing products?<br>Questions about orders?</p>
+                    <a href="/for-buyers">Buyer Resources →</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="support-box">
+                    <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                    <h4>For Suppliers</h4>
+                    <p>Want to list your products?<br>Account questions?</p>
+                    <a href="/for-suppliers">Supplier Resources →</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="support-box">
+                    <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+                    <h4>For Partners</h4>
+                    <p>Interested in partnership?<br>API integration help?</p>
+                    <a href="/enterprise">Partnership Info →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map placeholder -->
+    <div id="map" class="map-container">
+        <!-- You can integrate Google Maps or another mapping service here -->
+        <div style="background: #f0f0f0; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <p class="text-muted">Map integration coming soon</p>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="faq-section">
+    <div class="container">
+        <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="faq-item">
+                    <div class="faq-question">How quickly can I start sourcing?</div>
+                    <div class="faq-answer">Immediately after signing up. It's free to start and takes less than 2 minutes.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is international shipping included?</div>
+                    <div class="faq-answer">Shipping is arranged between buyer and supplier. We facilitate the connection and provide logistics support.</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="faq-item">
+                    <div class="faq-question">How do you verify suppliers?</div>
+                    <div class="faq-answer">Multi-step verification including business documents, references, quality certifications, and site visits when possible.</div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What payment methods are accepted?</div>
+                    <div class="faq-answer">We support wire transfers, letters of credit, and escrow payments for secure transactions.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Contact form handling
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Here you would normally send the form data to your server
+    alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+    this.reset();
+});
+</script>
+{% endblock %}

@@ -9,7 +9,7 @@ from typing import Dict, Tuple, Optional
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 import redis
-from foodxchange.config import get_settings
+from foodxchange.config.settings import get_settings
 
 logger = logging.getLogger(__name__)
 

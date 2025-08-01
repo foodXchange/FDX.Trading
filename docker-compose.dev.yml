@@ -1,94 +1,63 @@
 version: '3.8'
 
 services:
-  web:
-    build: 
+  foodxchange-dev:
+    build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: foodxchange_web_dev
-    command: python -m uvicorn foodxchange.main:app --host 0.0.0.0 --port 8003 --reload
+    container_name: foodxchange-dev
     volumes:
-      - .:/app
-      - /app/__pycache__
-      - /app/.pytest_cache
-    ports:
-      - "8003:8003"
+      - .:/workspace:cached
+      - foodxchange-dev-cache:/root/.cache
+    working_dir: /workspace
     environment:
-      - ENVIRONMENT=development
-      - DEBUG=True
-      - DATABASE_URL=postgresql://foodxchange:devpassword@db:5432/foodxchange_dev
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PORT=9000
+      - PYTHONPATH=/workspace
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/foodxchange_dev
       - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=dev-secret-key-change-in-production
-    env_file:
-      - .env.development
+    ports:
+      - "9000:9000"
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - db
+      - redis
+    command: sleep infinity
     networks:
-      - foodxchange_network
-    restart: unless-stopped
+      - foodxchange-dev-network
 
   db:
     image: postgres:15-alpine
-    container_name: foodxchange_db_dev
+    container_name: foodxchange-dev-db
     environment:
-      - POSTGRES_USER=foodxchange
-      - POSTGRES_PASSWORD=devpassword
-      - POSTGRES_DB=foodxchange_dev
-    volumes:
-      - ./postgres-data-dev:/var/lib/postgresql/data
+      POSTGRES_DB: foodxchange_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U foodxchange -d foodxchange_dev"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    volumes:
+      - foodxchange-dev-db-data:/var/lib/postgresql/data
+      - ./configs/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - foodxchange_network
-    restart: unless-stopped
+      - foodxchange-dev-network
 
   redis:
     image: redis:7-alpine
-    container_name: foodxchange_redis_dev
-    command: redis-server --appendonly yes
-    volumes:
-      - ./redis-data-dev:/data
+    container_name: foodxchange-dev-redis
     ports:
       - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - foodxchange_network
-    restart: unless-stopped
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: foodxchange_pgadmin_dev
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@foodxchange.local
-      - PGADMIN_DEFAULT_PASSWORD=adminpassword
     volumes:
-      - ./pgadmin-data-dev:/var/lib/pgadmin
-      - ./pgadmin_servers.json:/pgadmin4/servers.json:ro
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
+      - foodxchange-dev-redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
     networks:
-      - foodxchange_network
-    restart: unless-stopped
-
-networks:
-  foodxchange_network:
-    driver: bridge
+      - foodxchange-dev-network
 
 volumes:
-  postgres-data-dev:
-  redis-data-dev:
-  pgadmin-data-dev:
+  foodxchange-dev-cache:
+  foodxchange-dev-db-data:
+  foodxchange-dev-redis-data:
+
+networks:
+  foodxchange-dev-network:
+    driver: bridge
