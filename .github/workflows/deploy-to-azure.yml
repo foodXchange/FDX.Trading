@@ -53,28 +53,42 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: 'Deploy to Azure Web App'
-      uses: azure/webapps-deploy@v3
+      uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 
-    - name: Login to Azure for configuration
-      uses: azure/login@v1
-      with:
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-
-    - name: 'Configure container settings'
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.30.0
-        inlineScript: |
-          az webapp config container set \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --docker-custom-image-name ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/foodxchange:${{ github.sha }} \
-            --docker-registry-server-url https://${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }} \
-            --docker-registry-server-user ${{ secrets.AZURE_REGISTRY_USERNAME }} \
-            --docker-registry-server-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+    - name: 'Configure Container via Kudu API'
+      run: |
+        # Extract credentials from publish profile
+        PUBLISH_PROFILE='${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}'
+        
+        # Parse username and password
+        USERNAME=$(echo "$PUBLISH_PROFILE" | sed -n 's/.*userName="\([^"]*\)".*/\1/p' | head -1)
+        PASSWORD=$(echo "$PUBLISH_PROFILE" | sed -n 's/.*userPWD="\([^"]*\)".*/\1/p' | head -1)
+        
+        # Update Docker container configuration
+        curl -X POST "https://${{ env.AZURE_WEBAPP_NAME }}.scm.azurewebsites.net/api/siteextensions/Microsoft.AspNetCore.AzureAppServices.SiteExtension" \
+          -u "$USERNAME:$PASSWORD" \
+          -H "Content-Type: application/json" \
+          -d '{}' || true
+          
+        # Set app settings
+        curl -X POST "https://${{ env.AZURE_WEBAPP_NAME }}.scm.azurewebsites.net/api/settings" \
+          -u "$USERNAME:$PASSWORD" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "DOCKER_REGISTRY_SERVER_URL": "https://${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}",
+            "DOCKER_REGISTRY_SERVER_USERNAME": "${{ secrets.AZURE_REGISTRY_USERNAME }}",
+            "DOCKER_REGISTRY_SERVER_PASSWORD": "${{ secrets.AZURE_REGISTRY_PASSWORD }}",
+            "DOCKER_CUSTOM_IMAGE_NAME": "${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/foodxchange:${{ github.sha }}",
+            "WEBSITES_PORT": "9000",
+            "WEBSITE_WEBDEPLOY_USE_SCM": "true"
+          }'
+          
+        # Restart the container
+        curl -X POST "https://${{ env.AZURE_WEBAPP_NAME }}.scm.azurewebsites.net/api/app/restart" \
+          -u "$USERNAME:$PASSWORD"
 
     - name: 'Verify deployment'
       run: |
