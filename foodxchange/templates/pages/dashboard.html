@@ -1,6 +1,10 @@
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
 
 {% block title %}Dashboard - FoodXchange{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/app.css">
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -12,13 +16,21 @@
                     <h1 class="h3 mb-1">Welcome back, Admin!</h1>
                     <p class="text-muted mb-0">Here's what's happening with your FoodXchange platform today.</p>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user me-2"></i>Admin User
+                <div>
+                    <button class="btn btn-warning me-2" id="closeModalsBtn" title="Close all modals">
+                        <i class="fas fa-times-circle me-1"></i>Close Modals
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/">Logout</a></li>
-                    </ul>
+                    <button class="btn btn-success me-2" id="testModalBtn" title="Test modal">
+                        <i class="fas fa-vial me-1"></i>Test Modal
+                    </button>
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-2"></i>Admin User
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/">Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -301,7 +313,7 @@
 
 <!-- Stats Data Modals -->
 <!-- AI Analysis Modal -->
-<div class="modal fade" id="aiAnalysisModal" tabindex="-1" aria-labelledby="aiAnalysisModalLabel" aria-hidden="true">
+<div class="modal fade" id="aiAnalysisModal" tabindex="-1" aria-labelledby="aiAnalysisModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
@@ -868,74 +880,50 @@
 }
 </style>
 
-<script>
-// Stats Cards Click Handlers
-document.addEventListener('DOMContentLoaded', function() {
-    // Add click event listeners to all clickable stat cards
-    const statCards = document.querySelectorAll('.clickable-stat');
-    
-    statCards.forEach(card => {
-        card.addEventListener('click', function() {
-            const statType = this.getAttribute('data-stat');
-            showStatModal(statType);
-        });
-    });
-});
-
-function showStatModal(statType) {
-    let modalId = '';
-    
-    switch(statType) {
-        case 'ai-analysis':
-            modalId = 'aiAnalysisModal';
-            break;
-        case 'suppliers':
-            modalId = 'suppliersModal';
-            break;
-        case 'efficiency':
-            modalId = 'efficiencyModal';
-            break;
-        case 'savings':
-            modalId = 'savingsModal';
-            break;
-        default:
-            console.error('Unknown stat type:', statType);
-            return;
-    }
-    
-    // Show the modal using Bootstrap
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
-    modal.show();
+<!-- Simple Modal CSS Reset -->
+<style>
+/* Reset any conflicting styles */
+.modal {
+    display: none;
 }
 
-// Add keyboard navigation support
-document.addEventListener('keydown', function(e) {
-    // ESC key to close modals
-    if (e.key === 'Escape') {
-        const openModals = document.querySelectorAll('.modal.show');
-        openModals.forEach(modal => {
-            const modalInstance = bootstrap.Modal.getInstance(modal);
-            if (modalInstance) {
-                modalInstance.hide();
-            }
-        });
-    }
-});
+.modal.show {
+    display: block !important;
+}
 
-// Add touch support for mobile devices
-document.addEventListener('touchstart', function(e) {
-    const statCard = e.target.closest('.clickable-stat');
-    if (statCard) {
-        statCard.style.transform = 'translateY(-2px)';
-    }
-});
+.modal-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 1040 !important;
+}
 
-document.addEventListener('touchend', function(e) {
-    const statCard = e.target.closest('.clickable-stat');
-    if (statCard) {
-        statCard.style.transform = '';
-    }
-});
-</script>
+.modal-dialog {
+    pointer-events: all !important;
+}
+
+.modal-content {
+    pointer-events: all !important;
+    background-color: #fff !important;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+    pointer-events: all !important;
+}
+
+.btn-close,
+button[data-bs-dismiss="modal"] {
+    cursor: pointer !important;
+    pointer-events: all !important;
+}
+</style>
+
+<!-- Load Simple Modal Handler -->
+<script src="/static/js/simple-modal.js"></script>
 
 {% endblock %} 

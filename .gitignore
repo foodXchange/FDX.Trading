@@ -175,3 +175,6 @@ search_cache/
 github-secrets*.txt
 *secrets*.txt
 deploy-clean.ps1
+
+# Azure deployment credentials  
+deployment-credentials.txt

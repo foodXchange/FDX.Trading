@@ -108,16 +108,32 @@
                                 </div>
                             </div>
                             <div class="card-body p-0">
-                                <!-- Empty State -->
-                                <div class="empty-state text-center py-4">
-                                    <div class="empty-state-icon mb-3">
-                                        <i class="fas fa-building fa-3x text-muted"></i>
+                                <!-- Suppliers List Container -->
+                                <div id="suppliersListContainer">
+                                    <!-- Empty State (shown when no suppliers) -->
+                                    <div id="emptyState" class="empty-state text-center py-4" style="display: none;">
+                                        <div class="empty-state-icon mb-3">
+                                            <i class="fas fa-building fa-3x text-muted"></i>
+                                        </div>
+                                        <h5>No Suppliers Found</h5>
+                                        <p class="text-muted">Start building your supplier network to discover new products and opportunities.</p>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+                                            <i class="fas fa-plus me-2"></i>Add Your First Supplier
+                                        </button>
                                     </div>
-                                    <h5>No Suppliers Found</h5>
-                                    <p class="text-muted">Start building your supplier network to discover new products and opportunities.</p>
-                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
-                                        <i class="fas fa-plus me-2"></i>Add Your First Supplier
-                                    </button>
+                                    
+                                    <!-- Loading State -->
+                                    <div id="loadingState" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading suppliers...</p>
+                                    </div>
+                                    
+                                    <!-- Suppliers List -->
+                                    <div id="suppliersList" class="list-group list-group-flush" style="display: none;">
+                                        <!-- Suppliers will be inserted here -->
+                                    </div>
                                 </div>
                                                             <small class="text-muted">Contact: Lisa Brown</small>
                                                         </div>
@@ -396,9 +412,20 @@ async function saveSupplier() {
         const data = await response.json();
         
         if (data.success) {
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
-            modal.hide();
+            // Close the modal properly
+            const modalElement = document.getElementById('addSupplierModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Force cleanup any stuck backdrop
+            setTimeout(() => {
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('overflow');
+                document.body.style.removeProperty('padding-right');
+            }, 300);
             
             // Clear form
             document.getElementById('addSupplierForm').reset();
@@ -406,8 +433,8 @@ async function saveSupplier() {
             // Show success message
             alert('Supplier saved successfully!');
             
-            // Optionally reload the page to show the new supplier
-            // location.reload();
+            // Reload suppliers list
+            loadSuppliers();
         } else {
             alert('Error saving supplier: ' + data.message);
         }
@@ -416,5 +443,145 @@ async function saveSupplier() {
         alert('Error saving supplier. Please try again.');
     }
 }
+
+// Load suppliers when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadSuppliers();
+});
+
+async function loadSuppliers() {
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
+    const suppliersList = document.getElementById('suppliersList');
+    
+    try {
+        const response = await fetch('/suppliers/list');
+        const data = await response.json();
+        
+        // Hide loading state
+        loadingState.style.display = 'none';
+        
+        if (data.success && data.suppliers && data.suppliers.length > 0) {
+            // Show suppliers list
+            suppliersList.style.display = 'block';
+            suppliersList.innerHTML = '';
+            
+            // Update stats
+            document.querySelector('.bg-primary h3').textContent = data.suppliers.length;
+            
+            // Render each supplier
+            data.suppliers.forEach(supplier => {
+                const supplierItem = createSupplierItem(supplier);
+                suppliersList.appendChild(supplierItem);
+            });
+        } else {
+            // Show empty state
+            emptyState.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error loading suppliers:', error);
+        loadingState.style.display = 'none';
+        emptyState.style.display = 'block';
+    }
+}
+
+function createSupplierItem(supplier) {
+    const div = document.createElement('div');
+    div.className = 'list-group-item';
+    
+    const ratingStars = '★'.repeat(Math.round(supplier.rating)) + '☆'.repeat(5 - Math.round(supplier.rating));
+    const verifiedBadge = supplier.is_verified ? '<span class="badge bg-success ms-2">Verified</span>' : '';
+    
+    div.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start p-3">
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center mb-1">
+                    <h6 class="mb-0">${supplier.name || supplier.company_name}</h6>
+                    ${verifiedBadge}
+                </div>
+                <p class="text-muted mb-1 small">${supplier.company_name}</p>
+                <p class="mb-1"><i class="fas fa-map-marker-alt me-1"></i> ${supplier.city}, ${supplier.country}</p>
+                <div class="d-flex gap-3 small text-muted">
+                    <span><i class="fas fa-envelope me-1"></i> ${supplier.email}</span>
+                    <span><i class="fas fa-phone me-1"></i> ${supplier.phone || 'N/A'}</span>
+                    ${supplier.website ? `<span><i class="fas fa-globe me-1"></i> <a href="${supplier.website}" target="_blank">Website</a></span>` : ''}
+                </div>
+                ${supplier.categories && supplier.categories.length > 0 ? `
+                    <div class="mt-2">
+                        ${supplier.categories.map(cat => `<span class="badge bg-light text-dark me-1">${cat}</span>`).join('')}
+                    </div>
+                ` : ''}
+            </div>
+            <div class="text-end">
+                <div class="text-warning mb-1">${ratingStars}</div>
+                <p class="small text-muted mb-1">${supplier.rating.toFixed(1)} / 5.0</p>
+                ${supplier.response_rate ? `<p class="small text-muted">${supplier.response_rate}% response rate</p>` : ''}
+            </div>
+        </div>
+    `;
+    
+    return div;
+}
+
+// Fix for modal issues
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap modals properly
+    const addSupplierModal = document.getElementById('addSupplierModal');
+    if (addSupplierModal) {
+        // Remove any existing modal instances
+        const existingModal = bootstrap.Modal.getInstance(addSupplierModal);
+        if (existingModal) {
+            existingModal.dispose();
+        }
+        
+        // Create new modal instance
+        const modal = new bootstrap.Modal(addSupplierModal, {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+        });
+        
+        // Fix backdrop issues
+        addSupplierModal.addEventListener('hidden.bs.modal', function () {
+            // Remove any lingering backdrops
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            // Reset body classes
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+        });
+        
+        // Handle escape key
+        addSupplierModal.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                modal.hide();
+            }
+        });
+    }
+});
+
+// Emergency modal close function
+function forceCloseModal() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addSupplierModal'));
+    if (modal) {
+        modal.hide();
+    }
+    // Clean up any stuck elements
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+}
+
+// Add keyboard shortcut (Ctrl+Q) to force close modal
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'q') {
+        e.preventDefault();
+        forceCloseModal();
+    }
+});
 </script>
+
+<!-- Load modal fix script -->
+<script src="{{ url_for('static', filename='js/modal-fix.js') }}"></script>
 {% endblock %} 

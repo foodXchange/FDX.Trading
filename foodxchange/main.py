@@ -9,32 +9,24 @@ from dotenv import load_dotenv
 # Load environment variables FIRST before any other imports
 from pathlib import Path
 import logging
-logging.basicConfig(level=logging.INFO)
-early_logger = logging.getLogger("env_loader")
+import json
+from typing import Optional
+from datetime import datetime
 
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path, override=True)
-early_logger.info(f"Loading .env from: {env_path.absolute()}")
-early_logger.info(f"AZURE_OPENAI_ENDPOINT: {os.getenv('AZURE_OPENAI_ENDPOINT', 'NOT SET')}")
-early_logger.info(f".env exists: {env_path.exists()}")
-
-from fastapi import FastAPI, Request, Form, Depends, HTTPException, UploadFile, File
+import bcrypt
+from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-from foodxchange.middleware.static_headers import StaticFilesWithHeaders
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-# SessionMiddleware not needed - we use JWT tokens
-import json
-import logging
-from pathlib import Path
-from typing import Optional
-import bcrypt
-from datetime import datetime
+from foodxchange.middleware.static_headers import StaticFilesWithHeaders
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Load environment variables
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path, override=True)
 
 # Create FastAPI app
 app = FastAPI(
@@ -695,7 +687,7 @@ async def landing(request: Request):
                 "role": user.role,
                 "is_admin": user.is_admin
             }
-        return templates.TemplateResponse("pages/index.html", context)
+        return templates.TemplateResponse("pages/index_clean.html", context)
     except Exception as e:
         logger.error(f"Template error: {e}")
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
@@ -713,7 +705,7 @@ async def dashboard(request: Request):
         return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
     
     try:
-        return templates.TemplateResponse("pages/dashboard.html", {
+        return templates.TemplateResponse("pages/dashboard_simple.html", {
             "request": request,
             "current_user": {
                 "id": user.user_id,
@@ -731,7 +723,7 @@ async def login_page(request: Request):
     # Check for performance mode in query params or environment
     use_optimized = request.query_params.get("optimized", os.getenv("USE_OPTIMIZED_LOGIN", "false")).lower() == "true"
     
-    template_name = "pages/login_optimized.html" if use_optimized else "pages/login.html"
+    template_name = "pages/login_optimized.html" if use_optimized else "pages/login_simple.html"
     return templates.TemplateResponse(template_name, {"request": request})
 
 
@@ -910,7 +902,7 @@ async def suppliers_page(request: Request):
         return RedirectResponse(url="/login?error=not_authenticated", status_code=303)
     
     try:
-        return templates.TemplateResponse("pages/suppliers.html", {
+        return templates.TemplateResponse("pages/suppliers_simple.html", {
             "request": request,
             "current_user": {
                 "id": user.user_id,
@@ -1004,14 +996,102 @@ async def create_buyer(request: Request):
             "message": "Error creating buyer"
         }
 
+@app.get("/suppliers/list/debug")
+async def list_suppliers_debug():
+    """Debug version of list suppliers endpoint"""
+    import sqlite3
+    import json
+    import os
+    
+    debug_info = {
+        "cwd": os.getcwd(),
+        "db_path": os.path.abspath('foodxchange.db'),
+        "db_exists": os.path.exists('foodxchange.db'),
+        "db_size": os.path.getsize('foodxchange.db') if os.path.exists('foodxchange.db') else 0
+    }
+    
+    try:
+        conn = sqlite3.connect('foodxchange.db')
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT COUNT(*) FROM suppliers")
+        total_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM suppliers WHERE is_active = 1")
+        active_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT id, name, is_active FROM suppliers LIMIT 3")
+        sample = cursor.fetchall()
+        
+        conn.close()
+        
+        debug_info.update({
+            "total_suppliers": total_count,
+            "active_suppliers": active_count,
+            "sample": sample
+        })
+        
+    except Exception as e:
+        debug_info["error"] = str(e)
+    
+    return debug_info
+
 @app.get("/suppliers/list")
 async def list_suppliers():
-    """Get list of suppliers"""
+    """Get list of suppliers from database"""
     try:
-        # For now, return empty list - will be connected to database later
+        # Use SQLite for local development
+        import sqlite3
+        import json
+        import os
+        
+        # Log current directory and database path
+        print(f"DEBUG: Current working directory: {os.getcwd()}")
+        db_path = 'foodxchange.db'
+        print(f"DEBUG: Looking for database at: {os.path.abspath(db_path)}")
+        print(f"DEBUG: Database exists: {os.path.exists(db_path)}")
+        
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Query active suppliers
+        cursor.execute("""
+            SELECT id, name, company_name, email, phone, website, 
+                   city, country, categories, specialties, certifications,
+                   rating, response_rate, is_verified
+            FROM suppliers 
+            WHERE is_active = 1
+            ORDER BY rating DESC
+        """)
+        
+        rows = cursor.fetchall()
+        print(f"DEBUG: Query executed, found {len(rows)} suppliers")
+        
+        suppliers = []
+        for row in rows:
+            supplier = {
+                "id": row[0],
+                "name": row[1],
+                "company_name": row[2],
+                "email": row[3],
+                "phone": row[4],
+                "website": row[5],
+                "city": row[6],
+                "country": row[7],
+                "categories": json.loads(row[8]) if row[8] else [],
+                "specialties": json.loads(row[9]) if row[9] else [],
+                "certifications": json.loads(row[10]) if row[10] else [],
+                "rating": row[11],
+                "response_rate": row[12],
+                "is_verified": row[13]
+            }
+            suppliers.append(supplier)
+        
+        conn.close()
+        
         return {
             "success": True,
-            "suppliers": []
+            "suppliers": suppliers
         }
     except Exception as e:
         logger.error(f"Error listing suppliers: {e}")
@@ -1024,8 +1104,13 @@ async def list_suppliers():
 async def create_supplier(request: Request):
     """Create a new supplier"""
     try:
+        import sqlite3
+        import json
+        from datetime import datetime
+        
         form_data = await request.form()
         
+        # Prepare supplier data
         supplier_data = {
             "name": form_data.get("name"),
             "company_name": form_data.get("company_name"),
@@ -1034,20 +1119,64 @@ async def create_supplier(request: Request):
             "country": form_data.get("country"),
             "city": form_data.get("city"),
             "address": form_data.get("address"),
-            "industry": form_data.get("industry"),
-            "company_size": form_data.get("company_size"),
-            "certifications": form_data.get("certifications"),
-            "payment_terms": form_data.get("payment_terms"),
-            "minimum_order": form_data.get("minimum_order")
+            "status": "active",
+            "is_active": True,
+            "is_verified": False,
+            "rating": 0.0,
+            "response_rate": 0.0,
+            "average_response_time": 0.0
         }
         
-        # For now, just log the data - will be saved to database later
-        logger.info(f"Creating supplier: {supplier_data}")
+        # Handle JSON fields
+        certifications = form_data.get("certifications", "[]")
+        if isinstance(certifications, str):
+            try:
+                certifications = json.loads(certifications)
+            except:
+                certifications = []
+        
+        # Save to database
+        conn = sqlite3.connect('foodxchange.db')
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO suppliers (
+                name, company_name, email, phone, website, address, city, country,
+                categories, specialties, certifications, status, rating, response_rate,
+                average_response_time, is_verified, is_active, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            supplier_data['name'],
+            supplier_data['company_name'],
+            supplier_data['email'],
+            supplier_data['phone'],
+            form_data.get('website', ''),
+            supplier_data['address'],
+            supplier_data['city'],
+            supplier_data['country'],
+            json.dumps([form_data.get('industry', 'Other')]) if form_data.get('industry') else '[]',
+            '[]',  # specialties
+            json.dumps(certifications),
+            supplier_data['status'],
+            supplier_data['rating'],
+            supplier_data['response_rate'],
+            supplier_data['average_response_time'],
+            supplier_data['is_verified'],
+            supplier_data['is_active'],
+            datetime.now(),
+            datetime.now()
+        ))
+        
+        supplier_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        
+        logger.info(f"Created supplier with ID: {supplier_id}")
         
         return {
             "success": True,
             "message": "Supplier created successfully",
-            "supplier_id": 1  # Placeholder ID
+            "supplier_id": supplier_id
         }
     except Exception as e:
         logger.error(f"Error creating supplier: {e}")

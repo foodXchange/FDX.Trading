@@ -1,0 +1,14 @@
+{# Breadcrumb Component #}
+{# Usage: {% include 'components/breadcrumb.html' with items=[{'name': 'Dashboard', 'url': '/dashboard'}, {'name': 'Projects', 'active': True}] %} #}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {% for item in items %}
+            {% if item.active %}
+                <li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.name }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>

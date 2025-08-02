@@ -207,7 +207,21 @@
       "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe test_auth_debug.py)",
       "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe test_login_clean.py)",
       "Bash(git rm:*)",
-      "Bash(./run_server.bat)"
+      "Bash(./run_server.bat)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe check_suppliers.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe test_local_db.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe add_test_suppliers.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe check_supplier_schema.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe add_test_suppliers_fixed.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe test_api_debug.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe test_supplier_endpoint.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe test_direct_query.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe cleanup.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe aggressive_cleanup.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe cleanup_auto.py)",
+      "Bash(git --version)",
+      "Bash(git remote add:*)",
+      "Bash(pip freeze)"
     ],
     "deny": []
   }

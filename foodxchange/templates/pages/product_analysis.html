@@ -3,7 +3,7 @@
 {% block title %}AI Product Analysis - FoodXchange{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/product_analysis.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 <style>
     .upload-area {
         border: 2px dashed #dee2e6;
@@ -1894,6 +1894,71 @@
             analysisContent.appendChild(addButton);
         }
     };
+
+    // Reset Form Function
+    function resetForm() {
+        // Reset the product form
+        document.getElementById('productForm').reset();
+        
+        // Reset the upload area to original state
+        resetUpload();
+        
+        // Clear the file input
+        document.getElementById('imageInput').value = '';
+        
+        // Clear the image thumbnail if it exists
+        const imageThumbnail = document.getElementById('imageThumbnail');
+        if (imageThumbnail) {
+            imageThumbnail.innerHTML = '';
+        }
+        
+        // Clear any displayed images
+        const imageContainers = document.querySelectorAll('.image-preview-card');
+        imageContainers.forEach(container => container.remove());
+        
+        // Hide sections
+        document.getElementById('formSection').style.display = 'none';
+        document.getElementById('analysisStatusCard').style.display = 'none';
+        document.getElementById('quickActionsCard').style.display = 'none';
+        document.getElementById('needReviewCard').style.display = 'none';
+        document.getElementById('manualAnalysisSection').style.display = 'none';
+        document.getElementById('autoAnalysisStatus').style.display = 'none';
+        
+        // Clear analysis data
+        currentAnalysisData = null;
+        window.selectedFiles = null;
+        
+        // Reset to step 1
+        goToStep(1);
+        
+        // Show the upload area
+        document.getElementById('uploadSection').style.display = 'block';
+        
+        // Clear any analysis results
+        if (document.getElementById('analysisContent')) {
+            document.getElementById('analysisContent').innerHTML = '';
+        }
+        
+        // Hide the multi-product section
+        document.getElementById('multiProductSection').classList.add('d-none');
+        
+        // Clear selected products list
+        selectedProducts = [];
+        
+        // Clear save project form if visible
+        hideSaveProjectForm();
+        
+        // Reset progress bar
+        const progressBar = document.querySelector('.progress-85');
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            progressBar.setAttribute('aria-valuenow', '0');
+            progressBar.textContent = '0%';
+        }
+        
+        // Show notification
+        showNotification('Form has been reset', 'info');
+    }
 </script>
 
 <!-- Enhanced Product Analysis JavaScript -->

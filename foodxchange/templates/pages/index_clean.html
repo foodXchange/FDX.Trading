@@ -1,0 +1,199 @@
+{% extends "base_public.html" %}
+
+{% block title %}FoodXchange - B2B Food Sourcing Platform{% endblock %}
+
+{% block content %}
+<!-- Simple Hero Section -->
+<section class="bg-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-7">
+                <h1 class="display-4 fw-normal mb-3">B2B Food Sourcing Platform</h1>
+                <p class="lead text-muted mb-4">
+                    Connect buyers with suppliers. Get quotes. Manage orders.
+                </p>
+                
+                <!-- Simple feature list -->
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Post RFQs to multiple suppliers</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Compare quotes side-by-side</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Track orders in real-time</li>
+                        </ul>
+                    </div>
+                    <div class="col-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Verified supplier database</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Secure document management</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Compliance tracking</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Simple CTAs -->
+                <div class="d-flex gap-3">
+                    <a href="/login" class="btn btn-primary btn-lg">Sign In</a>
+                    <a href="/signup" class="btn btn-outline-secondary btn-lg">Request Demo</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-5">
+                <!-- Simple login card -->
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">Quick Sign In</h5>
+                        <form action="/login" method="POST">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Sign In</button>
+                            </div>
+                        </form>
+                        <hr class="my-3">
+                        <p class="text-center text-muted small mb-0">
+                            New to FoodXchange? <a href="/signup">Create an account</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Simple Features Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-file-alt fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">1. Post RFQs</h5>
+                        <p class="card-text text-muted">
+                            Create detailed requests and send to multiple pre-qualified suppliers at once.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-balance-scale fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">2. Compare Quotes</h5>
+                        <p class="card-text text-muted">
+                            Review and compare quotes in a standardized format. Make informed decisions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-truck fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">3. Track Orders</h5>
+                        <p class="card-text text-muted">
+                            Monitor shipments, manage documents, and communicate with suppliers in one place.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- User Types Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Who Uses FoodXchange</h2>
+        
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">For Buyers</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Access verified suppliers</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Streamline RFQ process</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Compare quotes easily</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Track order history</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Manage compliance docs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">For Suppliers</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Receive qualified RFQs</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Showcase products</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Manage quotes efficiently</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Build buyer relationships</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Expand market reach</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">For Enterprises</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Multi-user accounts</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Approval workflows</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Analytics dashboard</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> API integration</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Custom reporting</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Simple form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    if (!email || !password) {
+        e.preventDefault();
+        alert('Please fill in all fields');
+    }
+});
+</script>
+{% endblock %}

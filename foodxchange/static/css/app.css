@@ -1,0 +1,297 @@
+/* FoodXchange Consolidated App CSS */
+
+/* Import Core Styles */
+@import url('base.css');
+@import url('components.css');
+@import url('utilities.css');
+
+/* Global Variables */
+:root {
+    /* Primary Colors */
+    --color-primary: #0066cc;
+    --color-primary-hover: #0052a3;
+    --color-secondary: #6c757d;
+    --color-success: #28a745;
+    --color-danger: #dc3545;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    
+    /* Neutral Colors */
+    --color-white: #ffffff;
+    --color-gray-50: #fafafa;
+    --color-gray-100: #f8f9fa;
+    --color-gray-200: #e9ecef;
+    --color-gray-300: #dee2e6;
+    --color-gray-400: #ced4da;
+    --color-gray-500: #adb5bd;
+    --color-gray-600: #6c757d;
+    --color-gray-700: #495057;
+    --color-gray-800: #343a40;
+    --color-gray-900: #212529;
+    --color-black: #000000;
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+    
+    /* Font Sizes */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-xxl: 1.5rem;
+    
+    /* Border Radius */
+    --border-radius-sm: 2px;
+    --border-radius: 4px;
+    --border-radius-lg: 6px;
+    
+    /* Shadows - Minimal */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Layout */
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.container-narrow {
+    max-width: 720px;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 0.5rem 0;
+}
+
+.navbar-brand img {
+    height: 35px;
+}
+
+.navbar-nav .nav-link {
+    color: var(--color-gray-700);
+    font-weight: 400;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--color-primary);
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+/* Footer */
+footer {
+    background-color: var(--color-gray-100);
+    border-top: 1px solid var(--color-gray-200);
+    padding: 1.5rem 0;
+}
+
+footer.bg-dark {
+    background-color: var(--color-gray-800) !important;
+    color: var(--color-gray-400);
+}
+
+/* Page Content */
+.page-content {
+    padding: 2rem 0;
+    min-height: calc(100vh - 200px);
+}
+
+/* Dashboard Specific */
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.quick-stats {
+    margin-bottom: 2rem;
+}
+
+/* Forms */
+.form-section {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Tables */
+.table-container {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.table-container .table {
+    margin-bottom: 0;
+}
+
+/* Modals */
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius);
+}
+
+.modal-header {
+    background-color: var(--color-gray-100);
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 1rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    background-color: var(--color-gray-100);
+    border-top: 1px solid var(--color-gray-200);
+    padding: 1rem 1.5rem;
+}
+
+/* Lists */
+.list-group-item {
+    border: 1px solid var(--color-gray-200);
+    padding: 0.75rem 1rem;
+}
+
+.list-group-item:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.list-group-item:last-child {
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+/* Activity Feed */
+.activity-item {
+    display: flex;
+    align-items: start;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-gray-100);
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .navbar-nav {
+        padding-top: 1rem;
+    }
+    
+    .page-header .btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    
+    .table-responsive {
+        border: none;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    footer,
+    .btn,
+    .page-actions {
+        display: none !important;
+    }
+    
+    .page-content {
+        padding: 0;
+    }
+    
+    .card {
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+}
+
+/* Remove all animations and transitions for performance */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Allow specific transitions where needed */
+a,
+.btn,
+.form-control,
+.nav-link {
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+/* Accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .btn-primary {
+        background-color: #000080;
+        border-color: #000080;
+    }
+    
+    .btn-outline-primary {
+        border-width: 2px;
+    }
+    
+    .form-control {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

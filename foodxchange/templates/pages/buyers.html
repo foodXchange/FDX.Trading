@@ -3,30 +3,7 @@
 {% block title %}Buyers Management - FoodXchange{% endblock %}
 
 {% block extra_css %}
-<style>
-    .buyer-card {
-        transition: transform 0.2s;
-        cursor: pointer;
-    }
-    .buyer-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    .add-buyer-card {
-        border: 2px dashed #dee2e6;
-        background: #f8f9fa;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .add-buyer-card:hover {
-        border-color: var(--primary-color);
-        background: #fff;
-    }
-</style>
+<link rel="stylesheet" href="/static/css/app.css">
 {% endblock %}
 
 {% block content %}
@@ -48,15 +25,13 @@
         </div>
     </div>
 
-
-
     <!-- Buyer Stats -->
     <div class="row mb-2">
         <div class="col-xl-3 col-md-6 mb-2">
             <div class="card stat-card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                        <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3 stat-icon">
                             <i class="fas fa-users"></i>
                         </div>
                         <div>
@@ -72,7 +47,7 @@
             <div class="card stat-card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="bg-success bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                        <div class="bg-success bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3 stat-icon">
                             <i class="fas fa-project-diagram"></i>
                         </div>
                         <div>
@@ -88,7 +63,7 @@
             <div class="card stat-card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="bg-info bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                        <div class="bg-info bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3 stat-icon">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
                         <div>
@@ -104,7 +79,7 @@
             <div class="card stat-card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="bg-warning bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                        <div class="bg-warning bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3 stat-icon">
                             <i class="fas fa-clock"></i>
                         </div>
                         <div>
@@ -173,7 +148,7 @@
                 <div class="card-body">
                     <div class="activity-item mb-2">
                         <div class="d-flex align-items-center">
-                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2 activity-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
                             <div class="flex-grow-1">
@@ -184,7 +159,7 @@
                     </div>
                     <div class="activity-item mb-2">
                         <div class="d-flex align-items-center">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 activity-icon">
                                 <i class="fas fa-edit"></i>
                             </div>
                             <div class="flex-grow-1">
@@ -195,7 +170,7 @@
                     </div>
                     <div class="activity-item">
                         <div class="d-flex align-items-center">
-                            <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2 activity-icon">
                                 <i class="fas fa-project-diagram"></i>
                             </div>
                             <div class="flex-grow-1">
@@ -231,13 +206,13 @@
     </div>
 </div>
 
-<!-- Add Buyer Modal -->
-<div class="modal fade" id="addBuyerModal" tabindex="-1">
+<!-- Bootstrap 5 Modal -->
+<div class="modal fade" id="addBuyerModal" tabindex="-1" aria-labelledby="addBuyerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Buyer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="addBuyerModalLabel">Add New Buyer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addBuyerForm">
@@ -318,45 +293,19 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveBuyer()">Save Buyer</button>
+                <button type="button" class="btn btn-primary" id="saveBuyerBtn">Save Buyer</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    // Save buyer function
-    async function saveBuyer() {
-        const form = document.getElementById('addBuyerForm');
-        const formData = new FormData(form);
-        
-        try {
-            const response = await fetch('/buyers/create', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                alert('Buyer added successfully!');
-                bootstrap.Modal.getInstance(document.getElementById('addBuyerModal')).hide();
-                form.reset();
-                // Optionally refresh the buyer list
-                location.reload();
-            } else {
-                alert('Error adding buyer: ' + (data.message || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error adding buyer');
-        }
-    }
+<!-- Include the modal fix -->
+<script src="/static/js/modal-fix-buyers.js"></script>
 
-    // Load buyers on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        // You can add logic to load actual buyers here
-        console.log('Buyers page loaded');
-    });
-</script>
-{% endblock %} 
+<!-- Add emergency close button -->
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+    <button class="btn btn-danger btn-sm" onclick="forceCloseModal()" title="Force close modal (or press ESC)">
+        <i class="fas fa-times"></i> Force Close Modal
+    </button>
+</div>
+{% endblock %}
