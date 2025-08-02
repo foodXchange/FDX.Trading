@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 import logging
+from foodxchange.services.email_service import get_azure_email_service
 
 logger = logging.getLogger(__name__)
 
@@ -162,12 +163,18 @@ async def contact_submit(
             'message': message
         }
         
-        # TODO: Implement email sending functionality
-        # For now, just log the message
-        logger.info(f"Contact form submission from {email}: {subject}")
+        # Send email
+        email_service = get_azure_email_service()
+        result = await email_service.send_contact_form(contact_data)
         
-        # Redirect back to contact page with success message
-        return RedirectResponse(url="/contact?success=true", status_code=303)
+        if result['success']:
+            logger.info(f"Contact form email sent successfully from {email}: {subject}")
+            # Redirect back to contact page with success message
+            return RedirectResponse(url="/contact?success=true", status_code=303)
+        else:
+            logger.error(f"Failed to send contact form email: {result.get('error', 'Unknown error')}")
+            # Still show success to user but log the error
+            return RedirectResponse(url="/contact?success=true", status_code=303)
         
     except Exception as e:
         logger.error(f"Error processing contact form: {e}")

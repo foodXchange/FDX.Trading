@@ -351,4 +351,84 @@ async def check_ai_status():
         raise HTTPException(
             status_code=500, 
             detail=str(e)
+        )
+
+@ai_import_router.get("/details")
+async def get_import_details(file_path: str):
+    """Get detailed information about a specific import"""
+    try:
+        # Mock data for demonstration - in production, this would fetch from database
+        import_data = {
+            'file_name': os.path.basename(file_path),
+            'file_path': file_path,
+            'import_date': datetime.now().isoformat(),
+            'data_type': 'suppliers' if 'supplier' in file_path.lower() else 'buyers' if 'buyer' in file_path.lower() else 'products',
+            'import_method': 'ai',
+            'total_records': 150,
+            'successful_records': 145,
+            'failed_records': 5,
+            'processing_time': '2.5 seconds',
+            'field_mappings': {
+                'Company Name': {'target': 'company_name', 'confidence': 0.95},
+                'Email Address': {'target': 'email', 'confidence': 0.98},
+                'Phone': {'target': 'phone_number', 'confidence': 0.85},
+                'Address': {'target': 'address', 'confidence': 0.82},
+                'Product Category': {'target': 'category', 'confidence': 0.90},
+                'Contact Person': {'target': 'contact_name', 'confidence': 0.88}
+            },
+            'validation_results': [
+                {
+                    'field': 'email',
+                    'severity': 'warning',
+                    'message': 'Found 3 invalid email formats',
+                    'affected_rows': 3
+                },
+                {
+                    'field': 'phone_number',
+                    'severity': 'info',
+                    'message': 'Standardized phone number formats',
+                    'affected_rows': 45
+                },
+                {
+                    'field': 'address',
+                    'severity': 'error',
+                    'message': 'Missing required address information',
+                    'affected_rows': 2
+                }
+            ],
+            'sample_data': [
+                {
+                    'company_name': 'Fresh Foods Co.',
+                    'email': 'contact@freshfoods.com',
+                    'phone_number': '+1-555-0123',
+                    'address': '123 Market St, New York, NY',
+                    'category': 'Fresh Produce',
+                    'contact_name': 'John Smith'
+                },
+                {
+                    'company_name': 'Global Spices Ltd',
+                    'email': 'info@globalspices.com',
+                    'phone_number': '+1-555-0124',
+                    'address': '456 Spice Lane, Los Angeles, CA',
+                    'category': 'Spices & Seasonings',
+                    'contact_name': 'Maria Garcia'
+                },
+                {
+                    'company_name': 'Ocean Harvest Inc',
+                    'email': 'sales@oceanharvest.com',
+                    'phone_number': '+1-555-0125',
+                    'address': '789 Harbor Blvd, Seattle, WA',
+                    'category': 'Seafood',
+                    'contact_name': 'David Chen'
+                }
+            ]
+        }
+        
+        return JSONResponse(content=import_data)
+        
+    except Exception as e:
+        logger.error(f"Error fetching import details: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch import details: {str(e)}"
         ) 

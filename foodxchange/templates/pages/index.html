@@ -5,6 +5,8 @@
 {% block content %}
     <!-- Hero Section -->
     <section class="hero-section">
+        <div class="floating-shape floating-shape-1"></div>
+        <div class="floating-shape floating-shape-2"></div>
         <div class="container">
             <div class="row align-items-center min-vh-100">
                 <div class="col-lg-6">
@@ -17,21 +19,21 @@
                         FoodXchange is the operating system that makes international food trade faster, smarter, and surprisingly enjoyable.
                     </p>
                     <div class="hero-stats">
-                        <div class="stat-item">
-                            <h3>70%</h3>
+                        <div class="stat-item fade-in">
+                            <h3 class="stat-number" data-target="70" data-suffix="%">0</h3>
                             <p>Faster Sourcing</p>
                         </div>
-                        <div class="stat-item">
-                            <h3>95%</h3>
+                        <div class="stat-item fade-in">
+                            <h3 class="stat-number" data-target="95" data-suffix="%">0</h3>
                             <p>Error Reduction</p>
                         </div>
-                        <div class="stat-item">
-                            <h3>€2M+</h3>
+                        <div class="stat-item fade-in">
+                            <h3 class="stat-number" data-target="2000000" data-prefix="€">0</h3>
                             <p>Saved Annually</p>
                         </div>
                     </div>
                     <div class="hero-cta">
-                        <a href="#demo" class="btn btn-primary btn-lg">Request Demo</a>
+                        <a href="#demo" class="btn btn-primary btn-lg" onclick="foodXchangeAnimations.animateButton(this, {loadingText: 'Loading Demo...', successText: 'Demo Ready!'})">Request Demo</a>
                         <a href="#workflow" class="btn btn-outline-primary btn-lg">See How It Works</a>
                     </div>
                 </div>
@@ -53,7 +55,7 @@
                                         <span class="badge">12</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 75%"></div>
+                                        <div class="progress-fill progress-width-75"></div>
                                     </div>
                                 </div>
                                 <div class="dashboard-card">
@@ -239,7 +241,7 @@
                     <h4>Submit Smart RFQ</h4>
                     <p>AI-assisted request forms capture every requirement perfectly</p>
                 </div>
-                <div class="workflow-arrow">
+                <div class="workflow-arrow d-none d-md-block">
                     <i class="fas fa-arrow-right"></i>
                 </div>
                 <div class="workflow-step" data-step="2">
@@ -249,7 +251,7 @@
                     <h4>Receive Matched Offers</h4>
                     <p>Verified suppliers automatically matched to your needs</p>
                 </div>
-                <div class="workflow-arrow">
+                <div class="workflow-arrow d-none d-md-block">
                     <i class="fas fa-arrow-right"></i>
                 </div>
                 <div class="workflow-step" data-step="3">
@@ -259,7 +261,7 @@
                     <h4>Compare & Select</h4>
                     <p>Side-by-side comparisons with intelligent recommendations</p>
                 </div>
-                <div class="workflow-arrow">
+                <div class="workflow-arrow d-none d-md-block">
                     <i class="fas fa-arrow-right"></i>
                 </div>
                 <div class="workflow-step" data-step="4">
@@ -269,7 +271,7 @@
                     <h4>Track Samples</h4>
                     <p>Real-time sample management with automated reminders</p>
                 </div>
-                <div class="workflow-arrow">
+                <div class="workflow-arrow d-none d-md-block">
                     <i class="fas fa-arrow-right"></i>
                 </div>
                 <div class="workflow-step" data-step="5">
@@ -279,7 +281,7 @@
                     <h4>Ensure Compliance</h4>
                     <p>Automated checks for kosher, organic, and regulatory standards</p>
                 </div>
-                <div class="workflow-arrow">
+                <div class="workflow-arrow d-none d-md-block">
                     <i class="fas fa-arrow-right"></i>
                 </div>
                 <div class="workflow-step" data-step="6">
@@ -448,8 +450,8 @@
                     <h2 class="cta-title">Ready to Transform Your Food Sourcing?</h2>
                     <p class="cta-subtitle">Join leading enterprises already saving millions with FoodXchange</p>
                     <div class="cta-buttons">
-                        <a href="#demo" class="btn btn-primary btn-lg">Schedule a Demo</a>
-                        <a href="#contact" class="btn btn-outline-light btn-lg">Contact Sales</a>
+                        <a href="/demo" class="btn btn-primary btn-lg">Schedule a Demo</a>
+                        <a href="/contact" class="btn btn-outline-light btn-lg">Contact Sales</a>
                     </div>
                 </div>
             </div>

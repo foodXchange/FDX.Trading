@@ -24,11 +24,11 @@ class Settings(BaseSettings):
     
     # Security settings
     secret_key: str = Field("your-secret-key-here", env="SECRET_KEY")
-    allowed_hosts: list = Field(["*"], env="ALLOWED_HOSTS")
-    cors_origins: list = Field(["*"], env="CORS_ORIGINS")
+    allowed_hosts: list = ["*"]  # Hardcode to avoid environment variable parsing issues
+    cors_origins: list = ["*"]   # Hardcode to avoid environment variable parsing issues
     
     # Database settings
-    database_url: str = Field("sqlite:///./foodxchange.db", env="DATABASE_URL")
+    database_url: str = Field("postgresql://username:password@host:port/database", env="DATABASE_URL")
     
     # Azure OpenAI settings
     azure_openai_api_key: Optional[str] = Field(None, env="AZURE_OPENAI_API_KEY")
@@ -86,11 +86,8 @@ def is_development() -> bool:
 def get_database_url() -> str:
     """Get database URL with proper path handling"""
     settings = get_settings()
-    if settings.database_url.startswith("sqlite"):
-        # Ensure SQLite path is absolute
-        db_path = settings.database_url.replace("sqlite:///", "")
-        if not os.path.isabs(db_path):
-            base_dir = Path(__file__).resolve().parent.parent.parent
-            db_path = base_dir / db_path
-            return f"sqlite:///{db_path}"
-    return settings.database_url
+    # Azure PostgreSQL configuration
+    if settings.database_url.startswith("postgresql"):
+        return settings.database_url
+    else:
+        raise ValueError("Only PostgreSQL is supported. Please use Azure PostgreSQL.")

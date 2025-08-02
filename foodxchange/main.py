@@ -30,7 +30,6 @@ import logging
 from pathlib import Path
 from typing import Optional
 import bcrypt
-import sqlite3
 from datetime import datetime
 
 # Configure logging
@@ -60,11 +59,19 @@ app.add_middleware(
         "http://localhost:8003",
         "http://localhost:9000",
         "https://foodxchange.com",
-        "https://app.foodxchange.com"
+        "https://app.foodxchange.com",
+        "https://fdx.trading"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language", 
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-CSRF-Token"
+    ],
     expose_headers=["Content-Length", "X-Total-Count"],
     max_age=86400,  # Cache preflight requests for 24 hours
 )
@@ -192,7 +199,9 @@ def url_for(name: str, **path_params) -> str:
         "data_import.import_details": "/import/details/",
         "profile": "/profile/",
         "profile_edit": "/profile/edit",
-        "profile_settings": "/profile/settings"
+        "profile_settings": "/profile/settings",
+        "demo": "/demo",
+        "demo_animations": "/demo/animations"
     }
     
     if name == "static" and "filename" in path_params:
@@ -252,31 +261,85 @@ async def secure_login(
         auth_rate_limiter.record_attempt(f"{email}:{client_ip}")
         return RedirectResponse(url="/login?error=missing_credentials", status_code=303)
     
-    try:
-        # Connect to database
-        conn = sqlite3.connect('foodxchange.db')
-        cursor = conn.cursor()
+    # Development mode - mock authentication
+    from foodxchange.config.dev_auth import get_development_users, is_development_mode
+    
+    logger.info(f"Current environment: {os.getenv('ENVIRONMENT', 'production')}")
+    
+    if is_development_mode():
+        logger.info(f"Development mode login attempt for: {email}")
+        # Allow test users in development
+        test_users = get_development_users()
         
-        # Check for user in database first
-        cursor.execute("SELECT id, name, email, hashed_password, role, is_admin FROM users WHERE email = ?", (email,))
-        user = cursor.fetchone()
+        logger.info(f"Checking credentials - Email exists: {email in test_users}")
+        if email in test_users:
+            password_match = password == test_users[email]['password']
+            logger.info(f"Password validation attempt for user: {email}, success: {password_match}")
+        
+        if email in test_users and password == test_users[email]["password"]:
+            user_data = {
+                "user_id": test_users[email]["user_id"],
+                "email": email,
+                "role": test_users[email]["role"],
+                "is_admin": test_users[email]["role"] == "admin"
+            }
+            
+            # Create JWT token
+            jwt_manager = get_jwt_manager()
+            access_token = jwt_manager.create_access_token(user_data)
+            
+            # Clear rate limiting attempts
+            auth_rate_limiter.clear_attempts(f"{email}:{client_ip}")
+            
+            # Create response with redirect
+            response = RedirectResponse(url="/dashboard", status_code=303)
+            
+            # Cookie security settings
+            is_production = os.getenv("ENVIRONMENT", "development").lower() == "production"
+            response.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                secure=is_production,
+                samesite="strict" if is_production else "lax",
+                max_age=1800
+            )
+            
+            logger.info(f"Development login successful for: {email}")
+            return response
+    
+    try:
+        # Connect to PostgreSQL database
+        from sqlalchemy import create_engine, text
+        from sqlalchemy.orm import sessionmaker
+        
+        # Get database URL from environment or use default
+        database_url = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/foodxchange')
+        engine = create_engine(database_url)
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        
+        db = SessionLocal()
+        
+        # Check for user in database
+        result = db.execute(text("SELECT id, first_name, last_name, email, password_hash, role FROM users WHERE email = :email"), {"email": email})
+        user = result.fetchone()
         
         authenticated = False
         user_data = None
         
         if user:
             # Verify password against database
-            user_id, name, db_email, hashed_password, role, is_admin = user
+            user_id, first_name, last_name, db_email, hashed_password, role = user
             if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
                 authenticated = True
                 user_data = {
                     "user_id": user_id,
                     "email": db_email,
                     "role": role,
-                    "is_admin": bool(is_admin)
+                    "is_admin": role == "admin"
                 }
         
-        conn.close()
+        db.close()
         
         if authenticated and user_data:
             # Create JWT token
@@ -423,6 +486,14 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Footer pages routes not loaded: {e}")
 
+# Load demo routes
+try:
+    from foodxchange.routes import demo_routes
+    app.include_router(demo_routes.router)
+    logger.info("✅ Demo routes loaded")
+except ImportError as e:
+    logger.warning(f"⚠️ Demo routes not loaded: {e}")
+
 logger.info("✅ Optional route modules loaded successfully")
 
 # Add profile routes directly to avoid import issues
@@ -438,7 +509,7 @@ profile_router = APIRouter(prefix="/profile", tags=["profile"])
 MOCK_USER = {
     "id": 1,
     "name": "Admin User",
-    "email": "admin@foodxchange.com",
+    "email": "admin@fdx.trading",
     "company": "FoodXchange Inc.",
     "role": "admin",
     "is_active": True,
@@ -630,6 +701,7 @@ async def landing(request: Request):
         return HTMLResponse(content=f"Template error: {str(e)}", status_code=500)
 
 @app.get("/dashboard")
+@app.post("/dashboard")  # Handle POST redirects from login
 @app.head("/dashboard")
 async def dashboard(request: Request):
     """Dashboard page - requires authentication"""
@@ -656,7 +728,11 @@ async def dashboard(request: Request):
 
 @app.get("/login")
 async def login_page(request: Request):
-    return templates.TemplateResponse("pages/login.html", {"request": request})
+    # Check for performance mode in query params or environment
+    use_optimized = request.query_params.get("optimized", os.getenv("USE_OPTIMIZED_LOGIN", "false")).lower() == "true"
+    
+    template_name = "pages/login_optimized.html" if use_optimized else "pages/login.html"
+    return templates.TemplateResponse(template_name, {"request": request})
 
 
 @app.get("/debug-routes")
@@ -701,47 +777,74 @@ async def signup(
         if len(password) < 8:
             return RedirectResponse(url="/signup?error=weak_password", status_code=303)
         
-        # Check if user already exists
-        conn = sqlite3.connect('foodxchange.db')
-        cursor = conn.cursor()
+        # Use consistent PostgreSQL database connection
+        from sqlalchemy import create_engine, text
+        from sqlalchemy.orm import sessionmaker
         
-        cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
-        if cursor.fetchone():
-            conn.close()
-            return RedirectResponse(url="/signup?error=email_exists", status_code=303)
+        database_url = os.getenv('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/foodxchange')
+        engine = create_engine(database_url)
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        db = SessionLocal()
         
-        # Hash password
-        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        try:
+            # Check if user already exists
+            result = db.execute(text("SELECT id FROM users WHERE email = :email"), {"email": email})
+            if result.fetchone():
+                db.close()
+                return RedirectResponse(url="/signup?error=email_exists", status_code=303)
+            
+            # Hash password
+            password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            # Create user
+            db.execute(text("""
+                INSERT INTO users (first_name, last_name, email, password_hash, company, role, created_at)
+                VALUES (:first_name, :last_name, :email, :password_hash, :company, 'user', NOW())
+            """), {
+                "first_name": firstName,
+                "last_name": lastName, 
+                "email": email,
+                "password_hash": password_hash,
+                "company": company
+            })
+            
+            # Get the new user ID
+            result = db.execute(text("SELECT id FROM users WHERE email = :email"), {"email": email})
+            user_row = result.fetchone()
+            user_id = user_row[0] if user_row else None
+            
+            db.commit()
+        finally:
+            db.close()
         
-        # Create user
-        full_name = f"{firstName} {lastName}"
-        cursor.execute("""
-            INSERT INTO users (name, email, hashed_password, company, role, created_at)
-            VALUES (?, ?, ?, ?, 'user', datetime('now'))
-        """, (full_name, email, password_hash, company))
-        
-        user_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        # Create session
-        from foodxchange.core.auth import create_user_session
-        session_token = create_user_session(user_id, email, 'user')
+        # Create JWT token instead of session
+        from foodxchange.core.security import get_jwt_manager
+        jwt_manager = get_jwt_manager()
+        user_data = {
+            "user_id": user_id,
+            "email": email,
+            "role": "user",
+            "is_admin": False
+        }
+        access_token = jwt_manager.create_access_token(user_data)
         
         # Redirect to dashboard
         response = RedirectResponse(url="/dashboard", status_code=303)
+        
+        # Cookie security settings (consistent with login)
+        is_production = os.getenv("ENVIRONMENT", "development").lower() == "production"
         response.set_cookie(
-            key="session_token",
-            value=session_token,
+            key="access_token",
+            value=access_token,
             httponly=True,
-            secure=True,
-            samesite="lax",
-            max_age=30 * 24 * 60 * 60  # 30 days
+            secure=is_production,
+            samesite="strict" if is_production else "lax",
+            max_age=1800  # 30 minutes (consistent with login)
         )
         return response
         
     except Exception as e:
-        print(f"Signup error: {str(e)}")
+        logger.error(f"Signup error: {str(e)}", exc_info=True)
         return RedirectResponse(url="/signup?error=registration_failed", status_code=303)
 
 @app.get("/support")

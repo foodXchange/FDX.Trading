@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule a Demo - FoodXchange{% endblock %}
+
+{% block content %}
+<div class="demo-page">
+    <!-- Hero Section with Animations -->
+    <section class="demo-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4 hero-title">See FoodXchange in Action</h1>
+                    <p class="lead mb-4 hero-subtitle">Get a personalized demo of our AI-powered food sourcing platform. Discover how we can transform your supply chain in just 30 minutes.</p>
+                    <div class="demo-benefits">
+                        <div class="benefit-item fade-in" style="animation-delay: 0.2s">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Live platform walkthrough</span>
+                        </div>
+                        <div class="benefit-item fade-in" style="animation-delay: 0.3s">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Customized to your industry needs</span>
+                        </div>
+                        <div class="benefit-item fade-in" style="animation-delay: 0.4s">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>ROI calculation for your business</span>
+                        </div>
+                        <div class="benefit-item fade-in" style="animation-delay: 0.5s">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Q&A with our experts</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="demo-form-card gsap-scale">
+                        <h3 class="mb-4">Schedule Your Demo</h3>
+                        <form id="demoForm" method="POST" action="/demo/schedule">
+                            <!-- Personal Information -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" id="firstName" name="first_name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" id="lastName" name="last_name" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Work Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+
+                            <!-- Company Information -->
+                            <div class="mb-3">
+                                <label for="company" class="form-label">Company Name *</label>
+                                <input type="text" class="form-control" id="company" name="company" required>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="jobTitle" class="form-label">Job Title *</label>
+                                    <input type="text" class="form-control" id="jobTitle" name="job_title" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="companySize" class="form-label">Company Size *</label>
+                                    <select class="form-select" id="companySize" name="company_size" required>
+                                        <option value="">Select...</option>
+                                        <option value="1-10">1-10 employees</option>
+                                        <option value="11-50">11-50 employees</option>
+                                        <option value="51-200">51-200 employees</option>
+                                        <option value="201-500">201-500 employees</option>
+                                        <option value="501-1000">501-1000 employees</option>
+                                        <option value="1000+">1000+ employees</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Demo Preferences -->
+                            <div class="mb-3">
+                                <label for="industry" class="form-label">Industry *</label>
+                                <select class="form-select" id="industry" name="industry" required>
+                                    <option value="">Select your industry...</option>
+                                    <option value="restaurant">Restaurant/Food Service</option>
+                                    <option value="retail">Retail/Grocery</option>
+                                    <option value="distributor">Food Distributor</option>
+                                    <option value="manufacturer">Food Manufacturer</option>
+                                    <option value="hotel">Hotel/Hospitality</option>
+                                    <option value="catering">Catering</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="interests" class="form-label">What are you most interested in? *</label>
+                                <div class="interest-checkboxes">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="sourcing" name="interests" value="sourcing">
+                                        <label class="form-check-label" for="sourcing">
+                                            Global Sourcing & Supplier Discovery
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="analytics" name="interests" value="analytics">
+                                        <label class="form-check-label" for="analytics">
+                                            AI-Powered Analytics & Insights
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="automation" name="interests" value="automation">
+                                        <label class="form-check-label" for="automation">
+                                            Workflow Automation
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="compliance" name="interests" value="compliance">
+                                        <label class="form-check-label" for="compliance">
+                                            Quality & Compliance Management
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="integration" name="interests" value="integration">
+                                        <label class="form-check-label" for="integration">
+                                            ERP/System Integration
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scheduling -->
+                            <div class="mb-3">
+                                <label for="timezone" class="form-label">Your Timezone *</label>
+                                <select class="form-select" id="timezone" name="timezone" required>
+                                    <!-- Will be populated by JavaScript -->
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="preferredDate" class="form-label">Preferred Demo Date *</label>
+                                <input type="date" class="form-control" id="preferredDate" name="preferred_date" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="preferredTime" class="form-label">Preferred Time Slot *</label>
+                                <select class="form-select" id="preferredTime" name="preferred_time" required>
+                                    <option value="">Select a time...</option>
+                                    <option value="09:00">9:00 AM</option>
+                                    <option value="09:30">9:30 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="10:30">10:30 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="11:30">11:30 AM</option>
+                                    <option value="14:00">2:00 PM</option>
+                                    <option value="14:30">2:30 PM</option>
+                                    <option value="15:00">3:00 PM</option>
+                                    <option value="15:30">3:30 PM</option>
+                                    <option value="16:00">4:00 PM</option>
+                                    <option value="16:30">4:30 PM</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="message" class="form-label">Additional Information</label>
+                                <textarea class="form-control" id="message" name="message" rows="3" 
+                                    placeholder="Tell us about your current challenges or specific requirements..."></textarea>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="consent" name="consent" required>
+                                <label class="form-check-label" for="consent">
+                                    I agree to receive communications from FoodXchange about our products and services.
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-calendar-check me-2"></i>Schedule My Demo
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What to Expect Section -->
+    <section class="demo-expectations py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">What to Expect</h2>
+            <div class="row">
+                <div class="col-md-3 text-center mb-4">
+                    <div class="expectation-card">
+                        <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                        <h5>30-Minute Session</h5>
+                        <p>Quick, focused demo tailored to your needs</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="expectation-card">
+                        <i class="fas fa-user-tie fa-3x text-primary mb-3"></i>
+                        <h5>Expert Guidance</h5>
+                        <p>Led by our product specialists</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="expectation-card">
+                        <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                        <h5>ROI Analysis</h5>
+                        <p>See potential savings for your business</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="expectation-card">
+                        <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                        <h5>No Pressure</h5>
+                        <p>Educational session with Q&A time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <i class="fas fa-check-circle text-success fa-4x mb-4"></i>
+                    <h3>Demo Scheduled Successfully!</h3>
+                    <p class="mb-4">We've received your request and will send a confirmation email shortly with your meeting details.</p>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.demo-hero {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.demo-form-card {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.benefit-item {
+    padding: 10px 0;
+    font-size: 1.1rem;
+}
+
+.interest-checkboxes .form-check {
+    padding: 10px 0;
+}
+
+.expectation-card {
+    padding: 30px;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.expectation-card:hover {
+    transform: translateY(-5px);
+}
+
+.demo-expectations {
+    background: #f8f9fa;
+}
+
+/* Date input styling */
+input[type="date"] {
+    min-height: 38px;
+}
+
+/* Loading state for button */
+.btn-loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spinner 0.8s linear infinite;
+}
+
+@keyframes spinner {
+    to { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Populate timezone dropdown
+document.addEventListener('DOMContentLoaded', function() {
+    const timezoneSelect = document.getElementById('timezone');
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    // Common timezones
+    const timezones = [
+        { value: 'America/New_York', label: 'Eastern Time (ET)' },
+        { value: 'America/Chicago', label: 'Central Time (CT)' },
+        { value: 'America/Denver', label: 'Mountain Time (MT)' },
+        { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
+        { value: 'Europe/London', label: 'GMT/BST (London)' },
+        { value: 'Europe/Paris', label: 'CET (Paris/Berlin)' },
+        { value: 'Asia/Dubai', label: 'GST (Dubai)' },
+        { value: 'Asia/Singapore', label: 'SGT (Singapore)' },
+        { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
+        { value: 'Australia/Sydney', label: 'AEDT (Sydney)' }
+    ];
+    
+    // Populate dropdown
+    timezones.forEach(tz => {
+        const option = document.createElement('option');
+        option.value = tz.value;
+        option.textContent = tz.label;
+        if (tz.value === userTimezone) {
+            option.selected = true;
+        }
+        timezoneSelect.appendChild(option);
+    });
+    
+    // If user timezone not in list, add it
+    if (!timezones.find(tz => tz.value === userTimezone)) {
+        const option = document.createElement('option');
+        option.value = userTimezone;
+        option.textContent = userTimezone;
+        option.selected = true;
+        timezoneSelect.appendChild(option);
+    }
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('preferredDate').setAttribute('min', today);
+    
+    // Handle form submission
+    document.getElementById('demoForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.classList.add('btn-loading');
+        submitBtn.disabled = true;
+        
+        // Collect form data
+        const formData = new FormData(this);
+        
+        // Get selected interests
+        const interests = [];
+        document.querySelectorAll('input[name="interests"]:checked').forEach(checkbox => {
+            interests.push(checkbox.value);
+        });
+        formData.set('interests', interests.join(','));
+        
+        try {
+            const response = await fetch('/demo/schedule', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                // Show success modal
+                const modal = new bootstrap.Modal(document.getElementById('successModal'));
+                modal.show();
+                
+                // Reset form
+                this.reset();
+                
+                // Redirect after modal closes
+                document.getElementById('successModal').addEventListener('hidden.bs.modal', function() {
+                    window.location.href = '/';
+                });
+            } else {
+                alert('There was an error scheduling your demo. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('There was an error scheduling your demo. Please try again.');
+        } finally {
+            submitBtn.classList.remove('btn-loading');
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Validate at least one interest is selected
+    const interestCheckboxes = document.querySelectorAll('input[name="interests"]');
+    interestCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const anyChecked = document.querySelectorAll('input[name="interests"]:checked').length > 0;
+            interestCheckboxes.forEach(cb => {
+                if (anyChecked) {
+                    cb.removeAttribute('required');
+                } else {
+                    cb.setAttribute('required', 'required');
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

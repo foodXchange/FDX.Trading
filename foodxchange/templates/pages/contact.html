@@ -58,6 +58,7 @@
         font-weight: 600;
         color: #333;
         margin-bottom: 0.5rem;
+        display: block;
     }
 
     .form-control {
@@ -235,8 +236,9 @@
                     <div class="quick-contact-item">
                         <i class="fas fa-briefcase quick-contact-icon"></i>
                         <div>
-                            <strong>Sales</strong><br>
-                            <a href="mailto:sales@fdx.trading">sales@fdx.trading</a>
+                            <strong>Sales Team</strong><br>
+                            <a href="mailto:sales@fdx.trading">sales@fdx.trading</a><br>
+                            <small>Udi Stryk (Commercial) & Zeev Strykowski (Sales)</small>
                         </div>
                     </div>
                 </div>
@@ -253,7 +255,14 @@
                     <div class="quick-contact-item">
                         <i class="fas fa-phone-alt quick-contact-icon"></i>
                         <div>
-                            <strong>Phone</strong><br>
+                            <strong>Udi Stryk - Commercial Manager</strong><br>
+                            <a href="tel:+972525222291">+972-52-5222291</a>
+                        </div>
+                    </div>
+                    <div class="quick-contact-item">
+                        <i class="fas fa-phone-alt quick-contact-icon"></i>
+                        <div>
+                            <strong>Zeev Strykowski - Sales Manager</strong><br>
                             <a href="tel:+972525222291">+972-52-5222291</a>
                         </div>
                     </div>
@@ -297,14 +306,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">First Name *</label>
-                                <input type="text" class="form-control" name="first_name" required>
+                                <label class="form-label" for="firstName">First Name *</label>
+                                <input type="text" class="form-control" id="firstName" name="first_name" required aria-label="First Name" title="Enter your first name" placeholder="John">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Last Name *</label>
-                                <input type="text" class="form-control" name="last_name" required>
+                                <label class="form-label" for="lastName">Last Name *</label>
+                                <input type="text" class="form-control" id="lastName" name="last_name" required aria-label="Last Name" title="Enter your last name" placeholder="Doe">
                             </div>
                         </div>
                     </div>
@@ -312,26 +321,26 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Email *</label>
-                                <input type="email" class="form-control" name="email" required>
+                                <label class="form-label" for="email">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required aria-label="Email" title="Enter your email address" placeholder="john.doe@example.com">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Phone</label>
-                                <input type="tel" class="form-control" name="phone">
+                                <label class="form-label" for="phone">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" aria-label="Phone" title="Enter your phone number" placeholder="+1 (555) 123-4567">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Company</label>
-                        <input type="text" class="form-control" name="company">
+                        <label class="form-label" for="company">Company</label>
+                        <input type="text" class="form-control" id="company" name="company" aria-label="Company" title="Enter your company name" placeholder="Your Company Name">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">I am a:</label>
-                        <select class="form-select" name="user_type">
+                        <label class="form-label" for="userType">I am a:</label>
+                        <select class="form-select" id="userType" name="user_type" aria-label="User Type" title="Select your role">
                             <option value="">Select...</option>
                             <option value="buyer">Buyer</option>
                             <option value="supplier">Supplier</option>
@@ -341,13 +350,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Subject *</label>
-                        <input type="text" class="form-control" name="subject" required>
+                        <label class="form-label" for="subject">Subject *</label>
+                        <input type="text" class="form-control" id="subject" name="subject" required aria-label="Subject" title="Enter the subject of your message" placeholder="How can we help you?">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Message *</label>
-                        <textarea class="form-control" name="message" rows="5" required></textarea>
+                        <label class="form-label" for="message">Message *</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" required aria-label="Message" title="Enter your message" placeholder="Please provide details about your inquiry..."></textarea>
                     </div>
 
                     <div class="text-center">
@@ -392,7 +401,7 @@
     <!-- Map placeholder -->
     <div id="map" class="map-container">
         <!-- You can integrate Google Maps or another mapping service here -->
-        <div style="background: #f0f0f0; height: 100%; display: flex; align-items: center; justify-content: center;">
+        <div class="map-placeholder">
             <p class="text-muted">Map integration coming soon</p>
         </div>
     </div>

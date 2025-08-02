@@ -13,7 +13,7 @@ if os.path.exists('.env.blob'):
 
 class Settings(BaseSettings):
     # Required settings with validation
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./foodxchange.db")
+    database_url: str = os.getenv("DATABASE_URL", "postgresql://username:password@host:port/database")
     secret_key: str = os.getenv("SECRET_KEY")
     
     # Optional settings with defaults
@@ -49,8 +49,8 @@ class Settings(BaseSettings):
                 raise ValueError("DEBUG must be False in production")
             if not self.use_https:
                 print("WARNING: HTTPS is recommended for production")
-            if "sqlite" in self.database_url.lower():
-                print("WARNING: SQLite is not recommended for production")
+                    if "sqlite" in self.database_url.lower():
+            print("WARNING: SQLite is not supported. Please use Azure PostgreSQL.")
     
     # Azure OpenAI settings (optional)
     azure_openai_api_key: Optional[str] = os.getenv("AZURE_OPENAI_API_KEY")

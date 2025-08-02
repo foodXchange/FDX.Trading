@@ -49,7 +49,7 @@ class ErrorAnalyzer:
                 description="Database connection failure",
                 error_types=[ErrorType.DATABASE],
                 keywords=["connection refused", "database error", "connection timeout"],
-                regex_patterns=[r"psycopg2.*OperationalError", r"sqlite3.*OperationalError"],
+                regex_patterns=[r"psycopg2.*OperationalError"],
                 severity_override=ErrorSeverity.HIGH,
                 recovery_actions=[RecoveryAction.RETRY, RecoveryAction.ESCALATE]
             ),

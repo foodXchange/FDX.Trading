@@ -15,6 +15,9 @@
         // Initialize tooltips if Bootstrap is available
         initializeTooltips();
         
+        // Initialize dropdowns
+        initializeDropdowns();
+        
         // Initialize form validation
         initializeFormValidation();
         
@@ -36,6 +39,18 @@
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+    }
+
+    /**
+     * Initialize Bootstrap dropdowns
+     */
+    function initializeDropdowns() {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+            const dropdownElementList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+            dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl);
             });
         }
     }

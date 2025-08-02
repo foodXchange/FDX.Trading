@@ -203,6 +203,27 @@
     </div>
 </div>
 
+<!-- Import Details Modal -->
+<div class="modal fade" id="importDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Import Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="importDetailsContent">
+                <!-- Details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="downloadImportReport()">
+                    <i class="fas fa-download me-2"></i>Download Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -445,9 +466,196 @@ function displayImportHistory(history) {
 }
 
 // View import details
-function viewImportDetails(filePath) {
-    // TODO: Implement details view
-    console.log('View details for:', filePath);
+async function viewImportDetails(filePath) {
+    try {
+        // Show loading state
+        const modal = new bootstrap.Modal(document.getElementById('importDetailsModal'));
+        document.getElementById('importDetailsContent').innerHTML = `
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Loading import details...</p>
+            </div>
+        `;
+        modal.show();
+        
+        // Fetch import details
+        const response = await fetch(`/api/import/details?file_path=${encodeURIComponent(filePath)}`);
+        if (!response.ok) throw new Error('Failed to fetch details');
+        
+        const data = await response.json();
+        
+        // Display details
+        document.getElementById('importDetailsContent').innerHTML = `
+            <div class="import-details">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Import Information</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>File Name:</th>
+                                <td>${data.file_name || 'N/A'}</td>
+                            </tr>
+                            <tr>
+                                <th>Import Date:</th>
+                                <td>${new Date(data.import_date).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <th>Data Type:</th>
+                                <td><span class="badge bg-info">${data.data_type}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Import Method:</th>
+                                <td>${data.import_method === 'ai' ? '<i class="fas fa-robot"></i> AI-Powered' : '<i class="fas fa-file-upload"></i> Classic'}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Import Statistics</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Total Records:</th>
+                                <td>${data.total_records || 0}</td>
+                            </tr>
+                            <tr>
+                                <th>Successful:</th>
+                                <td class="text-success">${data.successful_records || 0}</td>
+                            </tr>
+                            <tr>
+                                <th>Failed:</th>
+                                <td class="text-danger">${data.failed_records || 0}</td>
+                            </tr>
+                            <tr>
+                                <th>Processing Time:</th>
+                                <td>${data.processing_time || 'N/A'}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                ${data.field_mappings ? `
+                <div class="mb-4">
+                    <h6>Field Mappings</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Source Field</th>
+                                    <th>Mapped To</th>
+                                    <th>Confidence</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.entries(data.field_mappings).map(([source, mapping]) => `
+                                    <tr>
+                                        <td>${source}</td>
+                                        <td>${mapping.target || 'Not Mapped'}</td>
+                                        <td>
+                                            ${mapping.confidence ? `
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar ${mapping.confidence > 0.8 ? 'bg-success' : mapping.confidence > 0.6 ? 'bg-warning' : 'bg-danger'}" 
+                                                         style="width: ${mapping.confidence * 100}%">
+                                                        ${Math.round(mapping.confidence * 100)}%
+                                                    </div>
+                                                </div>
+                                            ` : 'Manual'}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${data.validation_results ? `
+                <div class="mb-4">
+                    <h6>Validation Results</h6>
+                    <div class="validation-summary">
+                        ${data.validation_results.map(result => `
+                            <div class="alert alert-${result.severity === 'error' ? 'danger' : result.severity === 'warning' ? 'warning' : 'info'} py-2">
+                                <i class="fas fa-${result.severity === 'error' ? 'times-circle' : result.severity === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                                <strong>${result.field}:</strong> ${result.message}
+                                ${result.affected_rows ? `<span class="badge bg-secondary ms-2">${result.affected_rows} rows</span>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${data.sample_data ? `
+                <div>
+                    <h6>Sample Data (First 5 Records)</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    ${Object.keys(data.sample_data[0] || {}).map(key => `<th>${key}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.sample_data.slice(0, 5).map(row => `
+                                    <tr>
+                                        ${Object.values(row).map(value => `<td>${value || ''}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+        
+        // Store current import data for download
+        window.currentImportDetails = data;
+        
+    } catch (error) {
+        console.error('Error fetching import details:', error);
+        document.getElementById('importDetailsContent').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Failed to load import details. Please try again.
+            </div>
+        `;
+    }
+}
+
+// Download import report
+function downloadImportReport() {
+    if (!window.currentImportDetails) {
+        alert('No import details available to download');
+        return;
+    }
+    
+    const data = window.currentImportDetails;
+    const report = {
+        import_info: {
+            file_name: data.file_name,
+            import_date: data.import_date,
+            data_type: data.data_type,
+            import_method: data.import_method,
+            total_records: data.total_records,
+            successful_records: data.successful_records,
+            failed_records: data.failed_records,
+            processing_time: data.processing_time
+        },
+        field_mappings: data.field_mappings,
+        validation_results: data.validation_results,
+        sample_data: data.sample_data
+    };
+    
+    // Create and download JSON report
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `import_report_${data.file_name}_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 // Show AI setup guide

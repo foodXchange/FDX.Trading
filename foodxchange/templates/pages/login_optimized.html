@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - FoodXchange</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/static/brand/logos/Logo.png" as="image" fetchpriority="high">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    
+    <!-- Font optimization -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        /* Font-face declaration for faster loading */
+        @font-face {
+            font-family: 'System UI';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: local('system-ui'), local('-apple-system'), local('BlinkMacSystemFont'), 
+                 local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), local('Arial');
+        }
+    </style>
+    
+    <!-- Critical inline CSS for above-the-fold content -->
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --teal-accent: #00a8e8;
+            --warning-color: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'System UI', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-display: swap;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+        
+        .auth-form {
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .form-subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        /* Hide non-critical elements initially */
+        .auth-visual,
+        .social-login,
+        .divider {
+            opacity: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            
+            .auth-visual {
+                display: none;
+            }
+            
+            .auth-form {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+    
+    <!-- Load remaining CSS asynchronously -->
+    <link rel="preload" href="/static/css/login-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/static/css/login-styles.css"></noscript>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-visual" style="background: linear-gradient(135deg, var(--teal-accent) 0%, var(--primary-color) 100%); position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; color: white;">
+            <div class="logo-section" style="text-align: center; z-index: 1;">
+                <div class="logo" style="width: 120px; height: 80px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                    <img src="/static/brand/logos/Logo.png" alt="FoodXchange Logo" class="auth-logo" style="max-width: 100%; max-height: 100%; height: auto; filter: brightness(0) invert(1);" loading="eager" fetchpriority="high">
+                </div>
+                <p class="brand-tagline" style="font-size: 16px; opacity: 0.9; margin-bottom: 30px;">AI-Powered Food Sourcing Platform</p>
+                
+                <ul class="feature-list" style="list-style: none; text-align: left;">
+                    <li style="margin: 15px 0; display: flex; align-items: center; font-size: 14px;">
+                        <span style="content: '✓'; background: #10b981; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 12px; font-weight: bold;">✓</span>
+                        Smart supplier matching
+                    </li>
+                    <li style="margin: 15px 0; display: flex; align-items: center; font-size: 14px;">
+                        <span style="content: '✓'; background: #10b981; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 12px; font-weight: bold;">✓</span>
+                        AI-powered product analysis
+                    </li>
+                    <li style="margin: 15px 0; display: flex; align-items: center; font-size: 14px;">
+                        <span style="content: '✓'; background: #10b981; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 12px; font-weight: bold;">✓</span>
+                        Real-time quote comparison
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="auth-form">
+            <h2 class="form-title">Welcome Back</h2>
+            <p class="form-subtitle">Sign in to access your dashboard</p>
+
+            {% if request.query_params.get('error') %}
+                <div class="alert alert-danger" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; background-color: #fee; border: 1px solid #fcc; color: #c33;">
+                    {% if request.query_params.get('error') == 'invalid_credentials' %}
+                        Invalid email or password. Please try again.
+                    {% elif request.query_params.get('error') == 'rate_limited' %}
+                        Too many failed attempts. Please try again later.
+                    {% elif request.query_params.get('error') == 'missing_credentials' %}
+                        Please provide both email and password.
+                    {% elif request.query_params.get('error') == 'not_authenticated' %}
+                        Please log in to access this page.
+                    {% elif request.query_params.get('error') == 'session_expired' %}
+                        Your session has expired. Please log in again.
+                    {% else %}
+                        An error occurred. Please try again.
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            {% if request.query_params.get('success') == 'logged_out' %}
+                <div class="alert alert-success" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; background-color: #efe; border: 1px solid #cfc; color: #3c3;">
+                    You have been successfully logged out.
+                </div>
+            {% endif %}
+
+            <div class="social-login" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;">
+                <!-- Social login buttons will be enhanced via JS -->
+            </div>
+
+            <div class="divider" style="display: flex; align-items: center; margin: 30px 0; color: #9ca3af; font-size: 14px;">
+                <span style="flex: 1; height: 1px; background: #e5e7eb; margin-right: 16px;"></span>
+                or continue with email
+                <span style="flex: 1; height: 1px; background: #e5e7eb; margin-left: 16px;"></span>
+            </div>
+
+            <form action="/auth/login" method="post">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label" style="display: block; margin-bottom: 6px; font-weight: 500; color: #374151;">Email Address</label>
+                    <input type="email" class="form-input" name="email" placeholder="Enter your email" required autofocus style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; background: white;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label" style="display: block; margin-bottom: 6px; font-weight: 500; color: #374151;">Password</label>
+                    <div class="password-input" style="position: relative;">
+                        <input type="password" class="form-input" name="password" id="password" placeholder="Enter your password" required style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; background: white;">
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280;">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; font-size: 14px;">
+                    <div class="checkbox-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="remember" name="remember" checked>
+                        <label for="remember">Remember me for 30 days</label>
+                    </div>
+                    <a href="#" class="forgot-link" style="color: #4f46e5; text-decoration: none;">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="submit-btn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Sign In</button>
+            </form>
+
+            <div class="signup-link" style="text-align: center; margin-top: 30px; padding-top: 30px; border-top: 1px solid #e5e7eb;">
+                <p style="color: #6b7280; margin-bottom: 10px;">Don't have an account?</p>
+                <a href="/signup" style="color: #4f46e5; text-decoration: none; font-weight: 600;">Create an account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inline critical JS -->
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+        
+        // Progressive enhancement for visual elements
+        window.addEventListener('load', function() {
+            // Fade in non-critical elements
+            const elements = document.querySelectorAll('.auth-visual, .social-login, .divider');
+            elements.forEach(el => {
+                el.style.transition = 'opacity 0.3s ease';
+                el.style.opacity = '1';
+            });
+        });
+    </script>
+    
+    <!-- Defer non-critical scripts -->
+    <script defer src="/static/js/login-enhancements.js"></script>
+</body>
+</html>

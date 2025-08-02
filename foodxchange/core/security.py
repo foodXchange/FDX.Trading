@@ -151,10 +151,11 @@ class PasswordManager:
 
 def get_jwt_manager() -> JWTManager:
     """Get JWT manager instance with secret key from environment"""
-    secret_key = os.getenv("SECRET_KEY")
+    # Use JWT_SECRET_KEY if available, otherwise fall back to SECRET_KEY
+    secret_key = os.getenv("JWT_SECRET_KEY") or os.getenv("SECRET_KEY")
     
     if not secret_key:
-        raise ValueError("SECRET_KEY environment variable must be set")
+        raise ValueError("JWT_SECRET_KEY or SECRET_KEY environment variable must be set")
     
     return JWTManager(secret_key)
 

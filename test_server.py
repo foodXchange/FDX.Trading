@@ -1,30 +1,29 @@
-"""Simple test to check if server is responding"""
 import requests
 import time
 
 print("Testing FoodXchange server...")
 
-# Test different endpoints
+# Wait a moment for server to fully start
+time.sleep(2)
+
+# Test endpoints
 endpoints = [
     "http://localhost:8003/health",
     "http://localhost:8003/",
-    "http://127.0.0.1:8003/health",
-    "http://127.0.0.1:8003/"
+    "http://localhost:8003/demo",
+    "http://localhost:8003/demo/test",
+    "http://localhost:8003/demo/animations"
 ]
 
 for endpoint in endpoints:
     try:
-        print(f"\nTesting {endpoint}...")
         response = requests.get(endpoint, timeout=5)
-        print(f"Status: {response.status_code}")
-        print(f"Response: {response.text[:100]}...")
-    except requests.exceptions.ConnectionError as e:
-        print(f"Connection error: {e}")
+        print(f"✓ {endpoint} - Status: {response.status_code}")
+    except requests.exceptions.ConnectionError:
+        print(f"✗ {endpoint} - Connection failed")
     except requests.exceptions.Timeout:
-        print("Request timed out")
+        print(f"✗ {endpoint} - Timeout")
     except Exception as e:
-        print(f"Error: {type(e).__name__}: {e}")
-    
-    time.sleep(1)
+        print(f"✗ {endpoint} - Error: {e}")
 
-print("\nTest complete.")
+print("\nServer test complete!")

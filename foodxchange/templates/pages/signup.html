@@ -66,16 +66,19 @@
         }
 
         .logo {
-            width: 80px;
+            width: 120px;
             height: 80px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
+        }
+        
+        .auth-logo {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+            filter: brightness(0) invert(1);
         }
 
         .brand-name {
@@ -389,12 +392,8 @@
         <div class="auth-visual">
             <div class="logo-section">
                 <div class="logo">
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                        <path d="M20 8L32 14V26L20 32L8 26V14L20 8Z" fill="white" opacity="0.9"/>
-                        <path d="M20 12L28 16V24L20 28L12 24V16L20 12Z" fill="rgba(255,255,255,0.7)"/>
-                    </svg>
+                    <img src="/static/brand/logos/Logo.png" alt="FoodXchange Logo" class="auth-logo">
                 </div>
-                <h1 class="brand-name">FOOD<span style="color: #fbbf24;">X</span>CHANGE</h1>
                 <p class="brand-tagline">Join the Future of Food Sourcing</p>
                 
                 <ul class="benefits-list">

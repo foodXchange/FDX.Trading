@@ -16,13 +16,11 @@ services:
       - /app/__pycache__  # Exclude Python cache
     environment:
       - PYTHONUNBUFFERED=1
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/foodxchange
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=redis://redis:6379
     env_file:
       - .env
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_started
     restart: unless-stopped
@@ -30,25 +28,26 @@ services:
     networks:
       - foodxchange-network
 
-  # PostgreSQL database
-  postgres:
-    image: postgres:13-alpine
-    environment:
-      POSTGRES_DB: foodxchange
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./configs/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - foodxchange-network
+  # PostgreSQL database - Using Azure PostgreSQL instead of local PostgreSQL
+  # Commented out local PostgreSQL service as we're using Azure PostgreSQL
+  # postgres:
+  #   image: postgres:13-alpine
+  #   environment:
+  #     POSTGRES_DB: foodxchange
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./configs/init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - foodxchange-network
 
   # Redis for caching
   redis:
@@ -92,8 +91,8 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
       - ./pgadmin_servers.json:/pgadmin4/servers.json
-    depends_on:
-      - postgres
+    # depends_on:
+    #   - postgres
     networks:
       - foodxchange-network
 
@@ -119,8 +118,8 @@ services:
       - foodxchange-network
 
 volumes:
-  postgres_data:
-    driver: local
+  # postgres_data:  # Commented out as we're using Azure PostgreSQL
+  #   driver: local
   redis_data:
     driver: local
   pgadmin_data:

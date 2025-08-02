@@ -32,105 +32,15 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Custom JS -->
-    <script src="/static/js/main.js"></script>
+    <!-- GSAP Animation Library -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/ScrollToPlugin.min.js"></script>
     
-    <!-- Navigation fix for anchor links -->
-    <script>
-    (function() {
-        'use strict';
-        
-        function initNavigation() {
-            console.log('Navigation script loaded');
-            
-            // Handle navigation clicks for ALL nav links
-            const navLinks = document.querySelectorAll('.navbar a.nav-link');
-            console.log('Found nav links:', navLinks.length);
-            
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                console.log('Processing link:', href);
-                
-                // Only process links that start with /#
-                if (href && href.startsWith('/#')) {
-                    link.addEventListener('click', function(e) {
-                        console.log('Nav link clicked:', href);
-                        const targetId = href.substring(2); // Remove '/#'
-                        
-                        // Check if we're on the homepage
-                        if (window.location.pathname === '/') {
-                            // We're on homepage, just scroll to section
-                            e.preventDefault();
-                            const targetSection = document.getElementById(targetId);
-                            console.log('Looking for section:', targetId, 'Found:', !!targetSection);
-                            
-                            if (targetSection) {
-                                // Calculate offset accounting for fixed navbar
-                                const navbarHeight = document.querySelector('.navbar').offsetHeight || 80;
-                                const targetPosition = targetSection.offsetTop - navbarHeight - 20;
-                                
-                                window.scrollTo({
-                                    top: targetPosition,
-                                    behavior: 'smooth'
-                                });
-                                
-                                // Update URL hash
-                                history.pushState(null, null, '#' + targetId);
-                                
-                                // Close mobile menu if open
-                                const navbarCollapse = document.querySelector('.navbar-collapse');
-                                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
-                                    navbarCollapse.classList.remove('show');
-                                }
-                            } else {
-                                console.error('Target section not found:', targetId);
-                            }
-                        } else {
-                            // We're on another page, let the browser navigate
-                            console.log('Navigating from another page to:', href);
-                            // Don't prevent default - let browser handle navigation
-                        }
-                    });
-                }
-            });
-            
-            // Debug: List all sections with IDs on the page
-            const allSections = document.querySelectorAll('section[id]');
-            console.log('Sections with IDs found on page:', allSections.length);
-            allSections.forEach(section => {
-                console.log('Section ID:', section.id);
-            });
-            
-            // Handle hash on page load (when coming from another page)
-            if (window.location.hash) {
-                console.log('Hash found on page load:', window.location.hash);
-                const targetId = window.location.hash.substring(1);
-                const targetSection = document.getElementById(targetId);
-                
-                if (targetSection) {
-                    console.log('Scrolling to section on load:', targetId);
-                    const navbarHeight = document.querySelector('.navbar').offsetHeight || 80;
-                    const targetPosition = targetSection.offsetTop - navbarHeight - 20;
-                    
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
-                } else {
-                    console.error('Target section not found on load:', targetId);
-                }
-            }
-        }
-        
-        // Initialize on DOMContentLoaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initNavigation);
-        } else {
-            // DOM already loaded
-            initNavigation();
-        }
-    })();
-    </script>
+    <!-- Custom JS -->
+    <script src="/static/js/main.js?v=1.0"></script>
+    <script src="/static/js/navigation.js?v=1.0"></script>
+    <script src="/static/js/animations.js?v=2.0"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

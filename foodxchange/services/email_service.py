@@ -269,6 +269,105 @@ Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
         
         return text_template.strip()
     
+    async def send_contact_form(
+        self,
+        contact_data: Dict[str, str],
+        admin_email: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Send contact form submission to admin
+        
+        Args:
+            contact_data: Dictionary containing form data (name, email, company, etc.)
+            admin_email: Admin email address (defaults to env variable)
+            
+        Returns:
+            Dict with send result
+        """
+        if not admin_email:
+            admin_email = os.getenv('ADMIN_EMAIL', 'admin@foodxchange.com')
+        
+        # Create HTML email
+        html_body = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .header {{ background: #667eea; color: white; padding: 20px; text-align: center; }}
+                .content {{ padding: 20px; background: #f8f9fa; }}
+                .info-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+                .info-table th {{ background: #e9ecef; padding: 10px; text-align: left; width: 30%; }}
+                .info-table td {{ padding: 10px; background: white; }}
+                .message-box {{ background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }}
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>New Contact Form Submission</h1>
+            </div>
+            <div class="content">
+                <h2>Contact Details</h2>
+                <table class="info-table">
+                    <tr>
+                        <th>Name</th>
+                        <td>{contact_data.get('name', 'N/A')}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td><a href="mailto:{contact_data.get('email', '')}">{contact_data.get('email', 'N/A')}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Company</th>
+                        <td>{contact_data.get('company', 'N/A')}</td>
+                    </tr>
+                    <tr>
+                        <th>User Type</th>
+                        <td>{contact_data.get('user_type', 'N/A')}</td>
+                    </tr>
+                    <tr>
+                        <th>Subject</th>
+                        <td><strong>{contact_data.get('subject', 'N/A')}</strong></td>
+                    </tr>
+                </table>
+                
+                <h2>Message</h2>
+                <div class="message-box">
+                    {contact_data.get('message', 'No message provided').replace(chr(10), '<br>')}
+                </div>
+                
+                <p><small>Submitted on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</small></p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Create plain text email
+        text_body = f"""
+New Contact Form Submission
+
+Contact Details:
+Name: {contact_data.get('name', 'N/A')}
+Email: {contact_data.get('email', 'N/A')}
+Company: {contact_data.get('company', 'N/A')}
+User Type: {contact_data.get('user_type', 'N/A')}
+Subject: {contact_data.get('subject', 'N/A')}
+
+Message:
+{contact_data.get('message', 'No message provided')}
+
+---
+Submitted on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
+        """
+        
+        # Send email
+        return await self.send_product_brief(
+            recipient_emails=[admin_email],
+            subject=f"FoodXchange Contact Form: {contact_data.get('subject', 'New Message')}",
+            body_html=html_body,
+            body_text=text_body
+        )
+    
 
 
 

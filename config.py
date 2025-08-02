@@ -9,7 +9,7 @@ from datetime import timedelta
 class Config:
     """Base configuration class"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'fdx-trading-platform-secret-key-2024'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///fdx.db'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'postgresql://username:password@host:port/database'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Mail Configuration
@@ -70,7 +70,7 @@ class Config:
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///fdx-dev.db'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'postgresql://username:password@host:port/database'
     SESSION_COOKIE_SECURE = False  # Allow HTTP in development
     
     @classmethod
@@ -84,7 +84,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://username:password@host:port/database'
     WTF_CSRF_ENABLED = False
     SESSION_COOKIE_SECURE = False
     
@@ -101,7 +101,7 @@ class ProductionConfig(Config):
     database_url = os.environ.get('DATABASE_URL', '')
     if database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
-    SQLALCHEMY_DATABASE_URI = database_url or 'sqlite:///fdx.db'
+    SQLALCHEMY_DATABASE_URI = database_url or 'postgresql://username:password@host:port/database'
     
     @classmethod
     def init_app(cls, app):

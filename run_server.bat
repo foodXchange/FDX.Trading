@@ -1,28 +1,20 @@
 @echo off
 echo ========================================
-echo FoodXchange AI Product Analysis Server
+echo Starting FoodXchange Server
 echo ========================================
 echo.
-echo Starting server on port 8003...
+
+REM Kill any existing Python processes on our ports
+echo Cleaning up old processes...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8003') do taskkill /PID %%a /F 2>nul
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8004') do taskkill /PID %%a /F 2>nul
+
 echo.
-echo Available at:
-echo   - Main: http://localhost:8003
-echo   - AI Analysis: http://localhost:8003/product-analysis/
-echo   - Dashboard: http://localhost:8003/dashboard
-echo   - Search API: http://localhost:8003/api/search/
+echo Starting server on http://localhost:8003
 echo.
 echo Press Ctrl+C to stop the server
+echo ========================================
 echo.
 
-REM Activate virtual environment if it exists
-if exist "foodxchange-env\Scripts\activate.bat" (
-    call foodxchange-env\Scripts\activate.bat
-)
-
-REM Set Python path
-set PYTHONPATH=%cd%
-
-REM Start the server using the fixed startup script
-python start_server_fixed.py
-
-pause
+cd /d C:\Users\foodz\Desktop\FoodXchange
+python -m uvicorn foodxchange.main:app --reload --port 8003 --host 127.0.0.1

@@ -51,7 +51,7 @@ def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depen
         # Return mock admin user for development
         return MockUser({
             "id": 1,
-            "email": "admin@foodxchange.com",
+            "email": "admin@fdx.trading",
             "name": "Development Admin",
             "role": "admin",
             "is_active": True,

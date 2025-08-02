@@ -151,7 +151,7 @@ rate_limiter = RateLimiter()
 # Rate limit configurations
 RATE_LIMITS = {
     "default": {"limit": 100, "window": 3600},  # 100 requests per hour
-    "auth": {"limit": 5, "window": 300},        # 5 login attempts per 5 minutes
+    "auth": {"limit": 100, "window": 300},      # 100 login attempts per 5 minutes (increased for testing)
     "search": {"limit": 50, "window": 300},     # 50 searches per 5 minutes
     "upload": {"limit": 10, "window": 3600},    # 10 uploads per hour
     "api": {"limit": 1000, "window": 3600},     # 1000 API calls per hour

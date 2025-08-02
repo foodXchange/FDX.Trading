@@ -32,7 +32,7 @@ def get_current_user(request: Request) -> Optional[TokenData]:
         # Verify token
         jwt_manager = get_jwt_manager()
         token_data = jwt_manager.verify_token(access_token)
-        logger.info(f"Token verified successfully for user: {token_data.username if token_data else 'None'}")
+        logger.info(f"Token verified successfully for user: {token_data.email if token_data else 'None'}")
         return token_data
         
     except AuthenticationError as e:
