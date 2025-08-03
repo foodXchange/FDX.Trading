@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FDX.trading</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS for login page -->
+    <style>
+        /* Full height background */
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Login card styling */
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        /* Logo styling */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        /* Form styling */
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        /* Button styling */
+        .btn-login {
+            background: #667eea;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .btn-login:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Input group styling */
+        .input-group-text {
+            background: transparent;
+            border-right: none;
+            color: #667eea;
+        }
+        
+        .input-group .form-control {
+            border-left: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="login-card">
+                    <!-- Logo and Slogan -->
+                    <div class="logo">
+                        <h1>FDX.trading</h1>
+                        <p>Your Gateway to Global Food Trading</p>
+                    </div>
+                    
+                    <!-- Alert for messages (hidden by default) -->
+                    {% if message %}
+                    <div class="alert alert-{{ message_type }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Login Form -->
+                    <form method="POST" action="/login">
+                        <!-- Email Field with Icon -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       placeholder="your@email.com" 
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <!-- Password Field with Icon -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Enter your password" 
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <!-- Remember Me Checkbox -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">
+                                Remember me
+                            </label>
+                        </div>
+                        
+                        <!-- Login Button -->
+                        <button type="submit" class="btn btn-login mb-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Sign In
+                        </button>
+                        
+                        <!-- Additional Links -->
+                        <div class="text-center">
+                            <p class="mb-1">
+                                <a href="/forgot-password" class="text-decoration-none">Forgot Password?</a>
+                            </p>
+                            <p>
+                                Don't have an account? 
+                                <a href="/register" class="text-decoration-none">Sign Up</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

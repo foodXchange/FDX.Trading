@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers - {{ app_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Table container with horizontal scroll */
+    .table-container {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Fixed column widths for better readability */
+    .suppliers-table {
+        min-width: 1500px;
+    }
+    
+    /* Sticky first column */
+    .suppliers-table th:first-child,
+    .suppliers-table td:first-child {
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 10;
+        box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Header styling */
+    .suppliers-table thead th {
+        background: #f8f9fa;
+        font-weight: 600;
+        padding: 12px 8px;
+        white-space: nowrap;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    /* Cell styling */
+    .suppliers-table td {
+        padding: 10px 8px;
+        vertical-align: middle;
+    }
+    
+    /* Email link */
+    .email-link {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .email-link:hover {
+        text-decoration: underline;
+    }
+    
+    /* Truncate long text */
+    .truncate {
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Website link */
+    .website-link {
+        color: #17a2b8;
+        text-decoration: none;
+    }
+    
+    /* Country badge */
+    .country-badge {
+        background: #6c757d;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">
+                <i class="bi bi-building"></i> Imported Suppliers
+            </h1>
+            <p class="lead">Complete database of {{ suppliers|length }} suppliers from 50+ countries</p>
+        </div>
+        <div class="col-auto">
+            <!-- Action buttons -->
+            <button class="btn btn-primary btn-lg" onclick="exportSuppliers()">
+                <i class="bi bi-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ suppliers|length }}</h3>
+                    <p class="mb-0">Total Suppliers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-info">{{ countries|length }}</h3>
+                    <p class="mb-0">Countries</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">{{ suppliers|selectattr('company_email')|list|length }}</h3>
+                    <p class="mb-0">With Email</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ suppliers|selectattr('company_website')|list|length }}</h3>
+                    <p class="mb-0">With Website</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search suppliers by name, email, country..." onkeyup="filterTable()">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="countryFilter" onchange="filterTable()">
+                        <option value="">All Countries</option>
+                        {% for country in countries %}
+                        <option value="{{ country }}">{{ country }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="typeFilter" onchange="filterTable()">
+                        <option value="">All Types</option>
+                        <option value="Manufacturer">Manufacturers</option>
+                        <option value="Distributor">Distributors</option>
+                        <option value="Producer">Producers</option>
+                        <option value="Exporter">Exporters</option>
+                        <option value="Importer">Importers</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-secondary w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suppliers Table -->
+    <div class="table-container">
+        {% if suppliers %}
+        <table class="table table-hover suppliers-table" id="suppliersTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Supplier Name</th>
+                    <th>Company Name</th>
+                    <th>Email</th>
+                    <th>Website</th>
+                    <th>Type</th>
+                    <th>Country</th>
+                    <th>Products</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for supplier in suppliers %}
+                <tr data-country="{{ supplier.country or '' }}" 
+                    data-type="{{ supplier.supplier_type or '' }}"
+                    data-search="{{ (supplier.supplier_name or '' + ' ' + supplier.company_name or '' + ' ' + supplier.company_email or '' + ' ' + supplier.country or '')|lower }}">
+                    <!-- ID -->
+                    <td><strong>{{ loop.index }}</strong></td>
+                    
+                    <!-- Supplier Name -->
+                    <td>
+                        <strong>{{ supplier.supplier_name or supplier.company_name or 'N/A' }}</strong>
+                    </td>
+                    
+                    <!-- Company Name -->
+                    <td>{{ supplier.company_name or supplier.supplier_name or '-' }}</td>
+                    
+                    <!-- Email -->
+                    <td>
+                        {% if supplier.company_email %}
+                        <a href="mailto:{{ supplier.company_email }}" class="email-link">
+                            {{ supplier.company_email }}
+                        </a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Website -->
+                    <td>
+                        {% if supplier.company_website %}
+                        <a href="{{ supplier.company_website if supplier.company_website.startswith('http') else 'http://' + supplier.company_website }}" 
+                           target="_blank" class="website-link" title="{{ supplier.company_website }}">
+                            <i class="bi bi-link-45deg"></i> Website
+                        </a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Type -->
+                    <td>
+                        <div class="truncate" title="{{ supplier.supplier_type or '' }}">
+                            {{ supplier.supplier_type or '-' }}
+                        </div>
+                    </td>
+                    
+                    <!-- Country -->
+                    <td>
+                        {% if supplier.country %}
+                        <span class="country-badge">{{ supplier.country }}</span>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Products -->
+                    <td>
+                        <div class="truncate" title="{{ supplier.products or '' }}">
+                            {{ supplier.products or '-' }}
+                        </div>
+                    </td>
+                    
+                    <!-- Address -->
+                    <td>
+                        <div class="truncate" title="{{ supplier.address or '' }}">
+                            {{ supplier.address or '-' }}
+                        </div>
+                    </td>
+                    
+                    <!-- Actions -->
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="viewSupplier({{ supplier.id }})" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <!-- No suppliers message -->
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle fs-1"></i>
+            <h4 class="mt-3">No Suppliers Found</h4>
+            <p>No suppliers in the database.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filter table function
+function filterTable() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const countryFilter = document.getElementById('countryFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value.toLowerCase();
+    
+    const table = document.getElementById('suppliersTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    // Skip header row (start from 1)
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const searchText = row.getAttribute('data-search');
+        const country = row.getAttribute('data-country');
+        const type = row.getAttribute('data-type').toLowerCase();
+        
+        let showRow = true;
+        
+        // Search filter
+        if (searchInput && !searchText.includes(searchInput)) {
+            showRow = false;
+        }
+        
+        // Country filter
+        if (countryFilter && country !== countryFilter) {
+            showRow = false;
+        }
+        
+        // Type filter
+        if (typeFilter && !type.includes(typeFilter)) {
+            showRow = false;
+        }
+        
+        row.style.display = showRow ? '' : 'none';
+    }
+}
+
+// Clear all filters
+function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('countryFilter').value = '';
+    document.getElementById('typeFilter').value = '';
+    filterTable();
+}
+
+// View supplier details
+function viewSupplier(id) {
+    // Could open a modal or redirect to detail page
+    alert(`View details for supplier ID: ${id}`);
+}
+
+// Export suppliers
+function exportSuppliers() {
+    if (confirm('Export all suppliers to CSV?')) {
+        window.location.href = '/api/suppliers/export';
+    }
+}
+</script>
+{% endblock %}

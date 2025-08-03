@@ -1,0 +1,45 @@
+{
+  // Docker extension settings
+  "docker.showStartPage": false,
+  "docker.containers.showRunningContainersOnly": true,
+  "docker.containers.label": "com.foodxchange.service",
+  
+  // Remote containers
+  "remote.containers.defaultExtensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "cweijan.vscode-redis-client"
+  ],
+  
+  // Redis client configuration
+  "redis.connections": [
+    {
+      "name": "FoodXchange Redis",
+      "host": "localhost", 
+      "port": 6379,
+      "db": 0,
+      "password": ""
+    }
+  ],
+  
+  // Thunder Client settings
+  "thunder-client.workspaceRelativePath": "api-tests",
+  "thunder-client.saveToWorkspace": true,
+  
+  // Python settings
+  "python.defaultInterpreterPath": "/opt/venv/bin/python",
+  "python.terminal.activateEnvironment": false,
+  
+  // Resource monitor
+  "resmon.show.battery": false,
+  "resmon.show.cpufreq": false,
+  "resmon.show.mem": true,
+  "resmon.show.disk": true,
+  
+  // Path IntelliSense
+  "path-intellisense.mappings": {
+    "/": "${workspaceRoot}",
+    "./": "${workspaceRoot}",
+    "../": "${workspaceRoot}/../"
+  }
+}

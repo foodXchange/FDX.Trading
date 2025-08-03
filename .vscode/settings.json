@@ -1,0 +1,19 @@
+{
+    "cSpell.words": [
+        "endmacro",
+        "Xchange",
+        "FoodXchange",
+        "fdx",
+        "endfor",
+        "elif",
+        "endif",
+        "endblock",
+        "endcall",
+        "autoescape",
+        "endautoescape"
+    ],
+    "cSpell.ignoreRegExpList": [
+        "\\{%.*?%\\}",
+        "\\{\\{.*?\\}\\}"
+    ]
+}

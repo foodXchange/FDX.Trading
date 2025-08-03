@@ -1,0 +1,8 @@
+{
+  "database": {
+    "type": "postgresql",
+    "url": "postgresql://fdxadmin:FDX2030%21Secure%23DB@foodxchange-flex-db.postgres.database.azure.com:5432/foodxchange",
+    "never_use_sqlite": true
+  },
+  "project_context": "Production Food Xchange B2B platform - use existing PostgreSQL schema"
+} 

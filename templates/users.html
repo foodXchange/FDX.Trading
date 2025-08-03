@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Users - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Users Management</h1>
+        
+        <!-- Add User Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Add New User</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/users/add">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success w-100">Add User</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Users Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Users ({{ users|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary">Edit</button>
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No users found. Add your first user using the form above!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
