@@ -8,7 +8,7 @@ echo 🔧 Setting up Azure deployment...
 echo.
 
 echo 📋 Prerequisites:
-echo 1. Azure CLI installed
+echo 1. Azure CLI installed ✓
 echo 2. Azure account with subscription
 echo 3. Azure App Service plan
 echo.

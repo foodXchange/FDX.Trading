@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Supplier Search - FoodXchange</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .search-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .supplier-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .supplier-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .supplier-card.selected {
+            border-color: #0d6efd;
+            background: #f0f8ff;
+        }
+        
+        .score-badge {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+        }
+        
+        #actionBar {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+            z-index: 100;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!-- Bootstrap Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="bi bi-globe"></i> FoodXchange
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/suppliers" aria-current="page">
+                        <i class="bi bi-robot"></i> AI Supplier Search
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/projects">
+                        <i class="bi bi-folder2"></i> My Projects
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i> udi@fdx.trading
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings"><i class="bi bi-gear"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">AI-Powered Supplier Search</h1>
+    
+    <!-- Search History -->
+    <div id="searchHistory" class="mb-3">
+        <!-- Will be populated by JavaScript -->
+    </div>
+    
+    <!-- Search Box -->
+    <div class="search-box">
+        <form id="searchForm" onsubmit="searchSuppliers(event)">
+            <div class="mb-3">
+                <label class="form-label" for="searchQuery">Search for Products</label>
+                <input type="text" class="form-control form-control-lg" id="searchQuery" 
+                       placeholder="e.g., sunflower oil in 1 liter bottles" 
+                       autocomplete="off" required>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="countries">Filter by Country</label>
+                    <select class="form-select" id="countries" multiple
+                            title="Select countries to filter suppliers"
+                            aria-label="Country filter">
+                        <option value="Italy">Italy</option>
+                        <option value="Spain">Spain</option>
+                        <option value="France">France</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Greece">Greece</option>
+                        <option value="Turkey">Turkey</option>
+                        <option value="United States">United States</option>
+                        <option value="Poland">Poland</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="supplierTypes">Filter by Type</label>
+                    <select class="form-select" id="supplierTypes" multiple
+                            title="Select supplier types to filter"
+                            aria-label="Supplier type filter">
+                        <option value="Manufacturer">Manufacturer</option>
+                        <option value="Distributor">Distributor</option>
+                        <option value="Exporter">Exporter</option>
+                        <option value="Producer">Producer</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check mt-4">
+                        <input class="form-check-input" type="checkbox" id="useAI" checked>
+                        <label class="form-check-label" for="useAI">
+                            Use AI Analysis
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-search"></i> Search Suppliers
+            </button>
+        </form>
+    </div>
+    
+    <!-- Action Bar -->
+    <div id="actionBar">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAll()">Select All</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAll()">Deselect All</button>
+                <span class="ms-3"><strong id="selectedCount">0</strong> selected</span>
+            </div>
+            <button type="button" class="btn btn-success" onclick="addToProject()" id="addToProjectBtn" disabled>
+                <i class="bi bi-plus-circle"></i> Add to Project
+            </button>
+        </div>
+    </div>
+    
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Searching suppliers...</p>
+    </div>
+    
+    <!-- Results -->
+    <div id="results"></div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let selectedSuppliers = new Set();
+let allSuppliers = [];
+
+// Load search history when page loads
+document.addEventListener('DOMContentLoaded', loadSearchHistory);
+
+async function loadSearchHistory() {
+    try {
+        const response = await fetch('/api/search-history');
+        const data = await response.json();
+        
+        if (data.searches && data.searches.length > 0) {
+            let html = `
+                <div class="card bg-light mb-3">
+                    <div class="card-body py-2">
+                        <small class="text-muted d-block mb-2">
+                            <i class="bi bi-clock-history"></i> Recent searches:
+                        </small>
+                        <div>
+            `;
+            
+            data.searches.forEach(search => {
+                html += `<button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" 
+                         onclick="searchFromHistory('${search.query.replace(/'/g, "\\'")}')"
+                         title="Click to search again">
+                         <i class="bi bi-search"></i> ${search.query}
+                         </button>`;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('searchHistory').innerHTML = html;
+        } else {
+            document.getElementById('searchHistory').innerHTML = '';
+        }
+    } catch (error) {
+        console.error('Failed to load search history:', error);
+    }
+}
+
+function searchFromHistory(query) {
+    document.getElementById('searchQuery').value = query;
+    document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+}
+
+async function searchSuppliers(event) {
+    event.preventDefault();
+    
+    const query = document.getElementById('searchQuery').value;
+    const countries = Array.from(document.getElementById('countries').selectedOptions).map(o => o.value);
+    const types = Array.from(document.getElementById('supplierTypes').selectedOptions).map(o => o.value);
+    const useAI = document.getElementById('useAI').checked;
+    
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('actionBar').style.display = 'none';
+    
+    try {
+        const response = await fetch('/api/ai-supplier-search', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                product_description: query,
+                countries: countries,
+                supplier_types: types,
+                use_ai: useAI
+            })
+        });
+        
+        const data = await response.json();
+        document.getElementById('loading').style.display = 'none';
+        
+        if (data.error) {
+            alert('Error: ' + data.error);
+            return;
+        }
+        
+        displayResults(data);
+        
+        // Reload search history after successful search
+        setTimeout(loadSearchHistory, 500);
+    } catch (error) {
+        document.getElementById('loading').style.display = 'none';
+        alert('Error: ' + error.message);
+    }
+}
+
+function displayResults(data) {
+    allSuppliers = data.suppliers || [];
+    
+    if (allSuppliers.length === 0) {
+        document.getElementById('results').innerHTML = '<div class="alert alert-warning">No suppliers found</div>';
+        return;
+    }
+    
+    document.getElementById('actionBar').style.display = 'block';
+    
+    // Calculate statistics
+    const uniqueCountries = [...new Set(allSuppliers.map(s => s.country))];
+    const countryCount = uniqueCountries.length;
+    const estimatedProductsPerSupplier = 75; // Average products per supplier
+    const totalEstimatedProducts = allSuppliers.length * estimatedProductsPerSupplier;
+    
+    // Get search query from the form
+    const searchQuery = document.getElementById('searchQuery').value;
+    
+    // Create summary message
+    let html = `
+        <div class="alert alert-info mb-4" style="background-color: #e3f2fd; border-color: #90caf9;">
+            <h5 class="alert-heading">
+                <i class="bi bi-search"></i> Search Results Summary
+            </h5>
+            <p class="mb-0" style="font-size: 1.05rem;">
+                We have analyzed <strong>${allSuppliers.length.toLocaleString()}</strong> specialized suppliers 
+                from <strong>${countryCount}</strong> different countries, with an estimated combined catalog of over 
+                <strong>${totalEstimatedProducts.toLocaleString()}</strong> products relevant to your search for 
+                "<em>${searchQuery}</em>". The suppliers below have been carefully selected and ranked by our 
+                AI-powered matching algorithm based on product relevance, business reliability, and specific requirements match.
+                Each supplier's score (0-100) reflects how well they match your search criteria.
+            </p>
+        </div>
+        <h3>Top ${allSuppliers.length} Matching Suppliers</h3>
+    `;
+    
+    allSuppliers.forEach((supplier, i) => {
+        const hasEmail = supplier.company_email && supplier.company_email !== 'No email available';
+        const hasWebsite = supplier.company_website && supplier.company_website !== 'N/A' && supplier.company_website !== '';
+        
+        html += `
+        <div class="supplier-card" id="card-${supplier.id}">
+            <div class="row">
+                <div class="col-auto">
+                    <input type="checkbox" class="form-check-input" 
+                           id="cb-${supplier.id}" 
+                           ${hasEmail ? '' : 'disabled'}
+                           onchange="toggleSupplier(${supplier.id})"
+                           aria-label="Select ${supplier.supplier_name}">
+                    <label class="visually-hidden" for="cb-${supplier.id}">
+                        Select ${supplier.supplier_name}
+                    </label>
+                </div>
+                <div class="col">
+                    <h5>${supplier.supplier_name}</h5>
+                    <p class="mb-1">
+                        <strong>Country:</strong> ${supplier.country} | 
+                        <strong>Type:</strong> ${supplier.supplier_type || 'Supplier'}
+                    </p>
+                    <p class="mb-1">
+                        <strong>Email:</strong> ${supplier.company_email || 'No email'} | 
+                        <strong>Website:</strong> ${hasWebsite ? `<a href="${supplier.company_website.startsWith('http') ? supplier.company_website : 'https://' + supplier.company_website}" target="_blank" rel="noopener">${supplier.company_website}</a>` : 'Not available'}
+                    </p>
+                    <p class="text-muted small">${supplier.products ? supplier.products.substring(0, 200) + '...' : ''}</p>
+                </div>
+                <div class="col-auto">
+                    <span class="score-badge" title="Score calculated based on: Product match relevance, supplier type compatibility, and geographic proximity">
+                        Score: ${supplier.ai_score}/100
+                    </span>
+                </div>
+            </div>
+        </div>`;
+    });
+    
+    document.getElementById('results').innerHTML = html;
+}
+
+function toggleSupplier(id) {
+    if (selectedSuppliers.has(id)) {
+        selectedSuppliers.delete(id);
+        document.getElementById(`card-${id}`).classList.remove('selected');
+    } else {
+        selectedSuppliers.add(id);
+        document.getElementById(`card-${id}`).classList.add('selected');
+    }
+    updateSelectedCount();
+}
+
+function selectAll() {
+    allSuppliers.forEach(s => {
+        if (s.company_email && s.company_email !== 'No email available') {
+            selectedSuppliers.add(s.id);
+            document.getElementById(`cb-${s.id}`).checked = true;
+            document.getElementById(`card-${s.id}`).classList.add('selected');
+        }
+    });
+    updateSelectedCount();
+}
+
+function deselectAll() {
+    selectedSuppliers.clear();
+    document.querySelectorAll('.supplier-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const count = selectedSuppliers.size;
+    document.getElementById('selectedCount').textContent = count;
+    document.getElementById('addToProjectBtn').disabled = count === 0;
+}
+
+async function addToProject() {
+    if (selectedSuppliers.size === 0) return;
+    
+    // Get the search query as project name
+    const projectName = document.getElementById('searchQuery').value || 'Untitled Project';
+    
+    // Prompt for optional description
+    const description = prompt('Add a project description (optional):', '');
+    
+    const selectedList = Array.from(selectedSuppliers);
+    const selectedSupplierData = allSuppliers.filter(s => selectedList.includes(s.id));
+    
+    try {
+        const response = await fetch('/api/add-to-project', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                project_name: projectName,
+                description: description || '',
+                supplier_ids: selectedList,
+                suppliers: selectedSupplierData
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            alert('Error: ' + data.error);
+            return;
+        }
+        
+        alert(`Success! Added ${selectedList.length} suppliers to project "${projectName}".`);
+        deselectAll();
+        
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+</script>
+</body>
+</html>

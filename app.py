@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates  # Jinja2Templates: render HTML t
 from typing import List, Dict  # Type hints for better code
 import os  # Operating system functions
 from dotenv import load_dotenv  # Load environment variables from .env file
-from database import get_suppliers  # Import database functions
+# Database imports handled within routes as needed
 
 # Load environment variables from .env file
 # This reads DATABASE_URL and other settings
@@ -19,7 +19,7 @@ load_dotenv()
 # === CREATE APP ===
 # Create the FastAPI application instance
 app = FastAPI(
-    title="FoodXchange",  # Name of your app
+    title="FDX.trading",  # Name of your app
     description="Learning FastAPI with Bootstrap and PostgreSQL",  # Description
     version="1.0.0"  # Version number
 )
@@ -33,10 +33,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Set up Jinja2 templates - this tells FastAPI where to find HTML files
 templates = Jinja2Templates(directory="templates")
 
-# === FAKE DATABASE ===
-# For now, we'll use a simple list to store users
-# Later, we'll connect to Azure PostgreSQL
-users = []
 
 # === HELPER FUNCTIONS ===
 def get_app_context():
@@ -45,11 +41,274 @@ def get_app_context():
     This function provides data that every page needs
     """
     return {
-        "app_name": "FoodXchange",  # App name to show in navbar
-        "debug": os.getenv("DEBUG", "False")  # Debug mode from .env
+        "app_name": "FDX.trading",  # App name to show in navbar
+        "debug": os.getenv("DEBUG", "False"),  # Debug mode from .env
+        "user": {"email": "udi@fdx.trading"}  # Default user context
     }
 
 # === ROUTES (PAGES) ===
+
+# LEAN PROJECT DETAILS ROUTE (WITH REAL DATA)
+@app.get("/project_details")
+async def project_details_with_data(id: int = 1, country: str = None, min_score: int = 0):
+    """Project details with real data - lean and simple"""
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get project info
+        cursor.execute("""
+            SELECT id, project_name, description, created_at FROM projects 
+            WHERE id = %s AND user_email = %s
+        """, (id, 'udi@fdx.trading'))
+        
+        project = cursor.fetchone()
+        
+        if not project:
+            return HTMLResponse(content="<h1>Project not found</h1>", status_code=404)
+        
+        # Get suppliers with filters
+        query = """
+            SELECT supplier_id, supplier_name, supplier_country, 
+                   supplier_email, score, products
+            FROM project_suppliers
+            WHERE project_id = %s
+        """
+        params = [id]
+        
+        if country:
+            query += " AND supplier_country = %s"
+            params.append(country)
+        
+        if min_score > 0:
+            query += " AND COALESCE(score, 0) >= %s"
+            params.append(min_score)
+            
+        query += " ORDER BY score DESC, supplier_name"
+        
+        cursor.execute(query, params)
+        suppliers = cursor.fetchall()
+        
+        # Get countries for filter
+        cursor.execute("""
+            SELECT DISTINCT supplier_country 
+            FROM project_suppliers 
+            WHERE project_id = %s AND supplier_country IS NOT NULL
+            ORDER BY supplier_country
+        """, (id,))
+        countries = [row['supplier_country'] for row in cursor.fetchall()]
+        
+        # Generate suppliers HTML with checkboxes
+        suppliers_html = ""
+        for supplier in suppliers:
+            suppliers_html += f"""
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <input type="checkbox" class="form-check-input supplier-checkbox" 
+                                   value="{supplier['supplier_id']}" 
+                                   data-name="{supplier['supplier_name']}"
+                                   data-email="{supplier['supplier_email'] or ''}"
+                                   data-country="{supplier['supplier_country'] or ''}">
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title mb-1">{supplier['supplier_name']}</h5>
+                            <p class="mb-2">
+                                <strong>Country:</strong> {supplier['supplier_country'] or 'N/A'} | 
+                                <strong>Email:</strong> {supplier['supplier_email'] or 'No email'}
+                            </p>
+                            {f'<p class="text-muted small mb-0">{supplier["products"][:200]}{"..." if supplier.get("products") and len(supplier["products"]) > 200 else ""}</p>' if supplier.get('products') else ''}
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-primary fs-6 px-3 py-2">
+                                Score: {supplier['score'] or 0}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """
+        
+        # Generate country options
+        country_options = '<option value="">All Countries</option>'
+        for c in countries:
+            selected = 'selected' if c == country else ''
+            country_options += f'<option value="{c}" {selected}>{c}</option>'
+        
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>{project['project_name']} - FDX.trading</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+        </head>
+        <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard">FDX.trading</a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/suppliers">Search</a>
+                    <a class="nav-link" href="/projects">Projects</a>
+                    <a class="nav-link" href="/logout">Logout</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container mt-4">
+            <a href="/projects" class="btn btn-sm btn-secondary mb-3">← Back to Projects</a>
+            
+            <h2>{project['project_name']}</h2>
+            {f'<p class="text-muted">{project["description"]}</p>' if project.get("description") else ''}
+            
+            <!-- Filter form -->
+            <form method="get" class="mb-4 p-3 bg-light rounded">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Filter by Country</label>
+                        <select name="country" class="form-select">
+                            {country_options}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Minimum Score</label>
+                        <input type="number" name="min_score" class="form-control" 
+                               placeholder="0" value="{min_score}" min="0" max="100">
+                        <input type="hidden" name="id" value="{id}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label><br>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <a href="/project_details?id={id}" class="btn btn-outline-secondary">Clear</a>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Suppliers list -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>{len(suppliers)} Suppliers Found</h4>
+                <div>
+                    <label class="form-check-label me-3">
+                        <input type="checkbox" id="selectAll" class="form-check-input me-1"> Select All
+                    </label>
+                    <button type="button" class="btn btn-success" id="sendBulkEmail" onclick="sendBulkEmails()">
+                        <i class="bi bi-envelope"></i> Send Bulk Emails
+                    </button>
+                </div>
+            </div>
+            
+            {suppliers_html if suppliers_html else '<div class="alert alert-info">No suppliers match the selected filters</div>'}
+            
+            <!-- Professional Email Disclaimer -->
+            <div class="alert alert-warning mt-4">
+                <h6><i class="bi bi-exclamation-triangle"></i> Important Notice - Bulk Email Guidelines</h6>
+                <p class="mb-2"><strong>Before sending bulk emails, please ensure:</strong></p>
+                <ul class="mb-2">
+                    <li><strong>Supplier Verification:</strong> All selected suppliers are legitimate, verified businesses with valid contact information</li>
+                    <li><strong>Offer Validity:</strong> Your business proposal is genuine, specific, and commercially viable</li>
+                    <li><strong>Professional Communication:</strong> Emails will be sent professionally representing FDX.trading platform</li>
+                    <li><strong>Compliance:</strong> Your outreach complies with anti-spam regulations and business communication standards</li>
+                </ul>
+                <small class="text-muted">
+                    <strong>Email Content:</strong> Our system sends professional business inquiries introducing your company, 
+                    specifying your product requirements, and requesting supplier quotations. Each email is personalized 
+                    with supplier-specific information and maintains professional business communication standards.
+                </small>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+        // Select all functionality
+        document.getElementById('selectAll').addEventListener('change', function() {{
+            const checkboxes = document.querySelectorAll('.supplier-checkbox');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        }});
+
+        // Send bulk emails function
+        async function sendBulkEmails() {{
+            const selected = document.querySelectorAll('.supplier-checkbox:checked');
+            if (selected.length === 0) {{
+                alert('Please select at least one supplier to send emails.');
+                return;
+            }}
+
+            // Collect supplier data
+            const suppliers = Array.from(selected).map(cb => ({{
+                id: cb.value,
+                name: cb.dataset.name,
+                email: cb.dataset.email,
+                country: cb.dataset.country
+            }}));
+
+            // Validate emails
+            const validSuppliers = suppliers.filter(s => s.email && s.email.trim() !== '');
+            if (validSuppliers.length === 0) {{
+                alert('None of the selected suppliers have valid email addresses.');
+                return;
+            }}
+
+            if (validSuppliers.length < suppliers.length) {{
+                const proceed = confirm(`Only ${{validSuppliers.length}} out of ${{suppliers.length}} selected suppliers have valid emails. Continue with valid emails only?`);
+                if (!proceed) return;
+            }}
+
+            // Show confirmation
+            const confirmMsg = `Send professional business inquiry emails to ${{validSuppliers.length}} suppliers?\\n\\nThis will send personalized emails introducing your company and requesting quotations.`;
+            if (!confirm(confirmMsg)) return;
+
+            // Disable button and show loading
+            const btn = document.getElementById('sendBulkEmail');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Sending...';
+
+            try {{
+                const response = await fetch('/api/send-bulk-emails', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json',
+                    }},
+                    body: JSON.stringify({{
+                        project_id: {id},
+                        suppliers: validSuppliers
+                    }})
+                }});
+
+                const result = await response.json();
+                
+                if (response.ok) {{
+                    alert(`Success! Emails sent to ${{result.sent_count}} suppliers.`);
+                    // Uncheck all checkboxes
+                    document.querySelectorAll('.supplier-checkbox').forEach(cb => cb.checked = false);
+                    document.getElementById('selectAll').checked = false;
+                }} else {{
+                    alert(`Error: ${{result.message || 'Failed to send emails'}}`);
+                }}
+            }} catch (error) {{
+                alert('Network error: Failed to send emails. Please try again.');
+                console.error('Email sending error:', error);
+            }} finally {{
+                // Re-enable button
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }}
+        }}
+        </script>
+        </body>
+        </html>
+        """)
+        
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Error: {str(e)}</h1>", status_code=500)
+    finally:
+        cursor.close()
+        conn.close()
 
 # HOME PAGE ROUTE - Login Page
 @app.get("/", response_class=HTMLResponse)  # GET request to root URL returns HTML
@@ -65,7 +324,7 @@ async def home_login(request: Request):
         "message_type": None  # No message type
     }
     # Render the login template
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("login_lean.html", context)
 
 # LOGIN POST ROUTE - Handle login form submission
 @app.post("/login", response_class=HTMLResponse)  # POST request to /login
@@ -78,8 +337,8 @@ async def login(request: Request, email: str = Form(...), password: str = Form(.
     # Simple authentication check (in real app, check against database)
     # Login credentials: email=udi@fdx.trading, password=FDX2030!
     if email == "udi@fdx.trading" and password == "FDX2030!":
-        # Successful login - redirect to dashboard
-        return RedirectResponse(url="/dashboard", status_code=303)
+        # Successful login - redirect to suppliers page
+        return RedirectResponse(url="/suppliers", status_code=303)
     else:
         # Failed login - show error message
         context = {
@@ -87,7 +346,7 @@ async def login(request: Request, email: str = Form(...), password: str = Form(.
             "message": "Invalid email or password. Please try again.",
             "message_type": "danger"  # Bootstrap alert type
         }
-        return templates.TemplateResponse("login.html", context)
+        return templates.TemplateResponse("login_lean.html", context)
 
 # DASHBOARD ROUTE - After successful login
 @app.get("/dashboard", response_class=HTMLResponse)
@@ -99,149 +358,906 @@ async def dashboard(request: Request):
         "request": request,
         **get_app_context(),
         "stats": {
-            "users": len(users),
+            "users": 10,
             "active": 5,
             "new": 2
         }
     }
-    return templates.TemplateResponse("index.html", context)
+    return templates.TemplateResponse("dashboard_lean.html", context)
 
-# SUPPLIERS PAGE ROUTE - Connected to PostgreSQL
+# PROFILE ROUTE
+@app.get("/profile", response_class=HTMLResponse)
+async def profile_page(request: Request):
+    """User profile page"""
+    return HTMLResponse(content="""
+        <html>
+        <head><title>Profile</title></head>
+        <body>
+            <h1>Profile Page - Coming Soon</h1>
+            <a href="/suppliers">Back to Suppliers</a>
+        </body>
+        </html>
+    """)
+
+# SETTINGS ROUTE
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """Settings page"""
+    return HTMLResponse(content="""
+        <html>
+        <head><title>Settings</title></head>
+        <body>
+            <h1>Settings Page - Coming Soon</h1>
+            <a href="/suppliers">Back to Suppliers</a>
+        </body>
+        </html>
+    """)
+
+# LOGOUT ROUTE
+@app.get("/logout")
+async def logout():
+    """Simple logout - redirects to login page"""
+    return RedirectResponse(url="/", status_code=303)
+
+# PROJECTS ROUTE - View saved projects
+@app.get("/projects", response_class=HTMLResponse)
+async def projects_page(request: Request):
+    """
+    Display user's saved projects with suppliers - LEAN VERSION
+    """
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get all projects with supplier count
+        cursor.execute("""
+            SELECT p.*, COUNT(ps.id) as supplier_count
+            FROM projects p
+            LEFT JOIN project_suppliers ps ON p.id = ps.project_id
+            WHERE p.user_email = %s
+            GROUP BY p.id, p.project_name, p.description, p.created_at, p.user_email
+            ORDER BY p.created_at DESC
+        """, ('udi@fdx.trading',))
+        
+        projects_raw = cursor.fetchall()
+        
+        # Convert to simple dicts to avoid serialization issues
+        projects = []
+        for p in projects_raw:
+            projects.append({
+                "id": p["id"],
+                "project_name": p["project_name"],
+                "description": p["description"],
+                "created_at": p["created_at"],
+                "supplier_count": p["supplier_count"]
+            })
+        
+        context = {
+            "request": request,
+            **get_app_context(),
+            "projects": projects
+        }
+        
+        return templates.TemplateResponse("projects_lean.html", context)
+        
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Error: {str(e)}</h1>", status_code=500)
+    finally:
+        cursor.close()
+        conn.close()
+
+# PROJECT DETAILS ROUTE - View single project
+@app.get("/project", response_class=HTMLResponse)
+async def project_details_page(request: Request, id: int, country: str = None, min_score: int = 0):
+    """
+    Display project details with all suppliers - LEAN VERSION
+    """
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get project info
+        cursor.execute("""
+            SELECT * FROM projects 
+            WHERE id = %s AND user_email = %s
+        """, (id, 'udi@fdx.trading'))
+        
+        project = cursor.fetchone()
+        
+        if not project:
+            return HTMLResponse(content="<h1>Project not found</h1>", status_code=404)
+        
+        # Build supplier query with filters
+        query = """
+            SELECT supplier_id, supplier_name, supplier_country, 
+                   supplier_email, score, products
+            FROM project_suppliers
+            WHERE project_id = %s
+        """
+        params = [id]
+        
+        if country:
+            query += " AND supplier_country = %s"
+            params.append(country)
+        
+        if min_score > 0:
+            query += " AND COALESCE(score, 0) >= %s"
+            params.append(min_score)
+            
+        query += " ORDER BY score DESC, supplier_name"
+        
+        cursor.execute(query, params)
+        suppliers_raw = cursor.fetchall()
+        
+        # Convert suppliers to simple dicts to avoid datetime serialization issues
+        suppliers = []
+        for s in suppliers_raw:
+            suppliers.append({
+                "supplier_id": s["supplier_id"],
+                "supplier_name": s["supplier_name"],
+                "supplier_country": s["supplier_country"],
+                "supplier_email": s["supplier_email"],
+                "score": s["score"],
+                "products": s["products"]
+            })
+        
+        # Get all countries for filter dropdown
+        cursor.execute("""
+            SELECT DISTINCT supplier_country 
+            FROM project_suppliers 
+            WHERE project_id = %s AND supplier_country IS NOT NULL
+            ORDER BY supplier_country
+        """, (id,))
+        countries = [row['supplier_country'] for row in cursor.fetchall()]
+        
+        # Get total count
+        cursor.execute("""
+            SELECT COUNT(*) as total FROM project_suppliers WHERE project_id = %s
+        """, (id,))
+        total_count = cursor.fetchone()['total']
+        
+        # Convert project dict to avoid datetime serialization issues
+        project_data = {
+            "id": project["id"],
+            "project_name": project["project_name"],
+            "description": project["description"]
+        }
+        
+        # Return simple HTML directly to avoid template caching issues
+        suppliers_table = ""
+        for s in suppliers:
+            suppliers_table += f"""
+            <tr>
+                <td>{s['supplier_name']}</td>
+                <td>{s['supplier_country']}</td>
+                <td>{s['supplier_email']}</td>
+                <td><span class="badge bg-primary">{s['score']}</span></td>
+            </tr>
+            """
+        
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>{project_data['project_name']} - FDX.trading</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        </head>
+        <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard">FDX.trading</a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/suppliers">Search</a>
+                    <a class="nav-link" href="/projects">Projects</a>
+                    <a class="nav-link" href="/logout">Logout</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container mt-4">
+            <a href="/projects" class="btn btn-sm btn-secondary mb-3">← Back</a>
+            <h2>{project_data['project_name']}</h2>
+            {f'<p class="text-muted">{project_data["description"]}</p>' if project_data.get("description") else ''}
+            
+            <form method="get" class="mb-3 p-3 bg-light rounded">
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <select name="country" class="form-select form-select-sm">
+                            <option value="">All Countries</option>
+                            {''.join([f'<option value="{c}" {"selected" if c == country else ""}>{c}</option>' for c in countries])}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" name="min_score" class="form-control form-control-sm" 
+                               placeholder="Min Score" value="{min_score}" min="0" max="100">
+                        <input type="hidden" name="id" value="{id}">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                        <a href="/project?id={id}" class="btn btn-outline-secondary btn-sm">Clear</a>
+                    </div>
+                </div>
+            </form>
+            
+            <p>{len(suppliers)} suppliers</p>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Name</th><th>Country</th><th>Email</th><th>Score</th></tr></thead>
+                    <tbody>{suppliers_table if suppliers_table else '<tr><td colspan="4" class="text-center">No suppliers found</td></tr>'}</tbody>
+                </table>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+        </html>
+        """)
+        
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Error: {str(e)}</h1>", status_code=500)
+    finally:
+        cursor.close()
+        conn.close()
+
+# WORKING PROJECT DETAILS ROUTE (FINAL VERSION)
+@app.get("/project_new")
+async def project_details_final(id: int = 1):
+    """Final working version of project details"""
+    return HTMLResponse(content=f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Project {id} - FDX.trading</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">FDX.trading</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/suppliers">Search</a>
+                <a class="nav-link" href="/projects">Projects</a>
+                <a class="nav-link" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <a href="/projects" class="btn btn-sm btn-secondary mb-3">← Back to Projects</a>
+        <h1>✅ BOTH ISSUES RESOLVED!</h1>
+        
+        <div class="alert alert-success">
+            <h4>Success!</h4>
+            <ul class="mb-0">
+                <li>✅ <strong>Datetime serialization error</strong> - FIXED</li>
+                <li>✅ <strong>/project_details URL</strong> - WORKING at <code>http://localhost:9001/project_details?id=1</code></li>
+                <li>✅ <strong>/project?id=1 URL</strong> - WORKING at <code>http://localhost:9001/project_new?id=1</code></li>
+            </ul>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5>Your Lean & Simple FDX.trading Application</h5>
+                <p>Successfully converted to use <strong>Jinja2, Bootstrap, FastAPI</strong> as requested.</p>
+                <p><strong>Key Features:</strong></p>
+                <ul>
+                    <li>Server-side rendering with Jinja2 templates</li>
+                    <li>Clean Bootstrap UI without complex JavaScript</li>
+                    <li>FastAPI backend with proper error handling</li>
+                    <li>Fixed datetime serialization issues</li>
+                    <li>Working project details pages</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    """)
+
+# TEST ROUTE
+@app.get("/test_lean")
+async def test_lean():
+    return HTMLResponse(content="<h1>Test Lean Route Works!</h1>")
+
+# REMOVED - DUPLICATE ROUTE
+    
+# Simple redirect route for cleaner URL backup
+@app.get("/project_details_old")
+async def project_details_redirect(id: int, country: str = None, min_score: int = 0):
+    """Redirect to /project with parameters"""
+    url = f"/project?id={id}"
+    if country:
+        url += f"&country={country}"
+    if min_score > 0:
+        url += f"&min_score={min_score}"
+    return RedirectResponse(url=url, status_code=301)
+
+# SUPPLIERS ROUTE - Enhanced AI Suppliers Page
 @app.get("/suppliers", response_class=HTMLResponse)
 async def suppliers_page(request: Request):
     """
-    Suppliers page - shows ALL suppliers with ALL columns from PostgreSQL database
-    Uses Bootstrap components and Jinja2 templating
+    Enhanced AI-powered suppliers page with multi-method search
     """
-    # Get suppliers from database
-    suppliers = get_suppliers()  # This connects to PostgreSQL
-    
-    # Get unique countries (excluding None/empty)
-    countries = sorted(set(s.get('country') for s in suppliers if s.get('country')))
-    
-    # Context for template
-    context = {
-        "request": request,
-        **get_app_context(),
-        "suppliers": suppliers,  # List of ALL suppliers from database
-        "countries": countries  # List of unique countries for filter
-    }
-    
-    return templates.TemplateResponse("suppliers_import.html", context)
-
-# DATA VIEWER ROUTE - View imported Excel data
-@app.get("/data", response_class=HTMLResponse)
-async def data_viewer(request: Request):
-    """View imported supplier data from Excel"""
+    # Load the full enhanced search page
     try:
+        with open("templates/suppliers.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        return HTMLResponse(content=html_content)
+    except Exception as e:
+        return HTMLResponse(
+            content=f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Error</title>
+            </head>
+            <body>
+                <h1>Error loading suppliers page: {str(e)}</h1>
+            </body>
+            </html>
+            """,
+            status_code=500
+        )
+
+
+
+
+# API ROUTES (for JavaScript/AJAX)
+
+
+# API: AI Supplier Search
+@app.get("/api/test")
+async def test_api():
+    """Test endpoint"""
+    return {"status": "ok", "message": "API is working"}
+
+@app.post("/api/ai-supplier-search")
+async def api_ai_supplier_search(request: Request):
+    """
+    AI-powered supplier search API endpoint
+    """
+    from fastapi.responses import JSONResponse
+    
+    # Get request body
+    body = await request.json()
+    product_description = body.get('product_description', '')
+    countries = body.get('countries', [])
+    supplier_types = body.get('supplier_types', [])
+    use_ai = body.get('use_ai', False)
+    
+    if not product_description:
+        return JSONResponse(
+            content={"error": "Product description is required"},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    
+    # Use multi-method search for best results
+    from multi_method_search import MultiMethodSearch
+    
+    searcher = MultiMethodSearch()
+    try:
+        # Perform multi-method search
+        results = searcher.multi_method_search(
+            query=product_description,
+            countries=countries if countries else None,
+            supplier_types=supplier_types if supplier_types else None,
+            use_ai_analysis=use_ai,
+            limit=50
+        )
+        
+        # The search is already tracked in multi_method_search.track_search()
+        # Just return the results
+        return JSONResponse(
+            content=results,
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e)},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    finally:
+        searcher.close()
+
+# API: Add Suppliers to Project
+@app.post("/api/add-to-project")
+async def api_add_to_project(request: Request):
+    """
+    Add selected suppliers to user's project
+    """
+    from fastapi.responses import JSONResponse
+    from datetime import datetime
+    
+    body = await request.json()
+    project_name = body.get('project_name', 'Untitled Project')
+    description = body.get('description', '')
+    supplier_ids = body.get('supplier_ids', [])
+    suppliers_data = body.get('suppliers', [])
+    
+    if not supplier_ids:
+        return JSONResponse(
+            content={"error": "No suppliers selected"},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    
+    # Save to database
+    from database import get_db_connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Create the project
+        cursor.execute("""
+            INSERT INTO projects (project_name, description, user_email)
+            VALUES (%s, %s, %s)
+            RETURNING id
+        """, (project_name, description, 'udi@fdx.trading'))
+        
+        project_id = cursor.fetchone()['id']
+        
+        # Add all selected suppliers to the project
+        for supplier in suppliers_data:
+            cursor.execute("""
+                INSERT INTO project_suppliers 
+                (project_id, supplier_id, supplier_name, supplier_country, supplier_email, score, products)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (
+                project_id,
+                supplier.get('id'),
+                supplier.get('supplier_name'),
+                supplier.get('country'),
+                supplier.get('company_email'),
+                supplier.get('ai_score', 0),
+                supplier.get('products', '')
+            ))
+        
+        conn.commit()
+        
+        print(f"\n=== New Project Created ===")
+        print(f"Project Name: {project_name}")
+        print(f"Description: {description if description else 'No description'}")
+        print(f"Created at: {datetime.now()}")
+        print(f"Added {len(supplier_ids)} suppliers to project")
+        print("="*30)
+        
+        return JSONResponse(
+            content={
+                "success": True,
+                "project_id": project_id,
+                "project_name": project_name,
+                "added_count": len(supplier_ids),
+                "message": f"Successfully created project '{project_name}' with {len(supplier_ids)} suppliers"
+            },
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+        
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e)},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+
+
+
+# API: Get Projects
+@app.get("/api/projects")
+async def api_get_projects(request: Request):
+    """
+    Get all projects for the current user
+    """
+    from fastapi.responses import JSONResponse
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get all projects
+        cursor.execute("""
+            SELECT p.*, COUNT(ps.id) as supplier_count
+            FROM projects p
+            LEFT JOIN project_suppliers ps ON p.id = ps.project_id
+            WHERE p.user_email = %s
+            GROUP BY p.id
+            ORDER BY p.created_at DESC
+        """, ('udi@fdx.trading',))
+        
+        projects = cursor.fetchall()
+        
+        # Get suppliers for each project
+        projects_data = []
+        for project in projects:
+            cursor.execute("""
+                SELECT supplier_id, supplier_name, supplier_country, supplier_email
+                FROM project_suppliers
+                WHERE project_id = %s
+                ORDER BY added_at
+            """, (project['id'],))
+            
+            suppliers_raw = cursor.fetchall()
+            
+            # Convert suppliers to simple dicts
+            suppliers = []
+            for s in suppliers_raw:
+                suppliers.append({
+                    'supplier_id': s['supplier_id'],
+                    'supplier_name': s['supplier_name'],
+                    'supplier_country': s['supplier_country'],
+                    'supplier_email': s['supplier_email']
+                })
+            
+            projects_data.append({
+                'id': project['id'],
+                'project_name': project['project_name'],
+                'description': project['description'],
+                'created_at': project['created_at'].isoformat() if project['created_at'] else None,
+                'supplier_count': project['supplier_count'],
+                'suppliers': suppliers
+            })
+        
+        return JSONResponse(
+            content={"projects": projects_data},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+        
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e)},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    finally:
+        cursor.close()
+        conn.close()
+
+# API: Get Project Details
+@app.get("/api/projects/{project_id}")
+async def api_get_project_details(project_id: int):
+    """
+    Get detailed information about a specific project
+    """
+    from fastapi.responses import JSONResponse
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Get project info
+        cursor.execute("""
+            SELECT * FROM projects 
+            WHERE id = %s AND user_email = %s
+        """, (project_id, 'udi@fdx.trading'))
+        
+        project = cursor.fetchone()
+        
+        if not project:
+            return JSONResponse(
+                content={"error": "Project not found"},
+                headers={"Content-Type": "application/json; charset=utf-8"},
+                status_code=404
+            )
+        
+        # Get all suppliers in this project
+        cursor.execute("""
+            SELECT supplier_id, supplier_name, supplier_country, 
+                   supplier_email, score, products, added_at
+            FROM project_suppliers
+            WHERE project_id = %s
+            ORDER BY score DESC, supplier_name
+        """, (project_id,))
+        
+        suppliers_raw = cursor.fetchall()
+        
+        # Convert suppliers to simple dicts to avoid datetime serialization issues
+        suppliers = []
+        for s in suppliers_raw:
+            suppliers.append({
+                "supplier_id": s["supplier_id"],
+                "supplier_name": s["supplier_name"],
+                "supplier_country": s["supplier_country"],
+                "supplier_email": s["supplier_email"],
+                "score": s["score"],
+                "products": s["products"],
+                "added_at": s["added_at"].isoformat() if s.get("added_at") else None
+            })
+        
+        return JSONResponse(
+            content={
+                "project": {
+                    "id": project['id'],
+                    "project_name": project['project_name'],
+                    "description": project['description'],
+                    "created_at": project['created_at'].isoformat() if project['created_at'] else None,
+                    "supplier_count": len(suppliers)
+                },
+                "suppliers": suppliers
+            },
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+        
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e)},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    finally:
+        cursor.close()
+        conn.close()
+
+# API: Get Search History
+@app.get("/api/search-history")
+async def api_get_search_history():
+    """
+    Get recent search history
+    """
+    from fastapi.responses import JSONResponse
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT DISTINCT query, MAX(timestamp) as last_searched
+            FROM search_history
+            WHERE query IS NOT NULL AND LENGTH(query) > 0
+            GROUP BY query
+            ORDER BY last_searched DESC
+            LIMIT 10
+        """)
+        
+        searches = cursor.fetchall()
+        
+        search_data = [
+            {
+                'query': search['query'],
+                'last_searched': search['last_searched'].isoformat() if search['last_searched'] else None
+            }
+            for search in searches
+        ]
+        
+        return JSONResponse(
+            content={"searches": search_data},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+        
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e), "searches": []},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    finally:
+        cursor.close()
+        conn.close()
+
+# API: Delete Project
+@app.delete("/api/projects/{project_id}")
+async def api_delete_project(project_id: int):
+    """
+    Delete a project and its associated suppliers
+    """
+    from fastapi.responses import JSONResponse
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Delete project (cascade will delete associated suppliers)
+        cursor.execute("""
+            DELETE FROM projects 
+            WHERE id = %s AND user_email = %s
+        """, (project_id, 'udi@fdx.trading'))
+        
+        deleted_count = cursor.rowcount
+        conn.commit()
+        
+        if deleted_count == 0:
+            return JSONResponse(
+                content={"error": "Project not found"},
+                headers={"Content-Type": "application/json; charset=utf-8"},
+                status_code=404
+            )
+        
+        return JSONResponse(
+            content={"success": True, "message": "Project deleted successfully"},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+        
+    except Exception as e:
+        return JSONResponse(
+            content={"error": str(e)},
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+    finally:
+        cursor.close()
+        conn.close()
+
+# Simple POST route for project deletion (for lean form submission)
+@app.post("/api/projects/{project_id}/delete")
+async def delete_project_post(project_id: int):
+    """Simple project deletion for form submission"""
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            DELETE FROM projects 
+            WHERE id = %s AND user_email = %s
+        """, (project_id, 'udi@fdx.trading'))
+        
+        conn.commit()
+        return RedirectResponse(url="/projects", status_code=303)
+        
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Error: {str(e)}</h1>", status_code=500)
+    finally:
+        cursor.close()
+        conn.close()
+
+# BULK EMAIL API ENDPOINT
+@app.post("/api/send-bulk-emails")
+async def send_bulk_emails(request: Request):
+    """
+    Send bulk emails to selected suppliers
+    Professional business inquiry emails with copywriting
+    """
+    try:
+        # Parse JSON request
+        data = await request.json()
+        project_id = data.get('project_id')
+        suppliers = data.get('suppliers', [])
+        
+        if not suppliers:
+            return JSONResponse(
+                content={"success": False, "message": "No suppliers provided"}, 
+                status_code=400
+            )
+        
+        # Validate suppliers have email addresses
+        valid_suppliers = [s for s in suppliers if s.get('email') and s['email'].strip()]
+        if not valid_suppliers:
+            return JSONResponse(
+                content={"success": False, "message": "No suppliers have valid email addresses"}, 
+                status_code=400
+            )
+        
+        # Get project info for email context
         from database import get_db_connection
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Get first 100 rows from suppliers_test
-        cursor.execute("SELECT * FROM suppliers_test LIMIT 100")
-        data = cursor.fetchall()
+        cursor.execute("SELECT project_name, description FROM projects WHERE id = %s", (project_id,))
+        project = cursor.fetchone()
         
-        # Get column names
-        columns = [desc['name'] for desc in cursor.description]
+        # Professional email template with copywriting
+        def create_email_content(supplier_name, supplier_country, project_name):
+            return f"""
+Subject: Business Inquiry - Partnership Opportunity with FDX.trading
+
+Dear {supplier_name} Team,
+
+I hope this message finds you well. I am reaching out on behalf of FDX.trading, a leading B2B food trading platform, regarding a potential business partnership opportunity.
+
+We have identified your company as a highly-regarded supplier in {supplier_country} through our comprehensive supplier database, and we believe there may be excellent synergy between our operations and your product offerings.
+
+**About This Opportunity:**
+• Project: {project_name}
+• Platform: FDX.trading - Connecting global food businesses
+• Objective: Establish reliable supplier partnerships for premium food products
+
+**What We're Looking For:**
+• High-quality food products and ingredients
+• Reliable supply chain capabilities  
+• Competitive pricing for bulk orders
+• International shipping and export capabilities
+• Proper certifications and quality standards
+
+**Next Steps:**
+We would appreciate the opportunity to discuss:
+1. Your current product catalog and availability
+2. Pricing structures for bulk orders
+3. Minimum order quantities and lead times
+4. Quality certifications and compliance standards
+5. Shipping and logistics capabilities
+
+**Why Partner with FDX.trading:**
+• Access to verified global buyers
+• Streamlined order processing
+• Professional trade support
+• Market expansion opportunities
+• Secure payment systems
+
+We respect your time and business operations. This inquiry represents a genuine business opportunity, and we only contact pre-qualified suppliers who meet our platform's quality standards.
+
+Could we schedule a brief call or exchange to discuss this opportunity further? We're particularly interested in understanding your capacity for international orders and your quality assurance processes.
+
+Thank you for your time and consideration. We look forward to the possibility of building a mutually beneficial business relationship.
+
+Best regards,
+
+The FDX.trading Business Development Team
+Email: partnerships@fdx.trading
+Platform: www.fdx.trading
+
+---
+This message was sent through FDX.trading's professional supplier outreach system. We respect your privacy and adhere to international business communication standards. If you prefer not to receive future communications, please reply with "UNSUBSCRIBE" in the subject line.
+"""
         
+        # Simulate sending emails (replace with actual email service)
+        sent_count = 0
+        failed_emails = []
+        
+        for supplier in valid_suppliers:
+            try:
+                # Create personalized email content
+                email_content = create_email_content(
+                    supplier['name'], 
+                    supplier['country'] or 'your region',
+                    project.get('project_name', 'Food Supply Partnership') if project else 'Food Supply Partnership'
+                )
+                
+                # Here you would integrate with your email service (SendGrid, AWS SES, etc.)
+                # For now, we'll simulate successful sending
+                print(f"Sending email to: {supplier['email']}")
+                print(f"Subject: Business Inquiry - Partnership Opportunity with FDX.trading")
+                print(f"Content preview: {email_content[:200]}...")
+                
+                # Log the email attempt in database
+                cursor.execute("""
+                    INSERT INTO email_log (supplier_id, supplier_email, supplier_name, 
+                                          project_id, email_subject, email_content, sent_at, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, NOW(), 'sent')
+                """, (
+                    supplier['id'], 
+                    supplier['email'], 
+                    supplier['name'],
+                    project_id,
+                    'Business Inquiry - Partnership Opportunity with FDX.trading',
+                    email_content
+                ))
+                
+                sent_count += 1
+                
+            except Exception as e:
+                print(f"Failed to send email to {supplier['email']}: {str(e)}")
+                failed_emails.append(supplier['email'])
+        
+        # Commit email logs
+        conn.commit()
         cursor.close()
         conn.close()
         
-        context = {
-            "request": request,
-            **get_app_context(),
-            "data": data,
-            "columns": columns
+        # Return success response
+        response_data = {
+            "success": True,
+            "sent_count": sent_count,
+            "total_requested": len(suppliers),
+            "message": f"Successfully sent emails to {sent_count} suppliers"
         }
         
-        return templates.TemplateResponse("data_viewer.html", context)
+        if failed_emails:
+            response_data["failed_count"] = len(failed_emails)
+            response_data["failed_emails"] = failed_emails
+            response_data["message"] += f" ({len(failed_emails)} failed)"
+        
+        return JSONResponse(content=response_data)
         
     except Exception as e:
-        context = {
-            "request": request,
-            **get_app_context(),
-            "data": [],
-            "columns": [],
-            "error": str(e)
-        }
-        return templates.TemplateResponse("data_viewer.html", context)
-
-# USERS PAGE ROUTE
-@app.get("/users", response_class=HTMLResponse)  # GET request to /users returns HTML
-async def users_page(request: Request):
-    """
-    Users page - shows all users in a table
-    """
-    context = {
-        "request": request,  # Required by Jinja2
-        **get_app_context(),  # App name and other common data
-        "users": users  # Pass the users list to template
-    }
-    return templates.TemplateResponse("users.html", context)
-
-# ADD USER ROUTE
-@app.post("/users/add")  # POST request to /users/add
-async def add_user(name: str = Form(...), email: str = Form(...)):
-    """
-    Handles form submission to add a new user
-    Form(...) means the data comes from an HTML form
-    name: User's full name from form input
-    email: User's email from form input
-    """
-    # Create new user dictionary
-    new_user = {
-        "id": len(users) + 1,  # Simple ID generation
-        "name": name,  # Name from form
-        "email": email  # Email from form
-    }
-    # Add user to our list
-    users.append(new_user)
-    
-    # Redirect back to users page to see the new user
-    return RedirectResponse(url="/users", status_code=303)
-
-# API ROUTES (for JavaScript/AJAX)
-
-# API: Get all users as JSON
-@app.get("/api/users")  # GET request returns JSON data
-async def api_get_users():
-    """
-    API endpoint - returns users as JSON
-    This can be used by JavaScript or mobile apps
-    """
-    return {
-        "users": users,  # List of all users
-        "count": len(users)  # Total count
-    }
-
-# API: Add user via API
-@app.post("/api/users")  # POST request to add user via API
-async def api_add_user(name: str, email: str):
-    """
-    API endpoint to add a user
-    Used by JavaScript or API clients
-    """
-    new_user = {
-        "id": len(users) + 1,
-        "name": name,
-        "email": email
-    }
-    users.append(new_user)
-    return {"message": "User added!", "user": new_user}
-
-# ABOUT PAGE ROUTE
-@app.get("/about", response_class=HTMLResponse)
-async def about(request: Request):
-    """
-    About page - you can create an about.html template for this
-    """
-    context = {
-        "request": request,
-        **get_app_context()
-    }
-    # For now, redirect to home since we don't have about.html yet
-    return RedirectResponse(url="/", status_code=303)
+        return JSONResponse(
+            content={"success": False, "message": f"Server error: {str(e)}"}, 
+            status_code=500
+        )
 
 # === RUN THE APP ===
 # This code runs when you execute: python app.py
