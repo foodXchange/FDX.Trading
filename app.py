@@ -33,6 +33,23 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Set up Jinja2 templates - this tells FastAPI where to find HTML files
 templates = Jinja2Templates(directory="templates")
 
+# Store templates in app state for access from routers
+app.state.templates = templates
+
+# Import and include email CRM router
+try:
+    from app.email_crm.routes import router as email_router
+    app.include_router(email_router)
+except ImportError:
+    print("Email CRM module not found - skipping")
+
+# Import and include admin cost monitoring router
+try:
+    from app.admin.cost_dashboard import router as admin_router
+    app.include_router(admin_router, prefix="/admin", tags=["admin"])
+except ImportError:
+    print("Admin cost monitoring module not found - skipping")
+
 
 # === HELPER FUNCTIONS ===
 def get_app_context():
@@ -155,6 +172,7 @@ async def project_details_with_data(id: int = 1, country: str = None, min_score:
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link" href="/suppliers">Search</a>
                     <a class="nav-link" href="/projects">Projects</a>
+                    <a class="nav-link" href="/email"><i class="bi bi-envelope-at"></i> AI Emails</a>
                     <a class="nav-link" href="/logout">Logout</a>
                 </div>
             </div>
@@ -407,13 +425,54 @@ async def projects_page(request: Request):
     """
     from database import get_db_connection
     
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
     try:
+        conn = get_db_connection()
+        if not conn:
+            return HTMLResponse(content="<html><head><title>Database Error</title></head><body><h1>Database connection failed</h1><p><a href='/suppliers'>Go to Suppliers</a></p></body></html>", status_code=500)
+        
+        cursor = conn.cursor()
+        
+        # First check if projects table exists
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'projects'
+            )
+        """)
+        
+        table_exists = cursor.fetchone()
+        if not table_exists or not table_exists[0]:
+            # Projects table doesn't exist, create it
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS projects (
+                    id SERIAL PRIMARY KEY,
+                    project_name VARCHAR(255) NOT NULL,
+                    description TEXT,
+                    user_email VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS project_suppliers (
+                    id SERIAL PRIMARY KEY,
+                    project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+                    supplier_id INTEGER,
+                    supplier_name VARCHAR(255),
+                    supplier_country VARCHAR(100),
+                    supplier_email VARCHAR(255),
+                    score INTEGER DEFAULT 0,
+                    products TEXT,
+                    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            
+            conn.commit()
+        
         # Get all projects with supplier count
         cursor.execute("""
-            SELECT p.*, COUNT(ps.id) as supplier_count
+            SELECT p.id, p.project_name, p.description, p.created_at, p.user_email,
+                   COALESCE(COUNT(ps.id), 0) as supplier_count
             FROM projects p
             LEFT JOIN project_suppliers ps ON p.id = ps.project_id
             WHERE p.user_email = %s
@@ -427,11 +486,11 @@ async def projects_page(request: Request):
         projects = []
         for p in projects_raw:
             projects.append({
-                "id": p["id"],
-                "project_name": p["project_name"],
-                "description": p["description"],
-                "created_at": p["created_at"],
-                "supplier_count": p["supplier_count"]
+                "id": p[0],
+                "project_name": p[1],
+                "description": p[2],
+                "created_at": p[3],
+                "supplier_count": p[5]
             })
         
         context = {
@@ -443,10 +502,50 @@ async def projects_page(request: Request):
         return templates.TemplateResponse("projects_lean.html", context)
         
     except Exception as e:
-        return HTMLResponse(content=f"<h1>Error: {str(e)}</h1>", status_code=500)
+        import traceback
+        error_details = traceback.format_exc()
+        return HTMLResponse(content=f"""
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Projects Error - FDX.trading</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        </head>
+        <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard">FDX.trading</a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/suppliers">Search</a>
+                    <a class="nav-link" href="/projects">Projects</a>
+                    <a class="nav-link" href="/email"><i class="bi bi-envelope-at"></i> AI Emails</a>
+                    <a class="nav-link" href="/logout">Logout</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container mt-4">
+            <div class="alert alert-danger">
+                <h4>Database Error</h4>
+                <p>There was an error loading your projects. Please try again or contact support.</p>
+                <details>
+                    <summary>Error Details</summary>
+                    <pre>{str(e)}</pre>
+                </details>
+            </div>
+            <a href="/suppliers" class="btn btn-primary">Go to Suppliers Search</a>
+        </div>
+        </body>
+        </html>
+        """, status_code=500)
     finally:
-        cursor.close()
-        conn.close()
+        try:
+            if 'cursor' in locals():
+                cursor.close()
+            if 'conn' in locals():
+                conn.close()
+        except:
+            pass
 
 # PROJECT DETAILS ROUTE - View single project
 @app.get("/project", response_class=HTMLResponse)
@@ -555,6 +654,7 @@ async def project_details_page(request: Request, id: int, country: str = None, m
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link" href="/suppliers">Search</a>
                     <a class="nav-link" href="/projects">Projects</a>
+                    <a class="nav-link" href="/email"><i class="bi bi-envelope-at"></i> AI Emails</a>
                     <a class="nav-link" href="/logout">Logout</a>
                 </div>
             </div>
@@ -1001,42 +1101,73 @@ async def api_get_search_history():
     from fastapi.responses import JSONResponse
     from database import get_db_connection
     
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
     try:
+        conn = get_db_connection()
+        if not conn:
+            return JSONResponse(
+                content={"searches": []},
+                headers={"Content-Type": "application/json; charset=utf-8"}
+            )
+        
+        cursor = conn.cursor()
+        
+        # Simplified query to avoid cursor issues
         cursor.execute("""
-            SELECT DISTINCT query, MAX(timestamp) as last_searched
+            SELECT query, timestamp
             FROM search_history
             WHERE query IS NOT NULL AND LENGTH(query) > 0
-            GROUP BY query
-            ORDER BY last_searched DESC
+            ORDER BY timestamp DESC
             LIMIT 10
         """)
         
-        searches = cursor.fetchall()
+        results = cursor.fetchall()
         
-        search_data = [
-            {
-                'query': search['query'],
-                'last_searched': search['last_searched'].isoformat() if search['last_searched'] else None
-            }
-            for search in searches
-        ]
+        # Build search data manually to avoid cursor format issues
+        search_data = []
+        for result in results:
+            try:
+                # Try to access as tuple first
+                query = result[0] if len(result) > 0 else ''
+                timestamp = result[1] if len(result) > 1 else None
+                
+                if query:
+                    search_data.append({
+                        'query': str(query),
+                        'last_searched': timestamp.isoformat() if timestamp else None
+                    })
+            except:
+                # Skip problematic entries
+                continue
+        
+        # Remove duplicates and keep most recent
+        unique_searches = {}
+        for search in search_data:
+            query = search['query']
+            if query not in unique_searches or (search['last_searched'] and 
+                search['last_searched'] > unique_searches[query]['last_searched']):
+                unique_searches[query] = search
+        
+        final_searches = list(unique_searches.values())[:10]
         
         return JSONResponse(
-            content={"searches": search_data},
+            content={"searches": final_searches},
             headers={"Content-Type": "application/json; charset=utf-8"}
         )
         
     except Exception as e:
+        # Return empty searches on any error to avoid breaking the UI
         return JSONResponse(
-            content={"error": str(e), "searches": []},
+            content={"searches": [], "error": f"Search history temporarily unavailable: {str(e)}"},
             headers={"Content-Type": "application/json; charset=utf-8"}
         )
     finally:
-        cursor.close()
-        conn.close()
+        try:
+            if 'cursor' in locals():
+                cursor.close()
+            if 'conn' in locals():
+                conn.close()
+        except:
+            pass
 
 # API: Delete Project
 @app.delete("/api/projects/{project_id}")
@@ -1258,6 +1389,236 @@ This message was sent through FDX.trading's professional supplier outreach syste
             content={"success": False, "message": f"Server error: {str(e)}"}, 
             status_code=500
         )
+
+# EMAIL DASHBOARD ROUTE
+@app.get("/email", response_class=HTMLResponse)
+async def email_dashboard(request: Request):
+    """AI Email Dashboard with Azure OpenAI Integration"""
+    from database import get_db_connection
+    
+    try:
+        # Get basic email stats from database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Create email_log table if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS email_log (
+                id SERIAL PRIMARY KEY,
+                supplier_id INTEGER,
+                supplier_email VARCHAR(255),
+                supplier_name VARCHAR(255),
+                project_id INTEGER,
+                email_subject TEXT,
+                email_content TEXT,
+                sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                status VARCHAR(50) DEFAULT 'sent'
+            )
+        """)
+        conn.commit()
+        
+        # Get email statistics
+        cursor.execute("SELECT COUNT(*) FROM email_log WHERE sent_at >= CURRENT_DATE")
+        today_count = cursor.fetchone()[0] if cursor.fetchone() else 0
+        
+        cursor.execute("SELECT COUNT(*) FROM email_log WHERE sent_at >= CURRENT_DATE - INTERVAL '7 days'")
+        week_count = cursor.fetchone()[0] if cursor.fetchone() else 0
+        
+        cursor.execute("SELECT COUNT(*) FROM email_log WHERE sent_at >= CURRENT_DATE - INTERVAL '30 days'")
+        month_count = cursor.fetchone()[0] if cursor.fetchone() else 0
+        
+        cursor.execute("SELECT COUNT(*) FROM email_log")
+        total_count = cursor.fetchone()[0] if cursor.fetchone() else 0
+        
+        # Get recent emails
+        cursor.execute("""
+            SELECT id, supplier_email, supplier_name, sent_at, status
+            FROM email_log
+            ORDER BY sent_at DESC
+            LIMIT 20
+        """)
+        
+        recent_emails = []
+        for row in cursor.fetchall():
+            recent_emails.append({
+                'id': row[0],
+                'supplier_email': row[1], 
+                'supplier_name': row[2],
+                'sent_at': row[3],
+                'status': row[4] or 'sent'
+            })
+        
+        cursor.close()
+        conn.close()
+        
+        # Create stats object
+        stats = {
+            'totals': {
+                'total_today': today_count,
+                'total_7_days': week_count,
+                'total_30_days': month_count,
+                'total_all_time': total_count
+            }
+        }
+        
+        context = get_app_context()
+        context.update({
+            "request": request,
+            "stats": stats,
+            "recent_emails": recent_emails
+        })
+        
+        return templates.TemplateResponse("email_dashboard.html", context)
+        
+    except Exception as e:
+        # Return simplified dashboard on error
+        return HTMLResponse(content=f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>AI Email Center - FDX.trading</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+        </head>
+        <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard">FDX.trading</a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/suppliers">Search</a>
+                    <a class="nav-link" href="/projects">Projects</a>
+                    <a class="nav-link active" href="/email"><i class="bi bi-envelope-at"></i> AI Emails</a>
+                    <a class="nav-link" href="/logout">Logout</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container mt-4">
+            <h1><i class="bi bi-envelope-at"></i> AI Email Center</h1>
+            
+            <div class="alert alert-info">
+                <h5><i class="bi bi-robot"></i> Azure OpenAI Email Integration</h5>
+                <p>Our AI-powered email system uses Azure OpenAI to generate professional business communications with suppliers.</p>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5><i class="bi bi-pencil-square"></i> Compose AI Email</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Generate professional supplier emails with AI assistance.</p>
+                            <a href="/email/compose" class="btn btn-success">
+                                <i class="bi bi-pencil-square"></i> Compose Email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5><i class="bi bi-people"></i> Bulk Email Campaigns</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Send AI-generated emails to multiple suppliers from your projects.</p>
+                            <a href="/projects" class="btn btn-primary">
+                                <i class="bi bi-folder2"></i> Select Project
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-gear"></i> Email Features</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="bi bi-robot"></i> AI-Generated Content</h6>
+                            <p>Professional business emails crafted by Azure OpenAI</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="bi bi-envelope-check"></i> Bulk Campaigns</h6>
+                            <p>Send personalized emails to multiple suppliers at once</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="bi bi-graph-up"></i> Tracking & Analytics</h6>
+                            <p>Monitor email delivery and engagement metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
+        </html>
+        """, status_code=200)
+
+# COMPOSE EMAIL ROUTE
+@app.get("/email/compose", response_class=HTMLResponse)
+async def compose_email(request: Request, project_id: int = None):
+    """Simple email composer"""
+    context = get_app_context()
+    context.update({
+        "request": request,
+        "project_id": project_id
+    })
+    
+    return templates.TemplateResponse("email_compose.html", context)
+
+# AI EMAIL GENERATION API
+@app.post("/api/email/generate")
+async def generate_ai_email(request: Request):
+    """Generate email with AI"""
+    from email_service_lean import email_service
+    
+    data = await request.json()
+    
+    email_content = email_service.write_email(
+        supplier_name=data.get('supplier_name', 'Supplier'),
+        supplier_country=data.get('supplier_country', 'your country'),
+        products=data.get('products', ''),
+        email_type=data.get('email_type', 'inquiry')
+    )
+    
+    return JSONResponse({
+        "success": True,
+        "content": email_content
+    })
+
+# GET EMAIL DETAILS API
+@app.get("/api/email/{email_id}")
+async def get_email_details(email_id: int):
+    """Get email details for preview"""
+    from database import get_db_connection
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT supplier_email, email_content, sent_at
+        FROM email_log
+        WHERE id = %s
+    """, (email_id,))
+    
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    
+    if row:
+        return JSONResponse({
+            "supplier_email": row[0],
+            "content": row[1],
+            "sent_at": row[2].isoformat() if row[2] else None
+        })
+    else:
+        return JSONResponse({"error": "Email not found"}, status_code=404)
 
 # === RUN THE APP ===
 # This code runs when you execute: python app.py

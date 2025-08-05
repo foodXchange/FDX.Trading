@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Email CRM - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">📧 Email Center</h1>
+    
+    <!-- Simple Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center border-primary">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ stats.sent }}</h3>
+                    <small>Emails Sent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success">{{ stats.open_rate }}%</h3>
+                    <small>Open Rate</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <h3 class="text-info">{{ stats.click_rate }}%</h3>
+                    <small>Click Rate</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ pipeline.interested or 0 }}</h3>
+                    <small>Interested</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-4">
+        <a href="/email/compose" class="btn btn-success">
+            ✉️ Compose Email
+        </a>
+        <a href="/email/pipeline" class="btn btn-info">
+            📊 Supplier Pipeline
+        </a>
+        <a href="/suppliers" class="btn btn-primary">
+            👥 Select Suppliers
+        </a>
+    </div>
+
+    <!-- Recent Emails Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Emails</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sent</th>
+                            <th>Supplier</th>
+                            <th>Country</th>
+                            <th>Status</th>
+                            <th>Opens</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for email in recent[:10] %}
+                        <tr>
+                            <td>{{ email.sent_at.strftime('%m/%d %H:%M') }}</td>
+                            <td>{{ email.supplier_name or email.supplier_email }}</td>
+                            <td>{{ email.country or '-' }}</td>
+                            <td>
+                                {% if email.clicked_at %}
+                                    <span class="badge bg-success">Clicked</span>
+                                {% elif email.opened_at %}
+                                    <span class="badge bg-info">Opened</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Sent</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ email.open_count or 0 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

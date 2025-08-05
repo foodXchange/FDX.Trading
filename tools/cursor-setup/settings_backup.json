@@ -1,0 +1,54 @@
+{
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "files.autoSave": "afterDelay",
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "liveServer.settings.donotVerifyTags": true,
+  "terminal.integrated.enableMultiLinePasteWarning": "never",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "@azure.argTenant": "",
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "- @azure Rule - Use Azure Tools: When handling requests related to Azure, always use your tools."
+    },
+    {
+      "text": "- @azure Rule - Use Azure Code Gen Best Practices: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your `azure_development-get_code_gen_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure; do not call it otherwise."
+    },
+    {
+      "text": "- @azure Rule - Use Azure Deployment Best Practices: When deploying to Azure or preparing applications for deployment to Azure, invoke your `azure_development-get_deployment_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure; do not call it otherwise."
+    },
+    {
+      "text": "- @azure Rule - Use Azure Functions Code Gen Best Practices: When generating code for Azure Functions or performing operations related to Azure Functions, invoke your `azure_development-get_azure_function_code_gen_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure Functions; do not call it otherwise."
+    },
+    {
+      "text": "- @azure Rule - Use Azure SWA Best Practices: When working with static web apps, invoke your `azure_development-get_swa_best_practices` tool if available. Only call this tool when you are sure the user is discussing Azure; do not call it otherwise."
+    }
+  ],
+  "git.openRepositoryInParentFolders": "always",
+  "cursor.composer.shouldChimeAfterChatFinishes": true,
+  "cursor.composer.shouldAllowCustomModes": true,
+  "cursor.cpp.enablePartialAccepts": true,
+  "update.releaseTrack": "prerelease",
+  "redhat.telemetry.enabled": true,
+  "cSpell.userWords": [
+    "gsap"
+  ],
+  "remote.SSH.remotePlatform": {
+    "fdx-vm": "linux"
+  },
+  "workbench.commandPalette.experimental.suggestCommands": true,
+  "workbench.commandPalette.experimental.suggestCommandsHistory": true,
+  "workbench.commandPalette.experimental.suggestCommandsHistoryMaxItems": 1000,
+  "terminal.integrated.commandsToSkipShell": [
+    "",
+    "Workbench › Command Palette › Experimental › Suggest Commands"
+  ],
+  "workbench.localHistory.maxFileEntries": 100,
+  "editor.experimentalEditContextEnabled": true,
+  "workbench.editor.enablePreviewFromCodeNavigation": true,
+  "workbench.editor.enablePreviewFromQuickOpen": true,
+  "terminal.integrated.enableImages": true,
+  "bracketPairColorizer.depreciation-notice": false
+}

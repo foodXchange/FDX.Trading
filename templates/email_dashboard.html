@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Email Center - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-envelope"></i> Email Center</h1>
+    
+    <!-- Quick Stats Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Today</h5>
+                    <h2 class="text-primary">{{ stats.totals.total_today or 0 }}</h2>
+                    <small class="text-muted">emails sent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">This Week</h5>
+                    <h2 class="text-info">{{ stats.totals.total_7_days or 0 }}</h2>
+                    <small class="text-muted">emails sent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">This Month</h5>
+                    <h2 class="text-success">{{ stats.totals.total_30_days or 0 }}</h2>
+                    <small class="text-muted">emails sent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">All Time</h5>
+                    <h2 class="text-secondary">{{ stats.totals.total_all_time or 0 }}</h2>
+                    <small class="text-muted">emails sent</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="/email/compose" class="btn btn-success me-2">
+                        <i class="bi bi-pencil-square"></i> Compose Email
+                    </a>
+                    <button class="btn btn-info me-2" onclick="checkResponses()">
+                        <i class="bi bi-inbox"></i> Check Responses
+                    </button>
+                    <a href="/projects" class="btn btn-primary">
+                        <i class="bi bi-people"></i> Select Suppliers
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Email Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Supplier</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for email in recent_emails %}
+                                <tr>
+                                    <td>{{ email.sent_at.strftime('%Y-%m-%d %H:%M') if email.sent_at else '-' }}</td>
+                                    <td>{{ email.supplier_name or '-' }}</td>
+                                    <td>{{ email.supplier_email }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if email.status == 'sent' else 'warning' }}">
+                                            {{ email.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewEmail({{ email.id }})">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        No emails sent yet. <a href="/email/compose">Send your first email!</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Simple Email Preview Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Email Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="emailContent">
+                Loading...
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewEmail(emailId) {
+    // Simple email preview
+    document.getElementById('emailContent').innerHTML = 'Loading email content...';
+    const modal = new bootstrap.Modal(document.getElementById('emailModal'));
+    modal.show();
+    
+    // In real implementation, fetch email content
+    fetch(`/api/email/${emailId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('emailContent').innerHTML = `
+                <p><strong>To:</strong> ${data.supplier_email}</p>
+                <p><strong>Sent:</strong> ${data.sent_at}</p>
+                <hr>
+                <div>${data.content}</div>
+            `;
+        })
+        .catch(err => {
+            document.getElementById('emailContent').innerHTML = 'Error loading email.';
+        });
+}
+
+function checkResponses() {
+    alert('Response checking will be implemented soon!');
+    // In real implementation, call API to check email responses
+}
+</script>
+{% endblock %}

@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - VM Control Panel</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --bs-primary: #2c3e50;
+            --bs-secondary: #3498db;
+            --bs-success: #27ae60;
+            --bs-danger: #e74c3c;
+            --bs-warning: #f39c12;
+            --bs-info: #16a085;
+            --bs-dark: #34495e;
+            --bs-light: #ecf0f1;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-dark) 100%) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+        }
+        
+        .metric-card {
+            background: white;
+            border-left: 4px solid var(--bs-primary);
+            padding: 1.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--bs-primary);
+            line-height: 1;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .service-card {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--bs-success);
+            transition: width 0.3s;
+        }
+        
+        .service-card.inactive::before {
+            background: var(--bs-danger);
+        }
+        
+        .service-card:hover::before {
+            width: 8px;
+        }
+        
+        .terminal {
+            background: #1e1e1e;
+            color: #00ff00;
+            font-family: 'Consolas', 'Monaco', monospace;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            height: 400px;
+            overflow-y: auto;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        
+        .terminal::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .terminal::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        
+        .terminal::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        
+        .status-dot.active {
+            background: var(--bs-success);
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.inactive {
+            background: var(--bs-danger);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(39, 174, 96, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-secondary) 100%);
+            border: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, var(--bs-secondary) 0%, var(--bs-primary) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,.2);
+        }
+        
+        .alert-floating {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(0,0,0,.1);
+            border-radius: 50%;
+            border-top-color: var(--bs-primary);
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--bs-dark);
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .nav-pills .nav-link:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--bs-primary);
+        }
+        
+        .table-dark-custom {
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        .badge-status {
+            padding: 0.375rem 0.75rem;
+            font-weight: 500;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Azure Integration Styles */
+        .azure-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .azure-badge {
+            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="bi bi-server me-2"></i>
+                <span>{{ title }}</span>
+            </a>
+            <span class="navbar-text text-white-50 me-auto ms-3">
+                v{{ version }}
+            </span>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#dashboard">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">
+                            <i class="bi bi-gear me-1"></i>Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#monitoring">
+                            <i class="bi bi-graph-up me-1"></i>Monitoring
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tools">
+                            <i class="bi bi-tools me-1"></i>Tools
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            <span class="azure-badge" id="azure-status">
+                                <i class="bi bi-cloud-fill me-1"></i>Azure
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alert Container -->
+    <div id="alert-container"></div>
+
+    <!-- Main Container -->
+    <div class="container-fluid py-4">
+        <!-- System Info -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <div>
+                        <strong>VM:</strong> {{ settings.VM_USER }}@{{ settings.VM_IP }} |
+                        <strong>Resource Group:</strong> {{ settings.AZURE_RESOURCE_GROUP }} |
+                        <strong>Status:</strong> <span id="system-status">Checking...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card metric-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="metric-label">CPU Usage</div>
+                            <div class="metric-value" id="cpu-usage">--%</div>
+                        </div>
+                        <i class="bi bi-cpu text-primary fs-2"></i>
+                    </div>
+                    <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar bg-primary" id="cpu-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card metric-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="metric-label">Memory Usage</div>
+                            <div class="metric-value" id="memory-usage">--%</div>
+                        </div>
+                        <i class="bi bi-memory text-info fs-2"></i>
+                    </div>
+                    <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar bg-info" id="memory-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card metric-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="metric-label">Disk Usage</div>
+                            <div class="metric-value" id="disk-usage">--%</div>
+                        </div>
+                        <i class="bi bi-hdd text-warning fs-2"></i>
+                    </div>
+                    <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar bg-warning" id="disk-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card metric-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="metric-label">Network I/O</div>
+                            <div class="metric-value fs-5" id="network-io">-- MB/s</div>
+                        </div>
+                        <i class="bi bi-ethernet text-success fs-2"></i>
+                    </div>
+                    <small class="text-muted mt-2">
+                        <i class="bi bi-arrow-up"></i> <span id="net-up">0</span>
+                        <i class="bi bi-arrow-down ms-2"></i> <span id="net-down">0</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <!-- Side Navigation -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Navigation</h5>
+                        <ul class="nav nav-pills flex-column" id="mainTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="services-tab" data-bs-toggle="tab" href="#services-content">
+                                    <i class="bi bi-hdd-stack me-2"></i>Services
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="processes-tab" data-bs-toggle="tab" href="#processes-content">
+                                    <i class="bi bi-activity me-2"></i>Processes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="terminal-tab" data-bs-toggle="tab" href="#terminal-content">
+                                    <i class="bi bi-terminal me-2"></i>Terminal
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="logs-tab" data-bs-toggle="tab" href="#logs-content">
+                                    <i class="bi bi-file-text me-2"></i>Logs
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tools-tab" data-bs-toggle="tab" href="#tools-content">
+                                    <i class="bi bi-tools me-2"></i>Tools
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="azure-tab" data-bs-toggle="tab" href="#azure-content">
+                                    <i class="bi bi-cloud-fill me-2"></i>Azure
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Quick Actions</h5>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="restartNginx()">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Restart Nginx
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="clearCache()">
+                                <i class="bi bi-trash me-1"></i>Clear Cache
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="checkPorts()">
+                                <i class="bi bi-diagram-3 me-1"></i>Check Ports
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="createBackup()">
+                                <i class="bi bi-cloud-arrow-up me-1"></i>Backup Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <!-- Tab Content -->
+                <div class="tab-content" id="mainTabContent">
+                    <!-- Services Tab -->
+                    <div class="tab-pane fade show active" id="services-content">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-hdd-stack me-2"></i>Service Management
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3" id="services-container">
+                                    <!-- Services will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Processes Tab -->
+                    <div class="tab-pane fade" id="processes-content">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-activity me-2"></i>Process Monitor
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark-custom">
+                                            <tr>
+                                                <th>PID</th>
+                                                <th>Name</th>
+                                                <th>User</th>
+                                                <th>CPU %</th>
+                                                <th>Memory %</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="processes-list">
+                                            <!-- Processes will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Terminal Tab -->
+                    <div class="tab-pane fade" id="terminal-content">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-terminal me-2"></i>Terminal
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">$</span>
+                                    <input type="text" class="form-control" id="command-input" 
+                                           placeholder="Enter command..." autocomplete="off">
+                                    <button class="btn btn-gradient" type="button" onclick="executeCommand()">
+                                        <i class="bi bi-play-fill me-1"></i>Execute
+                                    </button>
+                                </div>
+                                <div class="terminal" id="terminal-output">
+                                    <div>Welcome to FDX VM Terminal</div>
+                                    <div>Type 'help' for available commands</div>
+                                    <div>$ </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logs Tab -->
+                    <div class="tab-pane fade" id="logs-content">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-file-text me-2"></i>System Logs
+                                    </h5>
+                                    <select class="form-select form-select-sm w-auto" id="log-service" onchange="loadLogs()">
+                                        <option value="system">System</option>
+                                        <option value="foodxchange">FoodXchange</option>
+                                        <option value="fdx_crawler">FDX Crawler</option>
+                                        <option value="nginx">Nginx</option>
+                                        <option value="postgresql">PostgreSQL</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="terminal" id="logs-output">
+                                    <div class="text-center">
+                                        <div class="loading-spinner"></div> Loading logs...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tools Tab -->
+                    <div class="tab-pane fade" id="tools-content">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-tools me-2"></i>System Tools
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="bi bi-database me-2 text-primary"></i>Database Backup
+                                                </h5>
+                                                <p class="card-text">Create and upload database backup to Azure.</p>
+                                                <div class="mb-3">
+                                                    <select class="form-select form-select-sm" id="backup-type">
+                                                        <option value="full">Full Backup</option>
+                                                        <option value="incremental">Incremental</option>
+                                                        <option value="differential">Differential</option>
+                                                    </select>
+                                                </div>
+                                                <button class="btn btn-primary btn-sm" onclick="performBackup()">
+                                                    <i class="bi bi-cloud-arrow-up me-1"></i>Backup Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="bi bi-arrow-repeat me-2 text-warning"></i>System Update
+                                                </h5>
+                                                <p class="card-text">Update system packages and dependencies.</p>
+                                                <button class="btn btn-warning btn-sm" onclick="updateSystem()">
+                                                    <i class="bi bi-download me-1"></i>Update System
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 mt-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="bi bi-lightning me-2 text-success"></i>Command Shortcuts
+                                                </h5>
+                                                <div class="row g-2">
+                                                    <div class="col-auto">
+                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('df -h')">
+                                                            <i class="bi bi-hdd me-1"></i>Disk Space
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('free -h')">
+                                                            <i class="bi bi-memory me-1"></i>Memory Info
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('top -b -n 1 | head -20')">
+                                                            <i class="bi bi-cpu me-1"></i>Top Processes
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('netstat -tuln')">
+                                                            <i class="bi bi-ethernet me-1"></i>Network Ports
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('systemctl list-units --failed')">
+                                                            <i class="bi bi-exclamation-triangle me-1"></i>Failed Services
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Azure Tab -->
+                    <div class="tab-pane fade" id="azure-content">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-cloud-fill me-2"></i>Azure Integration
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="azure-status-container">
+                                    <div class="text-center">
+                                        <div class="loading-spinner"></div> Loading Azure status...
+                                    </div>
+                                </div>
+                                
+                                <div class="row g-3 mt-3">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="bi bi-graph-up me-2"></i>Azure Monitor
+                                                </h6>
+                                                <canvas id="azure-metrics-chart" class="chart-container"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="bi bi-bell me-2"></i>Alerts
+                                                </h6>
+                                                <div id="alerts-list" style="max-height: 200px; overflow-y: auto;">
+                                                    <!-- Alerts will be loaded here -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js for metrics visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+        // Global variables
+        let metricsInterval;
+        let servicesInterval;
+        let processesInterval;
+        let metricsChart;
+        let metricsHistory = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start monitoring
+            updateMetrics();
+            updateServices();
+            checkAzureStatus();
+            
+            // Set intervals
+            metricsInterval = setInterval(updateMetrics, 2000);
+            servicesInterval = setInterval(updateServices, 5000);
+            
+            // Setup event listeners
+            document.getElementById('command-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    executeCommand();
+                }
+            });
+            
+            // Tab change listeners
+            document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(e) {
+                    const target = e.target.getAttribute('href');
+                    if (target === '#processes-content') {
+                        updateProcesses();
+                    } else if (target === '#logs-content') {
+                        loadLogs();
+                    }
+                });
+            });
+            
+            // Initialize metrics chart
+            initializeMetricsChart();
+        });
+
+        // Update system metrics
+        async function updateMetrics() {
+            try {
+                const response = await fetch('/api/metrics');
+                const data = await response.json();
+                
+                // Update CPU
+                document.getElementById('cpu-usage').textContent = data.cpu.percent.toFixed(1) + '%';
+                document.getElementById('cpu-progress').style.width = data.cpu.percent + '%';
+                
+                // Update Memory
+                document.getElementById('memory-usage').textContent = data.memory.percent.toFixed(1) + '%';
+                document.getElementById('memory-progress').style.width = data.memory.percent + '%';
+                
+                // Update Disk (use root partition)
+                const rootDisk = data.disk['/'] || Object.values(data.disk)[0];
+                if (rootDisk) {
+                    document.getElementById('disk-usage').textContent = rootDisk.percent.toFixed(1) + '%';
+                    document.getElementById('disk-progress').style.width = rootDisk.percent + '%';
+                }
+                
+                // Update Network
+                const mbSent = (data.network.bytes_sent / 1024 / 1024).toFixed(1);
+                const mbRecv = (data.network.bytes_recv / 1024 / 1024).toFixed(1);
+                document.getElementById('net-up').textContent = mbSent + ' MB';
+                document.getElementById('net-down').textContent = mbRecv + ' MB';
+                
+                // Update status
+                document.getElementById('system-status').innerHTML = '<span class="text-success">Online</span>';
+                
+                // Store history for chart
+                metricsHistory.push({
+                    time: new Date(),
+                    cpu: data.cpu.percent,
+                    memory: data.memory.percent
+                });
+                
+                // Keep only last 50 points
+                if (metricsHistory.length > 50) {
+                    metricsHistory.shift();
+                }
+                
+                // Update chart if visible
+                if (metricsChart) {
+                    updateMetricsChart();
+                }
+                
+            } catch (error) {
+                console.error('Failed to update metrics:', error);
+                document.getElementById('system-status').innerHTML = '<span class="text-danger">Offline</span>';
+            }
+        }
+
+        // Update services status
+        async function updateServices() {
+            try {
+                const response = await fetch('/api/services');
+                const services = await response.json();
+                
+                let html = '';
+                for (const [id, service] of Object.entries(services)) {
+                    const isActive = service.overall;
+                    const statusClass = isActive ? 'active' : 'inactive';
+                    const statusBadge = isActive ? 'success' : 'danger';
+                    const statusText = isActive ? 'Running' : 'Stopped';
+                    
+                    html += `
+                        <div class="col-md-6">
+                            <div class="card service-card ${statusClass}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="card-title mb-1">
+                                                <span class="status-dot ${statusClass}"></span>
+                                                ${service.name}
+                                            </h6>
+                                            <span class="badge bg-${statusBadge} badge-status">
+                                                ${statusText}
+                                            </span>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-link text-muted" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#" onclick="manageService('${id}', 'start')">
+                                                    <i class="bi bi-play-fill me-2"></i>Start</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="manageService('${id}', 'stop')">
+                                                    <i class="bi bi-stop-fill me-2"></i>Stop</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="manageService('${id}', 'restart')">
+                                                    <i class="bi bi-arrow-clockwise me-2"></i>Restart</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    ${service.url ? `<a href="${service.url}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i>Open</a>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('services-container').innerHTML = html;
+                
+            } catch (error) {
+                console.error('Failed to update services:', error);
+            }
+        }
+
+        // Update processes
+        async function updateProcesses() {
+            try {
+                const response = await fetch('/api/processes');
+                const processes = await response.json();
+                
+                let html = '';
+                processes.forEach(proc => {
+                    html += `
+                        <tr>
+                            <td>${proc.pid}</td>
+                            <td>${proc.name}</td>
+                            <td>${proc.username || 'N/A'}</td>
+                            <td>${proc.cpu_percent.toFixed(1)}%</td>
+                            <td>${proc.memory_percent.toFixed(1)}%</td>
+                            <td><span class="badge bg-success">${proc.status}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                document.getElementById('processes-list').innerHTML = html;
+                
+            } catch (error) {
+                console.error('Failed to update processes:', error);
+            }
+        }
+
+        // Execute command
+        async function executeCommand() {
+            const input = document.getElementById('command-input');
+            const command = input.value.trim();
+            
+            if (!command) return;
+            
+            const output = document.getElementById('terminal-output');
+            output.innerHTML += `<div>$ ${command}</div>`;
+            
+            input.value = '';
+            input.disabled = true;
+            
+            try {
+                const response = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ command: command })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    output.innerHTML += `<div>${escapeHtml(result.stdout || 'Command executed successfully')}</div>`;
+                } else {
+                    output.innerHTML += `<div class="text-danger">Error: ${escapeHtml(result.stderr || result.detail || 'Command failed')}</div>`;
+                }
+                
+            } catch (error) {
+                output.innerHTML += `<div class="text-danger">Error: ${error.message}</div>`;
+            }
+            
+            input.disabled = false;
+            input.focus();
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Load logs
+        async function loadLogs() {
+            const service = document.getElementById('log-service').value;
+            const output = document.getElementById('logs-output');
+            
+            output.innerHTML = '<div class="text-center"><div class="loading-spinner"></div> Loading logs...</div>';
+            
+            try {
+                const response = await fetch(`/api/logs/${service}?lines=200`);
+                const data = await response.json();
+                
+                output.innerHTML = `<pre>${escapeHtml(data.logs)}</pre>`;
+                output.scrollTop = output.scrollHeight;
+                
+            } catch (error) {
+                output.innerHTML = `<div class="text-danger">Failed to load logs: ${error.message}</div>`;
+            }
+        }
+
+        // Manage service
+        async function manageService(serviceId, action) {
+            showAlert(`Executing ${action} on ${serviceId}...`, 'info');
+            
+            try {
+                const response = await fetch(`/api/service/${serviceId}/${action}`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showAlert(`Service ${action} completed successfully`, 'success');
+                    setTimeout(updateServices, 1000);
+                } else {
+                    showAlert(`Failed to ${action} service: ${result.stderr || 'Unknown error'}`, 'danger');
+                }
+                
+            } catch (error) {
+                showAlert(`Error: ${error.message}`, 'danger');
+            }
+        }
+
+        // Azure status check
+        async function checkAzureStatus() {
+            try {
+                const response = await fetch('/api/azure/status');
+                const status = await response.json();
+                
+                const badge = document.getElementById('azure-status');
+                if (status.storage_connected || status.email_connected || status.monitor_connected) {
+                    badge.innerHTML = '<i class="bi bi-cloud-check-fill me-1"></i>Azure Connected';
+                } else {
+                    badge.innerHTML = '<i class="bi bi-cloud-slash-fill me-1"></i>Azure Offline';
+                }
+                
+                // Update Azure tab content
+                const container = document.getElementById('azure-status-container');
+                container.innerHTML = `
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card ${status.storage_connected ? 'border-success' : 'border-secondary'}">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-hdd-stack fs-1 ${status.storage_connected ? 'text-success' : 'text-secondary'}"></i>
+                                    <h6 class="mt-2">Blob Storage</h6>
+                                    <span class="badge bg-${status.storage_connected ? 'success' : 'secondary'}">
+                                        ${status.storage_connected ? 'Connected' : 'Disconnected'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card ${status.email_connected ? 'border-success' : 'border-secondary'}">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-envelope fs-1 ${status.email_connected ? 'text-success' : 'text-secondary'}"></i>
+                                    <h6 class="mt-2">Email Service</h6>
+                                    <span class="badge bg-${status.email_connected ? 'success' : 'secondary'}">
+                                        ${status.email_connected ? 'Connected' : 'Disconnected'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card ${status.monitor_connected ? 'border-success' : 'border-secondary'}">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-graph-up fs-1 ${status.monitor_connected ? 'text-success' : 'text-secondary'}"></i>
+                                    <h6 class="mt-2">Azure Monitor</h6>
+                                    <span class="badge bg-${status.monitor_connected ? 'success' : 'secondary'}">
+                                        ${status.monitor_connected ? 'Connected' : 'Disconnected'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="mb-1"><strong>Subscription:</strong> ${status.subscription_id || 'Not configured'}</p>
+                        <p class="mb-1"><strong>Resource Group:</strong> ${status.resource_group || 'Not configured'}</p>
+                        <p class="mb-0"><strong>VM Name:</strong> ${status.vm_name || 'Not configured'}</p>
+                    </div>
+                `;
+                
+                // Load alerts
+                loadAlerts();
+                
+            } catch (error) {
+                console.error('Failed to check Azure status:', error);
+            }
+        }
+
+        // Load alerts
+        async function loadAlerts() {
+            try {
+                const response = await fetch('/api/alerts');
+                const alerts = await response.json();
+                
+                const alertsList = document.getElementById('alerts-list');
+                if (alerts.length === 0) {
+                    alertsList.innerHTML = '<p class="text-muted mb-0">No alerts</p>';
+                } else {
+                    let html = '';
+                    alerts.slice(-10).reverse().forEach(alert => {
+                        const icon = {
+                            'info': 'info-circle',
+                            'warning': 'exclamation-triangle',
+                            'error': 'x-circle',
+                            'critical': 'exclamation-octagon'
+                        }[alert.level] || 'bell';
+                        
+                        const color = {
+                            'info': 'info',
+                            'warning': 'warning',
+                            'error': 'danger',
+                            'critical': 'danger'
+                        }[alert.level] || 'secondary';
+                        
+                        html += `
+                            <div class="alert alert-${color} py-2 mb-2">
+                                <i class="bi bi-${icon} me-2"></i>
+                                <small>${alert.message}</small>
+                                <br>
+                                <small class="text-muted">${new Date(alert.timestamp).toLocaleString()}</small>
+                            </div>
+                        `;
+                    });
+                    alertsList.innerHTML = html;
+                }
+                
+            } catch (error) {
+                console.error('Failed to load alerts:', error);
+            }
+        }
+
+        // Quick actions
+        async function restartNginx() {
+            await manageService('nginx', 'restart');
+        }
+
+        async function clearCache() {
+            await runCommand('sudo sync && sudo sysctl -w vm.drop_caches=3');
+        }
+
+        async function checkPorts() {
+            await runCommand('sudo netstat -tuln | grep LISTEN');
+        }
+
+        async function createBackup() {
+            performBackup();
+        }
+
+        async function performBackup() {
+            const backupType = document.getElementById('backup-type')?.value || 'full';
+            showAlert('Creating backup...', 'info');
+            
+            try {
+                const response = await fetch('/api/backup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        backup_type: backupType,
+                        compress: true,
+                        upload_to_azure: true
+                    })
+                });
+                
+                const result = await response.json();
+                showAlert('Backup initiated. Check back in a few minutes.', 'success');
+                
+            } catch (error) {
+                showAlert(`Backup failed: ${error.message}`, 'danger');
+            }
+        }
+
+        async function updateSystem() {
+            if (!confirm('Update system packages? This may take several minutes.')) return;
+            
+            showAlert('Starting system update...', 'info');
+            // This would typically call an update endpoint
+            showAlert('System update initiated', 'success');
+        }
+
+        async function runCommand(command) {
+            document.getElementById('command-input').value = command;
+            document.querySelector('a[href="#terminal-content"]').click();
+            setTimeout(executeCommand, 100);
+        }
+
+        // Initialize metrics chart
+        function initializeMetricsChart() {
+            const ctx = document.getElementById('azure-metrics-chart');
+            if (!ctx) return;
+            
+            metricsChart = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'CPU %',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }, {
+                        label: 'Memory %',
+                        data: [],
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update metrics chart
+        function updateMetricsChart() {
+            if (!metricsChart) return;
+            
+            const labels = metricsHistory.map(m => m.time.toLocaleTimeString());
+            const cpuData = metricsHistory.map(m => m.cpu);
+            const memoryData = metricsHistory.map(m => m.memory);
+            
+            metricsChart.data.labels = labels;
+            metricsChart.data.datasets[0].data = cpuData;
+            metricsChart.data.datasets[1].data = memoryData;
+            metricsChart.update();
+        }
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show alert-floating" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            const container = document.getElementById('alert-container');
+            container.insertAdjacentHTML('beforeend', alertHtml);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const alert = container.lastElementChild;
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>

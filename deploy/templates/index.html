@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Home - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="display-4 text-center mb-5">Welcome to {{ app_name }}</h1>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">FastAPI Backend</h5>
+                        <p class="card-text">Powerful Python web framework for building APIs with automatic documentation.</p>
+                        <a href="/docs" class="btn btn-primary">API Docs</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Bootstrap Frontend</h5>
+                        <p class="card-text">Modern, responsive UI components for beautiful web interfaces.</p>
+                        <a href="#" class="btn btn-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Azure PostgreSQL</h5>
+                        <p class="card-text">Scalable cloud database for storing your application data.</p>
+                        <a href="/users" class="btn btn-primary">View Users</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <h3>Quick Stats</h3>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="bg-light p-4 rounded">
+                        <h2 class="text-primary">{{ stats.users }}</h2>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light p-4 rounded">
+                        <h2 class="text-success">{{ stats.active }}</h2>
+                        <p>Active Today</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light p-4 rounded">
+                        <h2 class="text-info">{{ stats.new }}</h2>
+                        <p>New This Week</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

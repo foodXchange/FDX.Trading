@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Compose Email - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4"><i class="bi bi-pencil-square"></i> Compose Email</h1>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Email Form -->
+            <div class="card">
+                <div class="card-body">
+                    <form id="emailForm">
+                        <!-- Email Type -->
+                        <div class="mb-3">
+                            <label class="form-label">Email Type</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="emailType" id="typeInquiry" value="inquiry" checked>
+                                <label class="btn btn-outline-primary" for="typeInquiry">
+                                    <i class="bi bi-search"></i> Inquiry
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="emailType" id="typeFollowUp" value="follow_up">
+                                <label class="btn btn-outline-primary" for="typeFollowUp">
+                                    <i class="bi bi-arrow-repeat"></i> Follow-up
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="emailType" id="typeThanks" value="thanks">
+                                <label class="btn btn-outline-primary" for="typeThanks">
+                                    <i class="bi bi-heart"></i> Thanks
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Supplier Info -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Supplier Name</label>
+                                <input type="text" class="form-control" id="supplierName" placeholder="e.g., Mediterranean Oil Co." required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Country</label>
+                                <input type="text" class="form-control" id="supplierCountry" placeholder="e.g., Italy" required>
+                            </div>
+                        </div>
+
+                        <!-- Products -->
+                        <div class="mb-3">
+                            <label class="form-label">Products/Interest</label>
+                            <input type="text" class="form-control" id="products" placeholder="e.g., Organic sunflower oil, olive oil">
+                            <small class="text-muted">What products are you interested in?</small>
+                        </div>
+
+                        <!-- AI Generate Button -->
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-success w-100" onclick="generateEmail()">
+                                <i class="bi bi-magic"></i> Generate Email with AI
+                            </button>
+                        </div>
+
+                        <!-- Email Content -->
+                        <div class="mb-3">
+                            <label class="form-label">Email Content</label>
+                            <textarea class="form-control" id="emailContent" rows="10" placeholder="Click 'Generate Email with AI' or write your own..."></textarea>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary flex-fill" onclick="sendEmail()">
+                                <i class="bi bi-send"></i> Send Email
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                                <i class="bi bi-save"></i> Save Draft
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Sidebar -->
+        <div class="col-lg-4">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Email Tips</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Inquiry Tips:</h6>
+                    <ul class="small">
+                        <li>Be specific about products</li>
+                        <li>Mention order quantities if known</li>
+                        <li>Ask about certifications</li>
+                    </ul>
+                    
+                    <h6>Follow-up Tips:</h6>
+                    <ul class="small">
+                        <li>Reference previous email</li>
+                        <li>Keep it brief and friendly</li>
+                        <li>Add value or new info</li>
+                    </ul>
+                    
+                    <h6>Best Practices:</h6>
+                    <ul class="small">
+                        <li>Personal greeting helps</li>
+                        <li>Clear call-to-action</li>
+                        <li>Professional signature</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function generateEmail() {
+    const supplierName = document.getElementById('supplierName').value;
+    const supplierCountry = document.getElementById('supplierCountry').value;
+    const products = document.getElementById('products').value;
+    const emailType = document.querySelector('input[name="emailType"]:checked').value;
+    
+    if (!supplierName || !supplierCountry) {
+        alert('Please enter supplier name and country');
+        return;
+    }
+    
+    // Show loading
+    const contentArea = document.getElementById('emailContent');
+    contentArea.value = 'Generating email with AI...';
+    
+    try {
+        const response = await fetch('/api/email/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                supplier_name: supplierName,
+                supplier_country: supplierCountry,
+                products: products,
+                email_type: emailType
+            })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            contentArea.value = data.content;
+        } else {
+            alert('Error generating email');
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+        contentArea.value = '';
+    }
+}
+
+function sendEmail() {
+    const content = document.getElementById('emailContent').value;
+    if (!content) {
+        alert('Please generate or write email content first');
+        return;
+    }
+    
+    // For now, just show success
+    alert('Email functionality will be connected to your email service');
+    
+    // In real implementation, send via your email service
+    // Could redirect to project page to select suppliers
+    // Or integrate with existing bulk email endpoint
+}
+
+function saveDraft() {
+    alert('Draft saved! (Feature coming soon)');
+}
+</script>
+{% endblock %}

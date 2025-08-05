@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Compose Email - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">✉️ Compose Email</h1>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Email Type -->
+                    <div class="mb-3">
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="type" id="inquiry" value="inquiry" checked>
+                            <label class="btn btn-outline-primary" for="inquiry">
+                                🔍 New Inquiry
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="type" id="followup" value="follow_up">
+                            <label class="btn btn-outline-primary" for="followup">
+                                🔄 Follow-up
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Supplier Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Select Suppliers</label>
+                        <select id="suppliers" class="form-select" multiple size="5">
+                            {% for supplier in suppliers %}
+                            <option value="{{ supplier.id }}" data-country="{{ supplier.country }}">
+                                {{ supplier.supplier_name }} ({{ supplier.country }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                    </div>
+                    
+                    <!-- Quick Fill -->
+                    <div class="mb-3">
+                        <label class="form-label">Products/Interest</label>
+                        <input type="text" id="products" class="form-control" 
+                               placeholder="e.g., sunflower oil, olive oil">
+                    </div>
+                    
+                    <!-- Generate Button -->
+                    <div class="mb-3">
+                        <button class="btn btn-success w-100" onclick="generateEmails()">
+                            🤖 Generate Emails with AI
+                        </button>
+                    </div>
+                    
+                    <!-- Preview Area -->
+                    <div id="preview" class="mb-3" style="display: none;">
+                        <label class="form-label">Email Preview</label>
+                        <div class="border rounded p-3 bg-light" id="emailContent">
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary flex-fill" onclick="sendEmails()" 
+                                id="sendBtn" style="display: none;">
+                            📤 Send Emails
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.location='/email'">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tips -->
+        <div class="col-lg-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6>💡 Quick Tips</h6>
+                    <ul class="small mb-0">
+                        <li>Select multiple suppliers for bulk send</li>
+                        <li>AI personalizes each email</li>
+                        <li>Emails are tracked automatically</li>
+                        <li>Check pipeline for responses</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let generatedEmails = {};
+
+async function generateEmails() {
+    const suppliers = document.getElementById('suppliers');
+    const selected = Array.from(suppliers.selectedOptions);
+    
+    if (selected.length === 0) {
+        alert('Please select at least one supplier');
+        return;
+    }
+    
+    const products = document.getElementById('products').value;
+    const type = document.querySelector('input[name="type"]:checked').value;
+    
+    // Show loading
+    document.getElementById('emailContent').innerHTML = 'Generating emails...';
+    document.getElementById('preview').style.display = 'block';
+    
+    // Generate for first supplier as preview
+    const firstSupplier = selected[0];
+    
+    try {
+        const response = await fetch('/email/ai/generate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: firstSupplier.text.split(' (')[0],
+                country: firstSupplier.dataset.country,
+                products: products,
+                type: type
+            })
+        });
+        
+        const data = await response.json();
+        
+        // Show preview
+        document.getElementById('emailContent').innerHTML = `
+            <strong>To:</strong> ${firstSupplier.text}<br>
+            <strong>Subject:</strong> Partnership Opportunity - FDX Trading<br>
+            <hr>
+            ${data.content.replace(/\n/g, '<br>')}
+            <hr>
+            <small class="text-muted">
+                This email will be personalized for each of the ${selected.length} selected suppliers
+            </small>
+        `;
+        
+        document.getElementById('sendBtn').style.display = 'block';
+        
+    } catch (error) {
+        alert('Error generating email');
+    }
+}
+
+async function sendEmails() {
+    const suppliers = Array.from(document.getElementById('suppliers').selectedOptions);
+    const supplierIds = suppliers.map(s => parseInt(s.value));
+    
+    if (!confirm(`Send emails to ${supplierIds.length} suppliers?`)) {
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        supplierIds.forEach(id => formData.append('supplier_ids', id));
+        formData.append('campaign_name', 'Direct Outreach');
+        
+        const response = await fetch('/email/send', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        alert(`✅ Sent ${result.sent} emails successfully!`);
+        window.location.href = '/email';
+        
+    } catch (error) {
+        alert('Error sending emails');
+    }
+}
+</script>
+{% endblock %}

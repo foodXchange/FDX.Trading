@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <a href="/projects" class="btn btn-sm btn-secondary mb-3">← Back</a>
+    
+    <h2 id="projectName">Loading...</h2>
+    
+    <!-- Simple filters -->
+    <div class="mb-3">
+        <select id="countryFilter" class="form-select form-select-sm d-inline-block w-auto">
+            <option value="">All Countries</option>
+        </select>
+        <input type="range" id="scoreFilter" class="form-range d-inline-block w-25 ms-3" min="0" max="100" value="0">
+        <span id="scoreLabel">Score: 0+</span>
+    </div>
+    
+    <!-- Suppliers list -->
+    <div id="suppliers"></div>
+</div>
+
+<script>
+const projectId = new URLSearchParams(window.location.search).get('id');
+let suppliers = [];
+
+// Load data
+fetch(`/api/projects/${projectId}`)
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('projectName').textContent = 'Error: ' + data.error;
+            return;
+        }
+        
+        document.getElementById('projectName').textContent = data.project.project_name;
+        suppliers = data.suppliers || [];
+        
+        // Setup country filter
+        const countries = [...new Set(suppliers.map(s => s.supplier_country))];
+        countries.forEach(country => {
+            document.getElementById('countryFilter').innerHTML += 
+                `<option value="${country}">${country}</option>`;
+        });
+        
+        showSuppliers();
+    });
+
+// Filters
+document.getElementById('countryFilter').onchange = showSuppliers;
+document.getElementById('scoreFilter').oninput = function() {
+    document.getElementById('scoreLabel').textContent = `Score: ${this.value}+`;
+    showSuppliers();
+};
+
+function showSuppliers() {
+    const country = document.getElementById('countryFilter').value;
+    const minScore = parseInt(document.getElementById('scoreFilter').value);
+    
+    const filtered = suppliers.filter(s => 
+        (!country || s.supplier_country === country) && 
+        (s.score || 0) >= minScore
+    );
+    
+    let html = `<p>${filtered.length} suppliers</p>`;
+    filtered.forEach(s => {
+        html += `
+            <div class="border p-3 mb-2">
+                <strong>${s.supplier_name}</strong> - ${s.supplier_country} 
+                <span class="badge bg-primary float-end">${s.score || 0}</span><br>
+                <small>${s.supplier_email || 'No email'}</small>
+            </div>
+        `;
+    });
+    
+    document.getElementById('suppliers').innerHTML = html;
+}
+</script>
+</body>
+</html>

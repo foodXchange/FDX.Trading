@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodXchange VM Quick Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .status-bar {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .webapp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .webapp-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 5px solid #27ae60;
+            position: relative;
+        }
+        
+        .webapp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .webapp-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+        
+        .webapp-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .url {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #2c3e50;
+            font-size: 0.9em;
+            border: 1px solid #e9ecef;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .credentials, .ssh-info {
+            background: #f8f9fa;
+            margin: 0 30px 30px 30px;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .credentials h4, .ssh-info h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .credentials p, .ssh-info p {
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        
+        .credentials strong, .ssh-info strong {
+            color: #2c3e50;
+        }
+        
+        .keyboard-shortcuts {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+        
+        .keyboard-shortcuts h4 {
+            margin-bottom: 15px;
+        }
+        
+        .shortcut {
+            display: inline-block;
+            background: #34495e;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 FoodXchange VM</h1>
+            <p>Quick Access Dashboard</p>
+        </div>
+        
+        <div class="status-bar">
+            ⚠️ Some services need Azure firewall configuration
+        </div>
+        
+        <div class="webapp-grid">
+            <div class="webapp-card" onclick="openWebapp('http://4.206.1.15')">
+                <div class="status-indicator"></div>
+                <h3>🌐 FastAPI App (FDX.trading)</h3>
+                <p>Main FoodXchange application with login interface</p>
+                <div class="url">http://4.206.1.15</div>
+            </div>
+            
+            <div class="webapp-card" onclick="openWebapp('http://4.206.1.15:8003')">
+                <div class="status-indicator"></div>
+                <h3>🕷️ FDX Crawler (23,206 Suppliers)</h3>
+                <p>Complete supplier database with search and AI email features</p>
+                <div class="url">http://4.206.1.15:8003</div>
+            </div>
+            
+            <div class="webapp-card" onclick="openWebapp('http://4.206.1.15:3000')">
+                <div class="status-indicator" style="background: #f39c12;"></div>
+                <h3>📊 Grafana Monitoring</h3>
+                <p>System monitoring dashboard (requires Azure firewall config)</p>
+                <div class="url">http://4.206.1.15:3000</div>
+                <div style="font-size: 0.8em; color: #e74c3c; margin-top: 10px;">⚠️ Port 3000 blocked by Azure firewall</div>
+            </div>
+            
+            <div class="webapp-card" onclick="openWebapp('http://4.206.1.15:19999')">
+                <div class="status-indicator" style="background: #f39c12;"></div>
+                <h3>⚡ Netdata Real-time</h3>
+                <p>Real-time system metrics (requires Azure firewall config)</p>
+                <div class="url">http://4.206.1.15:19999</div>
+                <div style="font-size: 0.8em; color: #e74c3c; margin-top: 10px;">⚠️ Port 19999 blocked by Azure firewall</div>
+            </div>
+        </div>
+        
+        <div class="credentials">
+            <h4>🔑 Grafana Login Credentials</h4>
+            <p><strong>Username:</strong> admin</p>
+            <p><strong>Password:</strong> admin</p>
+        </div>
+        
+        <div class="ssh-info">
+            <h4>🔗 SSH Connection</h4>
+            <p><strong>Host:</strong> fdxfounder@4.206.1.15</p>
+            <p><strong>SSH Key:</strong> ~/.ssh/fdx_founders_key</p>
+            <p><strong>Command:</strong> ssh -i ~/.ssh/fdx_founders_key fdxfounder@4.206.1.15</p>
+        </div>
+        
+        <div class="credentials" style="background: #fff3cd; border-left-color: #ffc107;">
+            <h4>🔧 Access Blocked Services via SSH Tunnel</h4>
+            <p><strong>For Grafana:</strong> ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 fdxfounder@4.206.1.15</p>
+            <p><strong>For Netdata:</strong> ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 fdxfounder@4.206.1.15</p>
+            <p><strong>Then access:</strong> http://localhost:3000 (Grafana) or http://localhost:19999 (Netdata)</p>
+        </div>
+        
+        <div class="keyboard-shortcuts">
+            <h4>⌨️ Keyboard Shortcuts</h4>
+            <div>
+                <span class="shortcut">1</span> - Open FastAPI App
+                <span class="shortcut">2</span> - Open FDX Crawler
+                <span class="shortcut">3</span> - Open Grafana
+                <span class="shortcut">4</span> - Open Netdata
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openWebapp(url) {
+            window.open(url, '_blank');
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case '1':
+                    openWebapp('http://4.206.1.15');
+                    break;
+                case '2':
+                    openWebapp('http://4.206.1.15:8003');
+                    break;
+                case '3':
+                    openWebapp('http://4.206.1.15:3000');
+                    break;
+                case '4':
+                    openWebapp('http://4.206.1.15:19999');
+                    break;
+            }
+        });
+    </script>
+</body>
+</html> 

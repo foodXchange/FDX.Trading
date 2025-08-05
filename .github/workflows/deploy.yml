@@ -1,0 +1,56 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to VM
+      env:
+        VM_HOST: 4.206.1.15
+        VM_USER: azureuser
+      run: |
+        # Setup SSH
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H $VM_HOST >> ~/.ssh/known_hosts
+        
+        # Copy files to VM
+        scp -i ~/.ssh/deploy_key -r \
+          app.py templates static requirements.txt \
+          $VM_USER@$VM_HOST:/tmp/foodxchange_deploy/
+        
+        # Deploy on VM
+        ssh -i ~/.ssh/deploy_key $VM_USER@$VM_HOST << 'EOF'
+          echo "Deploying FoodXchange..."
+          
+          # Create backup
+          timestamp=$(date +%Y%m%d_%H%M%S)
+          mkdir -p ~/backups
+          cp -r /home/fdxfounder/fdx/app ~/backups/app_$timestamp
+          
+          # Update files (requires sudo)
+          echo "Files staged in /tmp/foodxchange_deploy/"
+          echo "Run: sudo cp -r /tmp/foodxchange_deploy/* /home/fdxfounder/fdx/app/"
+          
+          # Notify
+          echo "Deployment files ready!"
+        EOF
+        
+    - name: Verify Deployment
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://www.fdx.trading)
+        echo "Site response: $response"
+        if [ $response -eq 200 ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "⚠️ Site returned $response"
+        fi

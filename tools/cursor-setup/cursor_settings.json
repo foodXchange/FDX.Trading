@@ -1,0 +1,49 @@
+{
+    // Command Palette and UI Settings
+    "workbench.commandPalette.preserveInput": true,
+    "workbench.quickOpen.closeOnFocusLost": false,
+    "workbench.commandPalette.history": 50,
+    
+    // Show command palette hint
+    "workbench.tips.enabled": true,
+    "workbench.statusBar.visible": true,
+    
+    // Remote SSH Settings
+    "remote.SSH.remotePlatform": {
+        "fdx-vm": "linux",
+        "4.206.1.15": "linux"
+    },
+    "remote.SSH.defaultExtensions": [
+        "ms-python.python",
+        "ms-vscode.remote-explorer"
+    ],
+    "remote.SSH.connectTimeout": 30,
+    "remote.SSH.showLoginTerminal": true,
+    
+    // Terminal Settings for better visibility
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "terminal.integrated.fontSize": 14,
+    
+    // Editor Settings
+    "editor.suggestSelection": "first",
+    "editor.minimap.enabled": true,
+    "editor.wordWrap": "on",
+    
+    // File Explorer
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    
+    // Auto Save
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    
+    // Python specific for your VM
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    
+    // Keyboard shortcuts hint
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#1a73e8",
+        "statusBar.foreground": "#ffffff",
+        "statusBar.debuggingBackground": "#d93025"
+    }
+}

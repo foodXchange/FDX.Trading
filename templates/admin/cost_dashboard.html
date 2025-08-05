@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Cost Monitor - Microsoft Founders Hub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-6">
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h1 class="text-3xl font-bold mb-2">Azure Cost Monitor</h1>
+        <p class="text-gray-600">Microsoft Founders Hub - Credit Usage Tracking</p>
+        <p class="text-sm text-gray-500 mt-2">Last updated: {{ last_updated }}</p>
+    </div>
+
+    <!-- Monthly Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Monthly Spend</h3>
+            <p class="text-3xl font-bold text-blue-600">${{ "%.2f"|format(month_spend.total_spend) }}</p>
+            <p class="text-sm text-gray-500 mt-2">
+                {{ month_spend.founders_hub_credits.percentage_used|round(1) }}% of credits used
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Credits Remaining</h3>
+            <p class="text-3xl font-bold text-green-600">${{ "%.2f"|format(month_spend.founders_hub_credits.remaining) }}</p>
+            <p class="text-sm text-gray-500 mt-2">
+                of ${{ month_spend.founders_hub_credits.monthly_credits }} monthly
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Today's Spend</h3>
+            <p class="text-3xl font-bold text-orange-600">${{ "%.2f"|format(daily_spend.total_spend) }}</p>
+            <p class="text-sm text-gray-500 mt-2">
+                {{ daily_spend.by_service|length }} services active
+            </p>
+        </div>
+    </div>
+
+    <!-- Service Breakdown -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Service Breakdown (This Month)</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2">Service</th>
+                        <th class="text-right py-2">Cost</th>
+                        <th class="text-right py-2">Transactions</th>
+                        <th class="text-right py-2">Last Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in month_spend.by_service %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-2">
+                            <span class="font-medium">{{ service.service|upper }}</span>
+                        </td>
+                        <td class="text-right py-2">${{ "%.2f"|format(service.total_cost) }}</td>
+                        <td class="text-right py-2">{{ service.transaction_count }}</td>
+                        <td class="text-right py-2 text-sm text-gray-600">
+                            {{ service.last_usage|default('', true) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Daily Trend Chart -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Daily Cost Trend</h2>
+        <div class="h-64 flex items-end space-x-2">
+            {% for day in month_spend.daily_trend[-7:] %}
+            <div class="flex-1 bg-blue-500 hover:bg-blue-600 transition-colors rounded-t"
+                 style="height: {{ (day.daily_cost / (month_spend.daily_trend|map(attribute='daily_cost')|max|default(1)) * 100)|round }}%"
+                 title="${{ "%.2f"|format(day.daily_cost) }} on {{ day.date }}">
+            </div>
+            {% endfor %}
+        </div>
+        <div class="flex justify-between mt-2 text-xs text-gray-600">
+            {% for day in month_spend.daily_trend[-7:] %}
+            <span>{{ day.date.strftime('%m/%d') }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Optimization Recommendations -->
+    {% if report.recommendations %}
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">💡 Cost Optimization Recommendations</h2>
+        <div class="space-y-4">
+            {% for rec in report.recommendations %}
+            <div class="border-l-4 border-yellow-400 pl-4 py-2">
+                <h4 class="font-semibold">{{ rec.service|upper }}: {{ rec.issue }}</h4>
+                <p class="text-gray-700">{{ rec.recommendation }}</p>
+                <p class="text-sm text-green-600 mt-1">Potential savings: {{ rec.potential_savings }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Budget Alerts -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Budget Alerts</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="border rounded p-4">
+                <h3 class="font-medium mb-2">OpenAI</h3>
+                <div class="flex justify-between items-center">
+                    <span>Budget: $50/mo</span>
+                    <button onclick="updateBudget('openai')" class="text-blue-600 hover:underline">Edit</button>
+                </div>
+            </div>
+            <div class="border rounded p-4">
+                <h3 class="font-medium mb-2">PostgreSQL</h3>
+                <div class="flex justify-between items-center">
+                    <span>Budget: $30/mo</span>
+                    <button onclick="updateBudget('postgresql')" class="text-blue-600 hover:underline">Edit</button>
+                </div>
+            </div>
+            <div class="border rounded p-4">
+                <h3 class="font-medium mb-2">Monitoring</h3>
+                <div class="flex justify-between items-center">
+                    <span>Target: $100/mo</span>
+                    <span class="text-sm text-gray-600">(for credits)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateBudget(service) {
+    const budget = prompt(`Enter new monthly budget for ${service}:`);
+    if (budget && !isNaN(budget)) {
+        fetch('/admin/api/costs/alert', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({service: service, budget: parseFloat(budget)})
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        });
+    }
+}
+
+// Auto-refresh every 60 seconds
+setTimeout(() => location.reload(), 60000);
+</script>
+{% endblock %}

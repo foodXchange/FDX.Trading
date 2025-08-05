@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Supplier Pipeline - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">📊 Supplier Pipeline</h1>
+    
+    <!-- Simple Kanban Board -->
+    <div class="row">
+        <!-- New -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">🆕 New ({{ pipeline.new|length }})</h6>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for supplier in pipeline.new[:20] %}
+                    <div class="card mb-2">
+                        <div class="card-body p-2">
+                            <h6 class="mb-1">{{ supplier.supplier_name }}</h6>
+                            <small class="text-muted">{{ supplier.country }}</small>
+                            <div class="mt-1">
+                                <button class="btn btn-sm btn-primary" onclick="quickEmail({{ supplier.id }})">
+                                    Send Email
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contacted -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">📤 Contacted ({{ pipeline.contacted|length }})</h6>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for supplier in pipeline.contacted[:20] %}
+                    <div class="card mb-2">
+                        <div class="card-body p-2">
+                            <h6 class="mb-1">{{ supplier.supplier_name }}</h6>
+                            <small class="text-muted">
+                                Sent: {{ supplier.sent_at.strftime('%m/%d') if supplier.sent_at else '-' }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Opened -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">👁️ Opened ({{ pipeline.opened|length }})</h6>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for supplier in pipeline.opened[:20] %}
+                    <div class="card mb-2">
+                        <div class="card-body p-2">
+                            <h6 class="mb-1">{{ supplier.supplier_name }}</h6>
+                            <small class="text-muted">
+                                Opened: {{ supplier.opened_at.strftime('%m/%d') if supplier.opened_at else '-' }}
+                            </small>
+                            <div class="mt-1">
+                                <button class="btn btn-sm btn-info" onclick="followUp({{ supplier.id }})">
+                                    Follow Up
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interested -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">✅ Interested ({{ pipeline.interested|length }})</h6>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for supplier in pipeline.interested[:20] %}
+                    <div class="card mb-2 border-success">
+                        <div class="card-body p-2">
+                            <h6 class="mb-1">{{ supplier.supplier_name }}</h6>
+                            <small class="text-success">
+                                Responded: {{ supplier.received_at.strftime('%m/%d') if supplier.received_at else '-' }}
+                            </small>
+                            <div class="mt-1">
+                                <a href="/suppliers/{{ supplier.id }}" class="btn btn-sm btn-success">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function quickEmail(supplierId) {
+    window.location.href = `/email/compose?supplier=${supplierId}`;
+}
+
+function followUp(supplierId) {
+    window.location.href = `/email/compose?supplier=${supplierId}&type=follow_up`;
+}
+</script>
+{% endblock %}
