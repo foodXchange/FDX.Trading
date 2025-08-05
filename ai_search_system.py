@@ -28,6 +28,9 @@ load_dotenv()
 class AISearchSystem:
     def __init__(self):
         self.db_url = os.getenv('DATABASE_URL')
+        if not self.db_url:
+            # Fallback to hardcoded URL if env var not found
+            self.db_url = "postgresql://fdxadmin:FDX2030!@fdx-postgres-server.postgres.database.azure.com:5432/foodxchange?sslmode=require"
         
     def get_db_connection(self):
         return psycopg2.connect(self.db_url, cursor_factory=RealDictCursor)
@@ -113,7 +116,7 @@ class AISearchSystem:
                     -- Extract matched terms
                     ARRAY(
                         SELECT DISTINCT term 
-                        FROM unnest(ARRAY%s) as term 
+                        FROM unnest(%s::text[]) as term 
                         WHERE LOWER(products) LIKE '%%' || LOWER(term) || '%%'
                     ) as matched_terms,
                     
