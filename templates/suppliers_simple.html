@@ -81,12 +81,18 @@
             let html = `<p><strong>${data.total_results} suppliers found</strong></p>`;
             
             currentResults.forEach((r) => {
+                // Format website URL for clickable link
+                const websiteLink = r.website && r.website !== 'null' && r.website !== '' 
+                    ? `<a href="${r.website.startsWith('http') ? r.website : 'https://' + r.website}" target="_blank" class="text-primary text-decoration-none">🔗 ${r.website}</a>`
+                    : '';
+                
                 html += `
                     <div class="border rounded p-2 mb-2">
                         <input type="checkbox" value="${r.supplier_id}" onchange="toggleSupplier(${r.supplier_id})">
                         <strong>${r.supplier_name}</strong> - ${r.country}<br>
-                        <small>${r.email || 'No email'}</small><br>
-                        <small>${r.product_preview}</small>
+                        <small class="text-muted">📧 ${r.email || 'No email'}</small><br>
+                        ${websiteLink ? `<small class="d-block">${websiteLink}</small>` : ''}
+                        <small class="text-secondary">${r.product_preview}</small>
                     </div>
                 `;
             });
