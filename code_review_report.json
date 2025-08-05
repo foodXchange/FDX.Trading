@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-08-05T22:32:01.271750",
+  "fixes_applied": 21,
+  "files_modified": [
+    "quick_vm_access.html",
+    "suppliers_simple_fixed.html",
+    "VM_QUICK_ACCESS.html",
+    "templates\\dashboard.html",
+    "templates\\dashboard_fastapi.html",
+    "templates\\email_compose.html",
+    "templates\\email_dashboard.html",
+    "templates\\projects.html",
+    "templates\\projects_lean.html",
+    "templates\\project_details.html",
+    "templates\\suppliers.html",
+    "templates\\suppliers_ai.html",
+    "templates\\suppliers_simple.html",
+    "deploy\\templates\\projects.html",
+    "deploy\\templates\\projects_lean.html",
+    "deploy\\templates\\project_details.html",
+    "deploy\\templates\\suppliers.html",
+    "templates\\admin\\cost_dashboard.html",
+    "templates\\email\\compose.html",
+    "templates\\email\\pipeline.html",
+    "tools\\vm-access\\quick_vm_access.html"
+  ],
+  "status": "All critical issues resolved"
+}

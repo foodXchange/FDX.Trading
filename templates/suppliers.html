@@ -175,11 +175,11 @@
     <div id="actionBar">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAll()">Select All</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAll()">Deselect All</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" type="button" onclick="selectAll()">Select All</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" type="button" onclick="deselectAll()">Deselect All</button>
                 <span class="ms-3"><strong id="selectedCount">0</strong> selected</span>
             </div>
-            <button type="button" class="btn btn-success" onclick="addToProject()" id="addToProjectBtn" disabled>
+            <button type="button" class="btn btn-success" type="button" onclick="addToProject()" id="addToProjectBtn" disabled>
                 <i class="bi bi-plus-circle"></i> Add to Project
             </button>
         </div>
@@ -222,7 +222,7 @@ async function loadSearchHistory() {
             `;
             
             data.searches.forEach(search => {
-                html += `<button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" 
+                html += `<button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" type="button" 
                          onclick="searchFromHistory('${search.query.replace(/'/g, "\\'")}')"
                          title="Click to search again">
                          <i class="bi bi-search"></i> ${search.query}

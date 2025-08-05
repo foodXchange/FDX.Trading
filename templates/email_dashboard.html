@@ -57,7 +57,7 @@
                     <a href="/email/compose" class="btn btn-success me-2">
                         <i class="bi bi-pencil-square"></i> Compose Email
                     </a>
-                    <button class="btn btn-info me-2" onclick="checkResponses()">
+                    <button class="btn btn-info me-2" type="button" onclick="checkResponses()">
                         <i class="bi bi-inbox"></i> Check Responses
                     </button>
                     <a href="/projects" class="btn btn-primary">
@@ -99,7 +99,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="viewEmail({{ email.id }})">
+                                        <button class="btn btn-sm btn-outline-primary" type="button" onclick="viewEmail({{ email.id }})">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </td>

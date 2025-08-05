@@ -161,10 +161,10 @@ function displayProjects(projects) {
                         </div>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-outline-primary btn-sm" onclick="viewProject(${project.id})">
+                        <button class="btn btn-outline-primary btn-sm" type="button" onclick="viewProject(${project.id})">
                             <i class="bi bi-eye"></i> View
                         </button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteProject(${project.id}, '${project.project_name}')">
+                        <button class="btn btn-outline-danger btn-sm" type="button" onclick="deleteProject(${project.id}, '${project.project_name}')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>

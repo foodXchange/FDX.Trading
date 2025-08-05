@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}FoodXchange VM Control Center - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row bg-primary text-white py-4">
+        <div class="col-12 text-center">
+            <h1 class="display-4">
+                <i class="fas fa-server me-3"></i>FoodXchange VM Control Center
+            </h1>
+            <p class="lead">Ubuntu/Linux Development Environment Dashboard</p>
+        </div>
+    </div>
+
+    <!-- Status Alert -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Some services require Azure firewall configuration for external access
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-server fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">VM Status</h5>
+                    <p class="card-text" id="vm-status">Online & Running</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-network-wired fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Network</h5>
+                    <p class="card-text">{{ config.host }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-shield-alt fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Security</h5>
+                    <p class="card-text">SSH Key Protected</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Uptime</h5>
+                    <p class="card-text" id="uptime">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Services Grid -->
+        <div class="col-lg-8">
+            <div class="row">
+                {% for service in config.services %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 service-card {% if service.warning %}border-warning{% endif %}" 
+                         data-url="{{ service.url }}" 
+                         data-service-name="{{ service.name }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title">
+                                    <i class="{{ service.icon }} me-2"></i>{{ service.name }}
+                                </h5>
+                                <span class="badge {% if service.status == 'online' %}bg-success{% elif service.status == 'offline' %}bg-danger{% else %}bg-warning{% endif %} status-badge">
+                                    {{ service.status|title }}
+                                </span>
+                            </div>
+                            <p class="card-text">{{ service.description }}</p>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" value="{{ service.url }}" readonly>
+                                <button class="btn btn-outline-secondary copy-btn" type="button" data-url="{{ service.url }}">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            {% if service.warning %}
+                            <div class="alert alert-warning alert-sm mb-0">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                {{ service.warning_message }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-primary btn-sm open-service" data-url="{{ service.url }}">
+                                <i class="fas fa-external-link-alt me-1"></i>Open Service
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Grafana Credentials -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-key me-2"></i>Grafana Credentials
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Username:</strong> {{ config.credentials.grafana.username }}</p>
+                    <p class="mb-3"><strong>Password:</strong> {{ config.credentials.grafana.password }}</p>
+                    <button class="btn btn-outline-primary btn-sm copy-credentials">
+                        <i class="fas fa-copy me-1"></i>Copy Credentials
+                    </button>
+                </div>
+            </div>
+
+            <!-- SSH Connection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-terminal me-2"></i>SSH Connection
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Host:</strong> {{ config.ssh.host }}</p>
+                    <p class="mb-3"><strong>SSH Key:</strong> {{ config.ssh.key }}</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" value="{{ config.ssh.command }}" readonly>
+                        <button class="btn btn-outline-secondary copy-btn" type="button" data-text="{{ config.ssh.command }}">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SSH Tunnel Access -->
+            <div class="card mb-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tunnel me-2"></i>SSH Tunnel Access
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Use these commands to access blocked services:</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Grafana:</strong></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" readonly>
+                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Netdata:</strong></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" readonly>
+                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info alert-sm">
+                        <strong>Then access:</strong><br>
+                        • http://localhost:3000 (Grafana)<br>
+                        • http://localhost:19999 (Netdata)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Shortcuts -->
+            <div class="card bg-dark text-white">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-keyboard me-2"></i>Quick Access
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button class="btn btn-outline-light btn-sm w-100 shortcut-btn" data-key="1" data-url="http://{{ config.host }}">
+                                <kbd>1</kbd> FastAPI
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-light btn-sm w-100 shortcut-btn" data-key="2" data-url="http://{{ config.host }}:8003">
+                                <kbd>2</kbd> Crawler
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-light btn-sm w-100 shortcut-btn" data-key="3" data-url="http://{{ config.host }}:3000">
+                                <kbd>3</kbd> Grafana
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-light btn-sm w-100 shortcut-btn" data-key="4" data-url="http://{{ config.host }}:19999">
+                                <kbd>4</kbd> Netdata
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="notification-toast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong class="me-auto">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message">
+            <!-- Message will be inserted here -->
+        </div>
+    </div>
+</div>
+{% endblock %} 

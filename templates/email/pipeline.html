@@ -21,7 +21,7 @@
                             <h6 class="mb-1">{{ supplier.supplier_name }}</h6>
                             <small class="text-muted">{{ supplier.country }}</small>
                             <div class="mt-1">
-                                <button class="btn btn-sm btn-primary" onclick="quickEmail({{ supplier.id }})">
+                                <button class="btn btn-sm btn-primary" type="button" onclick="quickEmail({{ supplier.id }})">
                                     Send Email
                                 </button>
                             </div>
@@ -68,7 +68,7 @@
                                 Opened: {{ supplier.opened_at.strftime('%m/%d') if supplier.opened_at else '-' }}
                             </small>
                             <div class="mt-1">
-                                <button class="btn btn-sm btn-info" onclick="followUp({{ supplier.id }})">
+                                <button class="btn btn-sm btn-info" type="button" onclick="followUp({{ supplier.id }})">
                                     Follow Up
                                 </button>
                             </div>

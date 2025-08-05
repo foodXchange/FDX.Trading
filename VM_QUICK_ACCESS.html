@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDX VM Quick Access</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007acc;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007acc;
+        }
+        .command {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 10px 0;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background: #005a9e;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .link-card {
+            background: #007acc;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .link-card:hover {
+            transform: translateY(-2px);
+            background: #005a9e;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.active {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 FDX VM Quick Access</h1>
+        
+        <div class="section">
+            <h2>VM Details</h2>
+            <p><strong>IP:</strong> 4.206.1.15 <span class="status active">ACTIVE</span></p>
+            <p><strong>User:</strong> fdxfounder</p>
+            <p><strong>App:</strong> FDX.trading Platform</p>
+            <p><strong>Database:</strong> 23,206+ Suppliers</p>
+        </div>
+
+        <div class="section">
+            <h2>Quick Commands</h2>
+            
+            <h3>SSH Connection</h3>
+            <div class="command">
+                ssh fdx-vm
+                <button class="copy-btn" type="button" onclick="copyToClipboard('ssh fdx-vm')">Copy</button>
+            </div>
+            
+            <h3>Check Supplier Count</h3>
+            <div class="command">
+                ssh fdx-vm "cd /home/fdxfounder/fdx/app && python3 -c 'from database import get_db_connection; conn = get_db_connection(); cur = conn.cursor(); cur.execute(\"SELECT COUNT(*) FROM suppliers\"); print(f\"Suppliers: {cur.fetchone()[0]:,}\")'"
+                <button class="copy-btn" type="button" onclick="copyToClipboard(this.parentElement.textContent.replace('Copy', '').trim())">Copy</button>
+            </div>
+            
+            <h3>Restart Application</h3>
+            <div class="command">
+                ssh fdx-vm "sudo systemctl restart foodxchange"
+                <button class="copy-btn" type="button" onclick="copyToClipboard('ssh fdx-vm \"sudo systemctl restart foodxchange\"')">Copy</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Web Access</h2>
+            <div class="links">
+                <a href="http://4.206.1.15" target="_blank" class="link-card">
+                    <h3>📊 Main App</h3>
+                    <p>FDX Platform</p>
+                </a>
+                <a href="http://4.206.1.15/suppliers" target="_blank" class="link-card">
+                    <h3>🔍 Search Suppliers</h3>
+                    <p>23,206+ Suppliers</p>
+                </a>
+                <a href="http://4.206.1.15/email" target="_blank" class="link-card">
+                    <h3>📧 Email Center</h3>
+                    <p>AI Email System</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>File Transfer</h2>
+            <h3>Upload to VM</h3>
+            <div class="command">
+                scp file.txt fdx-vm:/home/fdxfounder/
+                <button class="copy-btn" type="button" onclick="copyToClipboard('scp file.txt fdx-vm:/home/fdxfounder/')">Copy</button>
+            </div>
+            
+            <h3>Download from VM</h3>
+            <div class="command">
+                scp fdx-vm:/home/fdxfounder/file.txt ./
+                <button class="copy-btn" type="button" onclick="copyToClipboard('scp fdx-vm:/home/fdxfounder/file.txt ./')">Copy</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Development</h2>
+            <h3>VS Code Remote</h3>
+            <div class="command">
+                code --remote ssh-remote+fdx-vm /home/fdxfounder/fdx/app
+                <button class="copy-btn" type="button" onclick="copyToClipboard('code --remote ssh-remote+fdx-vm /home/fdxfounder/fdx/app')">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                event.target.textContent = 'Copied!';
+                setTimeout(() => {
+                    event.target.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -342,7 +342,7 @@
                             <div class="input-group">
                                 <input type="text" class="form-control" id="command-input" 
                                        placeholder="Enter command (safe commands only)...">
-                                <button class="btn btn-primary" onclick="executeCommand()">
+                                <button class="btn btn-primary" type="button" onclick="executeCommand()">
                                     <i class="fas fa-play me-2"></i>Execute
                                 </button>
                             </div>
@@ -379,7 +379,7 @@
                                             <i class="fas fa-database me-2"></i>Database Backup
                                         </h5>
                                         <p class="card-text">Create a backup of the PostgreSQL database.</p>
-                                        <button class="btn btn-primary btn-action" onclick="backupDatabase()">
+                                        <button class="btn btn-primary btn-action" type="button" onclick="backupDatabase()">
                                             <i class="fas fa-download me-2"></i>Backup Now
                                         </button>
                                     </div>
@@ -392,7 +392,7 @@
                                             <i class="fas fa-sync me-2"></i>System Update
                                         </h5>
                                         <p class="card-text">Update system packages and dependencies.</p>
-                                        <button class="btn btn-warning btn-action" onclick="updateSystem()">
+                                        <button class="btn btn-warning btn-action" type="button" onclick="updateSystem()">
                                             <i class="fas fa-arrow-up me-2"></i>Update System
                                         </button>
                                     </div>
@@ -408,16 +408,16 @@
                                             <i class="fas fa-rocket me-2"></i>Quick Actions
                                         </h5>
                                         <div class="btn-group" role="group">
-                                            <button class="btn btn-outline-primary" onclick="restartNginx()">
+                                            <button class="btn btn-outline-primary" type="button" onclick="restartNginx()">
                                                 <i class="fas fa-redo me-1"></i>Restart Nginx
                                             </button>
-                                            <button class="btn btn-outline-primary" onclick="clearCache()">
+                                            <button class="btn btn-outline-primary" type="button" onclick="clearCache()">
                                                 <i class="fas fa-broom me-1"></i>Clear Cache
                                             </button>
-                                            <button class="btn btn-outline-primary" onclick="checkPorts()">
+                                            <button class="btn btn-outline-primary" type="button" onclick="checkPorts()">
                                                 <i class="fas fa-network-wired me-1"></i>Check Ports
                                             </button>
-                                            <button class="btn btn-outline-primary" onclick="viewCron()">
+                                            <button class="btn btn-outline-primary" type="button" onclick="viewCron()">
                                                 <i class="fas fa-clock me-1"></i>View Cron Jobs
                                             </button>
                                         </div>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - FDX.trading</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Simple Navigation -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">FDX.trading</a>
+            <div class="d-flex">
+                <a class="nav-link text-white px-2" href="/suppliers">Search</a>
+                <a class="nav-link text-white px-2" href="/projects">Projects</a>
+                <a class="nav-link text-white px-2" href="/email">Email</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+        <h4>Find Suppliers</h4>
+        
+        <!-- Simple Search Form -->
+        <form id="searchForm" class="mb-4">
+            <div class="mb-2">
+                <textarea class="form-control" id="queryInput" name="query" rows="2" 
+                          placeholder="What products are you looking for?" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <!-- Results Area -->
+        <div id="results">
+            <p class="text-muted">Enter search terms above</p>
+        </div>
+    </div>
+
+    <!-- Selected Actions -->
+    <div class="position-fixed bottom-0 end-0 p-3" id="selectedActions" style="display: none;">
+        <div class="bg-white border rounded p-2 shadow">
+            <span id="selectedCount">0</span> selected
+            <button type="button" class="btn btn-sm btn-success" type="button" onclick="addToProject()">Add to Project</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedSuppliers = new Set();
+        let currentResults = [];
+
+        // Handle search
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const query = document.getElementById('queryInput').value.trim();
+            if (!query) return;
+            
+            document.getElementById('results').innerHTML = '<p>Searching...</p>';
+            
+            try {
+                // Use URLSearchParams for proper encoding
+                const params = new URLSearchParams();
+                params.append('query', query);
+                
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: params.toString()
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('results').innerHTML = '<p class="text-danger">Error searching. Please try again.</p>';
+            }
+        });
+
+        function displayResults(data) {
+            currentResults = data.results || [];
+            
+            if (currentResults.length === 0) {
+                document.getElementById('results').innerHTML = '<p>No suppliers found. Try different search terms.</p>';
+                return;
+            }
+            
+            let html = `<p><strong>${data.total_results} suppliers found</strong></p>`;
+            
+            currentResults.forEach((r) => {
+                html += `
+                    <div class="border rounded p-2 mb-2">
+                        <input type="checkbox" value="${r.supplier_id}" onchange="toggleSupplier(${r.supplier_id})">
+                        <strong>${r.supplier_name}</strong> - ${r.country}<br>
+                        <small>${r.email || 'No email'}</small><br>
+                        <small>${r.product_preview}</small>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('results').innerHTML = html;
+        }
+
+        function toggleSupplier(id) {
+            if (selectedSuppliers.has(id)) {
+                selectedSuppliers.delete(id);
+            } else {
+                selectedSuppliers.add(id);
+            }
+            
+            const count = selectedSuppliers.size;
+            document.getElementById('selectedActions').style.display = count > 0 ? 'block' : 'none';
+            document.getElementById('selectedCount').textContent = count;
+        }
+
+        async function addToProject() {
+            if (selectedSuppliers.size === 0) return;
+            
+            const projectName = prompt('Project name:');
+            if (!projectName) return;
+            
+            try {
+                const response = await fetch('/api/add-to-project', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        supplier_ids: Array.from(selectedSuppliers),
+                        project_name: projectName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.project_id) {
+                    alert('Added to project');
+                    window.location.href = `/project_details?id=${data.project_id}`;
+                }
+            } catch (error) {
+                alert('Error adding to project');
+            }
+        }
+    </script>
+</body>
+</html>

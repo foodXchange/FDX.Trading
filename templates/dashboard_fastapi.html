@@ -413,16 +413,16 @@
                     <div class="card-body">
                         <h5 class="card-title mb-3">Quick Actions</h5>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-sm btn-outline-primary" onclick="restartNginx()">
+                            <button class="btn btn-sm btn-outline-primary" type="button" onclick="restartNginx()">
                                 <i class="bi bi-arrow-clockwise me-1"></i>Restart Nginx
                             </button>
-                            <button class="btn btn-sm btn-outline-info" onclick="clearCache()">
+                            <button class="btn btn-sm btn-outline-info" type="button" onclick="clearCache()">
                                 <i class="bi bi-trash me-1"></i>Clear Cache
                             </button>
-                            <button class="btn btn-sm btn-outline-warning" onclick="checkPorts()">
+                            <button class="btn btn-sm btn-outline-warning" type="button" onclick="checkPorts()">
                                 <i class="bi bi-diagram-3 me-1"></i>Check Ports
                             </button>
-                            <button class="btn btn-sm btn-outline-success" onclick="createBackup()">
+                            <button class="btn btn-sm btn-outline-success" type="button" onclick="createBackup()">
                                 <i class="bi bi-cloud-arrow-up me-1"></i>Backup Now
                             </button>
                         </div>
@@ -492,7 +492,7 @@
                                     <span class="input-group-text">$</span>
                                     <input type="text" class="form-control" id="command-input" 
                                            placeholder="Enter command..." autocomplete="off">
-                                    <button class="btn btn-gradient" type="button" onclick="executeCommand()">
+                                    <button class="btn btn-gradient" type="button" type="button" onclick="executeCommand()">
                                         <i class="bi bi-play-fill me-1"></i>Execute
                                     </button>
                                 </div>
@@ -556,7 +556,7 @@
                                                         <option value="differential">Differential</option>
                                                     </select>
                                                 </div>
-                                                <button class="btn btn-primary btn-sm" onclick="performBackup()">
+                                                <button class="btn btn-primary btn-sm" type="button" onclick="performBackup()">
                                                     <i class="bi bi-cloud-arrow-up me-1"></i>Backup Now
                                                 </button>
                                             </div>
@@ -570,7 +570,7 @@
                                                     <i class="bi bi-arrow-repeat me-2 text-warning"></i>System Update
                                                 </h5>
                                                 <p class="card-text">Update system packages and dependencies.</p>
-                                                <button class="btn btn-warning btn-sm" onclick="updateSystem()">
+                                                <button class="btn btn-warning btn-sm" type="button" onclick="updateSystem()">
                                                     <i class="bi bi-download me-1"></i>Update System
                                                 </button>
                                             </div>
@@ -585,27 +585,27 @@
                                                 </h5>
                                                 <div class="row g-2">
                                                     <div class="col-auto">
-                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('df -h')">
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="runCommand('df -h')">
                                                             <i class="bi bi-hdd me-1"></i>Disk Space
                                                         </button>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('free -h')">
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="runCommand('free -h')">
                                                             <i class="bi bi-memory me-1"></i>Memory Info
                                                         </button>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('top -b -n 1 | head -20')">
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="runCommand('top -b -n 1 | head -20')">
                                                             <i class="bi bi-cpu me-1"></i>Top Processes
                                                         </button>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('netstat -tuln')">
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="runCommand('netstat -tuln')">
                                                             <i class="bi bi-ethernet me-1"></i>Network Ports
                                                         </button>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <button class="btn btn-outline-secondary btn-sm" onclick="runCommand('systemctl list-units --failed')">
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="runCommand('systemctl list-units --failed')">
                                                             <i class="bi bi-exclamation-triangle me-1"></i>Failed Services
                                                         </button>
                                                     </div>

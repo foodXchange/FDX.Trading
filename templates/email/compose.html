@@ -47,7 +47,7 @@
                     
                     <!-- Generate Button -->
                     <div class="mb-3">
-                        <button class="btn btn-success w-100" onclick="generateEmails()">
+                        <button class="btn btn-success w-100" type="button" onclick="generateEmails()">
                             🤖 Generate Emails with AI
                         </button>
                     </div>
@@ -61,11 +61,11 @@
                     
                     <!-- Action Buttons -->
                     <div class="d-flex gap-2">
-                        <button class="btn btn-primary flex-fill" onclick="sendEmails()" 
+                        <button class="btn btn-primary flex-fill" type="button" onclick="sendEmails()" 
                                 id="sendBtn" style="display: none;">
                             📤 Send Emails
                         </button>
-                        <button class="btn btn-secondary" onclick="window.location='/email'">
+                        <button class="btn btn-secondary" type="button" onclick="window.location='/email'">
                             Cancel
                         </button>
                     </div>
