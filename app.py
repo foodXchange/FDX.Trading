@@ -328,21 +328,23 @@ async def project_details_with_data(id: int = 1, country: str = None, min_score:
         cursor.close()
         conn.close()
 
-# HOME PAGE ROUTE - Login Page
+# Import AI search system at the top of the file
+try:
+    from ai_search_system import AISearchSystem
+    ai_search = AISearchSystem()
+except ImportError:
+    print("AI Search System not found - some features may be limited")
+    ai_search = None
+
+# HOME PAGE ROUTE - AI Search Page
 @app.get("/", response_class=HTMLResponse)  # GET request to root URL returns HTML
-async def home_login(request: Request):
+async def home_ai_search(request: Request):
     """
-    Home page shows the login form
-    This is the landing page for FDX.trading
+    Home page shows AI supplier search
+    Simple interface for 1-person company
     """
-    # Context data for the template
-    context = {
-        "request": request,  # Required by Jinja2
-        "message": None,  # No message initially
-        "message_type": None  # No message type
-    }
-    # Render the login template
-    return templates.TemplateResponse("login_lean.html", context)
+    # Go directly to suppliers search (skip login for simplicity)
+    return RedirectResponse(url="/suppliers", status_code=303)
 
 # LOGIN POST ROUTE - Handle login form submission
 @app.post("/login", response_class=HTMLResponse)  # POST request to /login
@@ -782,36 +784,127 @@ async def project_details_redirect(id: int, country: str = None, min_score: int 
 @app.get("/suppliers", response_class=HTMLResponse)
 async def suppliers_page(request: Request):
     """
-    Enhanced AI-powered suppliers page with multi-method search
+    AI-powered suppliers page - simple and clean for 1-person company
     """
-    # Load the full enhanced search page
-    try:
-        with open("templates/suppliers.html", "r", encoding="utf-8") as f:
-            html_content = f.read()
-        return HTMLResponse(content=html_content)
-    except Exception as e:
-        return HTMLResponse(
-            content=f"""
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Error</title>
-            </head>
-            <body>
-                <h1>Error loading suppliers page: {str(e)}</h1>
-            </body>
-            </html>
-            """,
-            status_code=500
-        )
+    # Use the simple template
+    return templates.TemplateResponse("suppliers_simple.html", {
+        "request": request,
+        "user_email": "udi@fdx.trading"
+    })
 
 
 
 
 # API ROUTES (for JavaScript/AJAX)
 
+# NEW API: AI Search Endpoint
+@app.post("/api/search")
+async def api_ai_search(request: Request):
+    """
+    Execute AI-powered search using the AI Search System
+    Simple endpoint for 1-person company use
+    """
+    from fastapi.responses import JSONResponse
+    
+    # Get form data
+    form_data = await request.form()
+    query = form_data.get('query', '')
+    verified_only = form_data.get('verified_only') == 'on'
+    min_rating = form_data.get('min_rating')
+    countries = form_data.get('countries', '')
+    
+    try:
+        # Parse filters
+        filters = {}
+        if verified_only:
+            filters['verified_only'] = True
+        if min_rating and min_rating != '':
+            filters['min_rating'] = float(min_rating)
+        if countries:
+            filters['countries'] = [c.strip() for c in countries.split(',') if c.strip()]
+        
+        # Execute search using AI search system
+        if ai_search:
+            results = ai_search.ai_search_suppliers(
+                query=query,
+                user_email='udi@fdx.trading',
+                filters=filters,
+                limit=50
+            )
+        else:
+            # Fallback to basic search
+            from database import get_db_connection
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            search_sql = """
+                SELECT id, supplier_name, company_name, country, products, 
+                       company_email, company_website, verified, rating
+                FROM suppliers
+                WHERE products IS NOT NULL 
+                AND company_email IS NOT NULL
+                AND (LOWER(products) LIKE %s OR LOWER(supplier_name) LIKE %s)
+                ORDER BY rating DESC NULLS LAST
+                LIMIT 50
+            """
+            
+            search_term = f"%{query.lower()}%"
+            cursor.execute(search_sql, (search_term, search_term))
+            
+            raw_results = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            # Format results
+            results = {
+                'query': query,
+                'total_results': len(raw_results),
+                'execution_time_ms': 100,
+                'results': []
+            }
+            
+            for r in raw_results:
+                results['results'].append({
+                    'supplier_id': r['id'],
+                    'supplier_name': r['supplier_name'],
+                    'company_name': r['company_name'],
+                    'country': r['country'],
+                    'email': r['company_email'],
+                    'website': r['company_website'],
+                    'verified': r['verified'],
+                    'rating': float(r['rating']) if r['rating'] else None,
+                    'product_preview': r['products'][:300] if r['products'] else '',
+                    'match_percentage': 85.0,
+                    'matched_terms': [query.split()[0]] if query else []
+                })
+        
+        return JSONResponse(content=results)
+    
+    except Exception as e:
+        return JSONResponse(
+            content={"error": f"Search error: {str(e)}"},
+            status_code=500
+        )
+
+# API: Get Search History
+@app.get("/api/search-history")
+async def api_search_history():
+    """Get user's search history"""
+    if ai_search:
+        history = ai_search.get_search_history('udi@fdx.trading', limit=10)
+        return {"history": history}
+    else:
+        return {"history": []}
+
+# API: Get Popular Searches  
+@app.get("/api/popular-searches")
+async def api_popular_searches():
+    """Get trending searches"""
+    if ai_search:
+        popular = ai_search.get_popular_searches(limit=10)
+        return {"popular": popular}
+    else:
+        return {"popular": []}
 
 # API: AI Supplier Search
 @app.get("/api/test")
@@ -871,7 +964,8 @@ async def api_ai_supplier_search(request: Request):
 @app.post("/api/add-to-project")
 async def api_add_to_project(request: Request):
     """
-    Add selected suppliers to user's project
+    Add selected suppliers to project and prepare for email campaigns
+    Integrates with AI search system
     """
     from fastapi.responses import JSONResponse
     from datetime import datetime
@@ -880,7 +974,6 @@ async def api_add_to_project(request: Request):
     project_name = body.get('project_name', 'Untitled Project')
     description = body.get('description', '')
     supplier_ids = body.get('supplier_ids', [])
-    suppliers_data = body.get('suppliers', [])
     
     if not supplier_ids:
         return JSONResponse(

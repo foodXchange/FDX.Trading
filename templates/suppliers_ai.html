@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - FDX.trading</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Very Simple Navigation -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">FDX.trading</a>
+            <div class="navbar-nav ms-auto flex-row">
+                <a class="nav-link active px-2" href="/suppliers">Search</a>
+                <a class="nav-link px-2" href="/projects">Projects</a>
+                <a class="nav-link px-2" href="/email">Email</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Simple Header -->
+        <h3>Supplier Search</h3>
+
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="searchForm" method="post" action="/api/search">
+                    <div class="mb-3">
+                        <label for="query" class="form-label fw-bold">What products are you looking for?</label>
+                        <textarea class="form-control" id="query" name="query" rows="2" 
+                                  placeholder="Example: chocolate wafer biscuits, organic olive oil, cheese puffs"
+                                  required></textarea>
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="countries" 
+                                   placeholder="Countries (e.g., Italy, Spain)">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" name="min_rating">
+                                <option value="">Any Rating</option>
+                                <option value="4.0">4.0+ Stars</option>
+                                <option value="4.5">4.5+ Stars</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="verified_only" id="verified">
+                                <label class="form-check-label" for="verified">Verified Only</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Search Suppliers
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <!-- Recent Searches -->
+                <div class="card mb-3">
+                    <div class="card-header py-2">
+                        <h6 class="mb-0"><i class="bi bi-clock-history"></i> Recent</h6>
+                    </div>
+                    <div class="card-body p-2" id="searchHistory">
+                        <small class="text-muted">Loading...</small>
+                    </div>
+                </div>
+
+                <!-- Your Projects -->
+                <div class="card">
+                    <div class="card-header py-2">
+                        <h6 class="mb-0"><i class="bi bi-folder"></i> Projects</h6>
+                    </div>
+                    <div class="card-body p-2" id="projectsList">
+                        <small class="text-muted">Loading...</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="col-md-9">
+                <div id="results">
+                    <div class="text-center p-5 text-muted">
+                        <i class="bi bi-search" style="font-size: 3rem;"></i>
+                        <p>Enter search terms above</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selected Actions -->
+    <div class="position-fixed bottom-0 end-0 p-3" id="selectedActions" style="display: none;">
+        <div class="card shadow">
+            <div class="card-body">
+                <strong><span id="selectedCount">0</span> selected</strong>
+                <button class="btn btn-success btn-sm ms-2" onclick="addToProject()">
+                    <i class="bi bi-folder-plus"></i> Add to Project
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedSuppliers = new Set();
+        let currentResults = [];
+
+        // Load sidebar data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSearchHistory();
+            loadProjects();
+        });
+
+        // Handle search form
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            document.getElementById('results').innerHTML = `
+                <div class="text-center p-5">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2">Searching...</p>
+                </div>
+            `;
+            
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                displayResults(data);
+                loadSearchHistory();
+                
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="alert alert-danger">Search error. Please try again.</div>
+                `;
+            }
+        });
+
+        function displayResults(data) {
+            currentResults = data.results || [];
+            
+            if (currentResults.length === 0) {
+                document.getElementById('results').innerHTML = `
+                    <div class="alert alert-info">No suppliers found. Try different terms.</div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div class="d-flex justify-content-between mb-3">
+                    <h5>${data.total_results} suppliers found</h5>
+                    <label>
+                        <input type="checkbox" id="selectAll" onchange="toggleAll()"> Select All
+                    </label>
+                </div>
+            `;
+            
+            currentResults.forEach((r, i) => {
+                html += `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <input type="checkbox" class="form-check-input" 
+                                           value="${r.supplier_id}" onchange="toggleSupplier(${r.supplier_id})">
+                                </div>
+                                <div class="col">
+                                    <h6>${r.supplier_name}</h6>
+                                    <small class="text-muted">
+                                        ${r.country} | ${r.email || 'No email'}
+                                        ${r.verified ? '<span class="badge bg-success">Verified</span>' : ''}
+                                    </small>
+                                    <p class="mb-0 small">${r.product_preview}</p>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="badge bg-primary">${r.match_percentage}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('results').innerHTML = html;
+        }
+
+        function toggleSupplier(id) {
+            if (selectedSuppliers.has(id)) {
+                selectedSuppliers.delete(id);
+            } else {
+                selectedSuppliers.add(id);
+            }
+            updateSelectedActions();
+        }
+
+        function toggleAll() {
+            const selectAll = document.getElementById('selectAll').checked;
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                if (cb.id !== 'selectAll' && cb.id !== 'verified') {
+                    cb.checked = selectAll;
+                    const id = parseInt(cb.value);
+                    if (selectAll) {
+                        selectedSuppliers.add(id);
+                    } else {
+                        selectedSuppliers.delete(id);
+                    }
+                }
+            });
+            updateSelectedActions();
+        }
+
+        function updateSelectedActions() {
+            const count = selectedSuppliers.size;
+            document.getElementById('selectedActions').style.display = count > 0 ? 'block' : 'none';
+            document.getElementById('selectedCount').textContent = count;
+        }
+
+        async function addToProject() {
+            if (selectedSuppliers.size === 0) return;
+            
+            const projectName = prompt('Project name:');
+            if (!projectName) return;
+            
+            try {
+                const response = await fetch('/api/add-to-project', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        supplier_ids: Array.from(selectedSuppliers),
+                        project_name: projectName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.project_id) {
+                    alert(`Added ${data.suppliers_added} suppliers to "${projectName}"`);
+                    window.location.href = `/project_details?id=${data.project_id}`;
+                }
+            } catch (error) {
+                alert('Error adding to project');
+            }
+        }
+
+        async function loadSearchHistory() {
+            try {
+                const response = await fetch('/api/search-history');
+                const data = await response.json();
+                
+                const container = document.getElementById('searchHistory');
+                if (data.history && data.history.length > 0) {
+                    container.innerHTML = data.history.slice(0, 5).map(h => `
+                        <div class="p-1">
+                            <small class="d-block" style="cursor: pointer;" 
+                                   onclick="document.getElementById('query').value='${h.search_query}'; document.getElementById('searchForm').dispatchEvent(new Event('submit'));">
+                                ${h.search_query}
+                            </small>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<small class="text-muted">No searches yet</small>';
+                }
+            } catch (error) {
+                console.error('Error loading history');
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch('/api/projects');
+                const data = await response.json();
+                
+                const container = document.getElementById('projectsList');
+                if (data.projects && data.projects.length > 0) {
+                    container.innerHTML = data.projects.slice(0, 5).map(p => `
+                        <div class="p-1">
+                            <a href="/project_details?id=${p.id}" class="text-decoration-none">
+                                <small>${p.project_name} (${p.supplier_count})</small>
+                            </a>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<small class="text-muted">No projects yet</small>';
+                }
+            } catch (error) {
+                console.error('Error loading projects');
+            }
+        }
+    </script>
+</body>
+</html>
