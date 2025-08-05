@@ -328,12 +328,13 @@ async def project_details_with_data(id: int = 1, country: str = None, min_score:
         cursor.close()
         conn.close()
 
-# Import AI search system at the top of the file
+# Import Fixed search system at the top of the file
 try:
-    from ai_search_system import AISearchSystem
-    ai_search = AISearchSystem()
-except ImportError:
-    print("AI Search System not found - some features may be limited")
+    from fixed_search_system import FixedSearchSystem
+    ai_search = FixedSearchSystem()  # Keep the same variable name for compatibility
+    print("✅ Search System initialized successfully")
+except ImportError as e:
+    print(f"❌ Search System not found: {e}")
     ai_search = None
 
 # HOME PAGE ROUTE - AI Search Page
@@ -797,12 +798,13 @@ async def suppliers_page(request: Request):
 
 # API ROUTES (for JavaScript/AJAX)
 
-# NEW API: AI Search Endpoint
+# NEW API: Smart Database Search Endpoint (NOT using AI on all records)
 @app.post("/api/search")
-async def api_ai_search(request: Request):
+async def api_smart_search(request: Request):
     """
-    Execute AI-powered search using the AI Search System
-    Simple endpoint for 1-person company use
+    Execute smart database search with intelligent scoring
+    NOTE: This uses database pattern matching, NOT AI on every record
+    Fast and efficient for 1-person company use
     """
     from fastapi.responses import JSONResponse
     
@@ -823,9 +825,9 @@ async def api_ai_search(request: Request):
         if countries:
             filters['countries'] = [c.strip() for c in countries.split(',') if c.strip()]
         
-        # Execute search using AI search system
+        # Execute search using Fixed search system
         if ai_search:
-            results = ai_search.ai_search_suppliers(
+            results = ai_search.search_suppliers(
                 query=query,
                 user_email='udi@fdx.trading',
                 filters=filters,
