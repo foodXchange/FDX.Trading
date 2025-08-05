@@ -16,9 +16,9 @@ load_dotenv()
 
 # Azure OpenAI configuration
 client = AzureOpenAI(
-    api_key="4mSTbyKUOviCB5cxUXY7xKveMTmeRqozTJSmW61MkJzSknM8YsBLJQQJ99BDACYeBjFXJ3w3AAAAACOGtOUz",
+    api_key=os.getenv('AZURE_OPENAI_KEY'),
     api_version="2024-02-01",
-    azure_endpoint="https://foodzxaihub2ea6656946887.cognitiveservices.azure.com/"
+    azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT')
 )
 
 class EnhancedSearch:
