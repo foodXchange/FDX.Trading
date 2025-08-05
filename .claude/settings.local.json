@@ -469,7 +469,8 @@
       "Bash(C:UsersfoodzDesktopFoodXchangefix_vscode_ssh.bat)",
       "Bash(\"C:\\Users\\foodz\\AppData\\Local\\Programs\\Microsoft VS Code\\bin\\code\" --new-window --folder-uri vscode-remote://ssh-remote+fdx-vm/home/fdxfounder/fdx/app)",
       "Bash(Create_Desktop_Shortcuts.bat)",
-      "Bash(C:UsersfoodzDesktopFoodXchangeCreate_Desktop_Shortcuts.bat)"
+      "Bash(C:UsersfoodzDesktopFoodXchangeCreate_Desktop_Shortcuts.bat)",
+      "Bash(set FILTER_BRANCH_SQUELCH_WARNING=1)"
     ],
     "deny": []
   }
