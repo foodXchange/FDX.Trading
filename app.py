@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates  # Jinja2Templates: render HTML t
 from typing import List, Dict  # Type hints for better code
 import os  # Operating system functions
 from dotenv import load_dotenv  # Load environment variables from .env file
+from datetime import datetime  # DateTime for timestamps
 # Database imports handled within routes as needed
 
 # Load environment variables from .env file
@@ -336,6 +337,20 @@ try:
 except ImportError as e:
     print(f"❌ Search System not found: {e}")
     ai_search = None
+
+# Import optional modules with proper error handling
+try:
+    from email_service_lean import email_service
+    print("✅ Email CRM module loaded")
+except ImportError:
+    print("ℹ️ Email CRM module not found - email features will be limited")
+    email_service = None
+
+try:
+    import admin_cost_monitoring
+    print("✅ Admin cost monitoring module loaded")
+except ImportError:
+    print("ℹ️ Admin cost monitoring module not found - cost monitoring disabled")
 
 # HOME PAGE ROUTE - AI Search Page
 @app.get("/", response_class=HTMLResponse)  # GET request to root URL returns HTML
@@ -841,7 +856,7 @@ async def api_smart_search(request: Request):
             
             search_sql = """
                 SELECT id, supplier_name, company_name, country, products, 
-                       company_email, company_website, verified, rating
+                       company_email, company_website, verified, rating, company_phone
                 FROM suppliers
                 WHERE products IS NOT NULL 
                 AND company_email IS NOT NULL
@@ -1714,6 +1729,17 @@ async def get_email_details(email_id: int):
         })
     else:
         return JSONResponse({"error": "Email not found"}, status_code=404)
+
+# HEALTH CHECK ENDPOINT
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        "status": "healthy",
+        "message": "FDX.trading app is running",
+        "search_system": "working" if ai_search else "not available",
+        "timestamp": datetime.now().isoformat()
+    }
 
 # === RUN THE APP ===
 # This code runs when you execute: python app.py
