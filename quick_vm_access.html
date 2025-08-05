@@ -547,7 +547,7 @@
                     <h4><i class="fas fa-terminal"></i> SSH Connection</h4>
                     <p><strong>Host:</strong> fdxfounder@4.206.1.15</p>
                     <p><strong>SSH Key:</strong> ~/.ssh/fdx_founders_key</p>
-                    <div class="ssh-command" onclick="copyToClipboard('ssh -i ~/.ssh/fdx_founders_key fdxfounder@4.206.1.15')">
+                    <div class="ssh-command" onclick="copyToClipboard('ssh -i ~/.ssh/fdx_founders_key fdxfounder@4.206.1.15')" role="button" tabindex="0" aria-label="Copy SSH connection command to clipboard">
                         ssh -i ~/.ssh/fdx_founders_key fdxfounder@4.206.1.15
                     </div>
                 </div>
@@ -555,10 +555,10 @@
                 <div class="info-card warning">
                     <h4><i class="fas fa-tunnel"></i> SSH Tunnel Access</h4>
                     <p>Use these commands to access blocked services:</p>
-                    <div class="ssh-command" onclick="copyToClipboard('ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 fdxfounder@4.206.1.15')">
+                    <div class="ssh-command" onclick="copyToClipboard('ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 fdxfounder@4.206.1.15')" role="button" tabindex="0" aria-label="Copy Grafana SSH tunnel command to clipboard">
                         Grafana: ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 fdxfounder@4.206.1.15
                     </div>
-                    <div class="ssh-command" onclick="copyToClipboard('ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 fdxfounder@4.206.1.15')">
+                    <div class="ssh-command" onclick="copyToClipboard('ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 fdxfounder@4.206.1.15')" role="button" tabindex="0" aria-label="Copy Netdata SSH tunnel command to clipboard">
                         Netdata: ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 fdxfounder@4.206.1.15
                     </div>
                     <p style="margin-top: 10px; font-size: 0.9em;">

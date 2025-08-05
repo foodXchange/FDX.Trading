@@ -20,7 +20,7 @@
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <i class="fas fa-exclamation-triangle me-2"></i>
                 Some services require Azure firewall configuration for external access
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close warning message"></button>
             </div>
         </div>
     </div>
@@ -86,8 +86,8 @@
                             </div>
                             <p class="card-text">{{ service.description }}</p>
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" value="{{ service.url }}" readonly>
-                                <button class="btn btn-outline-secondary copy-btn" type="button" data-url="{{ service.url }}">
+                                <input type="text" class="form-control" value="{{ service.url }}" readonly aria-label="Service URL for {{ service.name }}">
+                                <button class="btn btn-outline-secondary copy-btn" type="button" data-url="{{ service.url }}" aria-label="Copy {{ service.name }} URL to clipboard">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
@@ -138,8 +138,8 @@
                     <p class="mb-2"><strong>Host:</strong> {{ config.ssh.host }}</p>
                     <p class="mb-3"><strong>SSH Key:</strong> {{ config.ssh.key }}</p>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" value="{{ config.ssh.command }}" readonly>
-                        <button class="btn btn-outline-secondary copy-btn" type="button" data-text="{{ config.ssh.command }}">
+                        <input type="text" class="form-control" value="{{ config.ssh.command }}" readonly aria-label="SSH connection command">
+                        <button class="btn btn-outline-secondary copy-btn" type="button" data-text="{{ config.ssh.command }}" aria-label="Copy SSH command to clipboard">
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
@@ -159,8 +159,8 @@
                     <div class="mb-3">
                         <label class="form-label"><strong>Grafana:</strong></label>
                         <div class="input-group">
-                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" readonly>
-                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}">
+                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" readonly aria-label="SSH tunnel command for Grafana">
+                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" aria-label="Copy Grafana SSH tunnel command">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -169,8 +169,8 @@
                     <div class="mb-3">
                         <label class="form-label"><strong>Netdata:</strong></label>
                         <div class="input-group">
-                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" readonly>
-                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}">
+                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" readonly aria-label="SSH tunnel command for Netdata">
+                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" aria-label="Copy Netdata SSH tunnel command">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -226,7 +226,7 @@
         <div class="toast-header">
             <i class="fas fa-info-circle me-2"></i>
             <strong class="me-auto">Notification</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close notification"></button>
         </div>
         <div class="toast-body" id="toast-message">
             <!-- Message will be inserted here -->

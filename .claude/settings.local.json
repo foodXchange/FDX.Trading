@@ -476,7 +476,8 @@
       "Bash(C:UsersfoodzDesktopFoodXchangedeploy_to_production.bat)",
       "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe fixed_search_system.py)",
       "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe -c \"\nimport psycopg2\nfrom dotenv import load_dotenv\nimport os\n\nload_dotenv()\n\nconn = psycopg2.connect(os.getenv(''DATABASE_URL''))\ncur = conn.cursor()\n\ncur.execute(\"\"\"\"\"\"\n    SELECT column_name \n    FROM information_schema.columns \n    WHERE table_name = ''suppliers''\n    ORDER BY ordinal_position\n\"\"\"\"\"\")\n\ncolumns = cur.fetchall()\nprint(''Suppliers table columns:'')\nfor col in columns:\n    print(f''  - {col[0]}'')\n\ncur.close()\nconn.close()\n\")",
-      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe quick_vm_fix.py)"
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe quick_vm_fix.py)",
+      "Bash(/c/Users/foodz/AppData/Local/Programs/Python/Python312/python.exe -c \"\nfrom fixed_search_system import FixedSearchSystem\nsearch = FixedSearchSystem()\nresults = search.search_suppliers(''oil'', limit=2)\nprint(f''Found {results[\"\"total_results\"\"]} results'')\nif results[''results'']:\n    first = results[''results''][0]\n    print(f''Website: {first.get(\"\"website\"\", \"\"No website\"\")}'')\n\")"
     ],
     "deny": []
   }

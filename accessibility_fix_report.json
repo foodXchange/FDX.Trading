@@ -1,0 +1,224 @@
+{
+  "summary": {
+    "files_checked": 43,
+    "files_fixed": 0,
+    "timestamp": "2025-08-05"
+  },
+  "results": [
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\postgres_dashboard.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\quick_vm_access.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\suppliers_simple_fixed.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\suppliers_updated.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\test_live_site.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\VM_QUICK_ACCESS.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\base.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\base_authenticated.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\dashboard_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\index.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\login.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\login_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\projects.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\projects_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\project_details.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\project_details_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\project_details_simple.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\deploy\\templates\\suppliers.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\base.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\base_authenticated.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\dashboard.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\dashboard_fastapi.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\dashboard_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\email_compose.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\email_dashboard.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\index.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\login.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\login_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\projects.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\projects_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\project_details.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\project_details_lean.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\project_details_simple.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\suppliers.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\suppliers_ai.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\suppliers_simple.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\admin\\cost_dashboard.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\email\\compose.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\email\\dashboard.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\templates\\email\\pipeline.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\tools\\vm-access\\quick_vm_access.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\tools\\vm-access\\templates\\base.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    },
+    {
+      "file": "C:\\Users\\foodz\\Desktop\\FoodXchange\\tools\\vm-access\\templates\\dashboard.html",
+      "error": "look-behind requires fixed-width pattern",
+      "status": "error"
+    }
+  ]
+}
