@@ -36,6 +36,7 @@ env/
 .pydevproject
 
 # Environment variables
+.env
 .env.local
 .env.*.local
 
