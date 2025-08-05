@@ -895,12 +895,16 @@ async def api_smart_search(request: Request):
                     'matched_terms': [query.split()[0]] if query else []
                 })
         
-        return JSONResponse(content=results)
+        return JSONResponse(
+            content=results,
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
     
     except Exception as e:
         return JSONResponse(
             content={"error": f"Search error: {str(e)}"},
-            status_code=500
+            status_code=500,
+            headers={"Content-Type": "application/json; charset=utf-8"}
         )
 
 # API: Get Search History
