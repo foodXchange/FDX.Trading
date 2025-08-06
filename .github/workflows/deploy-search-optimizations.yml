@@ -1,0 +1,361 @@
+name: Deploy Search Optimizations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - milestone-bulk-email-fdx-rebrand
+    paths:
+      - 'optimize_product_search.py'
+      - 'product_variation_handler.py'
+      - 'enhance_supplier_data.py'
+      - 'openai_search.py'
+      - 'advanced_search_system.py'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "${{ secrets.VM_HOST }} ssh-rsa ${{ secrets.VM_HOST_KEY }}" >> ~/.ssh/known_hosts
+    
+    - name: Deploy optimization files
+      run: |
+        echo "Deploying search optimization files..."
+        scp -i ~/.ssh/id_rsa optimize_product_search.py azureuser@${{ secrets.VM_HOST }}:/home/fdxfounder/fdx/app/
+        scp -i ~/.ssh/id_rsa product_variation_handler.py azureuser@${{ secrets.VM_HOST }}:/home/fdxfounder/fdx/app/
+        scp -i ~/.ssh/id_rsa enhance_supplier_data.py azureuser@${{ secrets.VM_HOST }}:/home/fdxfounder/fdx/app/
+        scp -i ~/.ssh/id_rsa openai_search.py azureuser@${{ secrets.VM_HOST }}:/home/fdxfounder/fdx/app/
+        scp -i ~/.ssh/id_rsa advanced_search_system.py azureuser@${{ secrets.VM_HOST }}:/home/fdxfounder/fdx/app/
+    
+    - name: Configure Azure OpenAI credentials
+      run: |
+        ssh -i ~/.ssh/id_rsa azureuser@${{ secrets.VM_HOST }} << 'EOF'
+          cd /home/fdxfounder/fdx/app
+          
+          # Add Azure OpenAI credentials to .env
+          if ! grep -q "AZURE_OPENAI_KEY" .env 2>/dev/null; then
+            echo "" >> .env
+            echo "# Azure OpenAI Configuration" >> .env
+            echo "AZURE_OPENAI_KEY=${{ secrets.AZURE_OPENAI_KEY }}" >> .env
+            echo "AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }}" >> .env
+            echo "AZURE_OPENAI_DEPLOYMENT=${{ secrets.AZURE_OPENAI_DEPLOYMENT }}" >> .env
+            echo "Azure OpenAI credentials added"
+          else
+            echo "Azure OpenAI credentials already configured"
+          fi
+          
+          # Setup database optimizations
+          python3 << 'PYTHON'
+import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+try:
+    conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+    cur = conn.cursor()
+    
+    # Add product classification column
+    cur.execute("""
+        ALTER TABLE suppliers 
+        ADD COLUMN IF NOT EXISTS product_classification VARCHAR(50)
+    """)
+    
+    # Add enhanced data columns
+    cur.execute("""
+        ALTER TABLE suppliers
+        ADD COLUMN IF NOT EXISTS enhanced_data JSONB,
+        ADD COLUMN IF NOT EXISTS last_enhanced TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS website_scraped BOOLEAN DEFAULT FALSE
+    """)
+    
+    # Add indexes for performance
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_product_classification 
+        ON suppliers(product_classification)
+    """)
+    
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_products_text 
+        ON suppliers USING gin(to_tsvector('english', products))
+    """)
+    
+    conn.commit()
+    print("Database optimizations applied")
+    cur.close()
+    conn.close()
+    
+except Exception as e:
+    print(f"Database setup error: {e}")
+PYTHON
+          
+          # Create integrated app
+          cat > app_optimized.py << 'APPEOF'
+#!/usr/bin/env python3
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+import os
+from dotenv import load_dotenv
+from datetime import datetime
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+# Import optimization modules
+try:
+    from optimize_product_search import ProductSearchOptimizer
+    from product_variation_handler import ProductVariationHandler
+    from advanced_search_system import AdvancedSearchSystem
+    optimizer_available = True
+    print("Search optimizers loaded successfully")
+except Exception as e:
+    print(f"Optimizer loading error: {e}")
+    optimizer_available = False
+
+load_dotenv()
+
+app = FastAPI(
+    title="FDX.trading",
+    description="B2B Food Trading Platform with AI-Optimized Search",
+    version="3.0.0"
+)
+
+# Mount static files if directory exists
+if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Templates
+if os.path.exists("templates"):
+    templates = Jinja2Templates(directory="templates")
+else:
+    templates = None
+
+def get_db_connection():
+    try:
+        conn = psycopg2.connect(
+            os.getenv('DATABASE_URL'),
+            cursor_factory=RealDictCursor
+        )
+        return conn
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return None
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return RedirectResponse(url="/suppliers", status_code=303)
+
+@app.get("/suppliers", response_class=HTMLResponse)
+async def suppliers_page(request: Request):
+    if templates:
+        return templates.TemplateResponse("suppliers.html", {
+            "request": request,
+            "user_email": "udi@fdx.trading"
+        })
+    else:
+        # Return simple HTML if templates not found
+        return HTMLResponse(content=open("suppliers_fixed.html").read())
+
+@app.post("/api/search")
+async def api_search(request: Request):
+    '''Optimized search with all enhancements'''
+    try:
+        form_data = await request.form()
+        query = form_data.get('query', '')
+        
+        if not query:
+            return JSONResponse(
+                content={"error": "No search query", "results": []},
+                headers={"Content-Type": "application/json; charset=utf-8"}
+            )
+        
+        # Use advanced optimizer if available
+        if optimizer_available:
+            try:
+                # Try advanced search first
+                advanced = AdvancedSearchSystem()
+                parsed = advanced.parse_complex_query(query)
+                
+                # Check for product variations
+                handler = ProductVariationHandler()
+                variation_results = handler.find_suppliers_with_variations(query)
+                
+                # Also run classification to exclude users
+                optimizer = ProductSearchOptimizer()
+                classified_results = optimizer.optimize_search(query, limit=100)
+                
+                # Combine results intelligently
+                manufacturers = variation_results.get('top_manufacturers', [])[:20]
+                sellers = classified_results.get('sellers', [])[:30]
+                
+                # Deduplicate by supplier_id
+                seen_ids = set()
+                final_results = []
+                
+                # Prioritize manufacturers with variations
+                for supplier in manufacturers:
+                    if supplier.get('supplier_id') not in seen_ids:
+                        seen_ids.add(supplier.get('supplier_id'))
+                        supplier['result_type'] = 'manufacturer_with_variations'
+                        final_results.append(supplier)
+                
+                # Add sellers (excluding users)
+                for supplier in sellers:
+                    if supplier.get('supplier_id') not in seen_ids:
+                        seen_ids.add(supplier.get('supplier_id'))
+                        supplier['result_type'] = 'seller'
+                        final_results.append(supplier)
+                
+                # Build informative message
+                excluded_count = classified_results.get('total_users', 0)
+                message_parts = []
+                if manufacturers:
+                    message_parts.append(f"{len(manufacturers)} manufacturers with product variations")
+                if excluded_count > 0:
+                    message_parts.append(f"excluded {excluded_count} who use {query} as ingredient")
+                
+                message = "Found " + " and ".join(message_parts) if message_parts else f"Found {len(final_results)} suppliers"
+                
+                return JSONResponse(
+                    content={
+                        'query': query,
+                        'total_results': len(final_results),
+                        'message': message,
+                        'parsed_query': parsed,
+                        'results': final_results[:50]
+                    },
+                    headers={"Content-Type": "application/json; charset=utf-8"}
+                )
+                
+            except Exception as opt_error:
+                print(f"Optimizer error, using fallback: {opt_error}")
+        
+        # Fallback to basic database search
+        conn = get_db_connection()
+        if not conn:
+            return JSONResponse(
+                content={"error": "Database error", "results": []},
+                headers={"Content-Type": "application/json; charset=utf-8"}
+            )
+        
+        cursor = conn.cursor()
+        search_term = f"%{query.lower()}%"
+        
+        # Basic search with classification awareness
+        cursor.execute('''
+            SELECT id, supplier_name, company_name, country, products,
+                   company_email as email, company_website as website,
+                   verified, rating, product_classification
+            FROM suppliers
+            WHERE (LOWER(products) LIKE %s OR LOWER(supplier_name) LIKE %s)
+              AND (product_classification != 'user' OR product_classification IS NULL)
+            ORDER BY 
+              CASE WHEN product_classification = 'seller' THEN 1 ELSE 2 END,
+              rating DESC NULLS LAST
+            LIMIT 100
+        ''', (search_term, search_term))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        formatted_results = []
+        for r in results:
+            formatted_results.append({
+                'supplier_id': r['id'],
+                'supplier_name': r['supplier_name'],
+                'company_name': r['company_name'] or r['supplier_name'],
+                'country': r['country'] or 'Unknown',
+                'email': r['email'] or '',
+                'website': r['website'] or '',
+                'product_preview': (r['products'] or '')[:300],
+                'verified': r.get('verified', False),
+                'rating': float(r['rating']) if r.get('rating') else 0,
+                'classification': r.get('product_classification', 'unknown')
+            })
+        
+        return JSONResponse(
+            content={
+                'query': query,
+                'total_results': len(formatted_results),
+                'results': formatted_results
+            },
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+        
+    except Exception as e:
+        print(f"Search error: {e}")
+        return JSONResponse(
+            content={"error": str(e), "results": []},
+            status_code=500,
+            headers={"Content-Type": "application/json; charset=utf-8"}
+        )
+
+@app.get("/projects", response_class=HTMLResponse)
+async def projects_page(request: Request):
+    '''Projects page'''
+    return HTMLResponse(content='''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Projects - FDX.trading</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">FDX.trading</a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/suppliers">Search</a>
+                    <a class="nav-link active" href="/projects">Projects</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container mt-4">
+            <h2>My Projects</h2>
+            <p>Projects functionality coming soon</p>
+        </div>
+    </body>
+    </html>
+    ''')
+
+@app.get("/health")
+async def health_check():
+    '''Health check endpoint'''
+    return {
+        "status": "healthy",
+        "optimizer": "enabled" if optimizer_available else "disabled",
+        "timestamp": datetime.now().isoformat(),
+        "version": "3.0.0"
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+APPEOF
+          
+          # Backup and activate
+          cp app.py app_backup_$(date +%Y%m%d_%H%M%S).py
+          cp app_optimized.py app.py
+          
+          # Restart service
+          sudo systemctl restart fdx-app || sudo supervisorctl restart fdx-app || echo "Manual restart needed"
+          
+          echo "Deployment complete!"
+        EOF
+    
+    - name: Verify deployment
+      run: |
+        sleep 5
+        curl -s https://www.fdx.trading/health || echo "Health check pending"
