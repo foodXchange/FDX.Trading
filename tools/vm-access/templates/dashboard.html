@@ -86,9 +86,10 @@
                             </div>
                             <p class="card-text">{{ service.description }}</p>
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" value="{{ service.url }}" readonly aria-label="Service URL for {{ service.name }}">
-                                <button class="btn btn-outline-secondary copy-btn" type="button" data-url="{{ service.url }}" aria-label="Copy {{ service.name }} URL to clipboard">
+                                <input type="text" class="form-control" value="{{ service.url }}" readonly aria-label="Service URL for {{ service.name }}" title="Service URL for {{ service.name }}">
+                                <button class="btn btn-outline-secondary copy-btn" type="button" data-url="{{ service.url }}" aria-label="Copy {{ service.name }} URL to clipboard" title="Copy URL">
                                     <i class="fas fa-copy"></i>
+                                    <span class="visually-hidden">Copy</span>
                                 </button>
                             </div>
                             {% if service.warning %}
@@ -121,7 +122,7 @@
                 <div class="card-body">
                     <p class="mb-2"><strong>Username:</strong> {{ config.credentials.grafana.username }}</p>
                     <p class="mb-3"><strong>Password:</strong> {{ config.credentials.grafana.password }}</p>
-                    <button class="btn btn-outline-primary btn-sm copy-credentials">
+                    <button class="btn btn-outline-primary btn-sm copy-credentials" aria-label="Copy Grafana credentials" title="Copy credentials">
                         <i class="fas fa-copy me-1"></i>Copy Credentials
                     </button>
                 </div>
@@ -138,9 +139,10 @@
                     <p class="mb-2"><strong>Host:</strong> {{ config.ssh.host }}</p>
                     <p class="mb-3"><strong>SSH Key:</strong> {{ config.ssh.key }}</p>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" value="{{ config.ssh.command }}" readonly aria-label="SSH connection command">
-                        <button class="btn btn-outline-secondary copy-btn" type="button" data-text="{{ config.ssh.command }}" aria-label="Copy SSH command to clipboard">
+                        <input type="text" class="form-control" value="{{ config.ssh.command }}" readonly aria-label="SSH connection command" title="SSH connection command">
+                        <button class="btn btn-outline-secondary copy-btn" type="button" data-text="{{ config.ssh.command }}" aria-label="Copy SSH command to clipboard" title="Copy command">
                             <i class="fas fa-copy"></i>
+                            <span class="visually-hidden">Copy</span>
                         </button>
                     </div>
                 </div>
@@ -159,9 +161,10 @@
                     <div class="mb-3">
                         <label class="form-label"><strong>Grafana:</strong></label>
                         <div class="input-group">
-                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" readonly aria-label="SSH tunnel command for Grafana">
-                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" aria-label="Copy Grafana SSH tunnel command">
+                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" readonly aria-label="SSH tunnel command for Grafana" title="SSH tunnel command for Grafana">
+                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 3000:localhost:3000 {{ config.ssh.host }}" aria-label="Copy Grafana SSH tunnel command" title="Copy">
                                 <i class="fas fa-copy"></i>
+                                <span class="visually-hidden">Copy</span>
                             </button>
                         </div>
                     </div>
@@ -169,9 +172,10 @@
                     <div class="mb-3">
                         <label class="form-label"><strong>Netdata:</strong></label>
                         <div class="input-group">
-                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" readonly aria-label="SSH tunnel command for Netdata">
-                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" aria-label="Copy Netdata SSH tunnel command">
+                            <input type="text" class="form-control" value="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" readonly aria-label="SSH tunnel command for Netdata" title="SSH tunnel command for Netdata">
+                            <button class="btn btn-outline-secondary copy-btn" type="button" data-text="ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 {{ config.ssh.host }}" aria-label="Copy Netdata SSH tunnel command" title="Copy">
                                 <i class="fas fa-copy"></i>
+                                <span class="visually-hidden">Copy</span>
                             </button>
                         </div>
                     </div>

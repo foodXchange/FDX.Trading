@@ -538,7 +538,7 @@
                     <h4><i class="fas fa-key"></i> Grafana Credentials</h4>
                     <p><strong>Username:</strong> admin</p>
                     <p><strong>Password:</strong> admin</p>
-                    <button type="button" onclick="copyCredentials()" style="margin-top: 10px; padding: 8px 16px; background: var(--secondary-color); color: white; border: none; border-radius: 5px; cursor: pointer;" aria-label="Copy Grafana credentials to clipboard">
+                    <button type="button" onclick="copyCredentials()" class="copy-button" aria-label="Copy Grafana credentials to clipboard">
                         <i class="fas fa-copy"></i> Copy Credentials
                     </button>
                 </div>
@@ -561,7 +561,7 @@
                     <div class="ssh-command" onclick="copyToClipboard('ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 fdxfounder@4.206.1.15')">
                         Netdata: ssh -i ~/.ssh/fdx_founders_key -L 19999:localhost:19999 fdxfounder@4.206.1.15
                     </div>
-                    <p style="margin-top: 10px; font-size: 0.9em;">
+                    <p class="tunnel-info">
                         <strong>Then access:</strong><br>
                         • http://localhost:3000 (Grafana)<br>
                         • http://localhost:19999 (Netdata)

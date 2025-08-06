@@ -1,0 +1,50 @@
+<!-- Internet Explorer Fallback Notice -->
+<!-- Include this snippet in your base template if IE support is needed -->
+
+<!--[if IE]>
+<style>
+    .ie-warning {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #fff3cd;
+        border-bottom: 2px solid #ffc107;
+        padding: 15px;
+        text-align: center;
+        z-index: 9999;
+        font-family: Arial, sans-serif;
+    }
+    .ie-warning h4 {
+        margin: 0 0 10px 0;
+        color: #856404;
+    }
+    .ie-warning p {
+        margin: 0;
+        color: #856404;
+    }
+    .ie-warning a {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+<div class="ie-warning">
+    <h4>Your browser is outdated</h4>
+    <p>
+        You are using Internet Explorer which is no longer supported. 
+        For the best experience, please upgrade to a modern browser:
+    </p>
+    <p>
+        <a href="https://www.microsoft.com/edge" target="_blank">Microsoft Edge</a> | 
+        <a href="https://www.google.com/chrome" target="_blank">Google Chrome</a> | 
+        <a href="https://www.mozilla.org/firefox" target="_blank">Mozilla Firefox</a>
+    </p>
+</div>
+<![endif]-->
+
+<!-- For very old IE versions (IE 9 and below) -->
+<!--[if lt IE 10]>
+<script>
+    window.location.href = '/unsupported-browser.html';
+</script>
+<![endif]-->
