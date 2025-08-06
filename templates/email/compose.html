@@ -27,8 +27,8 @@
                     
                     <!-- Supplier Selection -->
                     <div class="mb-3">
-                        <label class="form-label">Select Suppliers</label>
-                        <select id="suppliers" class="form-select" multiple size="5">
+                        <label class="form-label" for="suppliers">Select Suppliers</label>
+                        <select id="suppliers" class="form-select" multiple size="5" aria-label="Select suppliers to email">
                             {% for supplier in suppliers %}
                             <option value="{{ supplier.id }}" data-country="{{ supplier.country }}">
                                 {{ supplier.supplier_name }} ({{ supplier.country }})
