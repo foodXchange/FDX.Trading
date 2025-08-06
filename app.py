@@ -333,24 +333,24 @@ async def project_details_with_data(id: int = 1, country: str = None, min_score:
 try:
     from fixed_search_system import FixedSearchSystem
     ai_search = FixedSearchSystem()  # Keep the same variable name for compatibility
-    print("✅ Search System initialized successfully")
+    print("Search System initialized successfully")
 except ImportError as e:
-    print(f"❌ Search System not found: {e}")
+    print(f"Search System not found: {e}")
     ai_search = None
 
 # Import optional modules with proper error handling
 try:
     from email_service_lean import email_service
-    print("✅ Email CRM module loaded")
+    print("Email CRM module loaded")
 except ImportError:
-    print("ℹ️ Email CRM module not found - email features will be limited")
+    print("Email CRM module not found - email features will be limited")
     email_service = None
 
 try:
     import admin_cost_monitoring
-    print("✅ Admin cost monitoring module loaded")
+    print("Admin cost monitoring module loaded")
 except ImportError:
-    print("ℹ️ Admin cost monitoring module not found - cost monitoring disabled")
+    print("Admin cost monitoring module not found - cost monitoring disabled")
 
 # HOME PAGE ROUTE - AI Search Page
 @app.get("/", response_class=HTMLResponse)  # GET request to root URL returns HTML
@@ -747,14 +747,14 @@ async def project_details_final(id: int = 1):
     </nav>
     <div class="container mt-4">
         <a href="/projects" class="btn btn-sm btn-secondary mb-3">← Back to Projects</a>
-        <h1>✅ BOTH ISSUES RESOLVED!</h1>
+        <h1>BOTH ISSUES RESOLVED!</h1>
         
         <div class="alert alert-success">
             <h4>Success!</h4>
             <ul class="mb-0">
-                <li>✅ <strong>Datetime serialization error</strong> - FIXED</li>
-                <li>✅ <strong>/project_details URL</strong> - WORKING at <code>http://localhost:9001/project_details?id=1</code></li>
-                <li>✅ <strong>/project?id=1 URL</strong> - WORKING at <code>http://localhost:9001/project_new?id=1</code></li>
+                <li><strong>Datetime serialization error</strong> - FIXED</li>
+                <li><strong>/project_details URL</strong> - WORKING at <code>http://localhost:9001/project_details?id=1</code></li>
+                <li><strong>/project?id=1 URL</strong> - WORKING at <code>http://localhost:9001/project_new?id=1</code></li>
             </ul>
         </div>
         
@@ -802,8 +802,8 @@ async def suppliers_page(request: Request):
     """
     AI-powered suppliers page - simple and clean for 1-person company
     """
-    # Use the simple template
-    return templates.TemplateResponse("suppliers_simple.html", {
+    # Use the working AI template that calls /api/search
+    return templates.TemplateResponse("suppliers_ai.html", {
         "request": request,
         "user_email": "udi@fdx.trading"
     })

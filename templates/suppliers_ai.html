@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search - FDX.trading</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <!-- Very Simple Navigation -->
@@ -264,9 +265,10 @@
                 if (data.history && data.history.length > 0) {
                     container.innerHTML = data.history.slice(0, 5).map(h => `
                         <div class="p-1">
-                            <small class="d-block" style="cursor: pointer;" 
-                                   onclick="document.getElementById('query').value='${h.search_query}'; document.getElementById('searchForm').dispatchEvent(new Event('submit'));">
-                                ${h.search_query}
+                            <small class="d-block text-primary" style="cursor: pointer;" 
+                                   onclick="document.getElementById('query').value='${h.query}'; document.getElementById('searchForm').dispatchEvent(new Event('submit'));"
+                                   title="Click to search again">
+                                <i class="bi bi-clock-history"></i> ${h.query}
                             </small>
                         </div>
                     `).join('');

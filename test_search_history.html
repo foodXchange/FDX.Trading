@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Search History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h3>Search History Test</h3>
+        
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5>Test Search</h5>
+            </div>
+            <div class="card-body">
+                <input type="text" id="testQuery" class="form-control mb-2" placeholder="Enter search term" value="olive oil">
+                <button onclick="testSearch()" class="btn btn-primary">Test Search & Save to History</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-clock-history"></i> Search History</h5>
+                <button onclick="loadHistory()" class="btn btn-sm btn-outline-secondary">Refresh</button>
+            </div>
+            <div class="card-body" id="historyResults">
+                <button onclick="loadHistory()" class="btn btn-secondary">Load History</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testSearch() {
+            const query = document.getElementById('testQuery').value;
+            
+            try {
+                const formData = new FormData();
+                formData.append('query', query);
+                
+                const response = await fetch('https://www.fdx.trading/api/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                alert(`Search completed: ${data.total_results} results found for "${query}"`);
+                
+                // Reload history after search
+                setTimeout(loadHistory, 1000);
+            } catch (error) {
+                alert('Search failed: ' + error.message);
+            }
+        }
+        
+        async function loadHistory() {
+            try {
+                const response = await fetch('https://www.fdx.trading/api/search-history');
+                const data = await response.json();
+                
+                const container = document.getElementById('historyResults');
+                
+                if (data.history && data.history.length > 0) {
+                    container.innerHTML = '<h6>Recent Searches:</h6>' + 
+                        data.history.map(h => `
+                            <div class="p-2 border rounded mb-2">
+                                <strong>${h.query}</strong><br>
+                                <small class="text-muted">Last searched: ${h.last_searched ? new Date(h.last_searched).toLocaleString() : 'Unknown'}</small>
+                            </div>
+                        `).join('');
+                } else {
+                    container.innerHTML = '<p class="text-muted">No search history found</p>';
+                }
+            } catch (error) {
+                document.getElementById('historyResults').innerHTML = 
+                    '<p class="text-danger">Error loading history: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

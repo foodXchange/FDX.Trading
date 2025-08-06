@@ -92,12 +92,11 @@ class FixedSearchSystem:
                 try:
                     cur.execute("""
                         INSERT INTO search_history 
-                        (user_email, search_query, search_type, result_count, timestamp)
-                        VALUES (%s, %s, %s, %s, %s)
+                        (user_email, query, result_count, timestamp)
+                        VALUES (%s, %s, %s, %s)
                     """, (
                         user_email,
                         query,
-                        'database_search',
                         len(results),
                         datetime.now()
                     ))
@@ -147,10 +146,10 @@ class FixedSearchSystem:
             cur = conn.cursor()
             
             cur.execute("""
-                SELECT DISTINCT search_query, MAX(timestamp) as last_searched
+                SELECT DISTINCT query, MAX(timestamp) as last_searched
                 FROM search_history
                 WHERE user_email = %s
-                GROUP BY search_query
+                GROUP BY query
                 ORDER BY MAX(timestamp) DESC
                 LIMIT %s
             """, (user_email, limit))
@@ -161,7 +160,7 @@ class FixedSearchSystem:
             
             return [
                 {
-                    'query': r['search_query'],
+                    'query': r['query'],
                     'last_searched': r['last_searched'].isoformat() if r['last_searched'] else None
                 }
                 for r in results
@@ -176,10 +175,10 @@ class FixedSearchSystem:
             cur = conn.cursor()
             
             cur.execute("""
-                SELECT search_query, COUNT(*) as search_count
+                SELECT query, COUNT(*) as search_count
                 FROM search_history
                 WHERE timestamp > NOW() - INTERVAL '7 days'
-                GROUP BY search_query
+                GROUP BY query
                 ORDER BY search_count DESC
                 LIMIT %s
             """, (limit,))
@@ -190,7 +189,7 @@ class FixedSearchSystem:
             
             return [
                 {
-                    'query': r['search_query'],
+                    'query': r['query'],
                     'count': r['search_count']
                 }
                 for r in results
