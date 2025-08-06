@@ -1,103 +1,83 @@
-# 🎯 FoodXchange Quick Reference Card
+# FoodXchange Quick Reference Card
 
-## 🔑 Essential Info
-- **VM IP**: `4.206.1.15`
-- **SSH**: `ssh -i ~/.ssh/fdx_founders_key fdxfounder@4.206.1.15`
-- **App**: http://4.206.1.15:8000
-- **Cost**: $0/month (Founders Hub)
+## 🖥️ VM Details
+- **VM IP**: `74.248.141.31`
+- **SSH**: `ssh -i ~/.ssh/fdx_poland_key azureuser@74.248.141.31`
+- **App**: http://74.248.141.31:8000
+- **Location**: Poland Central
 
-## ⚡ Daily Commands
+## 🔑 Quick Access
 ```bash
 # Connect to VM
-ssh -i ~/.ssh/fdx_founders_key fdxfounder@4.206.1.15
+ssh -i ~/.ssh/fdx_poland_key azureuser@74.248.141.31
 
-# Check everything
-fdx-status
+# Check app status
+curl http://74.248.141.31:8000/health
 
-# Work with Claude
-fdx-claude
-
-# Detach (keep running)
-Ctrl+B, D
-
-# View logs
-fdx-logs
+# Monitor system
+htop
 ```
 
-## 🚨 Emergency Fixes
+## 🌐 Application URLs
+- **Main App**: http://74.248.141.31
+- **API**: http://74.248.141.31:8000
+- **Email CRM**: http://74.248.141.31:8003
+- **Monitoring**: http://74.248.141.31:3000
+
+## 🗄️ Database
+- **Server**: fdx-poland-db.postgres.database.azure.com
+- **Connection**: `postgresql://fdxadmin:FoodXchange2024!@fdx-poland-db.postgres.database.azure.com/foodxchange?sslmode=require`
+
+## 🛠️ Service Management
 ```bash
-# App down
-sudo systemctl restart fdx-app
-
-# High CPU/Memory
-htop  # Then kill process
-
-# Can't connect
-az vm start --resource-group foodxchange-founders-rg --name fdx-founders-vm
-
-# Disk full
-df -h
-rm -rf /tmp/*
-```
-
-## 📱 iPhone Commands
-```bash
-# In Termius, create snippets:
-
-# Quick health
-fdx-status && echo "✅ All good"
+# Check services
+sudo systemctl status gunicorn nginx
 
 # Restart app
-sudo systemctl restart fdx-app
+sudo systemctl restart gunicorn
 
-# Check logs
-tail -20 ~/fdx/logs/app.log
+# View logs
+sudo journalctl -u gunicorn -f
 ```
 
-## 💰 Cost Control
+## 📊 Monitoring
+- **Grafana**: http://74.248.141.31:3000
+- **Netdata**: http://74.248.141.31:19999
+- **System**: `htop`, `df -h`, `free -h`
+
+## 🔧 Troubleshooting
 ```bash
-# Check credits (local)
-./monitor_costs_automated.sh
+# Service down
+sudo systemctl restart gunicorn nginx
 
-# Stop VM (save $4/day)
-az vm deallocate --resource-group foodxchange-founders-rg --name fdx-founders-vm
+# High CPU
+htop
 
-# Start VM
-az vm start --resource-group foodxchange-founders-rg --name fdx-founders-vm
+# Disk space
+df -h
+
+# Memory
+free -h
 ```
 
-## 🔧 Business Tools
-| Tool | Status | Cost | Action |
-|------|--------|------|--------|
-| SendGrid | Ready | $19.95/mo | Add API key to .env |
-| Wave | Ready | FREE | Sign up at waveapps.com |
-| Stripe | Template | 2.9% | Add keys when ready |
-| Domain | Pending | $12/yr | Buy when ready |
+## 📈 Performance
+- **Latency from Israel**: ~30ms
+- **Monthly Cost**: $57
+- **Database Size**: ~2GB
 
-## 📊 Success Metrics
-- **Uptime Target**: 99.9%
-- **Response Time**: <200ms
-- **Daily Tasks**: 10 mins
-- **Break-even**: 1 customer
+## 🚨 Emergency
+1. **Service Restart**: `sudo systemctl restart gunicorn`
+2. **Database Check**: Test connection via psql
+3. **Network Check**: `ping 74.248.141.31`
 
-## 🎯 Growth Targets
-- **Week 1**: First user
-- **Month 1**: First customer
-- **Month 3**: $1K MRR
-- **Month 6**: $10K MRR
+## 📞 Quick Commands
+```bash
+# Full system check
+sudo systemctl status gunicorn nginx postgresql
 
-## 📞 Quick Contacts
-- **Azure Support**: Included with Founders Hub
-- **Your GitHub**: github.com/foodXchange/FDX.Trading
-- **Monitoring**: http://4.206.1.15:3000
+# Recent logs
+sudo journalctl -u gunicorn --since "1 hour ago"
 
-## 💡 Remember
-1. **tmux = persistent** (never lose work)
-2. **Costs = $0** (for 2 years!)
-3. **Automate everything** (time is money)
-4. **Track metrics** (data drives growth)
-5. **Stay lean** (only buy what pays)
-
----
-**Manager Script**: `./fdx_manager.sh`
-**Full Docs**: `LEAN_STARTUP_COMPLETE.md`
+# Resource usage
+htop && df -h && free -h
+```

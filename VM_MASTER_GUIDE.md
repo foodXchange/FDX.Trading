@@ -1,239 +1,280 @@
-# FDX VM Master Guide
-*Last Updated: August 5, 2025*
+# FoodXchange VM Master Guide
 
-## VM Overview
+## 🖥️ Virtual Machine Details
 
-- **IP Address**: 4.206.1.15
-- **Hostname**: fdx-founders-vm
-- **OS**: Ubuntu 22.04.5 LTS
-- **User**: fdxfounder (only user)
-- **SSH Key**: `~/.ssh/fdx_founders_key`
+### Current VM (Poland Central)
+- **Name**: fdx-poland-vm
+- **IP Address**: 74.248.141.31
+- **Location**: Poland Central
+- **Resource Group**: fdx-prod-rg
+- **Size**: Standard_B2s (2 vCPUs, 4 GB RAM)
+- **OS**: Ubuntu 22.04 LTS
+- **User**: azureuser
 
-## Quick Access
+### Performance Benefits
+- **Latency from Israel**: ~30ms (6x faster than US East)
+- **Monthly Cost**: $57 (saving $3/month)
+- **Network**: Optimized for European traffic
 
-### SSH Connection
-```bash
-# General access
-ssh fdx-vm
+## 🌐 Application Access
 
-# Development with port forwarding
-ssh fdx-dev
+### Main Services
+- **Main App**: http://74.248.141.31 (port 80)
+- **API Endpoint**: http://74.248.141.31:8000
+- **Email CRM**: http://74.248.141.31:8003
+- **Monitoring**: http://74.248.141.31:3000 (Grafana)
+
+### Database
+- **Server**: fdx-poland-db.postgres.database.azure.com
+- **Database**: foodxchange
+- **Connection**: `postgresql://fdxadmin:FoodXchange2024!@fdx-poland-db.postgres.database.azure.com/foodxchange?sslmode=require`
+
+## 🔑 SSH Access Configuration
+
+### SSH Config Setup
+Add to your `~/.ssh/config`:
+
 ```
-
-### Web Access
-- **Main App**: http://4.206.1.15 (port 80)
-- **Database**: Azure PostgreSQL (23,206+ suppliers)
-
-## SSH Configuration
-
-Your `~/.ssh/config` contains:
-```
-# FoodXchange VM - Main connection
-Host fdx-vm
-    HostName 4.206.1.15
-    User fdxfounder
+Host fdx-poland
+    HostName 74.248.141.31
+    User azureuser
+    IdentityFile ~/.ssh/fdx_poland_key
     Port 22
-    IdentityFile ~/.ssh/fdx_founders_key
-    StrictHostKeyChecking no
-    UserKnownHostsFile /dev/null
-    ForwardAgent yes
-
-# FoodXchange VM - Development with port forwarding
-Host fdx-dev
-    HostName 4.206.1.15
-    User fdxfounder
-    Port 22
-    IdentityFile ~/.ssh/fdx_founders_key
-    StrictHostKeyChecking no
-    UserKnownHostsFile /dev/null
-    ForwardAgent yes
-    LocalForward 8000 localhost:80
-    LocalForward 8003 localhost:8003
-    LocalForward 3000 localhost:3000
-    LocalForward 19999 localhost:19999
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
 ```
 
-## Directory Structure
-
-```
-/home/fdxfounder/
-├── fdx/
-│   ├── app/           # Main FDX application
-│   ├── backups/       # Backup files
-│   ├── data/          # Data files
-│   ├── logs/          # Application logs
-│   ├── monitoring/    # Monitoring scripts
-│   ├── scripts/       # Utility scripts
-│   └── secrets/       # Sensitive configurations
-├── FDX-Crawler/       # Web crawler application
-└── Workspace1/        # Additional workspace
-```
-
-## Essential Commands
-
-### Connect to VM
+### Quick Connect
 ```bash
-# Simple connection
-ssh fdx-vm
+# Direct connection
+ssh azureuser@74.248.141.31
 
-# Go directly to app directory
-ssh fdx-vm "cd /home/fdxfounder/fdx/app && bash"
+# Using config
+ssh fdx-poland
+
+# With key file
+ssh -i ~/.ssh/fdx_poland_key azureuser@74.248.141.31
 ```
 
-### Check Application Status
-```bash
-# View app status
-ssh fdx-vm "sudo systemctl status foodxchange"
+## 🛠️ System Management
 
-# Restart app
-ssh fdx-vm "sudo systemctl restart foodxchange"
+### Service Management
+```bash
+# Check all services
+sudo systemctl status gunicorn nginx postgresql
+
+# Restart application
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
 
 # View logs
-ssh fdx-vm "tail -f /home/fdxfounder/fdx/app/logs/app.log"
+sudo journalctl -u gunicorn -f
+sudo tail -f /var/log/nginx/error.log
 ```
 
-### Database Operations
+### Resource Monitoring
 ```bash
-# Check supplier count
-ssh fdx-vm "cd /home/fdxfounder/fdx/app && python3 -c 'from database import get_db_connection; conn = get_db_connection(); cur = conn.cursor(); cur.execute(\"SELECT COUNT(*) FROM suppliers\"); print(f\"Suppliers: {cur.fetchone()[0]:,}\")'"
+# System resources
+htop
+df -h
+free -h
 
-# Database connection string (in .env)
-# postgresql://fdxadmin:FDX2030!@fdx-postgres-server.postgres.database.azure.com:5432/foodxchange?sslmode=require
+# Network
+netstat -tulpn
+ss -tulpn
 ```
 
-### File Transfer
+### Application Logs
 ```bash
-# Upload file to VM
-scp local_file.txt fdx-vm:/home/fdxfounder/
+# Application logs
+sudo tail -f /var/log/foodxchange/app.log
 
-# Download from VM
-scp fdx-vm:/home/fdxfounder/file.txt ./
+# Nginx logs
+sudo tail -f /var/log/nginx/access.log
+sudo tail -f /var/log/nginx/error.log
 
-# Sync directory to VM
-rsync -avz --exclude='.git' ./ fdx-vm:/home/fdxfounder/fdx/app/
+# System logs
+sudo journalctl -u gunicorn --since "1 hour ago"
 ```
 
-## Development Workflow
+## 📊 Monitoring & Health Checks
 
-### Option 1: VS Code Remote SSH
+### Health Check URLs
+- **Application**: http://74.248.141.31:8000/health
+- **Database**: Check connection via psql
+- **Services**: `sudo systemctl status`
+
+### Monitoring Tools
+- **Grafana**: http://74.248.141.31:3000
+- **Netdata**: http://74.248.141.31:19999
+- **System**: `htop`, `df -h`, `free -h`
+
+## 🔧 Troubleshooting
+
+### Common Issues & Solutions
+
+#### 1. Service Not Responding
 ```bash
-# Command line
-code --remote ssh-remote+fdx-vm /home/fdxfounder/fdx/app
+# Check service status
+sudo systemctl status gunicorn nginx
 
-# Or use VS Code UI:
-# 1. Ctrl+Shift+P
-# 2. "Remote-SSH: Connect to Host"
-# 3. Select "fdx-vm"
+# Restart services
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+
+# Check logs
+sudo journalctl -u gunicorn --since "10 minutes ago"
 ```
 
-### Option 2: Direct SSH Development
+#### 2. Database Connection Issues
 ```bash
-# Connect
-ssh fdx-vm
+# Test database connection
+psql "postgresql://fdxadmin:FoodXchange2024!@fdx-poland-db.postgres.database.azure.com/foodxchange?sslmode=require"
 
-# Navigate to app
-cd /home/fdxfounder/fdx/app
-
-# Edit files
-nano app.py
-
-# Run development server
-python3 app.py
+# Check if database is accessible
+nc -zv fdx-poland-db.postgres.database.azure.com 5432
 ```
 
-### Option 3: Claude Code + SSH
+#### 3. High Resource Usage
 ```bash
-# Use claude_vm_connect.bat for guided connection
-C:\Users\foodz\Desktop\FoodXchange\claude_vm_connect.bat
+# Check CPU and memory
+htop
+free -h
+
+# Check disk space
+df -h
+
+# Check running processes
+ps aux --sort=-%cpu | head -10
 ```
 
-## Quick Scripts
-
-### Upload Excel to VM
+#### 4. Network Issues
 ```bash
-# Use the helper script
-C:\Users\foodz\Desktop\FoodXchange\upload_excel_to_vm.bat
+# Test connectivity
+ping 74.248.141.31
+curl http://74.248.141.31:8000/health
+
+# Check open ports
+netstat -tulpn | grep :8000
 ```
 
-### Open Dashboards
+## 🚀 Deployment & Updates
+
+### Code Deployment
 ```bash
-# Use the dashboard launcher
-C:\Users\foodz\Desktop\FoodXchange\Open_Dashboards.bat
+# Pull latest code
+cd /home/azureuser/foodxchange
+git pull origin main
+
+# Install dependencies
+pip3 install -r requirements.txt
+
+# Restart application
+sudo systemctl restart gunicorn
 ```
 
-## Service Management
-
-### Main Application
-- **Service**: foodxchange.service
-- **Port**: 80
-- **Process**: Python/Gunicorn
-
-### Commands
+### Configuration Updates
 ```bash
-# Start/Stop/Restart
-sudo systemctl start foodxchange
-sudo systemctl stop foodxchange
-sudo systemctl restart foodxchange
+# Update environment variables
+sudo nano /etc/foodxchange/.env
 
-# Enable/Disable autostart
-sudo systemctl enable foodxchange
-sudo systemctl disable foodxchange
-
-# View service logs
-sudo journalctl -u foodxchange -f
+# Reload configuration
+sudo systemctl reload gunicorn
 ```
 
-## Security Notes
-
-1. **Single User**: Only `fdxfounder` user exists (azureuser removed)
-2. **SSH Key**: Private key at `~/.ssh/fdx_founders_key`
-3. **Firewall**: Ports 80, 22 open
-4. **Database**: Hosted on Azure PostgreSQL (not on VM)
-
-## Troubleshooting
-
-### SSH Connection Issues
+### Database Updates
 ```bash
-# Test connection
-ssh -v fdx-vm
+# Run migrations
+python3 migrate_database.py
 
-# Clear known hosts if needed
-ssh-keygen -R 4.206.1.15
+# Backup database
+pg_dump "postgresql://fdxadmin:FoodXchange2024!@fdx-poland-db.postgres.database.azure.com/foodxchange?sslmode=require" > backup_$(date +%Y%m%d).sql
 ```
 
-### Application Not Responding
+## 🔒 Security
+
+### SSH Key Management
 ```bash
-# Check if running
-ssh fdx-vm "sudo systemctl status foodxchange"
+# Generate new key pair
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/fdx_poland_key
 
-# Check ports
-ssh fdx-vm "sudo ss -tlnp | grep :80"
+# Copy public key to server
+ssh-copy-id -i ~/.ssh/fdx_poland_key.pub azureuser@74.248.141.31
 
-# Restart service
-ssh fdx-vm "sudo systemctl restart foodxchange"
+# Remove old keys from known_hosts
+ssh-keygen -R 74.248.141.31
 ```
 
-### Database Connection
+### Firewall Rules
 ```bash
-# Test from VM
-ssh fdx-vm "cd /home/fdxfounder/fdx/app && python3 -c 'from database import get_db_connection; conn = get_db_connection(); print(\"Connected!\" if conn else \"Failed!\")'"
+# Check firewall status
+sudo ufw status
+
+# Allow specific ports
+sudo ufw allow 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
 ```
 
-## Important Paths
+## 📈 Performance Optimization
 
-- **App Code**: `/home/fdxfounder/fdx/app/`
-- **Environment**: `/home/fdxfounder/fdx/app/.env`
-- **Logs**: `/home/fdxfounder/fdx/app/logs/`
-- **Python**: `/usr/bin/python3`
-- **Service File**: `/etc/systemd/system/foodxchange.service`
+### Current Optimizations
+- Response caching (1-hour TTL)
+- Database query optimization
+- Static file serving via Nginx
+- Gunicorn worker processes
 
-## Next Steps
+### Monitoring Commands
+```bash
+# Check application performance
+curl -w "@curl-format.txt" -o /dev/null -s http://74.248.141.31:8000/
 
-1. For development, use VS Code with Remote SSH
-2. For quick edits, use direct SSH
-3. For automation, use the provided .bat scripts
-4. Always check logs if issues arise
+# Monitor database queries
+sudo tail -f /var/log/postgresql/postgresql-*.log
 
----
+# Check memory usage
+free -h && echo "---" && cat /proc/meminfo | grep -E "MemTotal|MemFree|MemAvailable"
+```
 
-*This is the master VM documentation. All other VM docs have been consolidated here.*
+## 🆘 Emergency Procedures
+
+### Immediate Actions
+1. **Service Down**: `sudo systemctl restart gunicorn`
+2. **Database Issues**: Check connection and restart if needed
+3. **High Load**: Monitor with `htop` and restart services
+4. **Disk Full**: Clean logs and temporary files
+
+### Backup & Recovery
+```bash
+# Create backup
+pg_dump "postgresql://fdxadmin:FoodXchange2024!@fdx-poland-db.postgres.database.azure.com/foodxchange?sslmode=require" > emergency_backup.sql
+
+# Restore if needed
+psql "postgresql://fdxadmin:FoodXchange2024!@fdx-poland-db.postgres.database.azure.com/foodxchange?sslmode=require" < emergency_backup.sql
+```
+
+## 📞 Quick Reference
+
+### Essential Commands
+```bash
+# Connect to VM
+ssh azureuser@74.248.141.31
+
+# Check application
+curl http://74.248.141.31:8000/health
+
+# Monitor system
+htop
+
+# View logs
+sudo journalctl -u gunicorn -f
+
+# Restart everything
+sudo systemctl restart gunicorn nginx
+```
+
+### Important URLs
+- **Application**: http://74.248.141.31
+- **API**: http://74.248.141.31:8000
+- **Email CRM**: http://74.248.141.31:8003
+- **Monitoring**: http://74.248.141.31:3000

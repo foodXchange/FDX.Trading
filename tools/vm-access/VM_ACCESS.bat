@@ -1,146 +1,150 @@
 @echo off
-title FDX VM Control Center
+title FoodXchange VM Access - Poland Central
 color 0A
-cls
 
-:MENU
-cls
 echo.
-echo    ============================================================
-echo                    FDX VM CONTROL CENTER                    
-echo    ============================================================
+echo ========================================
+echo    FOODXCHANGE VM ACCESS PANEL
+echo    Poland Central - 74.248.141.31
+echo ========================================
 echo.
-echo    VM IP: 4.206.1.15
-echo    Status: ONLINE
-echo.
-echo    [APPLICATIONS]
-echo    1. FoodXchange App....................... http://4.206.1.15
-echo    2. FDX Crawler (23,206 Suppliers)........ http://4.206.1.15:8003
-echo.
-echo    [MONITORING] (Requires SSH Tunnel)
-echo    3. Grafana Dashboard..................... Port 3000
-echo    4. Netdata Real-time..................... Port 19999
-echo    5. Setup Monitoring Access (SSH Tunnel)
-echo.
-echo    [DEVELOPMENT]
-echo    6. SSH Terminal.......................... Direct SSH Access
-echo    7. VS Code Remote........................ Open in VS Code
-echo    8. File Manager (SFTP)................... Browse VM Files
-echo.
-echo    [MANAGEMENT]
-echo    9. VM Control Panel...................... Local Dashboard
-echo    0. Quick Access Dashboard................ HTML Interface
-echo.
-echo    X. Exit
-echo.
-echo    ============================================================
-echo.
-set /p choice="Select option: "
 
-if "%choice%"=="1" goto APP
-if "%choice%"=="2" goto CRAWLER
-if "%choice%"=="3" goto GRAFANA
-if "%choice%"=="4" goto NETDATA
-if "%choice%"=="5" goto TUNNEL
-if "%choice%"=="6" goto SSH
-if "%choice%"=="7" goto VSCODE
-if "%choice%"=="8" goto SFTP
-if "%choice%"=="9" goto CONTROL
-if "%choice%"=="0" goto DASHBOARD
-if /i "%choice%"=="X" goto EXIT
-goto MENU
-
-:APP
+echo Current VM Details:
+echo    VM IP: 74.248.141.31
+echo    Location: Poland Central
+echo    Performance: 30ms latency from Israel
 echo.
+
+echo Available Services:
+echo    1. FoodXchange App....................... http://74.248.141.31
+echo    2. Email CRM System...................... http://74.248.141.31:8003
+echo    3. API Endpoint.......................... http://74.248.141.31:8000
+echo    4. Grafana Monitoring................... http://74.248.141.31:3000
+echo    5. Netdata Monitoring.................. http://74.248.141.31:19999
+echo.
+
+echo SSH Access:
+echo    User: azureuser
+echo    Key: ~/.ssh/fdx_poland_key
+echo    Command: ssh -i ~/.ssh/fdx_poland_key azureuser@74.248.141.31
+echo.
+
+echo ========================================
+echo    QUICK ACTIONS
+echo ========================================
+echo.
+
+:menu
+echo Choose an action:
+echo.
+echo [1] Open FoodXchange App
+echo [2] Open Email CRM System
+echo [3] Open API Documentation
+echo [4] Open Grafana Monitoring
+echo [5] Open Netdata Monitoring
+echo [6] SSH to VM (PowerShell)
+echo [7] SSH to VM (Command Prompt)
+echo [8] VS Code Remote SSH
+echo [9] SFTP File Transfer
+echo [10] Open SFTP in Explorer
+echo [11] Check VM Status
+echo [12] View All Services
+echo [0] Exit
+echo.
+
+set /p choice="Enter your choice (0-12): "
+
+if "%choice%"=="1" goto open_app
+if "%choice%"=="2" goto open_email
+if "%choice%"=="3" goto open_api
+if "%choice%"=="4" goto open_grafana
+if "%choice%"=="5" goto open_netdata
+if "%choice%"=="6" goto ssh_powershell
+if "%choice%"=="7" goto ssh_cmd
+if "%choice%"=="8" goto vscode_ssh
+if "%choice%"=="9" goto sftp
+if "%choice%"=="10" goto sftp_explorer
+if "%choice%"=="11" goto check_status
+if "%choice%"=="12" goto view_all
+if "%choice%"=="0" goto exit
+goto menu
+
+:open_app
 echo Opening FoodXchange App...
-start http://4.206.1.15
-timeout /t 2 >nul
-goto MENU
+start http://74.248.141.31
+goto menu
 
-:CRAWLER
-echo.
-echo Opening FDX Crawler...
-start http://4.206.1.15:8003
-timeout /t 2 >nul
-goto MENU
+:open_email
+echo Opening Email CRM System...
+start http://74.248.141.31:8003
+goto menu
 
-:GRAFANA
-echo.
-echo Checking for SSH tunnel...
-netstat -an | find "3000" | find "LISTENING" >nul
-if %errorlevel%==0 (
-    echo Tunnel active. Opening Grafana...
-    start http://localhost:3000
-) else (
-    echo No tunnel detected. Please run option 5 first.
-    pause
-)
-goto MENU
+:open_api
+echo Opening API Documentation...
+start http://74.248.141.31:8000/docs
+goto menu
 
-:NETDATA
-echo.
-echo Checking for SSH tunnel...
-netstat -an | find "19999" | find "LISTENING" >nul
-if %errorlevel%==0 (
-    echo Tunnel active. Opening Netdata...
-    start http://localhost:19999
-) else (
-    echo No tunnel detected. Please run option 5 first.
-    pause
-)
-goto MENU
+:open_grafana
+echo Opening Grafana Monitoring...
+start http://74.248.141.31:3000
+goto menu
 
-:TUNNEL
-echo.
-echo Setting up SSH tunnels for monitoring...
-call monitoring_tunnels.bat
-goto MENU
+:open_netdata
+echo Opening Netdata Monitoring...
+start http://74.248.141.31:19999
+goto menu
 
-:SSH
-echo.
-echo Connecting to VM via SSH...
-start cmd /k ssh -i ~/.ssh/fdx_founders_key fdxfounder@4.206.1.15
-goto MENU
+:ssh_powershell
+echo Opening PowerShell SSH connection...
+powershell -Command "ssh -i ~/.ssh/fdx_poland_key azureuser@74.248.141.31"
+goto menu
 
-:VSCODE
-echo.
+:ssh_cmd
+echo Opening Command Prompt SSH connection...
+start cmd /k ssh -i ~/.ssh/fdx_poland_key azureuser@74.248.141.31
+goto menu
+
+:vscode_ssh
 echo Opening VS Code with Remote SSH...
-code --remote ssh-remote+fdxfounder@4.206.1.15 /home/fdxfounder
-goto MENU
+code --remote ssh-remote+azureuser@74.248.141.31 /home/azureuser
+goto menu
 
-:SFTP
-echo.
+:sftp
 echo Opening SFTP connection...
-start "" "C:\Program Files\PuTTY\psftp.exe" -i "%USERPROFILE%\.ssh\fdx_founders_key.ppk" fdxfounder@4.206.1.15
-if %errorlevel% neq 0 (
-    echo.
-    echo PuTTY not found. Opening Windows Explorer SFTP...
-    start "" "sftp://fdxfounder@4.206.1.15"
-)
-goto MENU
+start "" "C:\Program Files\PuTTY\psftp.exe" -i "%USERPROFILE%\.ssh\fdx_poland_key.ppk" azureuser@74.248.141.31
+goto menu
 
-:CONTROL
-echo.
-echo Starting VM Control Panel...
-cd /d "%~dp0"
-if exist vm_control_fastapi.py (
-    start cmd /k python vm_control_fastapi.py
-    timeout /t 3 >nul
-    start http://localhost:5555
-) else (
-    echo Control panel not found.
-    pause
-)
-goto MENU
+:sftp_explorer
+echo Opening SFTP in Windows Explorer...
+start "" "sftp://azureuser@74.248.141.31"
+goto menu
 
-:DASHBOARD
+:check_status
+echo Checking VM status...
+powershell -Command "Test-NetConnection -ComputerName 74.248.141.31 -Port 22"
 echo.
-echo Opening Quick Access Dashboard...
-start quick_vm_access.html
-goto MENU
+echo Testing web services...
+powershell -Command "try { Invoke-WebRequest -Uri 'http://74.248.141.31:8000/health' -TimeoutSec 5 | Select-Object StatusCode } catch { Write-Host 'App not responding' }"
+echo.
+pause
+goto menu
 
-:EXIT
+:view_all
+echo Opening all services in browser...
+start http://74.248.141.31
+timeout /t 2 /nobreak >nul
+start http://74.248.141.31:8003
+timeout /t 2 /nobreak >nul
+start http://74.248.141.31:8000
+timeout /t 2 /nobreak >nul
+start http://74.248.141.31:3000
+timeout /t 2 /nobreak >nul
+start http://74.248.141.31:19999
+goto menu
+
+:exit
 echo.
-echo Goodbye!
-timeout /t 1 >nul
+echo Thank you for using FoodXchange VM Access!
+echo.
+pause
 exit

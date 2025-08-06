@@ -1,56 +1,75 @@
-name: Deploy to VM
+name: Deploy to Production VM
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  VM_HOST: 74.248.141.31
+  VM_USER: azureuser
+  VM_PATH: /home/azureuser/foodxchange
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Deploy to VM
-      env:
-        VM_HOST: 4.206.1.15
-        VM_USER: azureuser
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup SSH
       run: |
-        # Setup SSH
         mkdir -p ~/.ssh
-        echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
-        chmod 600 ~/.ssh/deploy_key
-        ssh-keyscan -H $VM_HOST >> ~/.ssh/known_hosts
+        echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ env.VM_HOST }} >> ~/.ssh/known_hosts
         
-        # Copy files to VM
-        scp -i ~/.ssh/deploy_key -r \
-          app.py templates static requirements.txt \
-          $VM_USER@$VM_HOST:/tmp/foodxchange_deploy/
+    - name: Deploy to VM
+      run: |
+        # Create deployment package
+        tar -czf deploy.tar.gz --exclude='.git' --exclude='node_modules' .
         
-        # Deploy on VM
-        ssh -i ~/.ssh/deploy_key $VM_USER@$VM_HOST << 'EOF'
-          echo "Deploying FoodXchange..."
+        # Upload to VM
+        scp deploy.tar.gz ${{ env.VM_USER }}@${{ env.VM_HOST }}:${{ env.VM_PATH }}/
+        
+        # Extract and restart on VM
+        ssh ${{ env.VM_USER }}@${{ env.VM_HOST }} << 'EOF'
+          cd ${{ env.VM_PATH }}
+          tar -xzf deploy.tar.gz
+          rm deploy.tar.gz
           
-          # Create backup
-          timestamp=$(date +%Y%m%d_%H%M%S)
-          mkdir -p ~/backups
-          cp -r /home/fdxfounder/fdx/app ~/backups/app_$timestamp
+          # Install dependencies
+          pip3 install -r requirements.txt
           
-          # Update files (requires sudo)
-          echo "Files staged in /tmp/foodxchange_deploy/"
-          echo "Run: sudo cp -r /tmp/foodxchange_deploy/* /home/fdxfounder/fdx/app/"
+          # Restart application
+          sudo systemctl restart gunicorn
+          sudo systemctl restart nginx
           
-          # Notify
-          echo "Deployment files ready!"
+          # Check status
+          sudo systemctl status gunicorn --no-pager
+          echo "Deployment completed successfully!"
         EOF
         
-    - name: Verify Deployment
+    - name: Health Check
       run: |
-        response=$(curl -s -o /dev/null -w "%{http_code}" https://www.fdx.trading)
-        echo "Site response: $response"
-        if [ $response -eq 200 ]; then
-          echo "✅ Deployment successful!"
-        else
-          echo "⚠️ Site returned $response"
-        fi
+        # Wait for app to start
+        sleep 10
+        
+        # Test application
+        curl -f http://${{ env.VM_HOST }}:8000/health || exit 1
+        echo "Health check passed!"
+        
+    - name: Notify Success
+      if: success()
+      run: |
+        echo "✅ Deployment to Poland Central VM successful!"
+        echo "🌐 Application: http://${{ env.VM_HOST }}"
+        echo "📊 Monitoring: http://${{ env.VM_HOST }}:3000"
+        
+    - name: Notify Failure
+      if: failure()
+      run: |
+        echo "❌ Deployment failed!"
+        echo "🔧 Check VM logs: ssh ${{ env.VM_USER }}@${{ env.VM_HOST }}"
+        echo "📋 View logs: sudo journalctl -u gunicorn -f"

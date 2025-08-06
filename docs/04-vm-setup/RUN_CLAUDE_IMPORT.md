@@ -2,8 +2,8 @@
 
 ## 1. Connect to VM
 ```bash
-ssh azureuser@4.206.1.15
-# Password: FDX2025!Import#VM
+ssh azureuser@74.248.141.31
+# Password: [Your VM Password]
 ```
 
 ## 2. Quick Setup (Copy & Paste)
@@ -21,7 +21,7 @@ mkdir -p ~/foodxchange && cd ~/foodxchange
 
 # Create .env with all credentials
 cat > .env << 'EOF'
-DATABASE_URL=postgresql://fdxadmin:FDX2030!@fdx-postgres-server.postgres.database.azure.com:5432/foodxchange?sslmode=require
+DATABASE_URL=postgresql://fdxadmin:FoodXchange2024!@fdx-poland-db.postgres.database.azure.com/foodxchange?sslmode=require
 AZURE_OPENAI_KEY=4mSTbyKUOviCB5cxUXY7xKveMTmeRqozTJSmW61MkJzSknM8YsBLJQQJ99BDACYeBjFXJ3w3AAAAACOGtOUz
 AZURE_OPENAI_ENDPOINT=https://foodzxaihub2ea6656946887.cognitiveservices.azure.com/
 AZURE_OPENAI_DEPLOYMENT=gpt-4o-mini
@@ -31,8 +31,8 @@ EOF
 ## 3. Upload Files (from your PC)
 ```bash
 # In a new terminal on your PC:
-scp "C:\Users\foodz\Downloads\Suppliers 29_7_2025.xlsx" azureuser@4.206.1.15:~/foodxchange/
-scp ai_enhanced_import.py azureuser@4.206.1.15:~/foodxchange/
+scp "C:\Users\foodz\Downloads\Suppliers 29_7_2025.xlsx" azureuser@74.248.141.31:~/foodxchange/
+scp ai_enhanced_import.py azureuser@74.248.141.31:~/foodxchange/
 ```
 
 ## 4. Run AI-Enhanced Import
@@ -89,3 +89,16 @@ cur.execute('SELECT COUNT(*) FROM suppliers')
 print(f'Suppliers: {cur.fetchone()[0]:,}')
 "
 ```
+
+## Performance Benefits
+
+### Poland Central Location
+- **Latency from Israel**: ~30ms (6x faster than US East)
+- **Network**: Optimized for European traffic
+- **Cost**: $57/month (saving $3/month)
+
+### Database Connection
+- **Server**: fdx-poland-db.postgres.database.azure.com
+- **Database**: foodxchange
+- **Location**: Poland Central
+- **Performance**: Optimized for read-heavy workloads

@@ -1,0 +1,210 @@
+==============================================================================
+                        FDX TRADING - SIMPLE WORKFLOW MAP
+==============================================================================
+
+1. MAIN BUSINESS FLOW (START TO END)
+=====================================
+
+    [BUYER]           [SUPPLIER]          [PRODUCT]           [MONEY]
+       |                  |                   |                  |
+       v                  v                   v                  v
+   [REQUEST] ---------> [FIND] ----------> [MATCH] --------> [PROPOSAL]
+       |                                      |                  |
+       v                                      v                  v
+   [APPROVE] <---------------------------[NEGOTIATE]-------> [PRICE]
+       |                                                         |
+       v                                                         v
+   [ORDER] -------------------------------------------> [INVOICE]
+       |                                                         |
+       v                                                         v
+   [SHIPPING] -------------------------------------> [PAYMENT]
+       |                                                         |
+       v                                                         v
+   [RECEIVE] <--------------------------------------- [COMPLETE]
+
+
+2. STEP-BY-STEP WORKFLOW
+=========================
+
+STEP 1: BUYER NEEDS PRODUCT
+----------------------------
+    Buyer (22) 
+        |
+        | creates
+        v
+    Request (85)
+        |
+        | contains
+        v
+    Line Items (218)
+
+
+STEP 2: FIND SUPPLIERS
+----------------------
+    Request
+        |
+        | search
+        v
+    Suppliers (23,206)
+        |
+        | who have
+        v
+    Products (224)
+
+
+STEP 3: GET PROPOSALS
+---------------------
+    Supplier
+        |
+        | sends
+        v
+    Proposal (56)
+        |
+        | with prices
+        v
+    Line Items (77)
+
+
+STEP 4: CREATE ORDER
+-------------------
+    Accepted Proposal
+        |
+        | becomes
+        v
+    Order (166)
+        |
+        | with items
+        v
+    Order Lines (549)
+
+
+STEP 5: SHIP & INVOICE
+----------------------
+    Order
+        |
+        | triggers
+        v
+    Shipping (271)
+        |
+        | generates
+        v
+    Invoice (263)
+
+
+STEP 6: COMPLIANCE CHECK
+------------------------
+    Product
+        |
+        +---> Kosher (74)
+        +---> Graphics (96)
+        +---> Compliance (88)
+        +---> Adaptation (67)
+
+
+3. DATA CONNECTIONS (CURRENT STATE)
+====================================
+
+CONNECTED:                          NOT YET CONNECTED:
+----------                          -----------------
+✓ Suppliers -> Products (222)      ○ Buyers -> Requests
+✓ Products -> Categories            ○ Requests -> Proposals  
+✓ Some Price Links                  ○ Proposals -> Orders
+                                    ○ Orders -> Shipping
+                                    ○ Orders -> Invoices
+
+
+4. SIMPLE WORKFLOW RULES
+========================
+
+RULE 1: One Request -> Many Proposals
+--------------------------------------
+    [1 REQUEST]
+         |
+    +----+----+----+
+    |    |    |    |
+   [P1] [P2] [P3] [P4]  (Multiple Proposals)
+
+
+RULE 2: One Order -> One Invoice
+--------------------------------
+    [ORDER] ----1:1----> [INVOICE]
+
+
+RULE 3: Product Must Pass Compliance
+------------------------------------
+    [PRODUCT] --check--> [KOSHER] --OK?--> [APPROVED]
+                            |
+                           NO?
+                            |
+                            v
+                        [REJECTED]
+
+
+5. NEXT ACTION ITEMS
+====================
+
+TODAY:
+------
+[ ] Link Buyers to Requests
+[ ] Link Requests to Proposals
+[ ] Test one complete flow
+
+TOMORROW:
+---------
+[ ] Link Orders to Shipping
+[ ] Link Orders to Invoices
+[ ] Create status tracking
+
+THIS WEEK:
+----------
+[ ] Build search function
+[ ] Create price comparison
+[ ] Make simple dashboard
+
+
+6. QUICK WIN WORKFLOWS
+======================
+
+A. SEARCH WORKFLOW (Easy)
+-------------------------
+    Type: "olive oil"
+           |
+           v
+    Find Suppliers
+           |
+           v
+    Show Products
+           |
+           v
+    Compare Prices
+
+
+B. REQUEST TRACKER (Medium)
+---------------------------
+    Show all Requests
+           |
+           v
+    Status: New/Pending/Complete
+           |
+           v
+    Link to Proposals
+           |
+           v
+    Track Progress
+
+
+C. INVOICE GENERATOR (Hard)
+---------------------------
+    Completed Order
+           |
+           v
+    Calculate Total
+           |
+           v
+    Add Commission
+           |
+           v
+    Generate Invoice
+
+
+==============================================================================

@@ -1,64 +1,145 @@
-# 🌐 Update fdx.trading to Point to Your VM
+# Update DNS to New VM (Poland Central)
 
-## Quick DNS Update (5 minutes)
+## Current DNS Configuration
 
-### 1. **Find Your Domain Provider**
-Your domain is registered with one of these:
-- GoDaddy
-- Namecheap  
-- Google Domains
-- Azure DNS
-- Other registrar
-
-### 2. **Update DNS Records**
-Login to your domain provider and update:
-
+### A Records
 | Type | Name | Value | TTL |
 |------|------|-------|-----|
-| A | @ | 4.206.1.15 | 300 |
-| A | www | 4.206.1.15 | 300 |
+| A | @ | 74.248.141.31 | 300 |
+| A | www | 74.248.141.31 | 300 |
 
-Remove or update the existing record pointing to 20.217.52.0
+### CNAME Records
+| Type | Name | Value | TTL |
+|------|------|-------|-----|
+| CNAME | api | fdx.trading | 300 |
 
-### 3. **Verify DNS Change**
+## DNS Provider: Cloudflare
+
+### Steps to Update DNS
+
+1. **Login to Cloudflare**
+   - Go to https://dash.cloudflare.com
+   - Select domain: `fdx.trading`
+
+2. **Navigate to DNS Settings**
+   - Click "DNS" in the left sidebar
+   - Go to "Records" tab
+
+3. **Update A Records**
+   - Find the A record for `@` (root domain)
+   - Change IP from old to: `74.248.141.31`
+   - Find the A record for `www`
+   - Change IP from old to: `74.248.141.31`
+   - Save changes
+
+4. **Verify Changes**
+   ```bash
+   # Test DNS resolution
+   nslookup fdx.trading
+   nslookup www.fdx.trading
+   
+   # Should show: Address: 74.248.141.31
+   ```
+
+## SSL Certificate
+
+### Current Status
+- **Provider**: Cloudflare
+- **Type**: Universal SSL (Free)
+- **Status**: Active
+- **Coverage**: *.fdx.trading
+
+### SSL Configuration
+- **SSL/TLS Mode**: Full (strict)
+- **Minimum TLS Version**: 1.2
+- **HSTS**: Enabled
+- **Security Level**: Medium
+
+## Performance Benefits
+
+### Poland Central Location
+- **Latency from Israel**: ~30ms (6x faster than US East)
+- **Network**: Optimized for European traffic
+- **Global CDN**: Cloudflare edge locations
+
+### DNS Performance
+- **TTL**: 300 seconds (5 minutes)
+- **Propagation**: Usually 5-15 minutes
+- **Global**: Cloudflare's worldwide network
+
+## Testing DNS Update
+
+### Command Line Testing
 ```bash
-# Check if update is complete (may take 5-30 mins)
+# Test root domain
+dig fdx.trading
 nslookup fdx.trading
 
-# Should show:
-# Address: 4.206.1.15
+# Test www subdomain
+dig www.fdx.trading
+nslookup www.fdx.trading
+
+# Test from different locations
+curl -I http://fdx.trading
+curl -I https://www.fdx.trading
 ```
 
-### 4. **Set Up SSL on VM**
-Once DNS is updated, run:
+### Online Tools
+- **DNS Checker**: https://dnschecker.org
+- **What's My DNS**: https://www.whatsmydns.net
+- **Cloudflare Status**: https://www.cloudflarestatus.com
+
+## Troubleshooting
+
+### Common Issues
+
+1. **DNS Not Updated**
+   - Wait 5-15 minutes for propagation
+   - Clear local DNS cache: `ipconfig /flushdns` (Windows)
+   - Try different DNS servers
+
+2. **SSL Certificate Issues**
+   - Check Cloudflare SSL/TLS settings
+   - Ensure "Full (strict)" mode is enabled
+   - Verify certificate is active
+
+3. **Website Not Loading**
+   - Check if VM is running: `ping 74.248.141.31`
+   - Verify services are running on VM
+   - Check firewall settings
+
+### Verification Commands
 ```bash
-chmod +x setup_domain_ssl.sh
-./setup_domain_ssl.sh
+# Test connectivity
+ping 74.248.141.31
+
+# Test web server
+curl -I http://74.248.141.31
+
+# Test SSL
+openssl s_client -connect fdx.trading:443 -servername fdx.trading
 ```
 
-## Alternative: Use Azure Web App
+## Monitoring
 
-If you prefer to keep using the Azure Web App:
+### DNS Health Checks
+- **Uptime**: Monitor via Cloudflare
+- **Response Time**: Track via Cloudflare Analytics
+- **SSL Status**: Monitor certificate expiration
 
-### Cost Comparison:
-- **VM Option**: $0/month (already running)
-- **Web App Option**: +$20-50/month extra
+### Alerts Setup
+- **DNS Failures**: Cloudflare notifications
+- **SSL Issues**: Certificate expiration alerts
+- **Performance**: Response time monitoring
 
-### To deploy to Web App:
-```bash
-# Package your app
-cd C:\Users\foodz\Desktop\FoodXchange
-zip -r foodxchange.zip app.py templates static requirements.txt
+## Future Considerations
 
-# Deploy to Azure Web App
-az webapp deployment source config-zip \
-    --resource-group [YourResourceGroup] \
-    --name [YourWebAppName] \
-    --src foodxchange.zip
-```
+### Scaling Options
+1. **Load Balancer**: Multiple VM instances
+2. **CDN**: Enhanced Cloudflare features
+3. **Geographic Routing**: Route to nearest server
 
-## 🎯 My Recommendation
-
-Use your VM - it's already running, costs $0, and has everything set up. The Azure Web App would be redundant and cost extra.
-
-Ready to update the DNS?
+### Security Enhancements
+1. **DDoS Protection**: Cloudflare Pro
+2. **Bot Management**: Advanced security rules
+3. **Rate Limiting**: API protection
