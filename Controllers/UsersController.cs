@@ -239,6 +239,55 @@ public class UsersController : ControllerBase
         });
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto updateDto)
+    {
+        var user = await _context.FdxUsers.FindAsync(id);
+        if (user == null)
+            return NotFound(new { message = "User not found" });
+
+        // Update user properties
+        user.Email = updateDto.Email ?? user.Email;
+        user.DisplayName = updateDto.DisplayName ?? user.DisplayName;
+        user.CompanyName = updateDto.CompanyName ?? user.CompanyName;
+        user.Type = (UserType)updateDto.Type;
+        user.IsActive = updateDto.IsActive;
+        user.PhoneNumber = updateDto.PhoneNumber ?? user.PhoneNumber;
+        user.Country = updateDto.Country ?? user.Country;
+        user.Address = updateDto.Address ?? user.Address;
+        user.Website = updateDto.Website ?? user.Website;
+        user.AlternateEmails = updateDto.AlternateEmails ?? user.AlternateEmails;
+        user.Category = updateDto.Category ?? user.Category;
+        user.BusinessType = updateDto.BusinessType ?? user.BusinessType;
+        user.SubCategories = updateDto.SubCategories ?? user.SubCategories;
+        user.FullDescription = updateDto.FullDescription ?? user.FullDescription;
+        user.RequiresPasswordChange = updateDto.RequiresPasswordChange;
+        user.DataComplete = updateDto.DataComplete;
+        user.Verification = (VerificationStatus)updateDto.Verification;
+        user.ImportNotes = updateDto.ImportNotes ?? user.ImportNotes;
+
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { success = true, message = "User updated successfully" });
+    }
+
+    [HttpPost("{id}/reset-password")]
+    public async Task<IActionResult> ResetPassword(int id, [FromBody] ResetPasswordDto dto)
+    {
+        var user = await _context.FdxUsers.FindAsync(id);
+        if (user == null)
+            return NotFound(new { message = "User not found" });
+
+        if (string.IsNullOrWhiteSpace(dto.NewPassword))
+            return BadRequest(new { message = "Password cannot be empty" });
+
+        user.Password = dto.NewPassword;
+        user.RequiresPasswordChange = true;
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { success = true, message = "Password reset successfully" });
+    }
+
     [HttpPut("{id}/toggle-active")]
     public async Task<IActionResult> ToggleUserActive(int id)
     {
@@ -513,4 +562,31 @@ public class UsersController : ControllerBase
         values.Add(currentValue.ToString());
         return values.ToArray();
     }
+}
+
+public class UserUpdateDto
+{
+    public string? Email { get; set; }
+    public string? DisplayName { get; set; }
+    public string? CompanyName { get; set; }
+    public int Type { get; set; }
+    public bool IsActive { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? Country { get; set; }
+    public string? Address { get; set; }
+    public string? Website { get; set; }
+    public string? AlternateEmails { get; set; }
+    public string? Category { get; set; }
+    public string? BusinessType { get; set; }
+    public string? SubCategories { get; set; }
+    public string? FullDescription { get; set; }
+    public bool RequiresPasswordChange { get; set; }
+    public bool DataComplete { get; set; }
+    public int Verification { get; set; }
+    public string? ImportNotes { get; set; }
+}
+
+public class ResetPasswordDto
+{
+    public string NewPassword { get; set; } = "";
 }
