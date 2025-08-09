@@ -484,6 +484,172 @@
         </div>
     </div>
     
+    <div class="modal" id="userProfileModal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <h2>User Profile</h2>
+            <form id="userProfileForm">
+                <input type="hidden" id="profileUserId">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                    <!-- Basic Information -->
+                    <div style="grid-column: span 2;">
+                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">Basic Information</h3>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Username</label>
+                        <input type="text" id="profileUsername" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+                        <input type="email" id="profileEmail" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Display Name</label>
+                        <input type="text" id="profileDisplayName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Company Name</label>
+                        <input type="text" id="profileCompanyName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">User Type</label>
+                        <select id="profileType" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="0">Admin</option>
+                            <option value="1">Expert/Contractor</option>
+                            <option value="2">Buyer</option>
+                            <option value="3">Supplier</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Status</label>
+                        <select id="profileIsActive" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div style="grid-column: span 2; margin-top: 20px;">
+                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">Contact Information</h3>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone Number</label>
+                        <input type="tel" id="profilePhoneNumber" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Country</label>
+                        <input type="text" id="profileCountry" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Address</label>
+                        <textarea id="profileAddress" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" rows="2"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Website</label>
+                        <input type="url" id="profileWebsite" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Alternate Emails</label>
+                        <input type="text" id="profileAlternateEmails" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="email1, email2">
+                    </div>
+                    
+                    <!-- Business Information -->
+                    <div style="grid-column: span 2; margin-top: 20px;">
+                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">Business Information</h3>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Category</label>
+                        <input type="text" id="profileCategory" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Business Type</label>
+                        <input type="text" id="profileBusinessType" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Sub Categories</label>
+                        <input type="text" id="profileSubCategories" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="category1, category2">
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Full Description</label>
+                        <textarea id="profileFullDescription" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" rows="3"></textarea>
+                    </div>
+                    
+                    <!-- System Information -->
+                    <div style="grid-column: span 2; margin-top: 20px;">
+                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">System Information</h3>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Requires Password Change</label>
+                        <select id="profileRequiresPasswordChange" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Data Complete</label>
+                        <select id="profileDataComplete" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Verification</label>
+                        <select id="profileVerification" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="0">Not Verified</option>
+                            <option value="1">Email Verified</option>
+                            <option value="2">Phone Verified</option>
+                            <option value="3">Fully Verified</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Last Login</label>
+                        <input type="text" id="profileLastLogin" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Created At</label>
+                        <input type="text" id="profileCreatedAt" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Imported At</label>
+                        <input type="text" id="profileImportedAt" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Import Notes</label>
+                        <textarea id="profileImportNotes" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button type="button" class="modal-btn" style="background: #6c757d; color: white;" onclick="resetPassword()">Reset Password</button>
+                    <button type="submit" class="modal-btn confirm">Save Changes</button>
+                    <button type="button" class="modal-btn cancel" onclick="closeProfileModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <div class="modal" id="supplierProductsModal">
         <div class="modal-content" style="max-width: 900px;">
             <h2>Supplier Products</h2>
@@ -568,7 +734,7 @@
                     const borderColor = user.type === 0 ? '#ffc107' : user.type === 1 ? '#17a2b8' : user.type === 2 ? '#28a745' : '#6f42c1';
                     
                     html += `
-                        <div class="user-card" style="background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid ${borderColor};">
+                        <div class="user-card" style="background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid ${borderColor}; cursor: pointer;" onclick="viewUserProfile(${user.id})">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                                 <div>
                                     <strong style="font-size: 16px;">${user.companyName || user.username}</strong>
@@ -582,7 +748,7 @@
                                 ${user.country ? `<div><strong>Country:</strong> ${user.country}</div>` : ''}
                                 <div><strong>Last Login:</strong> ${lastLogin}</div>
                             </div>
-                            <div class="actions" style="margin-top: 10px; display: flex; gap: 10px;">
+                            <div class="actions" style="margin-top: 10px; display: flex; gap: 10px;" onclick="event.stopPropagation()">
                                 <button class="action-btn toggle" style="flex: 1;" onclick="toggleUser(${user.id})">
                                     ${user.isActive ? 'Deactivate' : 'Activate'}
                                 </button>
@@ -623,7 +789,7 @@
                     const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
                     
                     html += `
-                        <tr>
+                        <tr style="cursor: pointer;" onclick="viewUserProfile(${user.id})">
                             <td>${user.id}</td>
                             <td>${user.username}</td>
                             <td>${user.companyName || '-'}</td>
@@ -633,7 +799,7 @@
                             <td>${user.category || '-'}</td>
                             <td>${lastLogin}</td>
                             <td><span class="status-badge ${statusClass}">${user.isActive ? 'Active' : 'Inactive'}</span></td>
-                            <td>
+                            <td onclick="event.stopPropagation()">
                                 <div class="actions">
                                     <button class="action-btn toggle" onclick="toggleUser(${user.id})">
                                         ${user.isActive ? 'Deactivate' : 'Activate'}
@@ -911,6 +1077,136 @@
         
         function closeSupplierModal() {
             document.getElementById('supplierProductsModal').classList.remove('active');
+        }
+        
+        async function viewUserProfile(userId) {
+            try {
+                const response = await fetch(`/api/users/${userId}`);
+                if (!response.ok) {
+                    alert('Error loading user profile');
+                    return;
+                }
+                
+                const user = await response.json();
+                
+                // Populate form fields
+                document.getElementById('profileUserId').value = user.id;
+                document.getElementById('profileUsername').value = user.username || '';
+                document.getElementById('profileEmail').value = user.email || '';
+                document.getElementById('profileDisplayName').value = user.displayName || '';
+                document.getElementById('profileCompanyName').value = user.companyName || '';
+                document.getElementById('profileType').value = user.type;
+                document.getElementById('profileIsActive').value = user.isActive.toString();
+                document.getElementById('profilePhoneNumber').value = user.phoneNumber || '';
+                document.getElementById('profileCountry').value = user.country || '';
+                document.getElementById('profileAddress').value = user.address || '';
+                document.getElementById('profileWebsite').value = user.website || '';
+                document.getElementById('profileAlternateEmails').value = user.alternateEmails || '';
+                document.getElementById('profileCategory').value = user.category || '';
+                document.getElementById('profileBusinessType').value = user.businessType || '';
+                document.getElementById('profileSubCategories').value = user.subCategories || '';
+                document.getElementById('profileFullDescription').value = user.fullDescription || '';
+                document.getElementById('profileRequiresPasswordChange').value = (user.requiresPasswordChange || false).toString();
+                document.getElementById('profileDataComplete').value = (user.dataComplete || false).toString();
+                document.getElementById('profileVerification').value = user.verification || 0;
+                document.getElementById('profileLastLogin').value = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never';
+                document.getElementById('profileCreatedAt').value = user.createdAt ? new Date(user.createdAt).toLocaleString() : '';
+                document.getElementById('profileImportedAt').value = user.importedAt ? new Date(user.importedAt).toLocaleString() : '';
+                document.getElementById('profileImportNotes').value = user.importNotes || '';
+                
+                // Disable type change for admin users
+                document.getElementById('profileType').disabled = user.type === 0;
+                
+                // Show modal
+                document.getElementById('userProfileModal').classList.add('active');
+                
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                alert('Error loading user profile');
+            }
+        }
+        
+        function closeProfileModal() {
+            document.getElementById('userProfileModal').classList.remove('active');
+        }
+        
+        // Handle profile form submission
+        document.getElementById('userProfileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('profileUserId').value;
+            const updateData = {
+                email: document.getElementById('profileEmail').value,
+                displayName: document.getElementById('profileDisplayName').value,
+                companyName: document.getElementById('profileCompanyName').value,
+                type: parseInt(document.getElementById('profileType').value),
+                isActive: document.getElementById('profileIsActive').value === 'true',
+                phoneNumber: document.getElementById('profilePhoneNumber').value,
+                country: document.getElementById('profileCountry').value,
+                address: document.getElementById('profileAddress').value,
+                website: document.getElementById('profileWebsite').value,
+                alternateEmails: document.getElementById('profileAlternateEmails').value,
+                category: document.getElementById('profileCategory').value,
+                businessType: document.getElementById('profileBusinessType').value,
+                subCategories: document.getElementById('profileSubCategories').value,
+                fullDescription: document.getElementById('profileFullDescription').value,
+                requiresPasswordChange: document.getElementById('profileRequiresPasswordChange').value === 'true',
+                dataComplete: document.getElementById('profileDataComplete').value === 'true',
+                verification: parseInt(document.getElementById('profileVerification').value),
+                importNotes: document.getElementById('profileImportNotes').value
+            };
+            
+            try {
+                const response = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('User profile updated successfully');
+                    closeProfileModal();
+                    loadUsers();
+                } else {
+                    alert('Error updating user profile: ' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error updating user profile:', error);
+                alert('Error updating user profile');
+            }
+        });
+        
+        async function resetPassword() {
+            const userId = document.getElementById('profileUserId').value;
+            const newPassword = prompt('Enter new password for the user:');
+            
+            if (!newPassword) return;
+            
+            try {
+                const response = await fetch(`/api/users/${userId}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newPassword })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Password reset successfully');
+                    document.getElementById('profileRequiresPasswordChange').value = 'true';
+                } else {
+                    alert('Error resetting password: ' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error resetting password:', error);
+                alert('Error resetting password');
+            }
         }
         
         function logout() {
