@@ -1,18 +1,19 @@
 using System.Text;
 using FDX.Trading.Models;
-using FDX.Trading.Controllers;
 using FDX.Trading.Services;
 
 namespace FDX.Trading.Services;
 
 public class ImportResult
 {
+    public string FileName { get; set; } = "";
+    public string UserType { get; set; } = "";
     public int TotalProcessed { get; set; }
     public int SuccessfulImports { get; set; }
     public int Skipped { get; set; }
     public List<string> Errors { get; set; } = new();
     public List<string> SkippedReasons { get; set; } = new();
-    public List<ImportedUserInfo> ImportedUsers { get; set; } = new();
+    public List<User> ImportedUsers { get; set; } = new();
 }
 
 public class ImportedUserInfo
@@ -28,11 +29,11 @@ public class ImportedUserInfo
 public class EnhancedImportService
 {
     private const string DEFAULT_PASSWORD = "FDX2025!";
-    
+
     public static async Task<ImportResult> ImportContractorsFromFile(string filePath, bool testMode = false, int testLimit = 5)
     {
         var result = new ImportResult();
-        var users = LoginController.GetUsers();
+        var existingUsernames = new HashSet<string>();
 
         if (!File.Exists(filePath))
         {
@@ -40,135 +41,114 @@ public class EnhancedImportService
             return result;
         }
 
-        using (var reader = new StreamReader(filePath, Encoding.UTF8))
+        var lines = await File.ReadAllLinesAsync(filePath);
+        
+        // Skip header
+        for (int i = 1; i < lines.Length; i++)
         {
-            // Parse entire file to handle multi-line records
-            var allRecords = ParseCsvFile(reader);
-            
-            // Skip header row
-            var dataRecords = allRecords.Skip(1).ToList();
-            
-            foreach (var values in dataRecords)
-            {
-                if (testMode && result.SuccessfulImports >= testLimit)
-                    break;
-                    
-                result.TotalProcessed++;
+            if (testMode && result.SuccessfulImports >= testLimit)
+                break;
                 
-                try
+            result.TotalProcessed++;
+            
+            try
+            {
+                var values = ParseCsvLine(lines[i]);
+                
+                if (values.Length < 12)
                 {
-                    
-                    if (values.Length >= 12) // Contractors CSV structure
-                    {
-                        var companyName = CleanValue(values[2]); // Company name
-                        var email = CleanValue(values[5]); // Company email
-                        var country = CleanValue(values[6]); // Country
-                        var phoneNumber = CleanValue(values[9]); // Phone
-                        var address = CleanValue(values[11]); // Address
-                        var category = CleanValue(values[3]); // Category
-                        var website = CleanValue(values[4]); // Website
-
-                        if (string.IsNullOrWhiteSpace(companyName))
-                        {
-                            result.SkippedReasons.Add($"Record {result.TotalProcessed}: No company name");
-                            result.Skipped++;
-                            continue;
-                        }
-
-                        // Check for duplicates
-                        if (users.Any(u => u.CompanyName.Equals(companyName, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            result.SkippedReasons.Add($"Record {result.TotalProcessed}: Duplicate company '{companyName}'");
-                            result.Skipped++;
-                            continue;
-                        }
-
-                        // Handle multiple emails
-                        string? alternateEmails = null;
-                        if (!string.IsNullOrEmpty(email) && email.Contains(","))
-                        {
-                            var emails = email.Split(',').Select(e => e.Trim()).ToArray();
-                            email = emails[0];
-                            alternateEmails = string.Join(";", emails.Skip(1));
-                        }
-
-                        // Generate username with underscore format
-                        var username = GenerateEnhancedUsername(companyName, users);
-
-                        // Check data completeness
-                        bool dataComplete = !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(phoneNumber);
-                        var verificationStatus = dataComplete ? VerificationStatus.Pending : VerificationStatus.Incomplete;
-                        
-                        // Generate placeholder email if missing
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            email = $"{username}@pending.fdx";
-                        }
-
-                        // Determine if should be active (complete data only)
-                        bool isActive = dataComplete;
-
-                        var user = new User
-                        {
-                            Id = LoginController.GetNextId(),
-                            Username = username,
-                            Password = DEFAULT_PASSWORD,
-                            Email = email,
-                            CompanyName = companyName,
-                            Type = UserType.Expert,
-                            Country = country ?? "",
-                            PhoneNumber = phoneNumber ?? "",
-                            Website = website ?? "",
-                            Address = address ?? "",
-                            CreatedAt = DateTime.Now,
-                            IsActive = isActive,
-                            RequiresPasswordChange = true,
-                            DataComplete = dataComplete,
-                            Verification = verificationStatus,
-                            AlternateEmails = alternateEmails,
-                            ImportedAt = DateTime.Now,
-                            ImportNotes = dataComplete ? "Imported successfully" : "Missing: " + 
-                                (string.IsNullOrEmpty(values[5]) ? "email " : "") + 
-                                (string.IsNullOrEmpty(phoneNumber) ? "phone" : "")
-                        };
-                        
-                        // Process category using CategoryService
-                        CategoryService.ProcessUserCategory(user, category, null);
-
-                        // Check for Hebrew and set display name
-                        if (ContainsHebrew(companyName))
-                        {
-                            user.DisplayName = username; // Use generated username as display
-                        }
-
-                        users.Add(user);
-                        result.SuccessfulImports++;
-                        
-                        result.ImportedUsers.Add(new ImportedUserInfo
-                        {
-                            Username = username,
-                            Password = DEFAULT_PASSWORD,
-                            CompanyName = companyName,
-                            Email = email,
-                            Status = isActive ? "Active" : "Inactive (Incomplete)",
-                            Notes = user.ImportNotes ?? ""
-                        });
-                    }
+                    result.SkippedReasons.Add($"Line {i + 1}: Insufficient columns");
+                    result.Skipped++;
+                    continue;
                 }
-                catch (Exception ex)
+                
+                // Parse fields based on CSV structure
+                var companyName = values[2]?.Trim() ?? ""; // Company name
+                var category = values[3]?.Trim() ?? ""; // Category
+                var website = values[4]?.Trim() ?? ""; // Website
+                var email = values[5]?.Trim() ?? ""; // Email
+                var country = values[6]?.Trim() ?? ""; // Country
+                var phoneNumber = values[9]?.Trim() ?? ""; // Phone
+                var address = values[11]?.Trim() ?? ""; // Address
+                
+                // Skip if no company name
+                if (string.IsNullOrWhiteSpace(companyName))
                 {
-                    result.Errors.Add($"Record {result.TotalProcessed}: {ex.Message}");
+                    result.SkippedReasons.Add($"Line {i + 1}: No company name");
+                    result.Skipped++;
+                    continue;
                 }
+                
+                // Check for duplicates
+                if (existingUsernames.Contains(companyName.ToLower()))
+                {
+                    result.SkippedReasons.Add($"Line {i + 1}: Duplicate company '{companyName}'");
+                    result.Skipped++;
+                    continue;
+                }
+                
+                // Determine if user is active (has email AND phone)
+                bool isActive = !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(phoneNumber);
+                bool dataComplete = isActive;
+                
+                // Generate placeholder email if missing
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    email = $"{GenerateUsername(companyName)}@pending.fdx";
+                }
+                
+                // Process category
+                var categoryType = CategoryService.DetectCategory(companyName, "", category, false);
+                var businessType = ExtractBusinessType(category);
+                string? displayName = null;
+                
+                var user = new User
+                {
+                    // Id will be auto-generated by database
+                    Username = GenerateUsername(companyName),
+                    Password = DEFAULT_PASSWORD,
+                    Email = email,
+                    CompanyName = companyName,
+                    Type = UserType.Expert,
+                    Country = country,
+                    PhoneNumber = phoneNumber,
+                    Website = website,
+                    Address = address,
+                    Category = !string.IsNullOrEmpty(businessType) ? businessType : category,
+                    CategoryId = categoryType,
+                    BusinessType = businessType ?? "",
+                    FullDescription = category,
+                    SubCategories = "",
+                    CreatedAt = DateTime.Now,
+                    LastLogin = null,
+                    IsActive = isActive,
+                    RequiresPasswordChange = true,
+                    DataComplete = dataComplete,
+                    Verification = VerificationStatus.Pending,
+                    DisplayName = displayName,
+                    ImportedAt = DateTime.Now,
+                    ImportNotes = dataComplete ? "Imported with complete data" : "Missing: " + 
+                        (string.IsNullOrWhiteSpace(phoneNumber) ? "phone " : "") +
+                        (email.Contains("@pending.fdx") ? "email" : "")
+                };
+                
+                result.ImportedUsers.Add(user);
+                existingUsernames.Add(companyName.ToLower());
+                result.SuccessfulImports++;
+            }
+            catch (Exception ex)
+            {
+                result.Errors.Add($"Line {i + 1}: {ex.Message}");
             }
         }
-
+        
         return result;
     }
 
     public static async Task<ImportResult> ImportBuyersFromFile(string filePath, bool testMode = false, int testLimit = 5)
     {
         var result = new ImportResult();
-        var users = LoginController.GetUsers();
+        var existingUsernames = new HashSet<string>();
 
         if (!File.Exists(filePath))
         {
@@ -176,264 +156,264 @@ public class EnhancedImportService
             return result;
         }
 
-        using (var reader = new StreamReader(filePath, Encoding.UTF8))
+        var fileContent = await File.ReadAllTextAsync(filePath);
+        var rows = ParseMultiLineCsv(fileContent);
+        
+        // Skip header
+        for (int i = 1; i < rows.Count; i++)
         {
-            // Parse entire file to handle multi-line records
-            var allRecords = ParseCsvFile(reader);
-            
-            // Skip header row
-            var dataRecords = allRecords.Skip(1).ToList();
-            
-            foreach (var values in dataRecords)
-            {
-                if (testMode && result.SuccessfulImports >= testLimit)
-                    break;
-                    
-                result.TotalProcessed++;
+            if (testMode && result.SuccessfulImports >= testLimit)
+                break;
                 
-                try
+            result.TotalProcessed++;
+            
+            try
+            {
+                var values = rows[i];
+                
+                if (values.Length < 14)
                 {
-                    if (values.Length >= 14) // Buyers CSV structure
-                    {
-                        var buyerId = CleanValue(values[2]); // ID
-                        var companyName = CleanValue(values[4]); // Company name
-                        var email = CleanValue(values[8]); // Email
-                        var phoneNumber = CleanValue(values[9]); // Phone
-                        var address = CleanValue(values[11]); // Address
-                        var country = CleanValue(values[13]); // Country
-                        var website = CleanValue(values[7]); // Website
-                        var description = CleanValue(values[6]); // Description
-
-                        if (string.IsNullOrWhiteSpace(companyName))
-                        {
-                            result.SkippedReasons.Add($"Record {result.TotalProcessed}: No company name");
-                            result.Skipped++;
-                            continue;
-                        }
-
-                        // Check for duplicates
-                        if (users.Any(u => u.CompanyName.Equals(companyName, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            result.SkippedReasons.Add($"Record {result.TotalProcessed}: Duplicate company '{companyName}'");
-                            result.Skipped++;
-                            continue;
-                        }
-
-                        // Handle multiple emails
-                        string? alternateEmails = null;
-                        if (!string.IsNullOrEmpty(email) && email.Contains(","))
-                        {
-                            var emails = email.Split(',').Select(e => e.Trim()).ToArray();
-                            email = emails[0];
-                            alternateEmails = string.Join(";", emails.Skip(1));
-                        }
-
-                        // Handle multiple phone numbers
-                        if (!string.IsNullOrEmpty(phoneNumber) && phoneNumber.Contains(","))
-                        {
-                            phoneNumber = phoneNumber.Replace(",", ";");
-                        }
-
-                        // Generate username
-                        var username = GenerateEnhancedUsername(companyName, users);
-
-                        // Check data completeness
-                        bool dataComplete = !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(phoneNumber);
-                        var verificationStatus = dataComplete ? VerificationStatus.Pending : VerificationStatus.Incomplete;
-                        
-                        // Generate placeholder email if missing
-                        if (string.IsNullOrEmpty(email))
-                        {
-                            email = $"{username}@pending.fdx";
-                        }
-
-                        // Buyers with complete data are active
-                        bool isActive = dataComplete;
-
-                        var user = new User
-                        {
-                            Id = LoginController.GetNextId(),
-                            Username = username,
-                            Password = DEFAULT_PASSWORD,
-                            Email = email,
-                            CompanyName = companyName,
-                            Type = UserType.Buyer,
-                            Country = country ?? "",
-                            PhoneNumber = phoneNumber ?? "",
-                            Website = website ?? "",
-                            Address = address ?? "",
-                            CreatedAt = DateTime.Now,
-                            IsActive = isActive,
-                            RequiresPasswordChange = true,
-                            DataComplete = dataComplete,
-                            Verification = verificationStatus,
-                            AlternateEmails = alternateEmails,
-                            ImportedAt = DateTime.Now,
-                            OriginalId = buyerId,
-                            ImportNotes = dataComplete ? "Imported successfully" : "Missing: " + 
-                                (string.IsNullOrEmpty(values[8]) ? "email " : "") + 
-                                (string.IsNullOrEmpty(values[9]) ? "phone" : "")
-                        };
-                        
-                        // Process category using CategoryService - description field contains the business info
-                        CategoryService.ProcessUserCategory(user, null, description);
-
-                        // Check for Hebrew and set display name
-                        if (ContainsHebrew(companyName))
-                        {
-                            user.DisplayName = username; // Use generated username as display
-                        }
-
-                        users.Add(user);
-                        result.SuccessfulImports++;
-                        
-                        result.ImportedUsers.Add(new ImportedUserInfo
-                        {
-                            Username = username,
-                            Password = DEFAULT_PASSWORD,
-                            CompanyName = companyName,
-                            Email = email,
-                            Status = isActive ? "Active" : "Inactive (Incomplete)",
-                            Notes = user.ImportNotes ?? ""
-                        });
-                    }
+                    result.SkippedReasons.Add($"Row {i + 1}: Insufficient columns (found {values.Length}, need 14)");
+                    result.Skipped++;
+                    continue;
                 }
-                catch (Exception ex)
+                
+                // Parse fields based on CSV structure
+                var companyName = values[4]?.Trim() ?? ""; // Company name
+                var description = values[6]?.Trim() ?? ""; // Business description
+                var website = values[7]?.Trim() ?? ""; // Website
+                var email = values[8]?.Trim() ?? ""; // Email
+                var phoneNumber = values[9]?.Trim() ?? ""; // Phone
+                var address = values[11]?.Trim() ?? ""; // Address
+                var country = values[13]?.Trim() ?? ""; // Country
+                
+                // Skip if no company name
+                if (string.IsNullOrWhiteSpace(companyName))
                 {
-                    result.Errors.Add($"Record {result.TotalProcessed}: {ex.Message}");
+                    result.SkippedReasons.Add($"Row {i + 1}: No company name");
+                    result.Skipped++;
+                    continue;
                 }
+                
+                // Check for duplicates
+                if (existingUsernames.Contains(companyName.ToLower()))
+                {
+                    result.SkippedReasons.Add($"Row {i + 1}: Duplicate company '{companyName}'");
+                    result.Skipped++;
+                    continue;
+                }
+                
+                // Determine if user is active (has email AND phone)
+                bool isActive = !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(phoneNumber);
+                bool dataComplete = isActive;
+                
+                // Generate placeholder email if missing
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    email = $"{GenerateUsername(companyName)}@pending.fdx";
+                }
+                
+                // Process category from description
+                var categoryType = CategoryService.DetectCategory(companyName, description, "", true);
+                var businessType = ExtractBusinessType(description);
+                string? displayName = null;
+                
+                var user = new User
+                {
+                    // Id will be auto-generated by database
+                    Username = GenerateUsername(companyName),
+                    Password = DEFAULT_PASSWORD,
+                    Email = email,
+                    CompanyName = companyName,
+                    Type = UserType.Buyer,
+                    Country = country,
+                    PhoneNumber = phoneNumber,
+                    Website = website,
+                    Address = address,
+                    Category = !string.IsNullOrEmpty(businessType) ? businessType : ExtractBusinessType(description),
+                    CategoryId = categoryType,
+                    BusinessType = businessType ?? ExtractBusinessType(description),
+                    FullDescription = description,
+                    SubCategories = "",
+                    CreatedAt = DateTime.Now,
+                    LastLogin = null,
+                    IsActive = isActive,
+                    RequiresPasswordChange = true,
+                    DataComplete = dataComplete,
+                    Verification = VerificationStatus.Pending,
+                    DisplayName = displayName,
+                    ImportedAt = DateTime.Now,
+                    ImportNotes = dataComplete ? "Imported with complete data" : "Missing: " + 
+                        (string.IsNullOrWhiteSpace(phoneNumber) ? "phone " : "") +
+                        (email.Contains("@pending.fdx") ? "email" : "")
+                };
+                
+                result.ImportedUsers.Add(user);
+                existingUsernames.Add(companyName.ToLower());
+                result.SuccessfulImports++;
+            }
+            catch (Exception ex)
+            {
+                result.Errors.Add($"Row {i + 1}: {ex.Message}");
             }
         }
-
+        
         return result;
     }
-
-    private static string GenerateEnhancedUsername(string companyName, List<User> existingUsers)
+    
+    private static string ExtractBusinessType(string description)
     {
-        // Clean company name for username with underscore format
-        var baseUsername = companyName.ToLower()
+        if (string.IsNullOrWhiteSpace(description))
+            return "";
+            
+        // Look for "is a" pattern
+        var isAIndex = description.IndexOf(" is a ", StringComparison.OrdinalIgnoreCase);
+        if (isAIndex > 0)
+        {
+            var startIndex = isAIndex + 6;
+            var endIndex = description.IndexOf('.', startIndex);
+            if (endIndex == -1)
+                endIndex = description.IndexOf(',', startIndex);
+            if (endIndex == -1)
+                endIndex = Math.Min(description.Length, startIndex + 100);
+                
+            var extracted = description.Substring(startIndex, endIndex - startIndex).Trim();
+            
+            // Limit length
+            if (extracted.Length > 50)
+            {
+                var lastSpace = extracted.LastIndexOf(' ', 50);
+                if (lastSpace > 0)
+                    extracted = extracted.Substring(0, lastSpace) + "...";
+                else
+                    extracted = extracted.Substring(0, 50) + "...";
+            }
+            
+            return extracted;
+        }
+        
+        // Fallback: take first sentence or part
+        var firstPeriod = description.IndexOf('.');
+        var firstComma = description.IndexOf(',');
+        var cutoff = firstPeriod > 0 && (firstComma == -1 || firstPeriod < firstComma) ? firstPeriod : firstComma;
+        
+        if (cutoff > 0 && cutoff < 100)
+            return description.Substring(0, cutoff).Trim();
+            
+        // Last resort: truncate
+        return description.Length > 50 ? description.Substring(0, 50) + "..." : description;
+    }
+    
+    private static string GenerateUsername(string companyName)
+    {
+        if (string.IsNullOrWhiteSpace(companyName))
+            return "user" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            
+        // Check if Hebrew
+        bool hasHebrew = companyName.Any(c => c >= 0x0590 && c <= 0x05FF);
+        if (hasHebrew)
+        {
+            // Generate random username for Hebrew names
+            return "user_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+        }
+        
+        // Clean and format username
+        var username = companyName.ToLower()
             .Replace(" ", "_")
-            .Replace(",", "")
+            .Replace("-", "_")
             .Replace(".", "")
+            .Replace(",", "")
+            .Replace("(", "")
+            .Replace(")", "")
             .Replace("/", "_")
             .Replace("\\", "_")
-            .Replace("-", "_")
-            .Replace("(", "")
-            .Replace(")", "");
-
+            .Replace("&", "and")
+            .Replace("'", "")
+            .Replace("\"", "");
+            
         // Remove multiple underscores
-        while (baseUsername.Contains("__"))
-        {
-            baseUsername = baseUsername.Replace("__", "_");
-        }
-
-        // Trim underscores from ends
-        baseUsername = baseUsername.Trim('_');
-
-        if (baseUsername.Length > 20)
-            baseUsername = baseUsername.Substring(0, 20);
-
-        var username = baseUsername;
-        var counter = 1;
-
-        // Ensure unique username
-        while (existingUsers.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
-        {
-            username = $"{baseUsername}{counter}";
-            counter++;
-        }
-
+        while (username.Contains("__"))
+            username = username.Replace("__", "_");
+            
+        // Trim underscores
+        username = username.Trim('_');
+        
+        // Limit length
+        if (username.Length > 30)
+            username = username.Substring(0, 30);
+            
+        // Ensure it starts with a letter
+        if (username.Length > 0 && !char.IsLetter(username[0]))
+            username = "u_" + username;
+            
+        // If empty, generate random
+        if (string.IsNullOrWhiteSpace(username))
+            username = "user_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+            
         return username;
     }
-
-    private static string CleanValue(string value)
+    
+    private static List<string[]> ParseMultiLineCsv(string content)
     {
-        if (string.IsNullOrEmpty(value))
-            return "";
-        
-        return value.Trim().Replace("\"", "");
-    }
-
-    private static bool ContainsHebrew(string text)
-    {
-        if (string.IsNullOrEmpty(text))
-            return false;
-            
-        return text.Any(c => c >= 0x0590 && c <= 0x05FF);
-    }
-
-    private static List<string[]> ParseCsvFile(StreamReader reader)
-    {
-        var records = new List<string[]>();
-        var currentRecord = new List<string>();
-        var currentValue = new StringBuilder();
+        var rows = new List<string[]>();
+        var currentRow = new List<string>();
+        var currentField = new StringBuilder();
         var inQuotes = false;
-        string? line;
-
-        while ((line = reader.ReadLine()) != null)
+        var previousChar = '\0';
+        
+        for (int i = 0; i < content.Length; i++)
         {
-            for (int i = 0; i < line.Length; i++)
+            var ch = content[i];
+            
+            if (ch == '"')
             {
-                var ch = line[i];
-
-                if (ch == '"')
+                if (inQuotes && i + 1 < content.Length && content[i + 1] == '"')
                 {
-                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
-                    {
-                        currentValue.Append('"');
-                        i++; // Skip next quote
-                    }
-                    else
-                    {
-                        inQuotes = !inQuotes;
-                    }
-                }
-                else if (ch == ',' && !inQuotes)
-                {
-                    currentRecord.Add(currentValue.ToString());
-                    currentValue.Clear();
+                    // Escaped quote
+                    currentField.Append('"');
+                    i++; // Skip next quote
                 }
                 else
                 {
-                    currentValue.Append(ch);
+                    inQuotes = !inQuotes;
                 }
             }
-
-            // If we're not in quotes, this line is complete
-            if (!inQuotes)
+            else if (ch == ',' && !inQuotes)
             {
-                // Add the last value
-                currentRecord.Add(currentValue.ToString());
-                currentValue.Clear();
-                
-                // Add the complete record if it has content
-                if (currentRecord.Count > 0 && !string.IsNullOrWhiteSpace(string.Join("", currentRecord)))
+                // End of field
+                currentRow.Add(currentField.ToString());
+                currentField.Clear();
+            }
+            else if ((ch == '\n' || ch == '\r') && !inQuotes)
+            {
+                // End of row (but skip empty lines)
+                if (ch == '\n' || (ch == '\r' && i + 1 < content.Length && content[i + 1] != '\n'))
                 {
-                    records.Add(currentRecord.ToArray());
+                    if (currentRow.Count > 0 || currentField.Length > 0)
+                    {
+                        currentRow.Add(currentField.ToString());
+                        rows.Add(currentRow.ToArray());
+                        currentRow.Clear();
+                        currentField.Clear();
+                    }
                 }
-                currentRecord.Clear();
             }
-            else
+            else if (ch != '\r' || inQuotes)
             {
-                // We're still in quotes, add a newline and continue with next line
-                currentValue.AppendLine();
+                currentField.Append(ch);
             }
+            
+            previousChar = ch;
         }
-
-        // Handle any remaining data
-        if (currentRecord.Count > 0 || currentValue.Length > 0)
+        
+        // Add last row if any
+        if (currentRow.Count > 0 || currentField.Length > 0)
         {
-            if (currentValue.Length > 0)
-            {
-                currentRecord.Add(currentValue.ToString());
-            }
-            if (currentRecord.Count > 0)
-            {
-                records.Add(currentRecord.ToArray());
-            }
+            currentRow.Add(currentField.ToString());
+            rows.Add(currentRow.ToArray());
         }
-
-        return records;
+        
+        return rows;
     }
     
     private static string[] ParseCsvLine(string line)
@@ -476,13 +456,13 @@ public class EnhancedImportService
     public static string GenerateImportReport(List<ImportResult> results)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("Username,Password,CompanyName,Email,Status,Notes");
+        sb.AppendLine("Username,Password,CompanyName,Email,Type,Status");
         
         foreach (var result in results)
         {
             foreach (var user in result.ImportedUsers)
             {
-                sb.AppendLine($"\"{user.Username}\",\"{user.Password}\",\"{user.CompanyName}\",\"{user.Email}\",\"{user.Status}\",\"{user.Notes}\"");
+                sb.AppendLine($"\"{user.Username}\",\"{user.Password}\",\"{user.CompanyName}\",\"{user.Email}\",\"{user.Type}\",\"{(user.IsActive ? "Active" : "Inactive")}\"");
             }
         }
         

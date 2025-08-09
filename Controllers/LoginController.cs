@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using FDX.Trading.Models;
+using FDX.Trading.Data;
 
 namespace FDX.Trading.Controllers;
 
@@ -7,39 +9,45 @@ namespace FDX.Trading.Controllers;
 [Route("api/[controller]")]
 public class LoginController : ControllerBase
 {
-    // Simple in-memory user storage
-    private static List<User> users = new List<User>
+    private readonly FdxTradingContext _context;
+    
+    public LoginController(FdxTradingContext context)
     {
-        new User { 
-            Id = 1, 
-            Username = "udi@fdx.trading", 
-            Password = "FDX2030!", 
-            Email = "udi@fdx.trading",
-            CompanyName = "FDX Trading",
-            Type = UserType.Admin,
-            Country = "Israel",
-            IsActive = true
-        }
-    };
-    private static int nextId = 2;
+        _context = context;
+    }
 
     [HttpPost("register")]
-    public IActionResult Register([FromBody] LoginRequest request)
+    public async Task<IActionResult> Register([FromBody] LoginRequest request)
     {
         // Check if user exists
-        if (users.Any(u => u.Username == request.Username))
+        if (await _context.FdxUsers.AnyAsync(u => u.Username == request.Username))
             return Ok(new { success = false, message = "User already exists" });
 
         // Create new user
         var user = new User
         {
-            Id = nextId++,
             Username = request.Username,
             Password = request.Password,
-            Email = $"{request.Username}@example.com"
+            Email = $"{request.Username}@example.com",
+            CompanyName = "",
+            Type = UserType.Buyer,
+            Country = "",
+            PhoneNumber = "",
+            Website = "",
+            Address = "",
+            Category = "",
+            BusinessType = "",
+            FullDescription = "",
+            SubCategories = "",
+            CreatedAt = DateTime.Now,
+            IsActive = true,
+            DataComplete = false,
+            RequiresPasswordChange = true,
+            Verification = VerificationStatus.Pending
         };
 
-        users.Add(user);
+        _context.FdxUsers.Add(user);
+        await _context.SaveChangesAsync();
 
         return Ok(new { 
             success = true, 
@@ -50,10 +58,10 @@ public class LoginController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         // Find user
-        var user = users.FirstOrDefault(u => 
+        var user = await _context.FdxUsers.FirstOrDefaultAsync(u => 
             u.Username == request.Username && 
             u.Password == request.Password);
 
@@ -62,6 +70,7 @@ public class LoginController : ControllerBase
 
         // Update last login
         user.LastLogin = DateTime.Now;
+        await _context.SaveChangesAsync();
 
         return Ok(new { 
             success = true, 
@@ -78,8 +87,4 @@ public class LoginController : ControllerBase
     {
         return Ok(new { message = "API is working!", time = DateTime.Now });
     }
-    
-    // Make users accessible to UsersController
-    public static List<User> GetUsers() => users;
-    public static int GetNextId() => nextId++;
 }

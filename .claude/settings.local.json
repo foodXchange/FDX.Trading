@@ -70,7 +70,10 @@
       "Bash(git bundle create:*)",
       "Bash(git checkout:*)",
       "Bash(del .gitindex.lock)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git push:*)",
+      "Bash(grep:*)",
+      "Bash(del C:FDX.TradingServicesCsvImportService.cs)"
     ],
     "deny": []
   }

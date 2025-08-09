@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using FDX.Trading.Models;
 using FDX.Trading.Services;
+using FDX.Trading.Data;
 using System.Text;
 
 namespace FDX.Trading.Controllers;
@@ -9,10 +11,17 @@ namespace FDX.Trading.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult GetAllUsers()
+    private readonly FdxTradingContext _context;
+    
+    public UsersController(FdxTradingContext context)
     {
-        var users = LoginController.GetUsers();
+        _context = context;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _context.FdxUsers.ToListAsync();
         var userDtos = users.Select(u => new UserDto
         {
             Id = u.Id,
@@ -51,9 +60,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetUser(int id)
+    public async Task<IActionResult> GetUser(int id)
     {
-        var user = LoginController.GetUsers().FirstOrDefault(u => u.Id == id);
+        var user = await _context.FdxUsers.FindAsync(id);
         if (user == null)
             return NotFound(new { message = "User not found" });
 
@@ -104,7 +113,6 @@ public class UsersController : ControllerBase
 
         var importedUsers = new List<User>();
         var errors = new List<string>();
-        var users = LoginController.GetUsers();
 
         using (var reader = new StreamReader(file.OpenReadStream(), Encoding.UTF8))
         {
@@ -136,11 +144,10 @@ public class UsersController : ControllerBase
                             continue;
 
                         // Generate username from company name
-                        var username = GenerateUsername(companyName, users);
+                        var username = await GenerateUsername(companyName);
 
                         var user = new User
                         {
-                            Id = LoginController.GetNextId(),
                             Username = username,
                             Password = "FDX2025!", // Default password
                             Email = email ?? $"{username}@fdx.trading",
@@ -151,11 +158,17 @@ public class UsersController : ControllerBase
                             Website = website ?? "",
                             Address = address ?? "",
                             Category = category ?? "",
+                            BusinessType = "",
+                            FullDescription = "",
+                            SubCategories = "",
                             CreatedAt = DateTime.Now,
-                            IsActive = true
+                            IsActive = true,
+                            DataComplete = false,
+                            RequiresPasswordChange = true,
+                            Verification = VerificationStatus.Pending
                         };
 
-                        users.Add(user);
+                        _context.FdxUsers.Add(user);
                         importedUsers.Add(user);
                     }
                     else if (type == UserType.Buyer && values.Length >= 14) // Buyers CSV
@@ -172,11 +185,10 @@ public class UsersController : ControllerBase
                             continue;
 
                         // Generate username from company name
-                        var username = GenerateUsername(companyName, users);
+                        var username = await GenerateUsername(companyName);
 
                         var user = new User
                         {
-                            Id = LoginController.GetNextId(),
                             Username = username,
                             Password = "FDX2025!", // Default password
                             Email = email ?? $"{username}@fdx.trading",
@@ -187,11 +199,17 @@ public class UsersController : ControllerBase
                             Website = website ?? "",
                             Address = address ?? "",
                             Category = description ?? "",
+                            BusinessType = "",
+                            FullDescription = "",
+                            SubCategories = "",
                             CreatedAt = DateTime.Now,
-                            IsActive = true
+                            IsActive = true,
+                            DataComplete = false,
+                            RequiresPasswordChange = true,
+                            Verification = VerificationStatus.Pending
                         };
 
-                        users.Add(user);
+                        _context.FdxUsers.Add(user);
                         importedUsers.Add(user);
                     }
                 }
@@ -201,6 +219,8 @@ public class UsersController : ControllerBase
                 }
             }
         }
+
+        await _context.SaveChangesAsync();
 
         return Ok(new
         {
@@ -220,21 +240,22 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}/toggle-active")]
-    public IActionResult ToggleUserActive(int id)
+    public async Task<IActionResult> ToggleUserActive(int id)
     {
-        var user = LoginController.GetUsers().FirstOrDefault(u => u.Id == id);
+        var user = await _context.FdxUsers.FindAsync(id);
         if (user == null)
             return NotFound(new { message = "User not found" });
 
         user.IsActive = !user.IsActive;
+        await _context.SaveChangesAsync();
+        
         return Ok(new { success = true, isActive = user.IsActive });
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteUser(int id)
+    public async Task<IActionResult> DeleteUser(int id)
     {
-        var users = LoginController.GetUsers();
-        var user = users.FirstOrDefault(u => u.Id == id);
+        var user = await _context.FdxUsers.FindAsync(id);
         if (user == null)
             return NotFound(new { message = "User not found" });
 
@@ -242,7 +263,9 @@ public class UsersController : ControllerBase
         if (user.Type == UserType.Admin)
             return BadRequest(new { message = "Cannot delete admin users" });
 
-        users.Remove(user);
+        _context.FdxUsers.Remove(user);
+        await _context.SaveChangesAsync();
+        
         return Ok(new { success = true, message = "User deleted" });
     }
 
@@ -255,11 +278,11 @@ public class UsersController : ControllerBase
         var results = new List<ImportResult>();
         
         // Import contractors
-        var contractorsResult = await EnhancedImportService.ImportContractorsFromFile(contractorsFile, testMode, 5);
+        var contractorsResult = await ImportFromFile(contractorsFile, UserType.Expert, testMode, 5);
         results.Add(contractorsResult);
         
         // Import buyers  
-        var buyersResult = await EnhancedImportService.ImportBuyersFromFile(buyersFile, testMode, 5);
+        var buyersResult = await ImportFromFile(buyersFile, UserType.Buyer, testMode, 5);
         results.Add(buyersResult);
         
         // Generate CSV report
@@ -300,24 +323,111 @@ public class UsersController : ControllerBase
         });
     }
     
-    [HttpPost("clear-imported-users")]
-    public IActionResult ClearImportedUsers()
+    private async Task<ImportResult> ImportFromFile(string filePath, UserType userType, bool testMode, int testLimit)
     {
-        var users = LoginController.GetUsers();
-        var removedCount = users.RemoveAll(u => u.ImportedAt != null && u.Type != UserType.Admin);
+        var result = new ImportResult 
+        { 
+            FileName = Path.GetFileName(filePath),
+            UserType = userType.ToString()
+        };
+
+        if (!System.IO.File.Exists(filePath))
+        {
+            result.Errors.Add($"File not found: {filePath}");
+            return result;
+        }
+
+        // Use EnhancedImportService for the actual import logic
+        if (userType == UserType.Expert)
+        {
+            var importResult = await EnhancedImportService.ImportContractorsFromFile(filePath, testMode, testLimit);
+            
+            // Add imported users to database one by one
+            foreach (var user in importResult.ImportedUsers)
+            {
+                try
+                {
+                    // Check if user already exists
+                    if (!await _context.FdxUsers.AnyAsync(u => u.Username == user.Username))
+                    {
+                        _context.FdxUsers.Add(user);
+                        await _context.SaveChangesAsync(); // Save each user individually
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error but continue with other users
+                    var innerMessage = ex.InnerException?.Message ?? ex.Message;
+                    importResult.Errors.Add($"Failed to save user {user.Username}: {innerMessage}");
+                    
+                    // Check if it's a duplicate username error
+                    if (innerMessage.Contains("duplicate") || innerMessage.Contains("unique"))
+                    {
+                        importResult.SkippedReasons.Add($"User {user.Username} already exists");
+                        importResult.Skipped++;
+                    }
+                }
+            }
+            
+            return importResult;
+        }
+        else
+        {
+            var importResult = await EnhancedImportService.ImportBuyersFromFile(filePath, testMode, testLimit);
+            
+            // Add imported users to database one by one
+            foreach (var user in importResult.ImportedUsers)
+            {
+                try
+                {
+                    // Check if user already exists
+                    if (!await _context.FdxUsers.AnyAsync(u => u.Username == user.Username))
+                    {
+                        _context.FdxUsers.Add(user);
+                        await _context.SaveChangesAsync(); // Save each user individually
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error but continue with other users
+                    var innerMessage = ex.InnerException?.Message ?? ex.Message;
+                    importResult.Errors.Add($"Failed to save user {user.Username}: {innerMessage}");
+                    
+                    // Check if it's a duplicate username error
+                    if (innerMessage.Contains("duplicate") || innerMessage.Contains("unique"))
+                    {
+                        importResult.SkippedReasons.Add($"User {user.Username} already exists");
+                        importResult.Skipped++;
+                    }
+                }
+            }
+            
+            return importResult;
+        }
+    }
+    
+    [HttpPost("clear-imported-users")]
+    public async Task<IActionResult> ClearImportedUsers()
+    {
+        var importedUsers = await _context.FdxUsers
+            .Where(u => u.ImportedAt != null && u.Type != UserType.Admin)
+            .ToListAsync();
+        
+        _context.FdxUsers.RemoveRange(importedUsers);
+        await _context.SaveChangesAsync();
         
         return Ok(new
         {
             success = true,
-            message = $"Removed {removedCount} imported users",
-            removedCount = removedCount
+            message = $"Removed {importedUsers.Count} imported users",
+            removedCount = importedUsers.Count
         });
     }
     
     [HttpGet("export-credentials")]
-    public IActionResult ExportCredentials()
+    public async Task<IActionResult> ExportCredentials()
     {
-        var users = LoginController.GetUsers()
+        var users = await _context.FdxUsers
             .Where(u => u.ImportedAt != null)
             .Select(u => new
             {
@@ -329,7 +439,8 @@ public class UsersController : ControllerBase
                 Type = u.Type.ToString(),
                 Status = u.IsActive ? "Active" : "Inactive",
                 DataComplete = u.DataComplete ? "Complete" : "Incomplete"
-            });
+            })
+            .ToListAsync();
         
         var csv = "Username,Password,CompanyName,Email,Phone,Type,Status,DataComplete\n";
         foreach (var user in users)
@@ -340,7 +451,7 @@ public class UsersController : ControllerBase
         return File(Encoding.UTF8.GetBytes(csv), "text/csv", $"user_credentials_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
     }
 
-    private string GenerateUsername(string companyName, List<User> existingUsers)
+    private async Task<string> GenerateUsername(string companyName)
     {
         // Clean company name for username
         var baseUsername = companyName.ToLower()
@@ -357,7 +468,7 @@ public class UsersController : ControllerBase
         var counter = 1;
 
         // Ensure unique username
-        while (existingUsers.Any(u => u.Username == username))
+        while (await _context.FdxUsers.AnyAsync(u => u.Username == username))
         {
             username = $"{baseUsername}{counter}";
             counter++;
