@@ -69,7 +69,8 @@
       "Bash(java:*)",
       "Bash(git bundle create:*)",
       "Bash(git checkout:*)",
-      "Bash(del .gitindex.lock)"
+      "Bash(del .gitindex.lock)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
