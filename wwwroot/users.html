@@ -299,6 +299,11 @@
             color: white;
         }
         
+        .user-type.supplier {
+            background: #6f42c1;
+            color: white;
+        }
+        
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -450,6 +455,10 @@
                 <div class="stat-label">Experts/Contractors</div>
             </div>
             <div class="stat-card">
+                <div class="stat-value" id="totalSuppliers">0</div>
+                <div class="stat-label">Suppliers</div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-value" id="activeUsers">0</div>
                 <div class="stat-label">Active Users</div>
             </div>
@@ -464,6 +473,7 @@
                 <button class="filter-btn" onclick="setFilter('admin', this)">Admins</button>
                 <button class="filter-btn" onclick="setFilter('buyer', this)">Buyers</button>
                 <button class="filter-btn" onclick="setFilter('expert', this)">Experts</button>
+                <button class="filter-btn" onclick="setFilter('supplier', this)">Suppliers</button>
                 <button class="filter-btn" onclick="setFilter('active', this)">Active</button>
             </div>
             <button class="import-btn" onclick="importUsers()">Import CSV Files</button>
@@ -474,6 +484,17 @@
         </div>
     </div>
     
+    <div class="modal" id="supplierProductsModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <h2>Supplier Products</h2>
+            <div id="supplierInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;"></div>
+            <div id="productsContainer" style="max-height: 400px; overflow-y: auto;"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeSupplierModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="modal" id="importModal">
         <div class="modal-content" style="max-width: 700px;">
             <h2>Import Users from CSV</h2>
@@ -481,6 +502,7 @@
             <ul>
                 <li><strong>Contractors 9_8_2025.csv</strong> → Experts/Contractors</li>
                 <li><strong>Buyers 9_8_2025.csv</strong> → Buyers</li>
+                <li><strong>Products 9_8_2025.csv</strong> → Suppliers (extracted from products file)</li>
             </ul>
             
             <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
@@ -540,12 +562,13 @@
                 let html = '<div class="mobile-users">';
                 
                 users.forEach(user => {
-                    const typeClass = user.type === 0 ? 'admin' : user.type === 1 ? 'expert' : 'buyer';
+                    const typeClass = user.type === 0 ? 'admin' : user.type === 1 ? 'expert' : user.type === 2 ? 'buyer' : 'supplier';
                     const statusClass = user.isActive ? 'active' : 'inactive';
                     const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
+                    const borderColor = user.type === 0 ? '#ffc107' : user.type === 1 ? '#17a2b8' : user.type === 2 ? '#28a745' : '#6f42c1';
                     
                     html += `
-                        <div class="user-card" style="background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid ${user.type === 0 ? '#ffc107' : user.type === 1 ? '#17a2b8' : '#28a745'};">
+                        <div class="user-card" style="background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid ${borderColor};">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                                 <div>
                                     <strong style="font-size: 16px;">${user.companyName || user.username}</strong>
@@ -563,6 +586,7 @@
                                 <button class="action-btn toggle" style="flex: 1;" onclick="toggleUser(${user.id})">
                                     ${user.isActive ? 'Deactivate' : 'Activate'}
                                 </button>
+                                ${user.type === 3 ? `<button class="action-btn" style="flex: 1; background: #6f42c1; color: white;" onclick="viewSupplierProducts(${user.id})">Products</button>` : ''}
                                 ${user.type !== 0 ? `<button class="action-btn delete" style="flex: 1;" onclick="deleteUser(${user.id})">Delete</button>` : ''}
                             </div>
                         </div>
@@ -594,7 +618,7 @@
                 `;
                 
                 users.forEach(user => {
-                    const typeClass = user.type === 0 ? 'admin' : user.type === 1 ? 'expert' : 'buyer';
+                    const typeClass = user.type === 0 ? 'admin' : user.type === 1 ? 'expert' : user.type === 2 ? 'buyer' : 'supplier';
                     const statusClass = user.isActive ? 'active' : 'inactive';
                     const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
                     
@@ -614,6 +638,7 @@
                                     <button class="action-btn toggle" onclick="toggleUser(${user.id})">
                                         ${user.isActive ? 'Deactivate' : 'Activate'}
                                     </button>
+                                    ${user.type === 3 ? `<button class="action-btn" style="background: #6f42c1; color: white;" onclick="viewSupplierProducts(${user.id})">Products</button>` : ''}
                                     ${user.type !== 0 ? `<button class="action-btn delete" onclick="deleteUser(${user.id})">Delete</button>` : ''}
                                 </div>
                             </td>
@@ -630,6 +655,7 @@
             document.getElementById('totalUsers').textContent = users.length;
             document.getElementById('totalBuyers').textContent = users.filter(u => u.type === 2).length;
             document.getElementById('totalExperts').textContent = users.filter(u => u.type === 1).length;
+            document.getElementById('totalSuppliers').textContent = users.filter(u => u.type === 3).length;
             document.getElementById('activeUsers').textContent = users.filter(u => u.isActive).length;
         }
         
@@ -651,6 +677,8 @@
                 filtered = filtered.filter(u => u.type === 2);
             } else if (currentFilter === 'expert') {
                 filtered = filtered.filter(u => u.type === 1);
+            } else if (currentFilter === 'supplier') {
+                filtered = filtered.filter(u => u.type === 3);
             } else if (currentFilter === 'active') {
                 filtered = filtered.filter(u => u.isActive);
             }
@@ -755,8 +783,9 @@
             // Details
             html += `<div style="background: white; padding: 15px; border-radius: 8px;">
                 <h4>By Type</h4>
-                <p><strong>Contractors:</strong> ${data.contractors.imported} imported, ${data.contractors.skipped} skipped</p>
-                <p><strong>Buyers:</strong> ${data.buyers.imported} imported, ${data.buyers.skipped} skipped</p>
+                <p><strong>Contractors:</strong> ${data.contractors ? data.contractors.imported : 0} imported, ${data.contractors ? data.contractors.skipped : 0} skipped</p>
+                <p><strong>Buyers:</strong> ${data.buyers ? data.buyers.imported : 0} imported, ${data.buyers ? data.buyers.skipped : 0} skipped</p>
+                <p><strong>Suppliers:</strong> ${data.suppliers ? data.suppliers.imported : 0} imported, ${data.suppliers ? data.suppliers.skipped : 0} skipped</p>
             </div>`;
             
             html += '</div>';
@@ -802,6 +831,86 @@
         
         function downloadCredentials() {
             window.open('/api/users/export-credentials', '_blank');
+        }
+        
+        async function viewSupplierProducts(supplierId) {
+            try {
+                const response = await fetch(`/api/suppliers/${supplierId}`);
+                if (!response.ok) {
+                    alert('Error loading supplier details');
+                    return;
+                }
+                
+                const supplier = await response.json();
+                
+                // Display supplier info
+                const supplierInfoHtml = `
+                    <h3>${supplier.companyName}</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div><strong>Email:</strong> ${supplier.email}</div>
+                        <div><strong>Country:</strong> ${supplier.country || 'N/A'}</div>
+                        <div><strong>Website:</strong> ${supplier.website || 'N/A'}</div>
+                        <div><strong>Products Count:</strong> ${supplier.products ? supplier.products.length : 0}</div>
+                    </div>
+                    ${supplier.details ? `
+                        <div style="margin-top: 15px;">
+                            <strong>Categories:</strong> ${supplier.details.productCategories || 'N/A'}<br>
+                            <strong>Certifications:</strong> ${supplier.details.certifications || 'N/A'}<br>
+                            <strong>Payment Terms:</strong> ${supplier.details.paymentTerms || 'N/A'}
+                        </div>
+                    ` : ''}
+                `;
+                document.getElementById('supplierInfo').innerHTML = supplierInfoHtml;
+                
+                // Display products
+                let productsHtml = '';
+                if (supplier.products && supplier.products.length > 0) {
+                    productsHtml = `
+                        <table class="users-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Product Code</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>MOQ</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    supplier.products.forEach(product => {
+                        const statusText = product.status === 0 ? 'Active' : product.status === 1 ? 'Pending' : 'Discontinued';
+                        const statusClass = product.status === 0 ? 'active' : 'inactive';
+                        productsHtml += `
+                            <tr>
+                                <td>${product.productCode}</td>
+                                <td>${product.productName}</td>
+                                <td>${product.category || 'N/A'}</td>
+                                <td>${product.unitWholesalePrice ? `${product.unitWholesalePrice} ${product.currency || 'USD'}` : 'N/A'}</td>
+                                <td>${product.minimumOrderQuantity || 'N/A'}</td>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            </tr>
+                        `;
+                    });
+                    
+                    productsHtml += '</tbody></table>';
+                } else {
+                    productsHtml = '<div class="empty">No products found for this supplier</div>';
+                }
+                
+                document.getElementById('productsContainer').innerHTML = productsHtml;
+                document.getElementById('supplierProductsModal').classList.add('active');
+                
+            } catch (error) {
+                console.error('Error loading supplier products:', error);
+                alert('Error loading supplier products');
+            }
+        }
+        
+        function closeSupplierModal() {
+            document.getElementById('supplierProductsModal').classList.remove('active');
         }
         
         function logout() {
