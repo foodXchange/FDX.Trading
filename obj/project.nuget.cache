@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "e/xgk7ITUbE=",
+  "dgSpecHash": "l8Mx5O0zz1U=",
   "success": true,
   "projectFilePath": "C:\\FDX.Trading\\FDX.Trading.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
+    "C:\\Users\\fdxadmin\\.nuget\\packages\\csvhelper\\33.1.0\\csvhelper.33.1.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\fluentvalidation\\11.5.1\\fluentvalidation.11.5.1.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.0\\fluentvalidation.aspnetcore.11.3.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.5.1\\fluentvalidation.dependencyinjectionextensions.11.5.1.nupkg.sha512",

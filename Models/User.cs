@@ -39,7 +39,8 @@ public enum UserType
 {
     Admin = 0,
     Expert = 1,     // Contractors/Experts - subcontractors for projects
-    Buyer = 2       // Buyers
+    Buyer = 2,      // Buyers
+    Supplier = 3    // Suppliers - companies that provide products
 }
 
 public enum VerificationStatus
