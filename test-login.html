@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FDX Trading - Simple Login Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            margin-bottom: 20px;
+        }
+        hr {
+            margin: 30px 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 FDX Trading - Learning .NET</h1>
+        
+        <div class="info">
+            <strong>📚 Learning Note:</strong><br>
+            This is a simple HTML page that talks to your .NET API.<br>
+            The API is running at: <strong>http://localhost:5000</strong>
+        </div>
+
+        <h2>Register New User</h2>
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" id="reg-username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="reg-password" placeholder="Enter password">
+        </div>
+        <button onclick="register()">Register</button>
+        <div id="register-result" class="result"></div>
+
+        <hr>
+
+        <h2>Login Existing User</h2>
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" id="login-username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="login-password" placeholder="Enter password">
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="login-result" class="result"></div>
+
+        <hr>
+
+        <h2>Test API Endpoints</h2>
+        <button onclick="testSuppliers()">Get Suppliers</button>
+        <button onclick="testSwagger()">Open Swagger Docs</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+
+        async function register() {
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            
+            if (!username || !password) {
+                showResult('register-result', 'Please enter username and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/simple-register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('register-result', 
+                        `✅ Registration successful!<br>
+                        User ID: ${data.userId}<br>
+                        Username: ${data.username}`, 
+                        'success');
+                } else {
+                    showResult('register-result', `❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('register-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!username || !password) {
+                showResult('login-result', 'Please enter username and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/simple-login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('login-result', 
+                        `✅ Login successful!<br>
+                        User ID: ${data.userId}<br>
+                        Username: ${data.username}`, 
+                        'success');
+                } else {
+                    showResult('login-result', `❌ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('login-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSuppliers() {
+            try {
+                const response = await fetch(`${API_URL}/api/suppliers?pageSize=5`);
+                const data = await response.json();
+                
+                showResult('api-result', 
+                    `✅ Found ${data.totalCount} suppliers!<br>
+                    First supplier: ${data.items[0].supplierName}`, 
+                    'success');
+            } catch (error) {
+                showResult('api-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        function testSwagger() {
+            window.open(`${API_URL}/swagger`, '_blank');
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = `result ${type}`;
+            element.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
