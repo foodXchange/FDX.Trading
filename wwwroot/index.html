@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Simple Login System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDX Trading - Login</title>
     <style>
         * {
             margin: 0;
@@ -145,32 +147,32 @@
         <h2>Welcome Back!</h2>
         
         <div class="tabs">
-            <div class="tab active" onclick="showTab('login')">Login</div>
-            <div class="tab" onclick="showTab('register')">Register</div>
+            <div class="tab active" onclick="showTab('login', this)">Login</div>
+            <div class="tab" onclick="showTab('register', this)">Register</div>
         </div>
         
         <div id="loginForm" class="form-section active">
             <div class="form-group">
-                <label>Email / Username</label>
-                <input type="text" id="loginUsername" placeholder="Enter email or username">
+                <label for="loginUsername">Email / Username</label>
+                <input type="text" id="loginUsername" name="username" placeholder="Enter email or username" autocomplete="username">
             </div>
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="password" placeholder="Enter your password" autocomplete="current-password">
             </div>
-            <button onclick="login()">Login</button>
+            <button onclick="login()" type="button">Login</button>
         </div>
         
         <div id="registerForm" class="form-section">
             <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="regUsername" placeholder="Choose a username">
+                <label for="regUsername">Username</label>
+                <input type="text" id="regUsername" name="new-username" placeholder="Choose a username" autocomplete="username">
             </div>
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="regPassword" placeholder="Choose a password">
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" name="new-password" placeholder="Choose a password" autocomplete="new-password">
             </div>
-            <button onclick="register()">Create Account</button>
+            <button onclick="register()" type="button">Create Account</button>
         </div>
         
         <div id="message" class="message"></div>
@@ -184,10 +186,22 @@
     </div>
 
     <script>
-        function showTab(tab) {
+        function showTab(tab, element) {
             // Update tabs
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            
+            // If called from onclick, use the element; if called programmatically, find the tab
+            if (element) {
+                element.classList.add('active');
+            } else {
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(t => {
+                    if ((tab === 'login' && t.textContent === 'Login') || 
+                        (tab === 'register' && t.textContent === 'Register')) {
+                        t.classList.add('active');
+                    }
+                });
+            }
             
             // Update forms
             document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
@@ -280,9 +294,6 @@
             document.getElementById('loginPassword').value = '';
             document.getElementById('message').style.display = 'none';
         }
-        
-        // Test credentials hint
-        console.log('Test account: testuser / test123');
     </script>
 </body>
 </html>
