@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace FDX.Trading.Models;
 
 public class User
@@ -33,6 +35,9 @@ public class User
     public string? ImportNotes { get; set; }  // Track import issues
     public DateTime? ImportedAt { get; set; }
     public string? OriginalId { get; set; }  // Store original CSV ID
+    
+    // Navigation Properties
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();  // For suppliers (Type=3)
 }
 
 public enum UserType

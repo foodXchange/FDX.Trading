@@ -116,14 +116,14 @@ public class SuppliersController : ControllerBase
                 p.IsOrganic,
                 p.CountryOfOrigin,
                 p.Status,
-                Suppliers = p.SupplierProducts.Select(sp => new
+                Supplier = p.Supplier != null ? new
                 {
-                    sp.SupplierDetails.User.CompanyName,
-                    sp.SupplierDetails.User.Country,
-                    sp.UnitWholesalePrice,
-                    sp.Currency,
-                    sp.MinimumOrderQuantity
-                }).ToList()
+                    p.Supplier.CompanyName,
+                    p.Supplier.Country,
+                    p.UnitWholesalePrice,
+                    p.Currency,
+                    p.MOQ
+                } : null
             })
             .ToListAsync();
         

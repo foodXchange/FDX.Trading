@@ -4,6 +4,7 @@ using FDX.Trading.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FDX.Trading.Migrations
 {
     [DbContext(typeof(FdxTradingContext))]
-    partial class FdxTradingContextModelSnapshot : ModelSnapshot
+    [Migration("20250809200750_AddProductRequestAndPriceProposalModels")]
+    partial class AddProductRequestAndPriceProposalModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,15 +194,6 @@ namespace FDX.Trading.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<decimal?>("CartonWholesalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("CartonsPerContainer20ft")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CartonsPerContainer40ft")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CartonsPerPallet")
                         .HasColumnType("int");
 
@@ -217,10 +211,6 @@ namespace FDX.Trading.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Currency")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -236,10 +226,6 @@ namespace FDX.Trading.Migrations
 
                     b.Property<DateTime?>("ImportedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Incoterms")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("InitialBuyerId")
                         .HasColumnType("int");
@@ -262,15 +248,6 @@ namespace FDX.Trading.Migrations
                     b.Property<string>("LabelImage")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("LeadTimeDays")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MOQ")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MOQCartons")
-                        .HasColumnType("int");
 
                     b.Property<string>("Manufacturer")
                         .HasMaxLength(200)
@@ -297,20 +274,6 @@ namespace FDX.Trading.Migrations
 
                     b.Property<string>("OtherCertifications")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("PalletsPerContainer20ft")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PalletsPerContainer40ft")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentTerms")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PreferredPort")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("ProductCode")
                         .IsRequired()
@@ -347,19 +310,9 @@ namespace FDX.Trading.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SupplierProductCode")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("UnitOfMeasure")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<decimal?>("UnitWholesalePrice")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("UnitsPerCarton")
                         .HasColumnType("int");
@@ -385,57 +338,7 @@ namespace FDX.Trading.Migrations
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("SupplierId");
-
                     b.ToTable("Products", (string)null);
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.ProductPriceHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChangeReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<DateTime>("EffectiveDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("ProductPriceHistory");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.ProductRequest", b =>
@@ -972,31 +875,7 @@ namespace FDX.Trading.Migrations
                         .WithMany()
                         .HasForeignKey("InitialBuyerId");
 
-                    b.HasOne("FDX.Trading.Models.User", "Supplier")
-                        .WithMany("Products")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("InitialBuyer");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.ProductPriceHistory", b =>
-                {
-                    b.HasOne("FDX.Trading.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FDX.Trading.Models.User", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.ProductRequest", b =>
@@ -1043,7 +922,7 @@ namespace FDX.Trading.Migrations
             modelBuilder.Entity("FDX.Trading.Models.SupplierProduct", b =>
                 {
                     b.HasOne("FDX.Trading.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("SupplierProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1069,6 +948,8 @@ namespace FDX.Trading.Migrations
                     b.Navigation("PriceProposals");
 
                     b.Navigation("RequestItems");
+
+                    b.Navigation("SupplierProducts");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.ProductRequest", b =>
@@ -1081,11 +962,6 @@ namespace FDX.Trading.Migrations
             modelBuilder.Entity("FDX.Trading.Models.SupplierDetails", b =>
                 {
                     b.Navigation("SupplierProducts");
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.User", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

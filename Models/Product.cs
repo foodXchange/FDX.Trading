@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FDX.Trading.Models;
 
@@ -90,8 +93,68 @@ public class Product
     public DateTime? ImportedAt { get; set; }
     public string? ImportNotes { get; set; }
     
+    // Supplier relationship (one supplier per product)
+    public int? SupplierId { get; set; }
+    
+    [ForeignKey("SupplierId")]
+    public virtual User? Supplier { get; set; }
+    
+    // Supplier-specific pricing and terms
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal? UnitWholesalePrice { get; set; }  // Price per unit
+    
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal? CartonWholesalePrice { get; set; }  // Price per carton
+    
+    [MaxLength(10)]
+    public string? Currency { get; set; } = "USD";  // Currency for prices
+    
+    [MaxLength(50)]
+    public string? Incoterms { get; set; }  // FOB, CIF, DDP, etc.
+    
+    [MaxLength(100)]
+    public string? PaymentTerms { get; set; }  // Net 30, Net 60, etc.
+    
+    public int? MOQ { get; set; }  // Minimum Order Quantity in units
+    public int? MOQCartons { get; set; }  // MOQ in cartons
+    
+    // Container and logistics info
+    public int? CartonsPerContainer20ft { get; set; }
+    public int? CartonsPerContainer40ft { get; set; }
+    public int? PalletsPerContainer20ft { get; set; }
+    public int? PalletsPerContainer40ft { get; set; }
+    
+    [MaxLength(200)]
+    public string? PreferredPort { get; set; }  // Preferred shipping port
+    
+    public int? LeadTimeDays { get; set; }  // Lead time for delivery
+    
+    // Supplier's product code
+    [MaxLength(100)]
+    public string? SupplierProductCode { get; set; }
+    
+    // Buyer reference (who initially requested this product)
+    public int? InitialBuyerId { get; set; }
+    
+    [ForeignKey("InitialBuyerId")]
+    public virtual User? InitialBuyer { get; set; }
+    
+    [MaxLength(100)]
+    public string? BuyerCompany { get; set; }
+    
+    [MaxLength(50)]
+    public string? BuyerProductCode { get; set; }
+    
+    // Additional fields from CSV
+    [MaxLength(500)]
+    public string? ProductImages { get; set; }
+    
+    [MaxLength(500)]
+    public string? OpenComments { get; set; }
+    
     // Navigation Properties
-    public virtual ICollection<SupplierProduct> SupplierProducts { get; set; } = new List<SupplierProduct>();
+    public virtual ICollection<ProductRequestItem> RequestItems { get; set; } = new List<ProductRequestItem>();
+    public virtual ICollection<PriceProposal> PriceProposals { get; set; } = new List<PriceProposal>();
 }
 
 public enum ProductStatus

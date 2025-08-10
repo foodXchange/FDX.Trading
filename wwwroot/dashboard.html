@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FDX Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .welcome-text h1 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-text p {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5em;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+        
+        .global-search {
+            position: relative;
+            width: 300px;
+        }
+        
+        .global-search input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+        }
+        
+        .global-search .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .logout-btn {
+            padding: 10px 20px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        /* Module Grid */
+        .module-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .module-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--module-color) 0%, var(--module-color-dark) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 50%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(35deg);
+        }
+        
+        .module-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .module-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .module-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .module-stats {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .module-stat {
+            text-align: center;
+        }
+        
+        .module-stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .module-stat-label {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .module-actions {
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .quick-action:hover {
+            background: var(--module-color);
+            color: white;
+            border-color: var(--module-color);
+        }
+        
+        .module-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        /* Activity Sidebar */
+        .activity-sidebar {
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .activity-item:hover {
+            background: #e8e9ea;
+        }
+        
+        .activity-icon {
+            font-size: 1.5em;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-size: 0.9em;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .activity-description {
+            font-size: 0.8em;
+            color: #666;
+        }
+        
+        .activity-time {
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 3px;
+        }
+        
+        .notification-list {
+            list-style: none;
+        }
+        
+        .notification-item {
+            padding: 12px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .notification-item.info {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        
+        .notification-item.warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .notification-item.error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .notification-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .notification-message {
+            font-size: 0.8em;
+            color: #666;
+        }
+        
+        /* Loading State */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 5px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .activity-sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .global-search {
+                width: 100%;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .activity-sidebar {
+                display: none;
+            }
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu-toggle {
+            display: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .header-actions {
+                display: none;
+            }
+            
+            .header-actions.mobile-visible {
+                display: flex;
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+                flex-direction: column;
+                z-index: 1001;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="welcome-section">
+                    <div class="user-avatar" id="userAvatar">JD</div>
+                    <div class="welcome-text">
+                        <h1>Welcome back, <span id="userName">John Doe</span>!</h1>
+                        <p>Today is <span id="currentDate"></span> <span class="role-badge" id="userRole">Admin</span></p>
+                    </div>
+                </div>
+                
+                <div class="header-actions" id="headerActions">
+                    <div class="global-search">
+                        <input type="text" placeholder="Search anything..." id="globalSearch">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    
+                    <div class="notification-bell" onclick="toggleNotifications()">
+                        🔔
+                        <span class="notification-badge" id="notificationCount">3</span>
+                    </div>
+                    
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+                
+                <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
+            </div>
+            
+            <!-- Stats Bar -->
+            <div class="stats-bar" id="statsBar">
+                <div class="stat-item">
+                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
+                    <div class="stat-label">Total Products</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
+                    <div class="stat-label">Active Suppliers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
+                    <div class="stat-label">New This Week</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
+                    <div class="stat-label">Pending Tasks</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Module Grid -->
+        <div class="module-grid" id="moduleGrid">
+            <!-- Modules will be loaded dynamically -->
+        </div>
+        
+        <!-- Activity Sidebar -->
+        <aside class="activity-sidebar">
+            <!-- Recent Activity -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Recent Activity</h3>
+                <ul class="activity-list" id="activityList">
+                    <li class="activity-item">
+                        <span class="activity-icon">⏳</span>
+                        <div class="activity-content">
+                            <div class="loading-skeleton" style="height: 14px; width: 80%; margin-bottom: 5px;"></div>
+                            <div class="loading-skeleton" style="height: 12px; width: 60%;"></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Notifications -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Notifications</h3>
+                <ul class="notification-list" id="notificationList">
+                    <li class="notification-item warning">
+                        <div class="loading-skeleton" style="height: 14px; width: 80%; margin-bottom: 5px;"></div>
+                        <div class="loading-skeleton" style="height: 12px; width: 60%;"></div>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+    
+    <script>
+        // State Management
+        let state = {
+            user: null,
+            stats: null,
+            modules: [],
+            activities: [],
+            notifications: [],
+            refreshInterval: null
+        };
+        
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            initializeUser();
+            setCurrentDate();
+            await loadDashboardData();
+            startAutoRefresh();
+        });
+        
+        // Initialize User
+        function initializeUser() {
+            // Get user from localStorage or session
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                state.user = JSON.parse(userData);
+                updateUserDisplay();
+            } else {
+                // Default user for demo
+                state.user = {
+                    name: 'Admin User',
+                    email: 'admin@fdx.com',
+                    role: 'Admin',
+                    initials: 'AU'
+                };
+                updateUserDisplay();
+            }
+        }
+        
+        // Update User Display
+        function updateUserDisplay() {
+            document.getElementById('userName').textContent = state.user.name;
+            document.getElementById('userRole').textContent = state.user.role;
+            document.getElementById('userAvatar').textContent = state.user.initials;
+        }
+        
+        // Set Current Date
+        function setCurrentDate() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
+        }
+        
+        // Load Dashboard Data
+        async function loadDashboardData() {
+            try {
+                // Load all data in parallel
+                const [stats, modules, activities, notifications] = await Promise.all([
+                    loadStats(),
+                    loadModules(),
+                    loadActivities(),
+                    loadNotifications()
+                ]);
+                
+                state.stats = stats;
+                state.modules = modules;
+                state.activities = activities;
+                state.notifications = notifications;
+                
+                // Render components
+                renderStats(stats);
+                renderModules(modules);
+                renderActivities(activities);
+                renderNotifications(notifications);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+        
+        // Load Stats
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/dashboard/stats');
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                return null;
+            }
+        }
+        
+        // Load Modules
+        async function loadModules() {
+            try {
+                const response = await fetch(`/api/dashboard/modules?userRole=${state.user.role}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading modules:', error);
+                return [];
+            }
+        }
+        
+        // Load Activities
+        async function loadActivities() {
+            try {
+                const response = await fetch('/api/dashboard/activity?limit=5');
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading activities:', error);
+                return [];
+            }
+        }
+        
+        // Load Notifications
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/dashboard/notifications');
+                const notifications = await response.json();
+                document.getElementById('notificationCount').textContent = notifications.length;
+                return notifications;
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                return [];
+            }
+        }
+        
+        // Render Stats
+        function renderStats(stats) {
+            if (!stats) return;
+            
+            const statsBar = document.getElementById('statsBar');
+            statsBar.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${stats.totalProducts}</div>
+                    <div class="stat-label">Total Products</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.activeSuppliers}</div>
+                    <div class="stat-label">Active Suppliers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.totalUsers}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.totalCategories}</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.newProductsThisWeek}</div>
+                    <div class="stat-label">New This Week</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${stats.pendingVerifications + stats.pendingRequests}</div>
+                    <div class="stat-label">Pending Tasks</div>
+                </div>
+            `;
+        }
+        
+        // Render Modules
+        function renderModules(modules) {
+            const moduleGrid = document.getElementById('moduleGrid');
+            
+            moduleGrid.innerHTML = modules.map(module => {
+                // Get module-specific stats
+                const moduleStats = getModuleStats(module.id);
+                
+                return `
+                    <div class="module-card" onclick="navigateToModule('${module.url}')" style="--module-color: ${module.color}; --module-color-dark: ${adjustColor(module.color, -20)};">
+                        <div class="module-header">
+                            ${moduleStats.badge ? `<span class="module-badge">${moduleStats.badge}</span>` : ''}
+                            <div class="module-icon">${module.icon}</div>
+                            <div class="module-title">${module.title}</div>
+                            <div class="module-description">${module.description}</div>
+                        </div>
+                        <div class="module-stats">
+                            ${moduleStats.stats.map(stat => `
+                                <div class="module-stat">
+                                    <div class="module-stat-value">${stat.value}</div>
+                                    <div class="module-stat-label">${stat.label}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="module-actions">
+                            ${module.quickActions.map(action => `
+                                <a href="${action.url}" class="quick-action" onclick="event.stopPropagation();" style="--module-color: ${module.color};">
+                                    ${action.label}
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Get Module Stats
+        function getModuleStats(moduleId) {
+            if (!state.stats) return { stats: [], badge: null };
+            
+            switch (moduleId) {
+                case 'products':
+                    return {
+                        stats: [
+                            { value: state.stats.totalProducts, label: 'Total' },
+                            { value: state.stats.activeProducts, label: 'Active' },
+                            { value: state.stats.newProductsThisWeek, label: 'New' }
+                        ],
+                        badge: state.stats.newProductsThisWeek > 0 ? `${state.stats.newProductsThisWeek} New` : null
+                    };
+                case 'suppliers':
+                    return {
+                        stats: [
+                            { value: state.stats.totalSuppliers, label: 'Total' },
+                            { value: state.stats.activeSuppliers, label: 'Active' },
+                            { value: state.stats.suppliersWithProducts, label: 'With Products' }
+                        ],
+                        badge: null
+                    };
+                case 'users':
+                    return {
+                        stats: [
+                            { value: state.stats.totalUsers, label: 'Total' },
+                            { value: state.stats.pendingVerifications, label: 'Pending' },
+                            { value: state.stats.usersByType.length, label: 'Types' }
+                        ],
+                        badge: state.stats.pendingVerifications > 0 ? `${state.stats.pendingVerifications}` : null
+                    };
+                case 'requests':
+                    return {
+                        stats: [
+                            { value: state.stats.activeRequests, label: 'Active' },
+                            { value: state.stats.pendingRequests, label: 'Pending' },
+                            { value: '-', label: 'Completed' }
+                        ],
+                        badge: state.stats.pendingRequests > 0 ? `${state.stats.pendingRequests}` : null
+                    };
+                case 'proposals':
+                    return {
+                        stats: [
+                            { value: state.stats.activeProposals, label: 'Active' },
+                            { value: state.stats.pendingApprovals, label: 'Pending' },
+                            { value: '-', label: 'Approved' }
+                        ],
+                        badge: state.stats.pendingApprovals > 0 ? `${state.stats.pendingApprovals}` : null
+                    };
+                case 'categories':
+                    return {
+                        stats: [
+                            { value: state.stats.totalCategories, label: 'Categories' },
+                            { value: state.stats.totalProducts, label: 'Products' },
+                            { value: '-', label: 'Uncategorized' }
+                        ],
+                        badge: null
+                    };
+                case 'reports':
+                    return {
+                        stats: [
+                            { value: state.stats.totalProducts, label: 'Products' },
+                            { value: state.stats.totalSuppliers, label: 'Suppliers' },
+                            { value: state.stats.totalUsers, label: 'Users' }
+                        ],
+                        badge: null
+                    };
+                case 'import':
+                    const lastImport = state.stats.recentImportDate ? new Date(state.stats.recentImportDate).toLocaleDateString() : 'Never';
+                    return {
+                        stats: [
+                            { value: lastImport, label: 'Last Import' },
+                            { value: state.stats.totalProducts, label: 'Records' },
+                            { value: '✓', label: 'Status' }
+                        ],
+                        badge: null
+                    };
+                case 'settings':
+                    return {
+                        stats: [
+                            { value: '100%', label: 'Profile' },
+                            { value: '✓', label: 'Verified' },
+                            { value: 'Active', label: 'Status' }
+                        ],
+                        badge: null
+                    };
+                default:
+                    return { stats: [], badge: null };
+            }
+        }
+        
+        // Render Activities
+        function renderActivities(activities) {
+            const activityList = document.getElementById('activityList');
+            
+            if (activities.length === 0) {
+                activityList.innerHTML = '<li class="activity-item">No recent activity</li>';
+                return;
+            }
+            
+            activityList.innerHTML = activities.map(activity => `
+                <li class="activity-item">
+                    <span class="activity-icon">${activity.icon}</span>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-description">${activity.description}</div>
+                        <div class="activity-time">${formatTime(activity.timestamp)}</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+        
+        // Render Notifications
+        function renderNotifications(notifications) {
+            const notificationList = document.getElementById('notificationList');
+            
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<li class="notification-item info"><div class="notification-title">All caught up!</div><div class="notification-message">No new notifications</div></li>';
+                return;
+            }
+            
+            notificationList.innerHTML = notifications.map(notification => `
+                <li class="notification-item ${notification.type}" onclick="navigateToModule('${notification.url}')">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-message">${notification.message}</div>
+                </li>
+            `).join('');
+        }
+        
+        // Navigate to Module
+        function navigateToModule(url) {
+            window.location.href = url;
+        }
+        
+        // Format Time
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes} min ago`;
+            if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+            
+            return date.toLocaleDateString();
+        }
+        
+        // Adjust Color
+        function adjustColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255))
+                .toString(16).slice(1);
+        }
+        
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const headerActions = document.getElementById('headerActions');
+            headerActions.classList.toggle('mobile-visible');
+        }
+        
+        // Toggle Notifications
+        function toggleNotifications() {
+            // In a real app, this would open a notification panel
+            alert(`You have ${state.notifications.length} notifications`);
+        }
+        
+        // Global Search
+        document.getElementById('globalSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            if (searchTerm.length > 2) {
+                // Filter modules based on search
+                const filteredModules = state.modules.filter(module => 
+                    module.title.toLowerCase().includes(searchTerm) ||
+                    module.description.toLowerCase().includes(searchTerm)
+                );
+                renderModules(filteredModules);
+            } else {
+                renderModules(state.modules);
+            }
+        });
+        
+        // Start Auto Refresh
+        function startAutoRefresh() {
+            // Refresh stats every 30 seconds
+            state.refreshInterval = setInterval(async () => {
+                const stats = await loadStats();
+                if (stats) {
+                    state.stats = stats;
+                    renderStats(stats);
+                    // Update module stats
+                    renderModules(state.modules);
+                }
+            }, 30000);
+        }
+        
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                clearInterval(state.refreshInterval);
+                window.location.href = '/index.html';
+            }
+        }
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (state.refreshInterval) {
+                clearInterval(state.refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

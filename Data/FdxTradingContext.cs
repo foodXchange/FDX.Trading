@@ -14,6 +14,11 @@ public class FdxTradingContext : DbContext
     public DbSet<SupplierDetails> SupplierDetails { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<SupplierProduct> SupplierProducts { get; set; }
+    public DbSet<ProductRequest> ProductRequests { get; set; }
+    public DbSet<ProductRequestItem> ProductRequestItems { get; set; }
+    public DbSet<PriceProposal> PriceProposals { get; set; }
+    public DbSet<PriceHistory> PriceHistories { get; set; }
+    public DbSet<ProductPriceHistory> ProductPriceHistory { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -160,7 +165,8 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => e.IsOrganic);
         });
 
-        // Configure SupplierProduct entity
+        // Configure SupplierProduct entity - DEPRECATED: Moving to one-to-many relationship
+        // Keeping for migration purposes only
         modelBuilder.Entity<SupplierProduct>(entity =>
         {
             entity.ToTable("SupplierProducts");
@@ -172,7 +178,7 @@ public class FdxTradingContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
             
             entity.HasOne(sp => sp.Product)
-                .WithMany(p => p.SupplierProducts)
+                .WithMany() // Removed navigation property from Product
                 .HasForeignKey(sp => sp.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
             
@@ -186,6 +192,116 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => new { e.SupplierDetailsId, e.ProductId }).IsUnique();
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.Currency);
+        });
+        
+        // Configure Product-Supplier relationship (one-to-many)
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasOne(p => p.Supplier)
+                .WithMany(u => u.Products)
+                .HasForeignKey(p => p.SupplierId)
+                .OnDelete(DeleteBehavior.SetNull);
+                
+            entity.Property(e => e.UnitWholesalePrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.CartonWholesalePrice).HasColumnType("decimal(18,2)");
+        });
+
+        // Configure ProductRequest entity
+        modelBuilder.Entity<ProductRequest>(entity =>
+        {
+            entity.ToTable("ProductRequests");
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(pr => pr.Buyer)
+                .WithMany()
+                .HasForeignKey(pr => pr.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.BuyerId);
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        // Configure ProductRequestItem entity
+        modelBuilder.Entity<ProductRequestItem>(entity =>
+        {
+            entity.ToTable("ProductRequestItems");
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(pri => pri.ProductRequest)
+                .WithMany(pr => pr.RequestItems)
+                .HasForeignKey(pri => pri.ProductRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(pri => pri.Product)
+                .WithMany(p => p.RequestItems)
+                .HasForeignKey(pri => pri.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(e => e.Unit).HasMaxLength(50);
+            entity.Property(e => e.SpecialRequirements).HasMaxLength(500);
+            
+            entity.HasIndex(e => new { e.ProductRequestId, e.ProductId }).IsUnique();
+        });
+
+        // Configure PriceProposal entity
+        modelBuilder.Entity<PriceProposal>(entity =>
+        {
+            entity.ToTable("PriceProposals");
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(pp => pp.ProductRequest)
+                .WithMany(pr => pr.Proposals)
+                .HasForeignKey(pp => pp.ProductRequestId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(pp => pp.Supplier)
+                .WithMany()
+                .HasForeignKey(pp => pp.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(pp => pp.Product)
+                .WithMany(p => p.PriceProposals)
+                .HasForeignKey(pp => pp.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(e => e.InitialPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.CurrentPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.PricePerCarton).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Currency).IsRequired().HasMaxLength(3);
+            entity.Property(e => e.Unit).HasMaxLength(50);
+            entity.Property(e => e.Incoterms).HasMaxLength(50);
+            entity.Property(e => e.PaymentTerms).HasMaxLength(100);
+            entity.Property(e => e.PreferredPort).HasMaxLength(100);
+            entity.Property(e => e.Notes).HasMaxLength(1000);
+            
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.SupplierId);
+            entity.HasIndex(e => e.ProductId);
+            entity.HasIndex(e => new { e.ProductRequestId, e.SupplierId, e.ProductId }).IsUnique();
+        });
+
+        // Configure PriceHistory entity
+        modelBuilder.Entity<PriceHistory>(entity =>
+        {
+            entity.ToTable("PriceHistories");
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(ph => ph.PriceProposal)
+                .WithMany(pp => pp.PriceHistories)
+                .HasForeignKey(ph => ph.PriceProposalId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.OldPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.NewPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.ChangeReason).HasMaxLength(500);
+            entity.Property(e => e.ChangedBy).HasMaxLength(100);
+            
+            entity.HasIndex(e => e.PriceProposalId);
+            entity.HasIndex(e => e.ChangedAt);
         });
     }
 }

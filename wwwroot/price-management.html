@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Management - FDX Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-buttons button {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .nav-buttons button:hover {
+            background: #5567d8;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .price-form, .price-history {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .current-price-box {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .current-price-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .price-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .price-meta {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .history-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s;
+        }
+        
+        .history-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .history-item.current {
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+            margin-left: -3px;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .history-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .history-date {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .history-meta {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            background: #4caf50;
+            color: white;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📊 Price Management System</h1>
+            <div class="nav-buttons">
+                <button onclick="window.location.href='/dashboard.html'">← Dashboard</button>
+                <button onclick="window.location.href='/products.html'">Products</button>
+                <button onclick="downloadTemplate()">Download CSV Template</button>
+                <button onclick="showImportDialog()">Import Prices</button>
+            </div>
+        </div>
+        
+        <!-- Alert Messages -->
+        <div id="alertMessage" class="alert"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column: Price Update Form -->
+            <div class="price-form">
+                <h2>Update Product Price</h2>
+                
+                <!-- Product Selection -->
+                <div class="form-group">
+                    <label for="productSelect">Select Product:</label>
+                    <select id="productSelect" onchange="loadPriceHistory()">
+                        <option value="">-- Select a Product --</option>
+                    </select>
+                </div>
+                
+                <!-- Current Price Display -->
+                <div id="currentPriceBox" class="current-price-box" style="display:none;">
+                    <h3>Current Price</h3>
+                    <div class="price-value">
+                        <span id="currencySymbol">$</span><span id="currentPrice">0.00</span>
+                    </div>
+                    <div class="price-meta">
+                        Last updated: <span id="lastUpdated">-</span>
+                    </div>
+                </div>
+                
+                <!-- New Price Form -->
+                <div id="priceUpdateForm" style="display:none;">
+                    <h3>Set New Price</h3>
+                    
+                    <div class="form-group">
+                        <label for="newPrice">New Unit Price:</label>
+                        <input type="number" id="newPrice" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currency">Currency:</label>
+                        <select id="currency">
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="ILS">ILS (₪)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="effectiveDate">Effective Date:</label>
+                        <input type="date" id="effectiveDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="changeReason">Reason for Change:</label>
+                        <textarea id="changeReason" rows="3" placeholder="e.g., Market adjustment, New supplier contract, Seasonal pricing"></textarea>
+                    </div>
+                    
+                    <button class="btn-primary" onclick="updatePrice()">Update Price</button>
+                </div>
+            </div>
+            
+            <!-- Right Column: Price History -->
+            <div class="price-history">
+                <h2>Price History</h2>
+                
+                <div id="historyContent">
+                    <div class="loading">Select a product to view price history</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Import Dialog (hidden by default) -->
+    <div id="importDialog" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000;">
+        <div style="background:white; max-width:500px; margin:100px auto; padding:20px; border-radius:10px;">
+            <h3>Import Prices from CSV</h3>
+            <p>CSV Format: ProductCode, Price, EffectiveDate, Reason</p>
+            <div class="form-group">
+                <label>File Path:</label>
+                <input type="text" id="importFilePath" placeholder="C:\path\to\prices.csv">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-primary" onclick="importPrices()">Import</button>
+                <button onclick="document.getElementById('importDialog').style.display='none'">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProduct = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            document.getElementById('effectiveDate').value = new Date().toISOString().split('T')[0];
+            
+            // Check if productId in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('productId');
+            if (productId) {
+                setTimeout(() => {
+                    document.getElementById('productSelect').value = productId;
+                    loadPriceHistory();
+                }, 1000);
+            }
+        });
+        
+        // Load products
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+                
+                const select = document.getElementById('productSelect');
+                select.innerHTML = '<option value="">-- Select a Product --</option>';
+                
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id;
+                    option.textContent = `${product.productCode} - ${product.productName}`;
+                    if (product.supplier) {
+                        option.textContent += ` (${product.supplier.supplierName})`;
+                    }
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showAlert('Error loading products: ' + error.message, 'error');
+            }
+        }
+        
+        // Load price history
+        async function loadPriceHistory() {
+            const productId = document.getElementById('productSelect').value;
+            if (!productId) {
+                document.getElementById('currentPriceBox').style.display = 'none';
+                document.getElementById('priceUpdateForm').style.display = 'none';
+                document.getElementById('historyContent').innerHTML = '<div class="loading">Select a product to view price history</div>';
+                return;
+            }
+            
+            try {
+                // Get current product details
+                const productsResponse = await fetch('/api/products/' + productId);
+                currentProduct = await productsResponse.json();
+                
+                // Get price history
+                const response = await fetch(`/api/prices/history/${productId}`);
+                const history = await response.json();
+                
+                // Display current price
+                const current = history.find(h => h.isActive);
+                if (current) {
+                    document.getElementById('currentPrice').textContent = (current.unitPrice || 0).toFixed(2);
+                    document.getElementById('currencySymbol').textContent = getCurrencySymbol(current.currency);
+                    document.getElementById('lastUpdated').textContent = new Date(current.createdAt).toLocaleDateString();
+                    document.getElementById('currency').value = current.currency;
+                } else if (currentProduct.supplier && currentProduct.supplier.unitPrice) {
+                    // Use product's base price if no history
+                    document.getElementById('currentPrice').textContent = (currentProduct.supplier.unitPrice || 0).toFixed(2);
+                    document.getElementById('currencySymbol').textContent = getCurrencySymbol(currentProduct.supplier.currency || 'USD');
+                    document.getElementById('lastUpdated').textContent = 'No price history';
+                    document.getElementById('currency').value = currentProduct.supplier.currency || 'USD';
+                } else {
+                    document.getElementById('currentPrice').textContent = '0.00';
+                    document.getElementById('currencySymbol').textContent = '$';
+                    document.getElementById('lastUpdated').textContent = 'No price set';
+                }
+                
+                document.getElementById('currentPriceBox').style.display = 'block';
+                document.getElementById('priceUpdateForm').style.display = 'block';
+                
+                // Display history
+                if (history.length > 0) {
+                    let historyHtml = '<div class="history-list">';
+                    
+                    history.forEach(item => {
+                        const itemClass = item.isActive ? 'history-item current' : 'history-item';
+                        historyHtml += `
+                            <div class="${itemClass}">
+                                <div class="history-header">
+                                    <span class="history-price">${getCurrencySymbol(item.currency)}${(item.unitPrice || 0).toFixed(2)}</span>
+                                    <span class="history-date">${new Date(item.effectiveDate).toLocaleDateString()}</span>
+                                </div>
+                                ${item.isActive ? '<span class="badge">CURRENT</span>' : ''}
+                                ${item.changeReason ? `<div style="margin-top:5px; color:#666;">${item.changeReason}</div>` : ''}
+                                <div class="history-meta">
+                                    Updated by ${item.createdBy || 'System'} on ${new Date(item.createdAt).toLocaleString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    historyHtml += '</div>';
+                    document.getElementById('historyContent').innerHTML = historyHtml;
+                } else {
+                    document.getElementById('historyContent').innerHTML = '<div class="loading">No price history available</div>';
+                }
+                
+            } catch (error) {
+                showAlert('Error loading price history: ' + error.message, 'error');
+            }
+        }
+        
+        // Update price
+        async function updatePrice() {
+            const productId = document.getElementById('productSelect').value;
+            const newPrice = document.getElementById('newPrice').value;
+            const currency = document.getElementById('currency').value;
+            const effectiveDate = document.getElementById('effectiveDate').value;
+            const changeReason = document.getElementById('changeReason').value;
+            
+            if (!productId || !newPrice || !effectiveDate) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/prices/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        productId: parseInt(productId),
+                        unitPrice: parseFloat(newPrice),
+                        currency: currency,
+                        effectiveDate: effectiveDate,
+                        changeReason: changeReason,
+                        createdBy: 'Admin' // In real app, get from auth
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showAlert('Price updated successfully!', 'success');
+                    
+                    // Clear form
+                    document.getElementById('newPrice').value = '';
+                    document.getElementById('changeReason').value = '';
+                    
+                    // Reload history
+                    loadPriceHistory();
+                } else {
+                    showAlert(result.message || 'Error updating price', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating price: ' + error.message, 'error');
+            }
+        }
+        
+        // Import prices
+        async function importPrices() {
+            const filePath = document.getElementById('importFilePath').value;
+            
+            if (!filePath) {
+                alert('Please enter a file path');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/prices/import-csv', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filePath: filePath })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showAlert(`Successfully imported ${result.imported} prices`, 'success');
+                    document.getElementById('importDialog').style.display = 'none';
+                    loadPriceHistory();
+                } else {
+                    showAlert(result.message || 'Error importing prices', 'error');
+                }
+            } catch (error) {
+                showAlert('Error importing prices: ' + error.message, 'error');
+            }
+        }
+        
+        // Helper functions
+        function getCurrencySymbol(currency) {
+            const symbols = {
+                'USD': '$',
+                'EUR': '€',
+                'ILS': '₪'
+            };
+            return symbols[currency] || '$';
+        }
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        function downloadTemplate() {
+            window.open('/api/prices/export-template', '_blank');
+        }
+        
+        function showImportDialog() {
+            document.getElementById('importDialog').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using FDX.Trading.Data;
+using FDX.Trading.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
+
+// Add services
+builder.Services.AddScoped<CsvProductImportService>();
+builder.Services.AddScoped<SupplierProductImportService>();
+builder.Services.AddScoped<PriceBookImportService>();
 
 var app = builder.Build();
 

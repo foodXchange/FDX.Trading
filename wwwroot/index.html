@@ -278,14 +278,21 @@
                 
                 if (data.success) {
                     showMessage('Login successful!', 'success');
-                    // Redirect admin users to users management page
-                    if (data.userType === 'Admin') {
-                        setTimeout(() => {
-                            window.location.href = '/users.html';
-                        }, 1000);
-                    } else {
-                        setTimeout(() => showWelcome(data.username, data.userId), 1000);
-                    }
+                    
+                    // Store user data in localStorage
+                    const userData = {
+                        id: data.userId,
+                        name: data.username,
+                        email: data.email || data.username,
+                        role: data.userType,
+                        initials: data.username.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    
+                    // Redirect all users to dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1000);
                 } else {
                     showMessage(data.message, 'error');
                 }

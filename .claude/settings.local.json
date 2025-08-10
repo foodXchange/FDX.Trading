@@ -75,7 +75,8 @@
       "Bash(grep:*)",
       "Bash(del C:FDX.TradingServicesCsvImportService.cs)",
       "Bash(mv:*)",
-      "Bash(del \"C:\\FDX.Trading\\Models\\Supplier.cs\")"
+      "Bash(del \"C:\\FDX.Trading\\Models\\Supplier.cs\")",
+      "Bash(del nul)"
     ],
     "deny": []
   }
