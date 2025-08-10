@@ -591,12 +591,12 @@
                     
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone Number</label>
-                        <input type="tel" id="profilePhoneNumber" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <input type="tel" id="profilePhoneNumber" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="+1 234 567 8900">
                     </div>
                     
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Country</label>
-                        <input type="text" id="profileCountry" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <input type="text" id="profileCountry" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="updatePhoneAreaCode(this.value)" placeholder="e.g., USA, UK, Israel">
                     </div>
                     
                     <div style="grid-column: span 2;">
@@ -1376,7 +1376,19 @@
                 document.getElementById('profileCompanyName').value = user.companyName || '';
                 document.getElementById('profileType').value = user.type;
                 document.getElementById('profileIsActive').value = user.isActive.toString();
-                document.getElementById('profilePhoneNumber').value = user.phoneNumber || '';
+                
+                // Set phone with area code if empty
+                const phoneInput = document.getElementById('profilePhoneNumber');
+                if (user.phoneNumber) {
+                    phoneInput.value = user.phoneNumber;
+                } else if (user.country) {
+                    const areaCode = getAreaCodeForCountry(user.country);
+                    if (areaCode) {
+                        phoneInput.value = areaCode + ' ';
+                        phoneInput.placeholder = areaCode + ' 234 567 8900';
+                    }
+                }
+                
                 document.getElementById('profileCountry').value = user.country || '';
                 document.getElementById('profileAddress').value = user.address || '';
                 document.getElementById('profileWebsite').value = user.website || '';
@@ -1507,8 +1519,122 @@
             document.getElementById('userProfileModal').classList.remove('active');
         }
         
+        // Country to area code mapping
+        const countryAreaCodes = {
+            'USA': '+1',
+            'United States': '+1',
+            'US': '+1',
+            'Canada': '+1',
+            'CA': '+1',
+            'UK': '+44',
+            'United Kingdom': '+44',
+            'GB': '+44',
+            'England': '+44',
+            'Scotland': '+44',
+            'Wales': '+44',
+            'Ireland': '+353',
+            'IE': '+353',
+            'Australia': '+61',
+            'AU': '+61',
+            'New Zealand': '+64',
+            'NZ': '+64',
+            'Germany': '+49',
+            'DE': '+49',
+            'France': '+33',
+            'FR': '+33',
+            'Italy': '+39',
+            'IT': '+39',
+            'Spain': '+34',
+            'ES': '+34',
+            'Netherlands': '+31',
+            'NL': '+31',
+            'Belgium': '+32',
+            'BE': '+32',
+            'Switzerland': '+41',
+            'CH': '+41',
+            'Austria': '+43',
+            'AT': '+43',
+            'Sweden': '+46',
+            'SE': '+46',
+            'Norway': '+47',
+            'NO': '+47',
+            'Denmark': '+45',
+            'DK': '+45',
+            'Finland': '+358',
+            'FI': '+358',
+            'Poland': '+48',
+            'PL': '+48',
+            'Russia': '+7',
+            'RU': '+7',
+            'China': '+86',
+            'CN': '+86',
+            'Japan': '+81',
+            'JP': '+81',
+            'South Korea': '+82',
+            'KR': '+82',
+            'India': '+91',
+            'IN': '+91',
+            'Singapore': '+65',
+            'SG': '+65',
+            'Malaysia': '+60',
+            'MY': '+60',
+            'Thailand': '+66',
+            'TH': '+66',
+            'Indonesia': '+62',
+            'ID': '+62',
+            'Philippines': '+63',
+            'PH': '+63',
+            'Vietnam': '+84',
+            'VN': '+84',
+            'Israel': '+972',
+            'IL': '+972',
+            'UAE': '+971',
+            'United Arab Emirates': '+971',
+            'AE': '+971',
+            'Saudi Arabia': '+966',
+            'SA': '+966',
+            'Egypt': '+20',
+            'EG': '+20',
+            'South Africa': '+27',
+            'ZA': '+27',
+            'Brazil': '+55',
+            'BR': '+55',
+            'Mexico': '+52',
+            'MX': '+52',
+            'Argentina': '+54',
+            'AR': '+54',
+            'Chile': '+56',
+            'CL': '+56',
+            'Colombia': '+57',
+            'CO': '+57',
+            'Peru': '+51',
+            'PE': '+51'
+        };
+        
+        function getAreaCodeForCountry(country) {
+            if (!country) return '';
+            
+            // Try exact match first
+            for (const [key, code] of Object.entries(countryAreaCodes)) {
+                if (country.toLowerCase() === key.toLowerCase()) {
+                    return code;
+                }
+            }
+            
+            // Try partial match
+            for (const [key, code] of Object.entries(countryAreaCodes)) {
+                if (country.toLowerCase().includes(key.toLowerCase()) || 
+                    key.toLowerCase().includes(country.toLowerCase())) {
+                    return code;
+                }
+            }
+            
+            return ''; // Default to empty if no match found
+        }
+        
         function addNewContact() {
             const companyName = document.getElementById('profileCompanyName').value;
+            const country = document.getElementById('profileCountry').value;
             
             if (!companyName) {
                 alert('Cannot add contact: No company associated with this user');
@@ -1522,6 +1648,14 @@
             // Clear the form
             document.getElementById('addContactForm').reset();
             document.getElementById('newContactIsActive').checked = true; // Default to active
+            
+            // Set default area code based on country
+            const areaCode = getAreaCodeForCountry(country);
+            if (areaCode) {
+                const phoneInput = document.getElementById('newContactPhone');
+                phoneInput.value = areaCode + ' ';
+                phoneInput.placeholder = areaCode + ' 234 567 8900';
+            }
             
             // Show the modal
             document.getElementById('addContactModal').classList.add('active');
@@ -1663,6 +1797,9 @@
                 
                 const contact = await response.json();
                 
+                // Try to get country from current user profile if available
+                const country = document.getElementById('profileCountry')?.value || '';
+                
                 // Set display info
                 document.getElementById('contactNameDisplay').textContent = contactName;
                 document.getElementById('contactCompanyDisplay').textContent = companyName;
@@ -1672,7 +1809,21 @@
                 document.getElementById('editContactName').value = contact.contactName || '';
                 document.getElementById('editContactRole').value = contact.contactRole || '';
                 document.getElementById('editContactEmail').value = contact.contactEmail || '';
-                document.getElementById('editContactPhone').value = contact.contactPhone || '';
+                
+                // Set phone with area code if empty
+                const phoneInput = document.getElementById('editContactPhone');
+                if (contact.contactPhone) {
+                    phoneInput.value = contact.contactPhone;
+                } else {
+                    const areaCode = getAreaCodeForCountry(country);
+                    if (areaCode) {
+                        phoneInput.value = areaCode + ' ';
+                        phoneInput.placeholder = areaCode + ' 234 567 8900';
+                    } else {
+                        phoneInput.value = '';
+                        phoneInput.placeholder = '+1 234 567 8900';
+                    }
+                }
                 
                 // Set checkboxes
                 document.getElementById('editContactIsActive').checked = contact.isActive !== false;
@@ -2113,6 +2264,22 @@
                 }
             }, 250);
         });
+        
+        // Update phone area code when country changes
+        function updatePhoneAreaCode(country) {
+            const phoneInput = document.getElementById('profilePhoneNumber');
+            
+            // Only update if phone is empty or just has an area code
+            if (!phoneInput.value || phoneInput.value.match(/^\+\d{1,4}\s*$/)) {
+                const areaCode = getAreaCodeForCountry(country);
+                if (areaCode) {
+                    phoneInput.value = areaCode + ' ';
+                    phoneInput.placeholder = areaCode + ' 234 567 8900';
+                } else {
+                    phoneInput.placeholder = '+1 234 567 8900';
+                }
+            }
+        }
         
         // Function to close modal and reset its data
         function closeModalAndReset(modal) {
