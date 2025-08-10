@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details - FDX Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .request-number {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .status-bar {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-draft {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .info-section h2 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .description-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            color: #495057;
+            margin-top: 10px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .items-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .item-number {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .quantity-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .price-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-description {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .timeline-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .timeline-dot {
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            border-radius: 50%;
+            margin-top: 5px;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .timeline-text {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loadingDiv" class="loading">
+            <div class="spinner"></div>
+            <p>Loading request details...</p>
+        </div>
+
+        <div id="contentDiv" style="display: none;">
+            <div class="header">
+                <div>
+                    <h1>📋 Request Details</h1>
+                    <div class="request-number" id="requestNumber"></div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="goBack()">
+                        ← Back to Requests
+                    </button>
+                    <button id="editBtn" class="btn btn-primary" onclick="editRequest()" style="display: none;">
+                        ✏️ Edit Request
+                    </button>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-info">
+                    <span>Current Status:</span>
+                    <span id="statusBadge"></span>
+                </div>
+                <div class="status-actions" id="statusActions">
+                    <!-- Status action buttons will be added dynamically -->
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="info-section">
+                    <h2>Request Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Title</span>
+                            <span class="info-value" id="requestTitle"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Buyer</span>
+                            <span class="info-value" id="buyerName"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Company</span>
+                            <span class="info-value" id="buyerCompany"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Created Date</span>
+                            <span class="info-value" id="createdDate"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Last Updated</span>
+                            <span class="info-value" id="updatedDate"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Total Items</span>
+                            <span class="info-value" id="totalItems"></span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Description</span>
+                        <div class="description-box" id="requestDescription"></div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h2>Request Items</h2>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Target Price</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="timeline-section" id="timelineSection">
+                    <h3>Activity Timeline</h3>
+                    <div id="timeline"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRequest = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestId = urlParams.get('id');
+
+        if (!requestId) {
+            alert('No request ID provided');
+            window.location.href = '/requests.html';
+        } else {
+            loadRequest(requestId);
+        }
+
+        async function loadRequest(id) {
+            try {
+                const response = await fetch(`/api/requests/${id}`);
+                if (!response.ok) throw new Error('Failed to load request');
+                
+                currentRequest = await response.json();
+                displayRequest(currentRequest);
+                
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('contentDiv').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading request:', error);
+                alert('Failed to load request details');
+                window.location.href = '/requests.html';
+            }
+        }
+
+        function displayRequest(request) {
+            // Header
+            document.getElementById('requestNumber').textContent = request.requestNumber;
+            
+            // Status
+            document.getElementById('statusBadge').innerHTML = getStatusBadge(request.status);
+            
+            // Status actions
+            const statusActions = document.getElementById('statusActions');
+            statusActions.innerHTML = '';
+            
+            if (request.status === 0) { // Draft
+                document.getElementById('editBtn').style.display = 'inline-flex';
+                statusActions.innerHTML = `
+                    <button class="btn btn-success" onclick="changeStatus(1)">
+                        ✅ Publish Request
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteRequest()">
+                        🗑️ Delete
+                    </button>
+                `;
+            } else if (request.status === 1) { // Active
+                statusActions.innerHTML = `
+                    <button class="btn btn-danger" onclick="changeStatus(2)">
+                        ❌ Close Request
+                    </button>
+                `;
+            } else if (request.status === 2) { // Closed
+                statusActions.innerHTML = `
+                    <button class="btn btn-warning" onclick="changeStatus(1)">
+                        🔄 Reopen Request
+                    </button>
+                `;
+            }
+            
+            // Basic info
+            document.getElementById('requestTitle').textContent = request.title;
+            document.getElementById('buyerName').textContent = request.buyerName;
+            document.getElementById('buyerCompany').textContent = request.buyerCompany;
+            document.getElementById('createdDate').textContent = formatDateTime(request.createdAt);
+            document.getElementById('updatedDate').textContent = formatDateTime(request.updatedAt);
+            document.getElementById('totalItems').textContent = request.itemCount;
+            
+            // Description
+            const descriptionDiv = document.getElementById('requestDescription');
+            if (request.description) {
+                descriptionDiv.textContent = request.description;
+            } else {
+                descriptionDiv.innerHTML = '<span class="no-description">No description provided</span>';
+            }
+            
+            // Items table
+            const tbody = document.getElementById('itemsTableBody');
+            tbody.innerHTML = '';
+            
+            if (request.items && request.items.length > 0) {
+                request.items.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><span class="item-number">${index + 1}</span></td>
+                        <td><strong>${item.productName}</strong></td>
+                        <td><span class="quantity-badge">${item.quantity}</span></td>
+                        <td>${item.unit}</td>
+                        <td>${item.targetPrice ? `<span class="price-badge">$${item.targetPrice.toFixed(2)}</span>` : '-'}</td>
+                        <td>${item.description || '<span class="no-description">-</span>'}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6c757d;">No items in this request</td></tr>';
+            }
+            
+            // Timeline
+            displayTimeline(request);
+        }
+
+        function displayTimeline(request) {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '';
+            
+            // Created event
+            addTimelineItem(request.createdAt, `Request created by ${request.buyerName}`);
+            
+            // Updated event (if different from created)
+            if (request.updatedAt !== request.createdAt) {
+                addTimelineItem(request.updatedAt, 'Request updated');
+            }
+            
+            // Status-based events
+            if (request.status === 1) {
+                addTimelineItem(request.updatedAt, 'Request published and made active');
+            } else if (request.status === 2) {
+                addTimelineItem(request.updatedAt, 'Request closed');
+            }
+        }
+
+        function addTimelineItem(date, text) {
+            const timeline = document.getElementById('timeline');
+            const item = document.createElement('div');
+            item.className = 'timeline-item';
+            item.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">${formatDateTime(date)}</div>
+                    <div class="timeline-text">${text}</div>
+                </div>
+            `;
+            timeline.appendChild(item);
+        }
+
+        function getStatusBadge(status) {
+            const statusMap = {
+                0: '<span class="status-badge status-draft">Draft</span>',
+                1: '<span class="status-badge status-active">Active</span>',
+                2: '<span class="status-badge status-closed">Closed</span>'
+            };
+            return statusMap[status] || '';
+        }
+
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        async function changeStatus(newStatus) {
+            const statusNames = {0: 'Draft', 1: 'Active', 2: 'Closed'};
+            const action = statusNames[newStatus];
+            
+            if (!confirm(`Are you sure you want to change the status to ${action}?`)) return;
+            
+            try {
+                const response = await fetch(`/api/requests/${requestId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update status');
+                
+                alert(`Request status updated to ${action}`);
+                loadRequest(requestId);
+                
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Failed to update request status');
+            }
+        }
+
+        async function deleteRequest() {
+            if (!confirm('Are you sure you want to delete this request? This action cannot be undone.')) return;
+            
+            try {
+                const response = await fetch(`/api/requests/${requestId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete request');
+                
+                alert('Request deleted successfully');
+                window.location.href = '/requests.html';
+                
+            } catch (error) {
+                console.error('Error deleting request:', error);
+                alert('Failed to delete request');
+            }
+        }
+
+        function editRequest() {
+            window.location.href = `/request-create.html?id=${requestId}`;
+        }
+
+        function goBack() {
+            window.location.href = '/requests.html';
+        }
+    </script>
+</body>
+</html>

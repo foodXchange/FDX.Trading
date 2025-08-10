@@ -19,9 +19,16 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers()
+    public async Task<IActionResult> GetAllUsers([FromQuery] UserType? type = null)
     {
-        var users = await _context.FdxUsers.ToListAsync();
+        var query = _context.FdxUsers.AsQueryable();
+        
+        if (type.HasValue)
+        {
+            query = query.Where(u => u.Type == type.Value);
+        }
+        
+        var users = await query.ToListAsync();
         var userDtos = users.Select(u => new UserDto
         {
             Id = u.Id,
@@ -59,6 +66,78 @@ public class UsersController : ControllerBase
         return Ok(userDtos);
     }
 
+    [HttpGet("suppliers/search")]
+    public async Task<IActionResult> SearchSuppliers(
+        [FromQuery] string? q = null,
+        [FromQuery] string? country = null,
+        [FromQuery] bool? hasProducts = null)
+    {
+        // Start with suppliers only
+        var query = _context.FdxUsers
+            .Where(u => u.Type == UserType.Supplier);
+        
+        // Search by company name
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            query = query.Where(u => u.CompanyName.ToLower().Contains(q.ToLower()));
+        }
+        
+        // Filter by country
+        if (!string.IsNullOrWhiteSpace(country))
+        {
+            query = query.Where(u => u.Country == country);
+        }
+        
+        // Filter by having products
+        if (hasProducts.HasValue)
+        {
+            if (hasProducts.Value)
+            {
+                query = query.Where(u => _context.Products.Any(p => p.SupplierId == u.Id));
+            }
+            else
+            {
+                query = query.Where(u => !_context.Products.Any(p => p.SupplierId == u.Id));
+            }
+        }
+        
+        // Get results with product count
+        var suppliers = await query
+            .Select(u => new
+            {
+                id = u.Id,
+                companyName = u.CompanyName,
+                country = u.Country,
+                email = u.Email,
+                website = u.Website,
+                phoneNumber = u.PhoneNumber,
+                isActive = u.IsActive,
+                productCount = _context.Products.Count(p => p.SupplierId == u.Id),
+                verification = u.Verification,
+                category = u.Category,
+                businessType = u.BusinessType
+            })
+            .OrderByDescending(s => s.productCount)
+            .ThenBy(s => s.companyName)
+            .ToListAsync();
+        
+        return Ok(suppliers);
+    }
+    
+    [HttpGet("suppliers/countries")]
+    public async Task<IActionResult> GetSupplierCountries()
+    {
+        var countries = await _context.FdxUsers
+            .Where(u => u.Type == UserType.Supplier)
+            .Where(u => !string.IsNullOrEmpty(u.Country))
+            .Select(u => u.Country)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToListAsync();
+        
+        return Ok(countries);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(int id)
     {
@@ -71,6 +150,8 @@ public class UsersController : ControllerBase
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
             CompanyName = user.CompanyName,
             Type = user.Type,
             TypeName = user.Type switch
@@ -78,6 +159,7 @@ public class UsersController : ControllerBase
                 UserType.Admin => "Admin",
                 UserType.Expert => "Expert/Contractor",
                 UserType.Buyer => "Buyer",
+                UserType.Supplier => "Supplier",
                 _ => "Unknown"
             },
             Country = user.Country,
@@ -91,7 +173,8 @@ public class UsersController : ControllerBase
             CategoryColor = user.CategoryId.HasValue ? CategoryData.GetColorCode(user.CategoryId.Value) : "#B2BEC3",
             CreatedAt = user.CreatedAt,
             LastLogin = user.LastLogin,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            ProfileImage = user.ProfileImage
         };
 
         return Ok(userDto);
@@ -239,6 +322,55 @@ public class UsersController : ControllerBase
         });
     }
 
+    [HttpPut("{id}/supplier-details")]
+    public async Task<IActionResult> UpdateSupplierDetails(int id, [FromBody] SupplierUpdateDto updateDto)
+    {
+        var user = await _context.FdxUsers.FindAsync(id);
+        if (user == null || user.Type != UserType.Supplier)
+            return NotFound(new { message = "Supplier not found" });
+        
+        // Update supplier details
+        if (!string.IsNullOrWhiteSpace(updateDto.CompanyName))
+            user.CompanyName = updateDto.CompanyName;
+        if (!string.IsNullOrWhiteSpace(updateDto.Email))
+            user.Email = updateDto.Email;
+        if (updateDto.PhoneNumber != null)
+            user.PhoneNumber = updateDto.PhoneNumber;
+        if (updateDto.Website != null)
+            user.Website = updateDto.Website;
+        if (updateDto.Address != null)
+            user.Address = updateDto.Address;
+        if (updateDto.Country != null)
+            user.Country = updateDto.Country;
+        if (updateDto.BusinessType != null)
+            user.BusinessType = updateDto.BusinessType;
+        if (updateDto.Category != null)
+            user.Category = updateDto.Category;
+        if (updateDto.ProfileImage != null)
+            user.ProfileImage = updateDto.ProfileImage;
+            
+        await _context.SaveChangesAsync();
+        
+        return Ok(new
+        {
+            success = true,
+            message = "Supplier details updated successfully",
+            supplier = new
+            {
+                id = user.Id,
+                companyName = user.CompanyName,
+                email = user.Email,
+                phoneNumber = user.PhoneNumber,
+                website = user.Website,
+                address = user.Address,
+                country = user.Country,
+                businessType = user.BusinessType,
+                category = user.Category,
+                profileImage = user.ProfileImage
+            }
+        });
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto updateDto)
     {
@@ -248,6 +380,8 @@ public class UsersController : ControllerBase
 
         // Update user properties
         user.Email = updateDto.Email ?? user.Email;
+        user.FirstName = updateDto.FirstName ?? user.FirstName;
+        user.LastName = updateDto.LastName ?? user.LastName;
         user.DisplayName = updateDto.DisplayName ?? user.DisplayName;
         user.CompanyName = updateDto.CompanyName ?? user.CompanyName;
         user.Type = (UserType)updateDto.Type;
@@ -256,6 +390,7 @@ public class UsersController : ControllerBase
         user.Country = updateDto.Country ?? user.Country;
         user.Address = updateDto.Address ?? user.Address;
         user.Website = updateDto.Website ?? user.Website;
+        user.ProfileImage = updateDto.ProfileImage ?? user.ProfileImage;
         user.AlternateEmails = updateDto.AlternateEmails ?? user.AlternateEmails;
         user.Category = updateDto.Category ?? user.Category;
         user.BusinessType = updateDto.BusinessType ?? user.BusinessType;
@@ -268,7 +403,35 @@ public class UsersController : ControllerBase
 
         await _context.SaveChangesAsync();
         
-        return Ok(new { success = true, message = "User updated successfully" });
+        // Return the updated user data
+        return Ok(new
+        {
+            id = user.Id,
+            username = user.Username,
+            email = user.Email,
+            firstName = user.FirstName,
+            lastName = user.LastName,
+            displayName = user.DisplayName,
+            companyName = user.CompanyName,
+            typeName = user.Type switch
+            {
+                UserType.Admin => "Admin",
+                UserType.Expert => "Expert/Contractor",
+                UserType.Buyer => "Buyer",
+                UserType.Supplier => "Supplier",
+                _ => "Unknown"
+            },
+            type = (int)user.Type,
+            country = user.Country,
+            phoneNumber = user.PhoneNumber,
+            website = user.Website,
+            address = user.Address,
+            profileImage = user.ProfileImage,
+            isActive = user.IsActive,
+            createdAt = user.CreatedAt,
+            success = true,
+            message = "User updated successfully"
+        });
     }
 
     [HttpPost("{id}/reset-password")]
@@ -564,9 +727,24 @@ public class UsersController : ControllerBase
     }
 }
 
+public class SupplierUpdateDto
+{
+    public string? CompanyName { get; set; }
+    public string? Email { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? Website { get; set; }
+    public string? Address { get; set; }
+    public string? Country { get; set; }
+    public string? BusinessType { get; set; }
+    public string? Category { get; set; }
+    public string? ProfileImage { get; set; }  // URL or base64 image
+}
+
 public class UserUpdateDto
 {
     public string? Email { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     public string? DisplayName { get; set; }
     public string? CompanyName { get; set; }
     public int Type { get; set; }
@@ -575,6 +753,7 @@ public class UserUpdateDto
     public string? Country { get; set; }
     public string? Address { get; set; }
     public string? Website { get; set; }
+    public string? ProfileImage { get; set; }
     public string? AlternateEmails { get; set; }
     public string? Category { get; set; }
     public string? BusinessType { get; set; }

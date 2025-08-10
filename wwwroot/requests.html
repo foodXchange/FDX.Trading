@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Requests - FDX Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 70px; /* Space for fixed navbar */
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0;
+        }
+        
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            transition: transform 0.3s;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            padding: 8px 16px;
+            color: #555;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .user-role {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+        
+        .notification-bell {
+            cursor: pointer;
+            position: relative;
+            font-size: 1.3rem;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+        
+        .user-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #667eea;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            
+            .navbar-nav.active {
+                display: flex;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .navbar-user {
+                display: none;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #667eea;
+        }
+
+        .file-input-group {
+            margin-bottom: 20px;
+        }
+
+        .file-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .file-input-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .file-input-group .help-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .btn-import {
+            background: #28a745;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-import:hover {
+            background: #218838;
+        }
+
+        .btn-import:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .import-results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .import-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .import-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .filters {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .stats-bar {
+            padding: 20px 30px;
+            background: white;
+            display: flex;
+            gap: 30px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .requests-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .requests-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .requests-table tr:hover {
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-draft {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .request-number {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .item-count {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Unified Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/dashboard.html" class="navbar-brand">
+                <div class="navbar-logo">FDX</div>
+                <span>FDX Trading</span>
+            </a>
+            
+            <div class="navbar-nav" id="navbarNav">
+                <a href="/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/requests.html" class="nav-link active">Requests</a>
+                <a href="/products.html" class="nav-link">Products</a>
+                <a href="/supplier-catalog.html" class="nav-link">Suppliers</a>
+                <a href="/price-management.html" class="nav-link">Pricing</a>
+                <a href="/users.html" class="nav-link">Users</a>
+            </div>
+            
+            <div class="navbar-user">
+                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
+                    <div class="user-info" style="cursor: pointer;">
+                        <div class="user-avatar-small" id="navUserAvatar">AU</div>
+                    </div>
+                </a>
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                📋 Procurement Requests
+            </h1>
+        </div>
+
+        <div class="filters">
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="searchInput">Search</label>
+                    <input type="text" id="searchInput" name="search" placeholder="Search requests..." onkeyup="filterRequests()">
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter" name="status" onchange="filterRequests()">
+                        <option value="">All Status</option>
+                        <option value="0">Draft</option>
+                        <option value="1">Active</option>
+                        <option value="2">Closed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="buyerFilter">Buyer</label>
+                    <select id="buyerFilter" name="buyer" onchange="filterRequests()">
+                        <option value="">All Buyers</option>
+                    </select>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="openImportModal()" style="background: #6c757d; color: white;">
+                    📥 Import CSV
+                </button>
+                <button class="btn btn-primary" onclick="createNewRequest()" style="background: #28a745; color: white;">
+                    ➕ New Request
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalRequests">0</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="draftRequests">0</div>
+                <div class="stat-label">Draft</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeRequests">0</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="closedRequests">0</div>
+                <div class="stat-label">Closed</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="loadingDiv" class="loading">
+                <div class="spinner"></div>
+                <p>Loading requests...</p>
+            </div>
+            <table class="requests-table" id="requestsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Request #</th>
+                        <th>Title</th>
+                        <th>Buyer</th>
+                        <th>Company</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="requestsTableBody">
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <h3>No Requests Found</h3>
+                <p>Create your first procurement request to get started.</p>
+                <br>
+                <button class="btn btn-primary" onclick="createNewRequest()">
+                    ➕ Create First Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📥 Import Requests from CSV</h2>
+                <span class="close" onclick="closeImportModal()">&times;</span>
+            </div>
+            
+            <div class="file-input-group">
+                <label for="requestsFile">Requests CSV File (Required)</label>
+                <input type="file" id="requestsFile" name="requestsFile" accept=".csv" onchange="validateFiles()">
+                <div class="help-text">Upload the "Requests 9_8_2025.csv" file</div>
+            </div>
+            
+            <div class="file-input-group">
+                <label for="itemsFile">Request Line Items CSV File (Optional)</label>
+                <input type="file" id="itemsFile" name="itemsFile" accept=".csv" onchange="validateFiles()">
+                <div class="help-text">Upload the "Request line items 10_8_2025.csv" file to include product items</div>
+            </div>
+            
+            <button class="btn btn-import" id="importBtn" onclick="importFiles()" disabled>
+                Import Requests
+            </button>
+            
+            <div id="importResults" class="import-results"></div>
+        </div>
+    </div>
+
+    <script>
+        let allRequests = [];
+        let buyers = new Map();
+
+        async function loadRequests() {
+            try {
+                const response = await fetch('/api/requests');
+                if (!response.ok) throw new Error('Failed to load requests');
+                
+                allRequests = await response.json();
+                
+                // Extract unique buyers
+                allRequests.forEach(req => {
+                    if (!buyers.has(req.buyerId)) {
+                        buyers.set(req.buyerId, {
+                            id: req.buyerId,
+                            name: req.buyerName,
+                            company: req.buyerCompany
+                        });
+                    }
+                });
+                
+                // Populate buyer filter
+                const buyerFilter = document.getElementById('buyerFilter');
+                buyerFilter.innerHTML = '<option value="">All Buyers</option>';
+                buyers.forEach(buyer => {
+                    buyerFilter.innerHTML += `<option value="${buyer.id}">${buyer.name} - ${buyer.company}</option>`;
+                });
+                
+                // Load stats
+                await loadStats();
+                
+                // Display requests
+                displayRequests(allRequests);
+                
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                showError('Failed to load requests');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/requests/stats');
+                if (!response.ok) throw new Error('Failed to load stats');
+                
+                const stats = await response.json();
+                document.getElementById('totalRequests').textContent = stats.total;
+                document.getElementById('draftRequests').textContent = stats.draft;
+                document.getElementById('activeRequests').textContent = stats.active;
+                document.getElementById('closedRequests').textContent = stats.closed;
+                
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function displayRequests(requests) {
+            const tbody = document.getElementById('requestsTableBody');
+            const table = document.getElementById('requestsTable');
+            const loading = document.getElementById('loadingDiv');
+            const empty = document.getElementById('emptyState');
+            
+            loading.style.display = 'none';
+            
+            if (requests.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+            
+            table.style.display = 'table';
+            empty.style.display = 'none';
+            
+            tbody.innerHTML = '';
+            
+            requests.forEach(request => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="request-number">${request.requestNumber}</span></td>
+                    <td>${request.title}</td>
+                    <td>${request.buyerName}</td>
+                    <td>${request.buyerCompany}</td>
+                    <td><span class="item-count">${request.itemCount}</span></td>
+                    <td>${getStatusBadge(request.status)}</td>
+                    <td>${formatDate(request.createdAt)}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm btn-view" onclick="viewRequest(${request.id})">View</button>
+                        ${request.status === 0 ? `
+                            <button class="btn btn-sm btn-edit" onclick="editRequest(${request.id})">Edit</button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteRequest(${request.id})">Delete</button>
+                        ` : ''}
+                    </td>
+                `;
+                row.onclick = (e) => {
+                    if (!e.target.classList.contains('btn')) {
+                        viewRequest(request.id);
+                    }
+                };
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusBadge(status) {
+            const statusMap = {
+                0: '<span class="status-badge status-draft">Draft</span>',
+                1: '<span class="status-badge status-active">Active</span>',
+                2: '<span class="status-badge status-closed">Closed</span>'
+            };
+            return statusMap[status] || '';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function filterRequests() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const buyerFilter = document.getElementById('buyerFilter').value;
+            
+            let filtered = allRequests.filter(request => {
+                const matchesSearch = !searchTerm || 
+                    request.title.toLowerCase().includes(searchTerm) ||
+                    request.requestNumber.toLowerCase().includes(searchTerm) ||
+                    request.buyerName.toLowerCase().includes(searchTerm) ||
+                    request.buyerCompany.toLowerCase().includes(searchTerm);
+                
+                const matchesStatus = !statusFilter || request.status.toString() === statusFilter;
+                const matchesBuyer = !buyerFilter || request.buyerId.toString() === buyerFilter;
+                
+                return matchesSearch && matchesStatus && matchesBuyer;
+            });
+            
+            displayRequests(filtered);
+        }
+
+        function createNewRequest() {
+            window.location.href = '/request-create.html';
+        }
+
+        function viewRequest(id) {
+            window.location.href = `/request-detail.html?id=${id}`;
+        }
+
+        function editRequest(id) {
+            window.location.href = `/request-create.html?id=${id}`;
+        }
+
+        async function deleteRequest(id) {
+            if (!confirm('Are you sure you want to delete this request?')) return;
+            
+            try {
+                const response = await fetch(`/api/requests/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete request');
+                
+                alert('Request deleted successfully');
+                await loadRequests();
+                
+            } catch (error) {
+                console.error('Error deleting request:', error);
+                alert('Failed to delete request');
+            }
+        }
+
+        function showError(message) {
+            const loading = document.getElementById('loadingDiv');
+            loading.innerHTML = `
+                <p style="color: #dc3545;">❌ ${message}</p>
+                <button class="btn btn-primary" onclick="loadRequests()">Retry</button>
+            `;
+        }
+
+        // Import Modal Functions
+        function openImportModal() {
+            document.getElementById('importModal').style.display = 'block';
+            document.getElementById('importResults').style.display = 'none';
+            document.getElementById('importResults').innerHTML = '';
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            document.getElementById('requestsFile').value = '';
+            document.getElementById('itemsFile').value = '';
+            document.getElementById('importBtn').disabled = true;
+        }
+
+        function validateFiles() {
+            const requestsFile = document.getElementById('requestsFile').files[0];
+            const importBtn = document.getElementById('importBtn');
+            
+            // Enable import button only if requests file is selected
+            importBtn.disabled = !requestsFile;
+        }
+
+        async function importFiles() {
+            const requestsFile = document.getElementById('requestsFile').files[0];
+            const itemsFile = document.getElementById('itemsFile').files[0];
+            const importBtn = document.getElementById('importBtn');
+            const resultsDiv = document.getElementById('importResults');
+            
+            if (!requestsFile) {
+                alert('Please select a requests CSV file');
+                return;
+            }
+            
+            importBtn.disabled = true;
+            importBtn.textContent = 'Importing...';
+            
+            const formData = new FormData();
+            formData.append('requestsFile', requestsFile);
+            if (itemsFile) {
+                formData.append('itemsFile', itemsFile);
+            }
+            
+            try {
+                const response = await fetch('/api/requests/import-csv', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    resultsDiv.className = 'import-results import-success';
+                    resultsDiv.innerHTML = `
+                        <h3>✅ Import Successful!</h3>
+                        <p>${result.message}</p>
+                        <ul>
+                            <li>Requests imported: ${result.importedCount}</li>
+                            <li>Total items: ${result.totalItems}</li>
+                        </ul>
+                        ${result.errors && result.errors.length > 0 ? 
+                            `<p><strong>Warnings:</strong></p><ul>${result.errors.map(e => `<li>${e}</li>`).join('')}</ul>` : ''}
+                    `;
+                    
+                    // Reload the requests list
+                    setTimeout(() => {
+                        closeImportModal();
+                        loadRequests();
+                    }, 3000);
+                } else {
+                    resultsDiv.className = 'import-results import-error';
+                    resultsDiv.innerHTML = `
+                        <h3>❌ Import Failed</h3>
+                        <p>${result.message || 'Failed to import CSV files'}</p>
+                        ${result.error ? `<p>Error: ${result.error}</p>` : ''}
+                        ${result.errors && result.errors.length > 0 ? 
+                            `<p><strong>Errors:</strong></p><ul>${result.errors.map(e => `<li>${e}</li>`).join('')}</ul>` : ''}
+                    `;
+                }
+                
+                resultsDiv.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                resultsDiv.className = 'import-results import-error';
+                resultsDiv.innerHTML = `
+                    <h3>❌ Import Error</h3>
+                    <p>Failed to import CSV files: ${error.message}</p>
+                `;
+                resultsDiv.style.display = 'block';
+            } finally {
+                importBtn.disabled = false;
+                importBtn.textContent = 'Import Requests';
+            }
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('importModal');
+            if (event.target == modal) {
+                closeImportModal();
+            }
+        }
+
+        // Navbar functions
+        function toggleMobileMenu() {
+            const nav = document.getElementById('navbarNav');
+            nav.classList.toggle('active');
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = '/index.html';
+            }
+        }
+        
+        function toggleNotifications() {
+            // In a real app, this would open a notification panel
+            alert('Notifications feature coming soon!');
+        }
+        
+        // Initialize user info in navbar
+        function initializeNavbar() {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                const user = JSON.parse(userData);
+                // Update avatar initials
+                const initials = user.firstName && user.lastName 
+                    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() 
+                    : (user.username ? user.username.substring(0, 2).toUpperCase() : 'U');
+                const avatar = document.getElementById('navUserAvatar');
+                if (avatar) {
+                    avatar.textContent = initials;
+                }
+            }
+        }
+        
+        // Load on page load
+        loadRequests();
+        initializeNavbar();
+    </script>
+</body>
+</html>

@@ -19,6 +19,8 @@ public class FdxTradingContext : DbContext
     public DbSet<PriceProposal> PriceProposals { get; set; }
     public DbSet<PriceHistory> PriceHistories { get; set; }
     public DbSet<ProductPriceHistory> ProductPriceHistory { get; set; }
+    public DbSet<Request> Requests { get; set; }
+    public DbSet<RequestItem> RequestItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -302,6 +304,65 @@ public class FdxTradingContext : DbContext
             
             entity.HasIndex(e => e.PriceProposalId);
             entity.HasIndex(e => e.ChangedAt);
+        });
+
+        // Configure Request entity
+        modelBuilder.Entity<Request>(entity =>
+        {
+            entity.ToTable("Requests");
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.RequestNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.Description)
+                .HasMaxLength(2000);
+            
+            entity.HasOne(r => r.Buyer)
+                .WithMany()
+                .HasForeignKey(r => r.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasIndex(e => e.RequestNumber).IsUnique();
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.BuyerId);
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        // Configure RequestItem entity
+        modelBuilder.Entity<RequestItem>(entity =>
+        {
+            entity.ToTable("RequestItems");
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.ProductName)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.Quantity)
+                .HasColumnType("decimal(18,3)");
+            
+            entity.Property(e => e.Unit)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+            
+            entity.Property(e => e.TargetPrice)
+                .HasColumnType("decimal(18,2)");
+            
+            entity.HasOne(ri => ri.Request)
+                .WithMany(r => r.RequestItems)
+                .HasForeignKey(ri => ri.RequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => e.RequestId);
         });
     }
 }

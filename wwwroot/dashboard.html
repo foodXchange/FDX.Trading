@@ -17,14 +17,160 @@
             min-height: 100vh;
         }
         
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0;
+        }
+        
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            transition: transform 0.3s;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            padding: 8px 16px;
+            color: #555;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .welcome-message {
+            font-size: 0.95rem;
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .user-role {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+        
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #667eea;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            
+            .navbar-nav.active {
+                display: flex;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .navbar-user {
+                display: none;
+            }
+        }
+        
         /* Header */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            margin-top: 10px;
         }
         
         .header-content {
@@ -497,33 +643,51 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Unified Navbar with Welcome Message -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/dashboard.html" class="navbar-brand">
+                <div class="navbar-logo">FDX</div>
+                <span>FDX Trading</span>
+            </a>
+            
+            <div class="navbar-nav" id="navbarNav">
+                <a href="/dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="/requests.html" class="nav-link">Requests</a>
+                <a href="/products.html" class="nav-link">Products</a>
+                <a href="/supplier-catalog.html" class="nav-link">Suppliers</a>
+                <a href="/price-management.html" class="nav-link">Pricing</a>
+                <a href="/users.html" class="nav-link">Users</a>
+            </div>
+            
+            <div class="navbar-user">
+                <div class="welcome-message" style="margin-right: 20px; color: #667eea; font-weight: 500;">
+                    Welcome, <span id="navUserFirstName">User</span>!
+                </div>
+                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
+                    <div class="user-info" style="cursor: pointer;">
+                        <div class="user-avatar-small" id="navUserAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">AU</div>
+                    </div>
+                </a>
+                <div class="notification-bell" onclick="toggleNotifications()" style="margin-left: 15px; cursor: pointer; position: relative;">
+                    🔔
+                    <span class="notification-badge" id="notificationCount" style="position: absolute; top: -5px; right: -5px; background: #ff4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold;">3</span>
+                </div>
+                <button class="logout-btn" onclick="logout()" style="margin-left: 15px;">Logout</button>
+            </div>
+            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+    
+    <!-- Simplified Header -->
     <header class="header">
         <div class="header-content">
-            <div class="header-top">
-                <div class="welcome-section">
-                    <div class="user-avatar" id="userAvatar">JD</div>
-                    <div class="welcome-text">
-                        <h1>Welcome back, <span id="userName">John Doe</span>!</h1>
-                        <p>Today is <span id="currentDate"></span> <span class="role-badge" id="userRole">Admin</span></p>
-                    </div>
+            <div class="header-top" style="justify-content: center;">
+                <div class="global-search" style="width: 400px;">
+                    <input type="text" placeholder="Search products, suppliers, users..." id="globalSearch">
+                    <span class="search-icon">🔍</span>
                 </div>
-                
-                <div class="header-actions" id="headerActions">
-                    <div class="global-search">
-                        <input type="text" placeholder="Search anything..." id="globalSearch">
-                        <span class="search-icon">🔍</span>
-                    </div>
-                    
-                    <div class="notification-bell" onclick="toggleNotifications()">
-                        🔔
-                        <span class="notification-badge" id="notificationCount">3</span>
-                    </div>
-                    
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                </div>
-                
-                <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
             </div>
             
             <!-- Stats Bar -->
@@ -616,12 +780,20 @@
             // Get user from localStorage or session
             const userData = localStorage.getItem('currentUser');
             if (userData) {
-                state.user = JSON.parse(userData);
+                const user = JSON.parse(userData);
+                state.user = {
+                    name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.displayName || user.username || 'User',
+                    firstName: user.firstName || (user.displayName || user.username || 'User').split(' ')[0],
+                    email: user.email || 'user@fdx.com',
+                    role: user.role || user.typeName || 'User',
+                    initials: user.firstName && user.lastName ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : 'U'
+                };
                 updateUserDisplay();
             } else {
                 // Default user for demo
                 state.user = {
                     name: 'Admin User',
+                    firstName: 'Admin',
                     email: 'admin@fdx.com',
                     role: 'Admin',
                     initials: 'AU'
@@ -632,9 +804,13 @@
         
         // Update User Display
         function updateUserDisplay() {
-            document.getElementById('userName').textContent = state.user.name;
-            document.getElementById('userRole').textContent = state.user.role;
-            document.getElementById('userAvatar').textContent = state.user.initials;
+            // Extract first name from full name
+            const firstName = state.user.firstName || state.user.name.split(' ')[0] || 'User';
+            document.getElementById('navUserFirstName').textContent = firstName;
+            
+            // Update avatar initials
+            const initials = state.user.initials || state.user.name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+            document.getElementById('navUserAvatar').textContent = initials;
         }
         
         // Set Current Date
@@ -665,6 +841,7 @@
                 renderModules(modules);
                 renderActivities(activities);
                 renderNotifications(notifications);
+                updateNotificationCount();
             } catch (error) {
                 console.error('Error loading dashboard data:', error);
             }
@@ -708,7 +885,7 @@
             try {
                 const response = await fetch('/api/dashboard/notifications');
                 const notifications = await response.json();
-                document.getElementById('notificationCount').textContent = notifications.length;
+                updateNotificationCount();
                 return notifications;
             } catch (error) {
                 console.error('Error loading notifications:', error);
@@ -953,8 +1130,8 @@
         
         // Toggle Mobile Menu
         function toggleMobileMenu() {
-            const headerActions = document.getElementById('headerActions');
-            headerActions.classList.toggle('mobile-visible');
+            const nav = document.getElementById('navbarNav');
+            nav.classList.toggle('active');
         }
         
         // Toggle Notifications
@@ -1007,6 +1184,16 @@
                 clearInterval(state.refreshInterval);
             }
         });
+        
+        // Update notification count from state
+        function updateNotificationCount() {
+            const count = state.notifications ? state.notifications.length : 0;
+            const badge = document.getElementById('notificationCount');
+            if (badge) {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'flex' : 'none';
+            }
+        }
     </script>
 </body>
 </html>

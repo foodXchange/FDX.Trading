@@ -16,6 +16,7 @@ public class SupplierDetails
     public string? CompanyRegistrationNumber { get; set; }
     public string? TaxId { get; set; }
     public string? Description { get; set; }  // Detailed company description
+    public string? Logo { get; set; }  // Base64 encoded logo image
     
     // Business Details
     public string? ProductCategories { get; set; }  // Comma-separated list of categories they supply

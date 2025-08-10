@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Request - FDX Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .items-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-add-item {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+        }
+
+        .btn-add-item:hover {
+            background: #218838;
+        }
+
+        .item-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            position: relative;
+        }
+
+        .item-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .item-number {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .btn-remove-item {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-remove-item:hover {
+            background: #c82333;
+        }
+
+        .item-fields {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .item-description {
+            grid-column: 1 / -1;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .empty-items {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="pageTitle">
+                ➕ Create New Request
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="goBack()">
+                    ← Back to Requests
+                </button>
+            </div>
+        </div>
+
+        <div class="form-container" id="formContainer">
+            <div class="form-section">
+                <h2>Request Information</h2>
+                <div class="form-group">
+                    <label for="title" class="required">Request Title</label>
+                    <input type="text" id="title" name="title" placeholder="Enter a descriptive title for this request" required>
+                </div>
+                <div class="form-group">
+                    <label for="buyerCompany" class="required">Buyer's Company</label>
+                    <input type="text" id="buyerCompany" name="buyerCompany" placeholder="Enter your company name" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Provide additional details about this request (optional)"></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Request Items</h2>
+                <div class="items-section">
+                    <div class="items-header">
+                        <h3>Products Required</h3>
+                        <button class="btn btn-add-item" onclick="addItem()">
+                            ➕ Add Item
+                        </button>
+                    </div>
+                    <div id="itemsList">
+                        <div class="empty-items">
+                            <p>No items added yet</p>
+                            <p>Click "Add Item" to start adding products to this request</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveAsDraft()">Save as Draft</button>
+            <button class="btn btn-success" onclick="saveAndPublish()">Save & Publish</button>
+        </div>
+
+        <div id="loadingDiv" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading request...</p>
+        </div>
+    </div>
+
+    <script>
+        let items = [];
+        let itemCounter = 0;
+        let editingRequestId = null;
+        let originalRequest = null;
+
+        // Check if we're editing an existing request
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestId = urlParams.get('id');
+
+        if (requestId) {
+            loadRequest(requestId);
+        }
+
+        async function loadRequest(id) {
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('loadingDiv').style.display = 'block';
+            
+            try {
+                const response = await fetch(`/api/requests/${id}`);
+                if (!response.ok) throw new Error('Failed to load request');
+                
+                const request = await response.json();
+                editingRequestId = id;
+                originalRequest = request;
+                
+                // Update page title
+                document.getElementById('pageTitle').innerHTML = `✏️ Edit Request: ${request.requestNumber}`;
+                
+                // Populate form
+                document.getElementById('title').value = request.title;
+                document.getElementById('buyerCompany').value = request.buyerCompany || '';
+                document.getElementById('description').value = request.description || '';
+                
+                // Load items
+                items = [];
+                itemCounter = 0;
+                request.items.forEach(item => {
+                    items.push({
+                        id: ++itemCounter,
+                        productName: item.productName,
+                        quantity: item.quantity,
+                        unit: item.unit,
+                        description: item.description || '',
+                        targetPrice: item.targetPrice || ''
+                    });
+                });
+                
+                renderItems();
+                
+                document.getElementById('formContainer').style.display = 'block';
+                document.getElementById('loadingDiv').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error loading request:', error);
+                alert('Failed to load request');
+                goBack();
+            }
+        }
+
+        function addItem() {
+            itemCounter++;
+            items.push({
+                id: itemCounter,
+                productName: '',
+                quantity: 1,
+                unit: 'pcs',
+                description: '',
+                targetPrice: ''
+            });
+            renderItems();
+        }
+
+        function removeItem(id) {
+            items = items.filter(item => item.id !== id);
+            renderItems();
+        }
+
+        function renderItems() {
+            const itemsList = document.getElementById('itemsList');
+            
+            if (items.length === 0) {
+                itemsList.innerHTML = `
+                    <div class="empty-items">
+                        <p>No items added yet</p>
+                        <p>Click "Add Item" to start adding products to this request</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            itemsList.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                itemCard.innerHTML = `
+                    <div class="item-card-header">
+                        <span class="item-number">Item #${index + 1}</span>
+                        <button class="btn btn-remove-item" onclick="removeItem(${item.id})">
+                            ✕ Remove
+                        </button>
+                    </div>
+                    <div class="item-fields">
+                        <div class="form-group">
+                            <label for="productName_${item.id}" class="required">Product Name</label>
+                            <input type="text" value="${item.productName}" 
+                                   id="productName_${item.id}" name="productName_${item.id}"
+                                   placeholder="Enter product name"
+                                   aria-label="Product name" title="Enter product name"
+                                   onchange="updateItem(${item.id}, 'productName', this.value)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity_${item.id}" class="required">Quantity</label>
+                            <input type="number" value="${item.quantity}" min="0.001" step="0.001"
+                                   id="quantity_${item.id}" name="quantity_${item.id}"
+                                   aria-label="Quantity" title="Enter quantity"
+                                   onchange="updateItem(${item.id}, 'quantity', this.value)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="unit_${item.id}" class="required">Unit</label>
+                            <select id="unit_${item.id}" name="unit_${item.id}" 
+                                    aria-label="Unit of measurement" title="Select unit"
+                                    value="${item.unit}" onchange="updateItem(${item.id}, 'unit', this.value)">
+                                <option value="pcs" ${item.unit === 'pcs' ? 'selected' : ''}>Pieces</option>
+                                <option value="kg" ${item.unit === 'kg' ? 'selected' : ''}>Kg</option>
+                                <option value="gr" ${item.unit === 'gr' ? 'selected' : ''}>Grams</option>
+                                <option value="lit" ${item.unit === 'lit' ? 'selected' : ''}>Liters</option>
+                                <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ML</option>
+                                <option value="box" ${item.unit === 'box' ? 'selected' : ''}>Box</option>
+                                <option value="carton" ${item.unit === 'carton' ? 'selected' : ''}>Carton</option>
+                                <option value="pallet" ${item.unit === 'pallet' ? 'selected' : ''}>Pallet</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="item-fields">
+                        <div class="form-group item-description">
+                            <label for="description_${item.id}">Description / Special Requirements</label>
+                            <input type="text" value="${item.description}" 
+                                   id="description_${item.id}" name="description_${item.id}"
+                                   placeholder="Any special requirements or specifications (optional)"
+                                   aria-label="Item description" title="Enter special requirements"
+                                   onchange="updateItem(${item.id}, 'description', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label for="targetPrice_${item.id}">Target Price (optional)</label>
+                            <input type="number" value="${item.targetPrice}" min="0" step="0.01"
+                                   id="targetPrice_${item.id}" name="targetPrice_${item.id}"
+                                   placeholder="0.00"
+                                   aria-label="Target price" title="Enter target price"
+                                   onchange="updateItem(${item.id}, 'targetPrice', this.value)">
+                        </div>
+                    </div>
+                `;
+                itemsList.appendChild(itemCard);
+            });
+        }
+
+        function updateItem(id, field, value) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                if (field === 'quantity' || field === 'targetPrice') {
+                    item[field] = parseFloat(value) || 0;
+                } else {
+                    item[field] = value;
+                }
+            }
+        }
+
+        function validateForm() {
+            const title = document.getElementById('title').value.trim();
+            const buyerCompany = document.getElementById('buyerCompany').value.trim();
+            
+            if (!title) {
+                alert('Please enter a request title');
+                return false;
+            }
+            
+            if (!buyerCompany) {
+                alert('Please enter the buyer\'s company name');
+                return false;
+            }
+            
+            if (items.length === 0) {
+                alert('Please add at least one item to the request');
+                return false;
+            }
+            
+            // Validate items
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (!item.productName.trim()) {
+                    alert(`Item #${i + 1}: Product name is required`);
+                    return false;
+                }
+                if (item.quantity <= 0) {
+                    alert(`Item #${i + 1}: Quantity must be greater than 0`);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        async function saveRequest(publish = false) {
+            if (!validateForm()) return;
+            
+            const requestData = {
+                title: document.getElementById('title').value.trim(),
+                buyerCompany: document.getElementById('buyerCompany').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                items: items.map(item => ({
+                    productName: item.productName.trim(),
+                    quantity: item.quantity,
+                    unit: item.unit,
+                    description: item.description.trim(),
+                    targetPrice: item.targetPrice || null
+                }))
+            };
+            
+            try {
+                let response;
+                
+                if (editingRequestId) {
+                    // Update existing request
+                    response = await fetch(`/api/requests/${editingRequestId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                } else {
+                    // Create new request
+                    response = await fetch('/api/requests', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                }
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to save request');
+                }
+                
+                const result = await response.json();
+                const requestId = editingRequestId || result.requestId;
+                
+                // If publishing, update status
+                if (publish) {
+                    const statusResponse = await fetch(`/api/requests/${requestId}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ status: 1 }) // Active status
+                    });
+                    
+                    if (!statusResponse.ok) {
+                        throw new Error('Failed to publish request');
+                    }
+                }
+                
+                alert(publish ? 'Request saved and published successfully!' : 'Request saved as draft!');
+                window.location.href = '/requests.html';
+                
+            } catch (error) {
+                console.error('Error saving request:', error);
+                alert(error.message || 'Failed to save request');
+            }
+        }
+
+        function saveAsDraft() {
+            saveRequest(false);
+        }
+
+        function saveAndPublish() {
+            if (confirm('Are you sure you want to publish this request? Once published, it will be visible to suppliers.')) {
+                saveRequest(true);
+            }
+        }
+
+        function goBack() {
+            if (confirm('Are you sure you want to leave? Any unsaved changes will be lost.')) {
+                window.location.href = '/requests.html';
+            }
+        }
+
+        // Add at least one item by default for new requests
+        if (!requestId) {
+            addItem();
+        }
+    </script>
+</body>
+</html>

@@ -13,11 +13,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-        }
+        /* Navbar styling moved to inline styles */
         
         .main-container {
             padding: 20px;
@@ -371,35 +367,44 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top" style="background: rgba(255, 255, 255, 0.98) !important; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">
-                <strong>FDX Trading</strong>
+            <a class="navbar-brand d-flex align-items-center" href="/dashboard.html" style="color: #667eea !important; font-weight: bold;">
+                <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
+                <span>FDX Trading</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Dashboard</a>
+                        <a class="nav-link" href="/dashboard.html" style="text-decoration: none;">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="users.html">Users</a>
+                        <a class="nav-link" href="/requests.html" style="text-decoration: none;">Requests</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="suppliers.html">Suppliers</a>
+                        <a class="nav-link active" href="/products.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white !important; border-radius: 5px; text-decoration: none;">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="products.html">Products</a>
+                        <a class="nav-link" href="/supplier-catalog.html" style="text-decoration: none;">Suppliers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="logout()">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </a>
+                        <a class="nav-link" href="/price-management.html" style="text-decoration: none;">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users.html" style="text-decoration: none;">Users</a>
                     </li>
                 </ul>
+                <div class="d-flex align-items-center">
+                    <div class="me-3 text-end">
+                        <div class="fw-bold" id="navUserName">Loading...</div>
+                        <small class="text-muted" id="navUserRole">Role</small>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -691,6 +696,13 @@
             loadProducts();
             loadCategories();
             loadSuppliers();
+            
+            // Load user info in navbar
+            const navUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (navUser) {
+                document.getElementById('navUserName').textContent = navUser.firstName + ' ' + navUser.lastName;
+                document.getElementById('navUserRole').textContent = navUser.role;
+            }
             loadStats();
             
             // Add event listeners
@@ -867,6 +879,11 @@
         
         // View product detail
         async function viewProductDetail(productId) {
+            // Redirect to product detail page
+            window.location.href = `/product-detail.html?id=${productId}`;
+            return;
+            
+            // Original modal code (kept for reference)
             try {
                 const response = await fetch(`/api/products/${productId}`);
                 if (response.ok) {

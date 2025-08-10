@@ -4,6 +4,7 @@ using FDX.Trading.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FDX.Trading.Migrations
 {
     [DbContext(typeof(FdxTradingContext))]
-    partial class FdxTradingContextModelSnapshot : ModelSnapshot
+    [Migration("20250810120940_AddFirstLastNameToUser")]
+    partial class AddFirstLastNameToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -517,99 +520,6 @@ namespace FDX.Trading.Migrations
                         .IsUnique();
 
                     b.ToTable("ProductRequestItems", (string)null);
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.Request", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BuyerCompany")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("BuyerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("RequestNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BuyerId");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("RequestNumber")
-                        .IsUnique();
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("Requests", (string)null);
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.RequestItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,3)");
-
-                    b.Property<int>("RequestId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("TargetPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RequestId");
-
-                    b.ToTable("RequestItems", (string)null);
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.SupplierDetails", b =>
@@ -1134,28 +1044,6 @@ namespace FDX.Trading.Migrations
                     b.Navigation("ProductRequest");
                 });
 
-            modelBuilder.Entity("FDX.Trading.Models.Request", b =>
-                {
-                    b.HasOne("FDX.Trading.Models.User", "Buyer")
-                        .WithMany()
-                        .HasForeignKey("BuyerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Buyer");
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.RequestItem", b =>
-                {
-                    b.HasOne("FDX.Trading.Models.Request", "Request")
-                        .WithMany("RequestItems")
-                        .HasForeignKey("RequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Request");
-                });
-
             modelBuilder.Entity("FDX.Trading.Models.SupplierDetails", b =>
                 {
                     b.HasOne("FDX.Trading.Models.User", "User")
@@ -1202,11 +1090,6 @@ namespace FDX.Trading.Migrations
                 {
                     b.Navigation("Proposals");
 
-                    b.Navigation("RequestItems");
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.Request", b =>
-                {
                     b.Navigation("RequestItems");
                 });
 

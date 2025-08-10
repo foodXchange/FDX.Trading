@@ -8,6 +8,8 @@ public class User
     public string Username { get; set; } = "";
     public string Password { get; set; } = "";
     public string Email { get; set; } = "";
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     public string CompanyName { get; set; } = "";
     public UserType Type { get; set; }
     public string Country { get; set; } = "";
@@ -32,6 +34,7 @@ public class User
     public VerificationStatus Verification { get; set; } = VerificationStatus.Pending;
     public string? AlternateEmails { get; set; }
     public string? DisplayName { get; set; }  // For Hebrew or alternative names
+    public string? ProfileImage { get; set; }  // Company logo/profile image (URL or base64)
     public string? ImportNotes { get; set; }  // Track import issues
     public DateTime? ImportedAt { get; set; }
     public string? OriginalId { get; set; }  // Store original CSV ID
@@ -66,6 +69,8 @@ public class UserDto
     public int Id { get; set; }
     public string Username { get; set; } = "";
     public string Email { get; set; } = "";
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     public string CompanyName { get; set; } = "";
     public string TypeName { get; set; } = "";
     public UserType Type { get; set; }
@@ -87,4 +92,5 @@ public class UserDto
     public string? AlternateEmails { get; set; }
     public string? DisplayName { get; set; }
     public DateTime? ImportedAt { get; set; }
+    public string? ProfileImage { get; set; }
 }

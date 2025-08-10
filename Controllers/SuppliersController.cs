@@ -72,7 +72,8 @@ public class SuppliersController : ControllerBase
                         sd.Currency,
                         sd.MinimumOrderValue,
                         sd.LeadTimeDays,
-                        sd.IsVerified
+                        sd.IsVerified,
+                        sd.Logo
                     })
                     .FirstOrDefault(),
                 Products = _context.SupplierDetails
@@ -177,9 +178,49 @@ public class SuppliersController : ControllerBase
         
         return Ok(stats);
     }
+    
+    [HttpPost("{id}/logo")]
+    public async Task<IActionResult> UpdateLogo(int id, [FromBody] UpdateLogoRequest request)
+    {
+        var user = await _context.FdxUsers
+            .FirstOrDefaultAsync(u => u.Id == id && u.Type == UserType.Supplier);
+        
+        if (user == null)
+        {
+            return NotFound("Supplier not found");
+        }
+        
+        var supplierDetails = await _context.SupplierDetails
+            .FirstOrDefaultAsync(sd => sd.UserId == id);
+        
+        if (supplierDetails == null)
+        {
+            supplierDetails = new SupplierDetails
+            {
+                UserId = id,
+                Logo = request.Logo,
+                CreatedAt = DateTime.Now
+            };
+            _context.SupplierDetails.Add(supplierDetails);
+        }
+        else
+        {
+            supplierDetails.Logo = request.Logo;
+            supplierDetails.UpdatedAt = DateTime.Now;
+        }
+        
+        await _context.SaveChangesAsync();
+        
+        return Ok(new { message = "Logo updated successfully" });
+    }
 }
 
 public class ImportRequest
 {
     public string FilePath { get; set; } = "";
+}
+
+public class UpdateLogoRequest
+{
+    public string? Logo { get; set; }
 }

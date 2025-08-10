@@ -269,6 +269,33 @@
     </style>
 </head>
 <body>
+    <!-- Navbar -->
+    <nav style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; padding: 10px 20px;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <a href="/dashboard.html" style="display: flex; align-items: center; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.5rem;">
+                <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
+                <span>FDX Trading</span>
+            </a>
+            
+            <div style="display: flex; gap: 5px;">
+                <a href="/dashboard.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Dashboard</a>
+                <a href="/requests.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Requests</a>
+                <a href="/products.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
+                <a href="/supplier-catalog.html" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
+                <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
+                <a href="/users.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-weight: 600; color: #333;" id="navUserName">Loading...</div>
+                    <div style="font-size: 0.85rem; color: #666;" id="navUserRole">Role</div>
+                </div>
+                <button onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Logout</button>
+            </div>
+        </div>
+    </nav>
+    
     <div class="container">
         <h1>🏭 Supplier Product Catalogs</h1>
         
@@ -292,20 +319,29 @@
         </div>
 
         <div class="controls">
-            <input type="text" id="searchInput" placeholder="Search suppliers..." style="flex: 1;">
-            <select id="countryFilter">
+            <label for="searchInput" style="display: none;">Search suppliers</label>
+            <input type="text" id="searchInput" placeholder="Search by company name..." style="flex: 1;" aria-label="Search suppliers" title="Search suppliers">
+            <label for="countryFilter" style="display: none;">Filter by country</label>
+            <select id="countryFilter" aria-label="Filter by country" title="Filter by country">
                 <option value="">All Countries</option>
             </select>
-            <select id="categoryFilter">
-                <option value="">All Categories</option>
+            <label for="hasProductsFilter" style="display: none;">Has products filter</label>
+            <select id="hasProductsFilter" aria-label="Has products" title="Filter by product availability">
+                <option value="">All Suppliers</option>
+                <option value="true">With Products</option>
+                <option value="false">Without Products</option>
             </select>
-            <button onclick="loadSuppliers()">🔄 Refresh</button>
+            <button onclick="searchSuppliers()">🔍 Search</button>
+            <button onclick="resetSearch()">↻ Reset</button>
             <button onclick="showImportDialog()">📥 Import CSV</button>
         </div>
 
         <div class="import-section" id="importSection" style="display: none;">
             <h3>Import Products from CSV</h3>
-            <p>CSV File Path: <input type="text" id="csvPath" value="C:\Users\fdxadmin\Downloads\Products 9_8_2025.csv" style="width: 500px;"></p>
+            <p>
+                <label for="csvPath">CSV File Path:</label>
+                <input type="text" id="csvPath" value="C:\Users\fdxadmin\Downloads\Products 9_8_2025.csv" style="width: 500px;" title="CSV file path" placeholder="Enter CSV file path">
+            </p>
             <button onclick="importCSV()">Start Import</button>
             <div id="importResult"></div>
         </div>
@@ -334,16 +370,68 @@
 
         async function loadSuppliers() {
             try {
-                const response = await fetch('/api/products/suppliers/catalog-summary');
+                const response = await fetch('/api/users/suppliers/search');
                 suppliers = await response.json();
                 
                 displaySuppliers(suppliers);
                 updateStats();
-                updateFilters();
+                await loadCountries();
             } catch (error) {
                 console.error('Error loading suppliers:', error);
                 document.getElementById('suppliersGrid').innerHTML = '<div class="loading">Error loading suppliers</div>';
             }
+        }
+        
+        async function loadCountries() {
+            try {
+                const response = await fetch('/api/users/suppliers/countries');
+                const countries = await response.json();
+                
+                const countryFilter = document.getElementById('countryFilter');
+                countryFilter.innerHTML = '<option value="">All Countries</option>';
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    option.textContent = country;
+                    countryFilter.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading countries:', error);
+            }
+        }
+        
+        async function searchSuppliers() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const country = document.getElementById('countryFilter').value;
+            const hasProducts = document.getElementById('hasProductsFilter').value;
+            
+            let url = '/api/users/suppliers/search?';
+            const params = [];
+            
+            if (searchTerm) params.push(`q=${encodeURIComponent(searchTerm)}`);
+            if (country) params.push(`country=${encodeURIComponent(country)}`);
+            if (hasProducts) params.push(`hasProducts=${hasProducts}`);
+            
+            url += params.join('&');
+            
+            try {
+                document.getElementById('suppliersGrid').innerHTML = '<div class="loading">Searching...</div>';
+                const response = await fetch(url);
+                suppliers = await response.json();
+                
+                displaySuppliers(suppliers);
+                updateStats();
+            } catch (error) {
+                console.error('Error searching suppliers:', error);
+                document.getElementById('suppliersGrid').innerHTML = '<div class="loading">Error searching suppliers</div>';
+            }
+        }
+        
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('countryFilter').value = '';
+            document.getElementById('hasProductsFilter').value = '';
+            loadSuppliers();
         }
 
         function displaySuppliers(suppliersToShow) {
@@ -355,7 +443,7 @@
             }
 
             grid.innerHTML = suppliersToShow.map(supplier => `
-                <div class="supplier-card" onclick="viewSupplierProducts(${supplier.supplierId})">
+                <div class="supplier-card" onclick="viewSupplierProducts(${supplier.id})" title="Click to view supplier profile">
                     <div class="supplier-header">
                         <h3>${supplier.companyName || 'Unknown Supplier'}</h3>
                         <p>📍 ${supplier.country || 'Unknown'}</p>
@@ -367,25 +455,30 @@
                                 <div class="supplier-stat-label">Products</div>
                             </div>
                             <div class="supplier-stat">
-                                <div class="supplier-stat-value">${supplier.categories || 0}</div>
-                                <div class="supplier-stat-label">Categories</div>
+                                <div class="supplier-stat-value">${supplier.isActive ? '✓' : '✗'}</div>
+                                <div class="supplier-stat-label">Active</div>
                             </div>
                             <div class="supplier-stat">
-                                <div class="supplier-stat-value">$${(supplier.totalValue || 0).toFixed(0)}</div>
-                                <div class="supplier-stat-label">Total Value</div>
+                                <div class="supplier-stat-value">${supplier.verification === 1 ? '✓' : '○'}</div>
+                                <div class="supplier-stat-label">Verified</div>
                             </div>
                         </div>
                         <div class="badges">
-                            ${supplier.hasKosherProducts ? '<span class="badge kosher">Kosher</span>' : ''}
-                            ${supplier.hasOrganicProducts ? '<span class="badge organic">Organic</span>' : ''}
+                            ${supplier.productCount > 0 ? '<span class="badge kosher">Has Products</span>' : ''}
+                            ${supplier.website ? '<span class="badge organic">Website</span>' : ''}
                         </div>
-                        ${supplier.latestProduct ? `<p style="margin-top: 10px; font-size: 0.9em; color: #666;">Latest: ${supplier.latestProduct}</p>` : ''}
+                        ${supplier.businessType ? `<p style="margin-top: 10px; font-size: 0.9em; color: #666;">Type: ${supplier.businessType}</p>` : ''}
                     </div>
                 </div>
             `).join('');
         }
 
         async function viewSupplierProducts(supplierId) {
+            // Navigate to supplier profile page
+            window.location.href = `/supplier-profile.html?id=${supplierId}`;
+            return;
+            
+            // Original modal code (kept for reference)
             try {
                 const response = await fetch(`/api/products/supplier/${supplierId}`);
                 const data = await response.json();
@@ -452,8 +545,8 @@
         function updateStats() {
             document.getElementById('totalSuppliers').textContent = suppliers.length;
             document.getElementById('totalProducts').textContent = suppliers.reduce((sum, s) => sum + (s.productCount || 0), 0);
-            document.getElementById('totalCategories').textContent = new Set(suppliers.flatMap(s => s.categories || [])).size;
-            document.getElementById('activeSuppliers').textContent = suppliers.filter(s => s.productCount > 0).length;
+            document.getElementById('totalCategories').textContent = new Set(suppliers.map(s => s.country).filter(c => c)).size;
+            document.getElementById('activeSuppliers').textContent = suppliers.filter(s => s.isActive).length;
         }
 
         function updateFilters() {
@@ -541,6 +634,19 @@
 
         // Load suppliers on page load
         loadSuppliers();
+        
+        // Navbar functions
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = '/index.html';
+        }
+        
+        // Load user info in navbar
+        const navUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (navUser) {
+            document.getElementById('navUserName').textContent = navUser.firstName + ' ' + navUser.lastName;
+            document.getElementById('navUserRole').textContent = navUser.role;
+        }
     </script>
 </body>
 </html>

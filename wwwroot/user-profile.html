@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - FDX Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .profile-image-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .profile-image-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #667eea;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .profile-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: white;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        
+        .profile-placeholder {
+            font-size: 4rem;
+            color: #999;
+        }
+        
+        .upload-section {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .editing .upload-section {
+            display: flex;
+        }
+        
+        .upload-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .upload-tab {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .upload-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .upload-content {
+            display: none;
+        }
+        
+        .upload-content.active {
+            display: block;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .file-input-button {
+            display: block;
+            width: 100%;
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .file-input-button:hover {
+            background: #5a67d8;
+        }
+        
+        .avatar-option {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .avatar-option:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .avatar-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-role {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+        
+        .user-meta {
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .detail-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .detail-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            color: #333;
+            font-size: 1.1rem;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .view-mode {
+            display: block;
+        }
+        
+        .edit-mode {
+            display: none;
+        }
+        
+        .editing .view-mode {
+            display: none;
+        }
+        
+        .editing .edit-mode {
+            display: block;
+        }
+        
+        .edit-mode input,
+        .edit-mode select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .edit-mode input:focus,
+        .edit-mode select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .back-btn {
+            background: #f0f0f0;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 999; padding: 10px 20px;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <a href="/dashboard.html" style="display: flex; align-items: center; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.5rem;">
+                <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
+                <span>FDX Trading</span>
+            </a>
+            
+            <div style="display: flex; gap: 5px;">
+                <a href="/dashboard.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Dashboard</a>
+                <a href="/requests.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Requests</a>
+                <a href="/products.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
+                <a href="/supplier-catalog.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
+                <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
+                <a href="/users.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
+                    <div style="text-align: right; cursor: pointer;">
+                        <div style="font-weight: 600; color: #333;" id="navUserName">Loading...</div>
+                        <div style="font-size: 0.85rem; color: #666;" id="navUserRole">Role</div>
+                    </div>
+                </a>
+                <button onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="/dashboard.html" class="back-btn">← Back to Dashboard</a>
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-image-section">
+                    <div class="profile-image-container">
+                        <img id="profileImage" style="display: none;" alt="Profile Picture">
+                        <span class="profile-placeholder" id="profilePlaceholder">👤</span>
+                    </div>
+                    
+                    <div class="upload-section">
+                        <div class="upload-tabs">
+                            <button class="upload-tab active" onclick="switchUploadTab('avatar')">Avatar</button>
+                            <button class="upload-tab" onclick="switchUploadTab('url')">URL</button>
+                            <button class="upload-tab" onclick="switchUploadTab('file')">Upload</button>
+                        </div>
+                        <div class="upload-content active" id="avatarUploadContent">
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                                <div class="avatar-option" onclick="selectAvatar('👤')" title="Default">👤</div>
+                                <div class="avatar-option" onclick="selectAvatar('👨')" title="Man">👨</div>
+                                <div class="avatar-option" onclick="selectAvatar('👩')" title="Woman">👩</div>
+                                <div class="avatar-option" onclick="selectAvatar('👨‍💼')" title="Business Man">👨‍💼</div>
+                                <div class="avatar-option" onclick="selectAvatar('👩‍💼')" title="Business Woman">👩‍💼</div>
+                                <div class="avatar-option" onclick="selectAvatar('👨‍💻')" title="Developer">👨‍💻</div>
+                                <div class="avatar-option" onclick="selectAvatar('👩‍💻')" title="Developer">👩‍💻</div>
+                                <div class="avatar-option" onclick="selectAvatar('🧑‍💼')" title="Professional">🧑‍💼</div>
+                                <div class="avatar-option" onclick="selectAvatar('😊')" title="Happy">😊</div>
+                                <div class="avatar-option" onclick="selectAvatar('😎')" title="Cool">😎</div>
+                                <div class="avatar-option" onclick="selectAvatar('🤓')" title="Nerdy">🤓</div>
+                                <div class="avatar-option" onclick="selectAvatar('🦸')" title="Hero">🦸</div>
+                            </div>
+                            <button onclick="selectAvatar(null)" style="width: 100%; margin-top: 10px; padding: 8px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">Remove Avatar</button>
+                        </div>
+                        <div class="upload-content" id="urlUploadContent">
+                            <input type="url" id="imageUrlInput" placeholder="Enter image URL" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div class="upload-content" id="fileUploadContent">
+                            <div class="file-input-wrapper">
+                                <input type="file" id="imageFileInput" accept="image/*" onchange="handleImageFileSelect(event)">
+                                <label for="imageFileInput" class="file-input-button">Choose Image</label>
+                            </div>
+                            <span id="selectedFileName" style="text-align: center; font-size: 0.85rem; color: #666;"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-info">
+                    <h1 class="user-name">
+                        <span id="displayName">Loading...</span>
+                        <span class="user-role" id="userRole">User</span>
+                    </h1>
+                    <div class="user-meta">
+                        <p>Member since: <span id="memberSince">-</span></p>
+                        <p>User ID: <span id="userId">-</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-details">
+                <div class="detail-group">
+                    <label class="detail-label">First Name</label>
+                    <div class="detail-value view-mode" id="firstNameView">-</div>
+                    <input class="edit-mode" id="firstNameInput" type="text" placeholder="Enter first name">
+                </div>
+                
+                <div class="detail-group">
+                    <label class="detail-label">Last Name</label>
+                    <div class="detail-value view-mode" id="lastNameView">-</div>
+                    <input class="edit-mode" id="lastNameInput" type="text" placeholder="Enter last name">
+                </div>
+                
+                <div class="detail-group">
+                    <label class="detail-label">Email (Login) <span style="color: #999; font-size: 0.8rem;" title="Email cannot be changed as it's your login ID">🔒</span></label>
+                    <div class="detail-value view-mode" id="emailView">-</div>
+                    <input class="edit-mode" id="emailInput" type="email" placeholder="Enter email" readonly style="background-color: #f0f0f0; cursor: not-allowed;" title="Email cannot be changed as it's your login ID">
+                </div>
+                
+                <div class="detail-group">
+                    <label class="detail-label">Phone Number</label>
+                    <div class="detail-value view-mode" id="phoneView">-</div>
+                    <div class="edit-mode" style="display: flex; gap: 5px;">
+                        <select id="countryCodeSelect" style="width: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+33">🇫🇷 +33</option>
+                            <option value="+49">🇩🇪 +49</option>
+                            <option value="+39">🇮🇹 +39</option>
+                            <option value="+34">🇪🇸 +34</option>
+                            <option value="+31">🇳🇱 +31</option>
+                            <option value="+32">🇧🇪 +32</option>
+                            <option value="+41">🇨🇭 +41</option>
+                            <option value="+46">🇸🇪 +46</option>
+                            <option value="+47">🇳🇴 +47</option>
+                            <option value="+45">🇩🇰 +45</option>
+                            <option value="+358">🇫🇮 +358</option>
+                            <option value="+48">🇵🇱 +48</option>
+                            <option value="+420">🇨🇿 +420</option>
+                            <option value="+43">🇦🇹 +43</option>
+                            <option value="+30">🇬🇷 +30</option>
+                            <option value="+351">🇵🇹 +351</option>
+                            <option value="+353">🇮🇪 +353</option>
+                            <option value="+972">🇮🇱 +972</option>
+                            <option value="+966">🇸🇦 +966</option>
+                            <option value="+971">🇦🇪 +971</option>
+                            <option value="+20">🇪🇬 +20</option>
+                            <option value="+27">🇿🇦 +27</option>
+                            <option value="+234">🇳🇬 +234</option>
+                            <option value="+254">🇰🇪 +254</option>
+                            <option value="+212">🇲🇦 +212</option>
+                            <option value="+216">🇹🇳 +216</option>
+                            <option value="+90">🇹🇷 +90</option>
+                            <option value="+91">🇮🇳 +91</option>
+                            <option value="+86">🇨🇳 +86</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+65">🇸🇬 +65</option>
+                            <option value="+60">🇲🇾 +60</option>
+                            <option value="+62">🇮🇩 +62</option>
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+66">🇹🇭 +66</option>
+                            <option value="+84">🇻🇳 +84</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+64">🇳🇿 +64</option>
+                            <option value="+7">🇷🇺 +7</option>
+                            <option value="+380">🇺🇦 +380</option>
+                            <option value="+52">🇲🇽 +52</option>
+                            <option value="+55">🇧🇷 +55</option>
+                            <option value="+54">🇦🇷 +54</option>
+                            <option value="+56">🇨🇱 +56</option>
+                            <option value="+57">🇨🇴 +57</option>
+                            <option value="+58">🇻🇪 +58</option>
+                            <option value="+51">🇵🇪 +51</option>
+                        </select>
+                        <input id="phoneInput" type="tel" placeholder="Enter phone number" style="flex: 1;">
+                    </div>
+                </div>
+                
+                <div class="detail-group">
+                    <label class="detail-label">Company Name</label>
+                    <div class="detail-value view-mode" id="companyView">-</div>
+                    <input class="edit-mode" id="companyInput" type="text" placeholder="Enter company name">
+                </div>
+                
+                <div class="detail-group">
+                    <label class="detail-label">Country</label>
+                    <div class="detail-value view-mode" id="countryView">-</div>
+                    <input class="edit-mode" id="countryInput" type="text" placeholder="Enter country">
+                </div>
+                
+                <div class="detail-group">
+                    <label class="detail-label">Address</label>
+                    <div class="detail-value view-mode" id="addressView">-</div>
+                    <input class="edit-mode" id="addressInput" type="text" placeholder="Enter address">
+                </div>
+                
+                <div class="detail-group">
+                    <label class="detail-label">Website</label>
+                    <div class="detail-value view-mode" id="websiteView">-</div>
+                    <input class="edit-mode" id="websiteInput" type="url" placeholder="Enter website URL">
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary view-mode" onclick="enableEditMode()">✏️ Edit Profile</button>
+                <button class="btn btn-success edit-mode" onclick="saveChanges()">✓ Save Changes</button>
+                <button class="btn btn-danger edit-mode" onclick="cancelEdit()">✗ Cancel</button>
+                <button class="btn btn-secondary" onclick="changePassword()">🔒 Change Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let originalValues = {};
+        let selectedImageData = null;
+        let selectedAvatar = null;
+        
+        // Country to country code mapping
+        const countryCodeMap = {
+            'USA': '+1', 'United States': '+1', 'US': '+1', 'America': '+1', 'Canada': '+1',
+            'UK': '+44', 'United Kingdom': '+44', 'England': '+44', 'Britain': '+44', 'GB': '+44',
+            'France': '+33', 'FR': '+33',
+            'Germany': '+49', 'DE': '+49', 'Deutschland': '+49',
+            'Italy': '+39', 'IT': '+39', 'Italia': '+39',
+            'Spain': '+34', 'ES': '+34', 'España': '+34',
+            'Netherlands': '+31', 'NL': '+31', 'Holland': '+31',
+            'Belgium': '+32', 'BE': '+32',
+            'Switzerland': '+41', 'CH': '+41',
+            'Sweden': '+46', 'SE': '+46',
+            'Norway': '+47', 'NO': '+47',
+            'Denmark': '+45', 'DK': '+45',
+            'Finland': '+358', 'FI': '+358',
+            'Poland': '+48', 'PL': '+48',
+            'Czech Republic': '+420', 'CZ': '+420', 'Czechia': '+420',
+            'Austria': '+43', 'AT': '+43',
+            'Greece': '+30', 'GR': '+30',
+            'Portugal': '+351', 'PT': '+351',
+            'Ireland': '+353', 'IE': '+353',
+            'Israel': '+972', 'IL': '+972',
+            'Saudi Arabia': '+966', 'SA': '+966',
+            'UAE': '+971', 'United Arab Emirates': '+971',
+            'Egypt': '+20', 'EG': '+20',
+            'South Africa': '+27', 'ZA': '+27',
+            'Nigeria': '+234', 'NG': '+234',
+            'Kenya': '+254', 'KE': '+254',
+            'Morocco': '+212', 'MA': '+212',
+            'Tunisia': '+216', 'TN': '+216',
+            'Turkey': '+90', 'TR': '+90', 'Türkiye': '+90',
+            'India': '+91', 'IN': '+91',
+            'China': '+86', 'CN': '+86',
+            'Japan': '+81', 'JP': '+81',
+            'South Korea': '+82', 'Korea': '+82', 'KR': '+82',
+            'Singapore': '+65', 'SG': '+65',
+            'Malaysia': '+60', 'MY': '+60',
+            'Indonesia': '+62', 'ID': '+62',
+            'Philippines': '+63', 'PH': '+63',
+            'Thailand': '+66', 'TH': '+66',
+            'Vietnam': '+84', 'VN': '+84',
+            'Australia': '+61', 'AU': '+61',
+            'New Zealand': '+64', 'NZ': '+64',
+            'Russia': '+7', 'RU': '+7',
+            'Ukraine': '+380', 'UA': '+380',
+            'Mexico': '+52', 'MX': '+52',
+            'Brazil': '+55', 'BR': '+55', 'Brasil': '+55',
+            'Argentina': '+54', 'AR': '+54',
+            'Chile': '+56', 'CL': '+56',
+            'Colombia': '+57', 'CO': '+57',
+            'Venezuela': '+58', 'VE': '+58',
+            'Peru': '+51', 'PE': '+51'
+        };
+        
+        // Function to get country code from country name
+        function getCountryCode(country) {
+            if (!country) return '+1'; // Default to US
+            
+            // Try exact match first
+            for (const [countryName, code] of Object.entries(countryCodeMap)) {
+                if (country.toLowerCase() === countryName.toLowerCase()) {
+                    return code;
+                }
+            }
+            
+            // Try partial match
+            for (const [countryName, code] of Object.entries(countryCodeMap)) {
+                if (country.toLowerCase().includes(countryName.toLowerCase()) || 
+                    countryName.toLowerCase().includes(country.toLowerCase())) {
+                    return code;
+                }
+            }
+            
+            return '+1'; // Default to US if no match
+        }
+        
+        // Function to parse phone number with country code
+        function parsePhoneNumber(phoneNumber) {
+            if (!phoneNumber || phoneNumber === '-') return { code: '', number: '' };
+            
+            // Remove all non-digit characters except +
+            const cleaned = phoneNumber.replace(/[^\d+]/g, '');
+            
+            // Check if it starts with a country code
+            if (cleaned.startsWith('+')) {
+                // Try to match known country codes (longest first)
+                const codes = ['+972', '+966', '+971', '+234', '+254', '+212', '+216', '+380', '+420', '+353', '+351', '+358'];
+                for (const code of codes) {
+                    if (cleaned.startsWith(code)) {
+                        return { code: code, number: cleaned.substring(code.length) };
+                    }
+                }
+                
+                // Try 2-digit codes
+                const codes2 = ['+20', '+27', '+30', '+31', '+32', '+33', '+34', '+39', '+41', '+43', '+44', '+45', '+46', '+47', '+48', '+49', '+51', '+52', '+54', '+55', '+56', '+57', '+58', '+60', '+61', '+62', '+63', '+64', '+65', '+66', '+81', '+82', '+84', '+86', '+90', '+91'];
+                for (const code of codes2) {
+                    if (cleaned.startsWith(code)) {
+                        return { code: code, number: cleaned.substring(code.length) };
+                    }
+                }
+                
+                // Try 1-digit codes
+                if (cleaned.startsWith('+1') || cleaned.startsWith('+7')) {
+                    return { code: cleaned.substring(0, 2), number: cleaned.substring(2) };
+                }
+            }
+            
+            // If no country code, return as is
+            return { code: '', number: cleaned };
+        }
+        
+        // Function to format phone for display
+        function formatPhoneDisplay(phoneNumber) {
+            if (!phoneNumber || phoneNumber === '-') return '-';
+            const { code, number } = parsePhoneNumber(phoneNumber);
+            if (code && number) {
+                return `${code} ${number}`;
+            }
+            return phoneNumber;
+        }
+        
+        // Load user profile on page load
+        async function loadUserProfile() {
+            const storedUser = localStorage.getItem('currentUser');
+            if (!storedUser) {
+                alert('Please login first');
+                window.location.href = '/index.html';
+                return;
+            }
+            
+            currentUser = JSON.parse(storedUser);
+            
+            // Ensure email is set (use username as email since username IS the email in this system)
+            if (!currentUser.email && currentUser.username) {
+                currentUser.email = currentUser.username;
+            }
+            
+            // Update navbar
+            const displayName = (currentUser.firstName && currentUser.lastName) 
+                ? `${currentUser.firstName} ${currentUser.lastName}` 
+                : currentUser.displayName || currentUser.username;
+            
+            document.getElementById('navUserName').textContent = displayName;
+            document.getElementById('navUserRole').textContent = currentUser.role || currentUser.typeName || 'User';
+            
+            // Load full user details from API
+            try {
+                const response = await fetch(`/api/users/${currentUser.id}`);
+                if (response.ok) {
+                    const userData = await response.json();
+                    // Ensure email is set (use username as email since username IS the email)
+                    if (!userData.email && userData.username) {
+                        userData.email = userData.username;
+                    }
+                    displayUserInfo(userData);
+                } else {
+                    // Use local storage data if API fails
+                    displayUserInfo(currentUser);
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                // Use local storage data if API fails
+                displayUserInfo(currentUser);
+            }
+        }
+        
+        function displayUserInfo(user) {
+            // Update display name
+            const displayName = (user.firstName && user.lastName) 
+                ? `${user.firstName} ${user.lastName}` 
+                : user.displayName || user.username || 'Unknown User';
+            
+            document.getElementById('displayName').textContent = displayName;
+            document.getElementById('userRole').textContent = user.role || user.typeName || 'User';
+            document.getElementById('userId').textContent = user.id || '-';
+            
+            // Format member since date
+            if (user.createdAt) {
+                const date = new Date(user.createdAt);
+                document.getElementById('memberSince').textContent = date.toLocaleDateString();
+            }
+            
+            // Display profile image or avatar
+            const profileImg = document.getElementById('profileImage');
+            const placeholder = document.getElementById('profilePlaceholder');
+            
+            if (user.profileImage) {
+                // Check if it's an avatar (emoji) or actual image
+                if (user.profileImage.length <= 4 && !user.profileImage.startsWith('http') && !user.profileImage.startsWith('data:')) {
+                    // It's an avatar emoji
+                    profileImg.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    placeholder.textContent = user.profileImage;
+                    placeholder.style.fontSize = '4rem';
+                } else {
+                    // It's a real image
+                    profileImg.src = user.profileImage;
+                    profileImg.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+            } else {
+                // No profile image - use default avatar
+                profileImg.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.textContent = '👤';
+                placeholder.style.fontSize = '4rem';
+            }
+            
+            // Update detail fields
+            document.getElementById('firstNameView').textContent = user.firstName || '-';
+            document.getElementById('lastNameView').textContent = user.lastName || '-';
+            // Always show email - it should never be empty since it's the login
+            document.getElementById('emailView').textContent = user.email || user.username || '-';
+            document.getElementById('emailInput').value = user.email || user.username || '';
+            document.getElementById('phoneView').textContent = formatPhoneDisplay(user.phoneNumber);
+            document.getElementById('companyView').textContent = user.companyName || '-';
+            document.getElementById('countryView').textContent = user.country || '-';
+            document.getElementById('addressView').textContent = user.address || '-';
+            document.getElementById('websiteView').textContent = user.website || '-';
+            
+            // Store current user data
+            currentUser = user;
+        }
+        
+        function switchUploadTab(tabType) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.upload-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.upload-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            if (tabType === 'avatar') {
+                document.querySelector('.upload-tab:nth-child(1)').classList.add('active');
+                document.getElementById('avatarUploadContent').classList.add('active');
+            } else if (tabType === 'url') {
+                document.querySelector('.upload-tab:nth-child(2)').classList.add('active');
+                document.getElementById('urlUploadContent').classList.add('active');
+            } else if (tabType === 'file') {
+                document.querySelector('.upload-tab:nth-child(3)').classList.add('active');
+                document.getElementById('fileUploadContent').classList.add('active');
+            }
+        }
+        
+        function selectAvatar(avatar) {
+            // Remove selected class from all avatars
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            if (avatar === null) {
+                // Remove avatar - revert to default
+                selectedAvatar = null;
+                const profileImg = document.getElementById('profileImage');
+                const placeholder = document.getElementById('profilePlaceholder');
+                profileImg.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.textContent = '👤';
+            } else {
+                // Set selected avatar
+                selectedAvatar = avatar;
+                
+                // Mark as selected
+                document.querySelectorAll('.avatar-option').forEach(option => {
+                    if (option.textContent === avatar) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                // Update the profile display
+                const profileImg = document.getElementById('profileImage');
+                const placeholder = document.getElementById('profilePlaceholder');
+                profileImg.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.textContent = avatar;
+                placeholder.style.fontSize = '4rem';
+            }
+            
+            // Clear other upload methods
+            selectedImageData = null;
+            document.getElementById('imageUrlInput').value = '';
+            document.getElementById('imageFileInput').value = '';
+            document.getElementById('selectedFileName').textContent = '';
+        }
+        
+        function handleImageFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('selectedFileName').textContent = file.name;
+                
+                // Clear avatar selection
+                selectedAvatar = null;
+                document.querySelectorAll('.avatar-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Convert to base64
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImageData = e.target.result;
+                    // Preview the image
+                    const profileImg = document.getElementById('profileImage');
+                    const placeholder = document.getElementById('profilePlaceholder');
+                    profileImg.src = selectedImageData;
+                    profileImg.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function enableEditMode() {
+            // Store original values
+            originalValues = {
+                firstName: document.getElementById('firstNameView').textContent,
+                lastName: document.getElementById('lastNameView').textContent,
+                email: document.getElementById('emailView').textContent,
+                phone: document.getElementById('phoneView').textContent,
+                company: document.getElementById('companyView').textContent,
+                country: document.getElementById('countryView').textContent,
+                address: document.getElementById('addressView').textContent,
+                website: document.getElementById('websiteView').textContent,
+                profileImage: document.getElementById('profileImage').src
+            };
+            
+            // Set input values
+            document.getElementById('firstNameInput').value = originalValues.firstName !== '-' ? originalValues.firstName : '';
+            document.getElementById('lastNameInput').value = originalValues.lastName !== '-' ? originalValues.lastName : '';
+            // Email is always from the current user (login email) and read-only - use username as fallback
+            document.getElementById('emailInput').value = currentUser.email || currentUser.username || originalValues.email;
+            
+            // Handle phone number with country code
+            const phoneData = parsePhoneNumber(currentUser.phoneNumber);
+            if (phoneData.code) {
+                document.getElementById('countryCodeSelect').value = phoneData.code;
+                document.getElementById('phoneInput').value = phoneData.number;
+            } else {
+                // Auto-select country code based on user's country
+                const countryCode = getCountryCode(currentUser.country);
+                document.getElementById('countryCodeSelect').value = countryCode;
+                document.getElementById('phoneInput').value = phoneData.number || '';
+            }
+            
+            document.getElementById('companyInput').value = originalValues.company !== '-' ? originalValues.company : '';
+            document.getElementById('countryInput').value = originalValues.country !== '-' ? originalValues.country : '';
+            document.getElementById('addressInput').value = originalValues.address !== '-' ? originalValues.address : '';
+            document.getElementById('websiteInput').value = originalValues.website !== '-' ? originalValues.website : '';
+            
+            // Set image URL input if there's an existing image URL (not base64)
+            if (originalValues.profileImage && !originalValues.profileImage.startsWith('data:')) {
+                document.getElementById('imageUrlInput').value = originalValues.profileImage;
+            }
+            
+            // Add editing class
+            document.querySelector('.profile-card').classList.add('editing');
+            document.querySelector('.profile-image-section').classList.add('editing');
+        }
+        
+        function cancelEdit() {
+            // Remove editing class
+            document.querySelector('.profile-card').classList.remove('editing');
+            document.querySelector('.profile-image-section').classList.remove('editing');
+            
+            // Restore original values
+            document.getElementById('firstNameView').textContent = originalValues.firstName;
+            document.getElementById('lastNameView').textContent = originalValues.lastName;
+            document.getElementById('emailView').textContent = originalValues.email;
+            document.getElementById('phoneView').textContent = originalValues.phone;
+            document.getElementById('companyView').textContent = originalValues.company;
+            document.getElementById('countryView').textContent = originalValues.country;
+            document.getElementById('addressView').textContent = originalValues.address;
+            document.getElementById('websiteView').textContent = originalValues.website;
+            
+            // Restore original image
+            const profileImg = document.getElementById('profileImage');
+            const placeholder = document.getElementById('profilePlaceholder');
+            if (originalValues.profileImage) {
+                profileImg.src = originalValues.profileImage;
+                profileImg.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                profileImg.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+            
+            // Clear temporary data
+            selectedImageData = null;
+            selectedAvatar = null;
+            document.getElementById('imageUrlInput').value = '';
+            document.getElementById('imageFileInput').value = '';
+            document.getElementById('selectedFileName').textContent = '';
+            
+            // Clear avatar selection
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+        
+        async function saveChanges() {
+            // Determine which image/avatar to use
+            let profileImageToSave = null;
+            if (selectedAvatar) {
+                // User selected an avatar emoji
+                profileImageToSave = selectedAvatar;
+            } else if (selectedImageData) {
+                // User uploaded a file
+                profileImageToSave = selectedImageData;
+            } else {
+                // Check if URL was entered
+                const urlInput = document.getElementById('imageUrlInput').value.trim();
+                if (urlInput) {
+                    profileImageToSave = urlInput;
+                }
+            }
+            
+            // Get new values
+            const countryCode = document.getElementById('countryCodeSelect').value;
+            const phoneNumber = document.getElementById('phoneInput').value;
+            const fullPhoneNumber = phoneNumber ? `${countryCode}${phoneNumber}` : '';
+            
+            const updateData = {
+                firstName: document.getElementById('firstNameInput').value,
+                lastName: document.getElementById('lastNameInput').value,
+                email: currentUser.email || currentUser.username, // Always use the login email/username
+                phoneNumber: fullPhoneNumber,
+                companyName: document.getElementById('companyInput').value,
+                country: document.getElementById('countryInput').value,
+                address: document.getElementById('addressInput').value,
+                website: document.getElementById('websiteInput').value,
+                profileImage: profileImageToSave || currentUser.profileImage
+            };
+            
+            try {
+                const response = await fetch(`/api/users/${currentUser.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    const updatedUser = await response.json();
+                    
+                    // Update display
+                    displayUserInfo(updatedUser);
+                    
+                    // Update local storage
+                    const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+                    Object.assign(storedUser, updateData);
+                    localStorage.setItem('currentUser', JSON.stringify(storedUser));
+                    
+                    // Exit edit mode
+                    document.querySelector('.profile-card').classList.remove('editing');
+                    document.querySelector('.profile-image-section').classList.remove('editing');
+                    
+                    // Clear temporary data
+                    selectedImageData = null;
+                    selectedAvatar = null;
+                    document.getElementById('imageUrlInput').value = '';
+                    document.getElementById('imageFileInput').value = '';
+                    document.getElementById('selectedFileName').textContent = '';
+                    
+                    // Clear avatar selection
+                    document.querySelectorAll('.avatar-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    
+                    alert('✓ Profile updated successfully!');
+                } else {
+                    const error = await response.json();
+                    alert('Error updating profile: ' + (error.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to update profile. Please try again.');
+            }
+        }
+        
+        function changePassword() {
+            // TODO: Implement password change functionality
+            alert('Password change functionality coming soon!');
+        }
+        
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = '/index.html';
+        }
+        
+        // Add event listener for URL input to preview image
+        document.getElementById('imageUrlInput').addEventListener('blur', function() {
+            const url = this.value.trim();
+            if (url) {
+                // Clear avatar selection
+                selectedAvatar = null;
+                document.querySelectorAll('.avatar-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                const profileImg = document.getElementById('profileImage');
+                const placeholder = document.getElementById('profilePlaceholder');
+                profileImg.src = url;
+                profileImg.onload = function() {
+                    profileImg.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                profileImg.onerror = function() {
+                    profileImg.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    placeholder.textContent = '👤';
+                    alert('Failed to load image from URL. Please check the URL is valid.');
+                };
+            }
+        });
+        
+        // Add event listener for country input to update country code
+        document.getElementById('countryInput').addEventListener('input', function() {
+            const country = this.value;
+            if (country) {
+                const countryCode = getCountryCode(country);
+                document.getElementById('countryCodeSelect').value = countryCode;
+            }
+        });
+        
+        // Initialize on page load
+        loadUserProfile();
+    </script>
+</body>
+</html>
