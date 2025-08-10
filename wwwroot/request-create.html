@@ -180,6 +180,22 @@
             background: #c82333;
         }
 
+        .btn-duplicate-item {
+            background: #17a2b8;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-duplicate-item:hover {
+            background: #138496;
+            transform: translateY(-1px);
+        }
+
         .item-fields {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
@@ -294,7 +310,19 @@
                 </div>
                 <div class="form-group">
                     <label for="buyerCompany" class="required">Buyer's Company</label>
-                    <input type="text" id="buyerCompany" name="buyerCompany" placeholder="Enter your company name" required>
+                    <input type="text" id="buyerCompany" name="buyerCompany" placeholder="Enter your company name" required onblur="loadContactsForCompany()">
+                </div>
+                <div class="form-group">
+                    <label for="buyerName" class="required">Buyer Name</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="buyerName" name="buyerName" style="flex: 1;" required>
+                            <option value="">Select or type a name...</option>
+                        </select>
+                        <button type="button" class="btn btn-sm" onclick="showAddContactModal()" style="padding: 8px 15px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            ➕ Add
+                        </button>
+                    </div>
+                    <input type="text" id="buyerNameInput" name="buyerNameInput" placeholder="Or type a new name" style="margin-top: 10px; display: none;">
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>
@@ -367,6 +395,43 @@
                 document.getElementById('buyerCompany').value = request.buyerCompany || '';
                 document.getElementById('description').value = request.description || '';
                 
+                // Load contacts for the company and set buyer name
+                if (request.buyerCompany) {
+                    await loadContactsForCompany();
+                    // Set the buyer name after contacts are loaded
+                    const buyerSelect = document.getElementById('buyerName');
+                    if (request.buyerName) {
+                        // Check if the buyer name exists in the select options
+                        let found = false;
+                        for (let option of buyerSelect.options) {
+                            if (option.value === request.buyerName) {
+                                buyerSelect.value = request.buyerName;
+                                found = true;
+                                break;
+                            }
+                        }
+                        // If not found, set custom option and show input
+                        if (!found) {
+                            buyerSelect.value = '__custom__';
+                            const nameInput = document.getElementById('buyerNameInput');
+                            nameInput.style.display = 'block';
+                            nameInput.value = request.buyerName;
+                            nameInput.required = true;
+                            buyerSelect.required = false;
+                        }
+                    }
+                } else if (request.buyerName) {
+                    // No company, just set the name as custom
+                    const buyerSelect = document.getElementById('buyerName');
+                    buyerSelect.innerHTML = '<option value="__custom__">✏️ Enter name manually</option>';
+                    buyerSelect.value = '__custom__';
+                    const nameInput = document.getElementById('buyerNameInput');
+                    nameInput.style.display = 'block';
+                    nameInput.value = request.buyerName;
+                    nameInput.required = true;
+                    buyerSelect.required = false;
+                }
+                
                 // Load items
                 items = [];
                 itemCounter = 0;
@@ -411,6 +476,48 @@
             renderItems();
         }
 
+        function duplicateItem(id) {
+            // Find the item to duplicate
+            const itemToDuplicate = items.find(item => item.id === id);
+            
+            if (itemToDuplicate) {
+                // Create a deep copy of the item with a new ID
+                itemCounter++;
+                const duplicatedItem = {
+                    id: itemCounter,
+                    productName: itemToDuplicate.productName,
+                    productCode: itemToDuplicate.productCode,
+                    productCategory: itemToDuplicate.productCategory,
+                    quantity: itemToDuplicate.quantity,
+                    unit: itemToDuplicate.unit,
+                    description: itemToDuplicate.description,
+                    targetPrice: itemToDuplicate.targetPrice,
+                    maxPrice: itemToDuplicate.maxPrice,
+                    minPrice: itemToDuplicate.minPrice,
+                    specifications: itemToDuplicate.specifications,
+                    brand: itemToDuplicate.brand,
+                    origin: itemToDuplicate.origin,
+                    certifications: itemToDuplicate.certifications,
+                    packagingType: itemToDuplicate.packagingType,
+                    packagingSize: itemToDuplicate.packagingSize,
+                    notes: itemToDuplicate.notes
+                };
+                
+                // Find the index of the original item
+                const originalIndex = items.findIndex(item => item.id === id);
+                
+                // Insert the duplicated item right after the original
+                items.splice(originalIndex + 1, 0, duplicatedItem);
+                
+                // Re-render the items list
+                renderItems();
+                
+                // Show a success message
+                const itemNumber = originalIndex + 1;
+                console.log(`Item #${itemNumber} duplicated successfully`);
+            }
+        }
+
         function renderItems() {
             const itemsList = document.getElementById('itemsList');
             
@@ -432,9 +539,14 @@
                 itemCard.innerHTML = `
                     <div class="item-card-header">
                         <span class="item-number">Item #${index + 1}</span>
-                        <button class="btn btn-remove-item" onclick="removeItem(${item.id})">
-                            ✕ Remove
-                        </button>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-duplicate-item" onclick="duplicateItem(${item.id})" title="Duplicate this item">
+                                📋 Duplicate
+                            </button>
+                            <button class="btn btn-remove-item" onclick="removeItem(${item.id})">
+                                ✕ Remove
+                            </button>
+                        </div>
                     </div>
                     <div class="item-fields">
                         <div class="form-group">
@@ -506,8 +618,24 @@
             const title = document.getElementById('title').value.trim();
             const buyerCompany = document.getElementById('buyerCompany').value.trim();
             
+            // Get the actual buyer name
+            const buyerSelect = document.getElementById('buyerName');
+            const buyerInput = document.getElementById('buyerNameInput');
+            let buyerName = '';
+            
+            if (buyerSelect.value === '__custom__' || buyerInput.style.display !== 'none') {
+                buyerName = buyerInput.value.trim();
+            } else {
+                buyerName = buyerSelect.value;
+            }
+            
             if (!title) {
                 alert('Please enter a request title');
+                return false;
+            }
+            
+            if (!buyerName) {
+                alert('Please enter or select a buyer name');
                 return false;
             }
             
@@ -540,8 +668,20 @@
         async function saveRequest(publish = false) {
             if (!validateForm()) return;
             
+            // Get the actual buyer name
+            const buyerSelect = document.getElementById('buyerName');
+            const buyerInput = document.getElementById('buyerNameInput');
+            let buyerName = '';
+            
+            if (buyerSelect.value === '__custom__' || buyerInput.style.display !== 'none') {
+                buyerName = buyerInput.value.trim();
+            } else {
+                buyerName = buyerSelect.value;
+            }
+            
             const requestData = {
                 title: document.getElementById('title').value.trim(),
+                buyerName: buyerName,
                 buyerCompany: document.getElementById('buyerCompany').value.trim(),
                 description: document.getElementById('description').value.trim(),
                 items: items.map(item => ({
@@ -627,6 +767,220 @@
         // Add at least one item by default for new requests
         if (!requestId) {
             addItem();
+        }
+
+        // Contact management functions
+        async function loadContactsForCompany() {
+            const companyName = document.getElementById('buyerCompany').value.trim();
+            if (!companyName) return;
+            
+            const select = document.getElementById('buyerName');
+            select.innerHTML = '<option value="">Loading contacts...</option>';
+            
+            try {
+                const response = await fetch(`/api/company-contacts/by-company/${encodeURIComponent(companyName)}`);
+                if (response.ok) {
+                    const contacts = await response.json();
+                    
+                    select.innerHTML = '<option value="">Select a contact...</option>';
+                    contacts.forEach(contact => {
+                        const option = document.createElement('option');
+                        option.value = contact.contactName;
+                        option.textContent = contact.contactName;
+                        if (contact.contactRole) {
+                            option.textContent += ` - ${contact.contactRole}`;
+                        }
+                        select.appendChild(option);
+                    });
+                    
+                    // Add custom option
+                    const customOption = document.createElement('option');
+                    customOption.value = '__custom__';
+                    customOption.textContent = '✏️ Enter custom name...';
+                    select.appendChild(customOption);
+                } else {
+                    // No contacts found, allow custom entry
+                    select.innerHTML = '<option value="">No contacts found</option>';
+                    const customOption = document.createElement('option');
+                    customOption.value = '__custom__';
+                    customOption.textContent = '✏️ Enter custom name...';
+                    select.appendChild(customOption);
+                }
+            } catch (error) {
+                console.error('Error loading contacts:', error);
+                select.innerHTML = '<option value="__custom__">✏️ Enter name manually</option>';
+            }
+            
+            // Handle selection change
+            select.onchange = function() {
+                const nameInput = document.getElementById('buyerNameInput');
+                if (this.value === '__custom__') {
+                    nameInput.style.display = 'block';
+                    nameInput.required = true;
+                    this.required = false;
+                    nameInput.focus();
+                } else {
+                    nameInput.style.display = 'none';
+                    nameInput.required = false;
+                    this.required = true;
+                }
+            };
+        }
+
+        async function showAddContactModal() {
+            const companyName = document.getElementById('buyerCompany').value.trim();
+            if (!companyName) {
+                alert('Please enter a company name first');
+                document.getElementById('buyerCompany').focus();
+                return;
+            }
+            
+            const contactName = prompt('Enter contact name:');
+            if (!contactName) return;
+            
+            const contactEmail = prompt('Enter contact email (optional):');
+            const contactPhone = prompt('Enter contact phone (optional):');
+            const contactRole = prompt('Enter contact role/title (optional):');
+            
+            try {
+                const response = await fetch('/api/company-contacts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        companyName: companyName,
+                        contactName: contactName,
+                        contactEmail: contactEmail || null,
+                        contactPhone: contactPhone || null,
+                        contactRole: contactRole || null
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Contact added successfully!');
+                    await loadContactsForCompany();
+                    document.getElementById('buyerName').value = contactName;
+                } else {
+                    const error = await response.text();
+                    alert('Failed to add contact: ' + error);
+                }
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                alert('Failed to add contact');
+            }
+        }
+
+        // Override the saveRequest function to handle custom buyer name
+        const originalSaveRequest = saveRequest;
+        saveRequest = async function(publish = false) {
+            // Get the actual buyer name
+            const buyerSelect = document.getElementById('buyerName');
+            const buyerInput = document.getElementById('buyerNameInput');
+            let buyerName = '';
+            
+            if (buyerSelect.value === '__custom__' || buyerInput.style.display !== 'none') {
+                buyerName = buyerInput.value.trim();
+            } else {
+                buyerName = buyerSelect.value;
+            }
+            
+            // Temporarily update the field for validation
+            if (buyerName) {
+                document.getElementById('buyerName').value = buyerName;
+            }
+            
+            // Call original save function
+            return originalSaveRequest(publish);
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S or Cmd+S - Save form
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveRequest();
+                return false;
+            }
+            
+            // Ctrl+Enter or Cmd+Enter - Save and publish
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                saveAndPublish();
+                return false;
+            }
+            
+            // Alt+A - Add new item
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                addItem();
+                // Focus on the new item's product name field
+                setTimeout(() => {
+                    const lastItem = items[items.length - 1];
+                    const productNameField = document.getElementById(`productName_${lastItem.id}`);
+                    if (productNameField) productNameField.focus();
+                }, 100);
+                return false;
+            }
+            
+            // Alt+D - Duplicate last item
+            if (e.altKey && e.key === 'd') {
+                e.preventDefault();
+                if (items.length > 0) {
+                    const lastItem = items[items.length - 1];
+                    duplicateItem(lastItem.id);
+                }
+                return false;
+            }
+            
+            // Escape - Cancel/Go back
+            if (e.key === 'Escape') {
+                if (confirm('Are you sure you want to leave this page? Any unsaved changes will be lost.')) {
+                    goBack();
+                }
+                return false;
+            }
+            
+            // F1 - Show keyboard shortcuts help
+            if (e.key === 'F1') {
+                e.preventDefault();
+                showKeyboardShortcuts();
+                return false;
+            }
+        });
+
+        function showKeyboardShortcuts() {
+            alert(`Keyboard Shortcuts:
+            
+📝 Form Actions:
+• Ctrl+S / Cmd+S - Save as draft
+• Ctrl+Enter / Cmd+Enter - Save and publish
+• Escape - Cancel and go back
+
+📦 Item Management:
+• Alt+A - Add new item
+• Alt+D - Duplicate last item
+
+ℹ️ Help:
+• F1 - Show this help
+
+💡 Tip: These shortcuts work on all form pages!`);
+        }
+
+        function saveAndPublish() {
+            // First save the request
+            const title = document.getElementById('title').value;
+            if (!title) {
+                alert('Please enter a request title');
+                document.getElementById('title').focus();
+                return;
+            }
+            
+            // Change status to Active (1) before saving
+            const statusField = document.querySelector('input[name="status"]');
+            if (statusField) {
+                statusField.value = '1';
+            }
+            
+            saveRequest();
         }
     </script>
 </body>

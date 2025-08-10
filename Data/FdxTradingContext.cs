@@ -21,6 +21,7 @@ public class FdxTradingContext : DbContext
     public DbSet<ProductPriceHistory> ProductPriceHistory { get; set; }
     public DbSet<Request> Requests { get; set; }
     public DbSet<RequestItem> RequestItems { get; set; }
+    public DbSet<CompanyContact> CompanyContacts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -363,6 +364,35 @@ public class FdxTradingContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
             
             entity.HasIndex(e => e.RequestId);
+        });
+
+        // Configure CompanyContact entity
+        modelBuilder.Entity<CompanyContact>(entity =>
+        {
+            entity.ToTable("CompanyContacts");
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.CompanyName)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.ContactName)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.ContactEmail)
+                .HasMaxLength(100);
+            
+            entity.Property(e => e.ContactPhone)
+                .HasMaxLength(50);
+            
+            entity.Property(e => e.ContactRole)
+                .HasMaxLength(100);
+            
+            // Create index for faster lookups
+            entity.HasIndex(e => e.CompanyName);
+            entity.HasIndex(e => new { e.CompanyName, e.ContactName });
+            entity.HasIndex(e => e.IsActive);
         });
     }
 }

@@ -39,6 +39,9 @@ public class User
     public DateTime? ImportedAt { get; set; }
     public string? OriginalId { get; set; }  // Store original CSV ID
     
+    // Link to company contact if this user is associated with a contact
+    public int? ContactId { get; set; }
+    
     // Navigation Properties
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();  // For suppliers (Type=3)
 }

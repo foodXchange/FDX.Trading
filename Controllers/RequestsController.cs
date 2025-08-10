@@ -4,6 +4,7 @@ using FDX.Trading.Models;
 using FDX.Trading.Data;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Globalization;
 
 namespace FDX.Trading.Controllers;
@@ -43,9 +44,9 @@ public class RequestsController : ControllerBase
                 Title = r.Title,
                 Description = r.Description,
                 BuyerId = r.BuyerId,
-                BuyerName = r.Buyer.FirstName != null && r.Buyer.LastName != null 
+                BuyerName = r.BuyerName ?? (r.Buyer.FirstName != null && r.Buyer.LastName != null 
                     ? $"{r.Buyer.FirstName} {r.Buyer.LastName}"
-                    : r.Buyer.Username,
+                    : r.Buyer.Username),
                 BuyerCompany = r.BuyerCompany ?? r.Buyer.CompanyName,
                 Status = r.Status,
                 ItemCount = r.RequestItems.Count,
@@ -76,9 +77,9 @@ public class RequestsController : ControllerBase
             Title = request.Title,
             Description = request.Description,
             BuyerId = request.BuyerId,
-            BuyerName = request.Buyer.FirstName != null && request.Buyer.LastName != null 
+            BuyerName = request.BuyerName ?? (request.Buyer.FirstName != null && request.Buyer.LastName != null 
                 ? $"{request.Buyer.FirstName} {request.Buyer.LastName}"
-                : request.Buyer.Username,
+                : request.Buyer.Username),
             BuyerCompany = request.BuyerCompany ?? request.Buyer.CompanyName,
             Status = request.Status,
             ItemCount = request.RequestItems.Count,
@@ -143,6 +144,7 @@ public class RequestsController : ControllerBase
             Title = dto.Title,
             Description = dto.Description,
             BuyerId = buyerId,
+            BuyerName = dto.BuyerName ?? buyer.DisplayName ?? buyer.Username,
             BuyerCompany = dto.BuyerCompany ?? buyer.CompanyName,
             Status = ProcurementRequestStatus.Draft,
             CreatedAt = DateTime.Now,
@@ -192,6 +194,7 @@ public class RequestsController : ControllerBase
 
         request.Title = dto.Title;
         request.Description = dto.Description;
+        request.BuyerName = dto.BuyerName;
         request.BuyerCompany = dto.BuyerCompany;
         request.UpdatedAt = DateTime.Now;
 
@@ -210,6 +213,42 @@ public class RequestsController : ControllerBase
                 TargetPrice = itemDto.TargetPrice,
                 CreatedAt = DateTime.Now
             });
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = "Request updated successfully"
+        });
+    }
+
+    // PATCH: api/requests/{id}
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> PatchRequest(int id, [FromBody] JsonElement patchData)
+    {
+        var request = await _context.Requests.FindAsync(id);
+
+        if (request == null)
+            return NotFound(new { message = "Request not found" });
+
+        // Update only the fields that are provided
+        if (patchData.TryGetProperty("buyerName", out JsonElement buyerNameElement))
+        {
+            request.BuyerName = buyerNameElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("buyerCompany", out JsonElement buyerCompanyElement))
+        {
+            request.BuyerCompany = buyerCompanyElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("updatedAt", out JsonElement updatedAtElement))
+        {
+            request.UpdatedAt = DateTime.Now;
         }
 
         await _context.SaveChangesAsync();

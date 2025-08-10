@@ -4,6 +4,7 @@ using FDX.Trading.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FDX.Trading.Migrations
 {
     [DbContext(typeof(FdxTradingContext))]
-    partial class FdxTradingContextModelSnapshot : ModelSnapshot
+    [Migration("20250810205624_AddBuyerNameAndCompanyContacts")]
+    partial class AddBuyerNameAndCompanyContacts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,6 @@ namespace FDX.Trading.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("CanManageContacts")
-                        .HasColumnType("bit");
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
@@ -58,31 +58,17 @@ namespace FDX.Trading.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedByUserId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsOrganizationAdmin")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("UpdatedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyName");
 
                     b.HasIndex("IsActive");
-
-                    b.HasIndex("UserId");
 
                     b.HasIndex("CompanyName", "ContactName");
 
@@ -982,9 +968,6 @@ namespace FDX.Trading.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int?>("ContactId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1105,15 +1088,6 @@ namespace FDX.Trading.Migrations
                             Verification = 0,
                             Website = ""
                         });
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.CompanyContact", b =>
-                {
-                    b.HasOne("FDX.Trading.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.PriceHistory", b =>

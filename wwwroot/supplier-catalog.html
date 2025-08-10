@@ -5,16 +5,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Catalogs - FDX Trading</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+        }
+        
+        /* Navbar Styles - Match Dashboard */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0;
+        }
+        
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            transition: transform 0.3s;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            padding: 8px 16px;
+            color: #555;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .welcome-message {
+            margin-right: 20px;
+            color: #667eea;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .user-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .user-avatar-small:hover {
+            transform: scale(1.05);
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-left: 15px;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #ff3333;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 20px;
         }
         h1 {
             color: white;
@@ -269,29 +396,30 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; padding: 10px 20px;">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-            <a href="/dashboard.html" style="display: flex; align-items: center; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.5rem;">
-                <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
+    <!-- Navbar - Dashboard Style -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/dashboard.html" class="navbar-brand">
+                <div class="navbar-logo">FDX</div>
                 <span>FDX Trading</span>
             </a>
             
-            <div style="display: flex; gap: 5px;">
-                <a href="/dashboard.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Dashboard</a>
-                <a href="/requests.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Requests</a>
-                <a href="/products.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
-                <a href="/supplier-catalog.html" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
-                <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
-                <a href="/users.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
+            <div class="navbar-nav">
+                <a href="/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/requests.html" class="nav-link">Requests</a>
+                <a href="/products.html" class="nav-link">Products</a>
+                <a href="/supplier-catalog.html" class="nav-link active">Suppliers</a>
+                <a href="/price-management.html" class="nav-link">Pricing</a>
+                <a href="/users.html" class="nav-link">Users</a>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="text-align: right;">
-                    <div style="font-weight: 600; color: #333;" id="navUserName">Loading...</div>
-                    <div style="font-size: 0.85rem; color: #666;" id="navUserRole">Role</div>
-                </div>
-                <button onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Logout</button>
+            <div class="navbar-user">
+                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
+                    <div class="user-info" style="cursor: pointer;">
+                        <div class="user-avatar-small" id="navUserAvatar">U</div>
+                    </div>
+                </a>
+                <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </div>
     </nav>
@@ -641,12 +769,74 @@
             window.location.href = '/index.html';
         }
         
-        // Load user info in navbar
-        const navUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (navUser) {
-            document.getElementById('navUserName').textContent = navUser.firstName + ' ' + navUser.lastName;
-            document.getElementById('navUserRole').textContent = navUser.role;
+        // Initialize user display in navbar
+        function initializeUserDisplay() {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    
+                    // Determine display name with fallbacks
+                    let displayName = 'User';
+                    if (user.firstName && user.lastName) {
+                        displayName = `${user.firstName} ${user.lastName}`;
+                    } else if (user.displayName) {
+                        displayName = user.displayName;
+                    } else if (user.username) {
+                        displayName = user.username;
+                    } else if (user.email) {
+                        displayName = user.email.split('@')[0];
+                    }
+                    
+                    // Determine role
+                    const role = user.role || user.typeName || 'User';
+                    
+                    // Update navbar elements
+                    // Create initials for avatar
+                    let initials = 'U';
+                    if (user.firstName && user.lastName) {
+                        initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+                    } else if (displayName && displayName !== 'User') {
+                        const nameParts = displayName.split(' ');
+                        if (nameParts.length >= 2) {
+                            initials = `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+                        } else {
+                            initials = displayName.substring(0, 2).toUpperCase();
+                        }
+                    }
+                    
+                    // Update navbar elements
+                    const firstNameElement = document.getElementById('navUserFirstName');
+                    const avatarElement = document.getElementById('navUserAvatar');
+                    
+                    if (firstNameElement) {
+                        const firstName = user.firstName || displayName.split(' ')[0] || 'User';
+                        firstNameElement.textContent = firstName;
+                    }
+                    if (avatarElement) avatarElement.textContent = initials;
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    setDefaultUser();
+                }
+            } else {
+                setDefaultUser();
+            }
         }
+        
+        // Set default user display
+        function setDefaultUser() {
+            const firstNameElement = document.getElementById('navUserFirstName');
+            const avatarElement = document.getElementById('navUserAvatar');
+            
+            if (firstNameElement) firstNameElement.textContent = 'Guest';
+            if (avatarElement) avatarElement.textContent = 'GU';
+        }
+        
+        // Initialize user display on load
+        initializeUserDisplay();
     </script>
+    
+    <!-- Global Keyboard Shortcuts -->
+    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>

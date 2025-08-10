@@ -368,43 +368,29 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top" style="background: rgba(255, 255, 255, 0.98) !important; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/dashboard.html" style="color: #667eea !important; font-weight: bold;">
+    <nav style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; padding: 10px 20px;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <a href="/dashboard.html" style="display: flex; align-items: center; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.5rem;">
                 <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
                 <span>FDX Trading</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard.html" style="text-decoration: none;">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/requests.html" style="text-decoration: none;">Requests</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/products.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white !important; border-radius: 5px; text-decoration: none;">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/supplier-catalog.html" style="text-decoration: none;">Suppliers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/price-management.html" style="text-decoration: none;">Pricing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/users.html" style="text-decoration: none;">Users</a>
-                    </li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <div class="me-3 text-end">
-                        <div class="fw-bold" id="navUserName">Loading...</div>
-                        <small class="text-muted" id="navUserRole">Role</small>
+            
+            <div style="display: flex; gap: 5px;">
+                <a href="/dashboard.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Dashboard</a>
+                <a href="/requests.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Requests</a>
+                <a href="/products.html" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
+                <a href="/supplier-catalog.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
+                <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
+                <a href="/users.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
+            </div>
+            
+            <div class="navbar-user" style="display: flex; align-items: center; gap: 10px;">
+                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
+                    <div class="user-info" style="cursor: pointer;">
+                        <div class="user-avatar-small" id="navUserAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">U</div>
                     </div>
-                    <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
-                </div>
+                </a>
+                <button class="logout-btn" onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; margin-left: 15px;">Logout</button>
             </div>
         </div>
     </nav>
@@ -458,7 +444,7 @@
                     <!-- Category Filter -->
                     <div class="filter-section">
                         <div class="filter-title">Category</div>
-                        <select class="form-select" id="categoryFilter">
+                        <select class="form-select" id="categoryFilter" aria-label="Filter by category" title="Filter products by category">
                             <option value="">All Categories</option>
                         </select>
                     </div>
@@ -466,7 +452,7 @@
                     <!-- Status Filter -->
                     <div class="filter-section">
                         <div class="filter-title">Status</div>
-                        <select class="form-select" id="statusFilter">
+                        <select class="form-select" id="statusFilter" aria-label="Filter by status" title="Filter products by status">
                             <option value="">All Status</option>
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
@@ -500,7 +486,7 @@
                     <!-- Supplier Filter -->
                     <div class="filter-section">
                         <div class="filter-title">Supplier</div>
-                        <select class="form-select" id="supplierFilter">
+                        <select class="form-select" id="supplierFilter" aria-label="Filter by supplier" title="Filter products by supplier">
                             <option value="">All Suppliers</option>
                         </select>
                     </div>
@@ -532,7 +518,7 @@
     </div>
 
     <!-- Add Product Button -->
-    <button class="btn-add-product" onclick="showAddProductModal()">
+    <button class="btn-add-product" onclick="showAddProductModal()" aria-label="Add new product" title="Add new product">
         <i class="bi bi-plus"></i>
     </button>
 
@@ -542,7 +528,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Product Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" title="Close dialog"></button>
                 </div>
                 <div class="modal-body" id="productDetailContent">
                     <!-- Content will be dynamically loaded -->
@@ -563,7 +549,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addProductTitle">Add New Product</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" title="Close dialog"></button>
                 </div>
                 <div class="modal-body">
                     <form id="productForm">
@@ -571,29 +557,29 @@
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Product Code *</label>
-                                <input type="text" class="form-control" id="productCode" required>
+                                <label class="form-label" for="productCode">Product Code *</label>
+                                <input type="text" class="form-control" id="productCode" required aria-label="Product code" placeholder="Enter product code">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Product Name *</label>
-                                <input type="text" class="form-control" id="productName" required>
+                                <label class="form-label" for="productName">Product Name *</label>
+                                <input type="text" class="form-control" id="productName" required aria-label="Product name" placeholder="Enter product name">
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Category</label>
-                                <input type="text" class="form-control" id="productCategory">
+                                <label class="form-label" for="productCategory">Category</label>
+                                <input type="text" class="form-control" id="productCategory" aria-label="Product category" placeholder="Enter category">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Sub-Category</label>
-                                <input type="text" class="form-control" id="productSubCategory">
+                                <label class="form-label" for="productSubCategory">Sub-Category</label>
+                                <input type="text" class="form-control" id="productSubCategory" aria-label="Product sub-category" placeholder="Enter sub-category">
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" id="productDescription" rows="3"></textarea>
+                            <label class="form-label" for="productDescription">Description</label>
+                            <textarea class="form-control" id="productDescription" rows="3" aria-label="Product description" placeholder="Enter product description"></textarea>
                         </div>
                         
                         <div class="row">
@@ -602,16 +588,16 @@
                                 <input type="text" class="form-control" id="unitOfMeasure" placeholder="kg, liter, etc">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label class="form-label">Net Weight</label>
-                                <input type="number" class="form-control" id="netWeight" step="0.001">
+                                <label class="form-label" for="netWeight">Net Weight</label>
+                                <input type="number" class="form-control" id="netWeight" step="0.001" aria-label="Net weight" placeholder="0.000">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label class="form-label">Gross Weight</label>
-                                <input type="number" class="form-control" id="grossWeight" step="0.001">
+                                <label class="form-label" for="grossWeight">Gross Weight</label>
+                                <input type="number" class="form-control" id="grossWeight" step="0.001" aria-label="Gross weight" placeholder="0.000">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label class="form-label">Units/Carton</label>
-                                <input type="number" class="form-control" id="unitsPerCarton">
+                                <label class="form-label" for="unitsPerCarton">Units/Carton</label>
+                                <input type="number" class="form-control" id="unitsPerCarton" aria-label="Units per carton" placeholder="0">
                             </div>
                         </div>
                         
@@ -644,27 +630,27 @@
                         
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Shelf Life (days)</label>
-                                <input type="number" class="form-control" id="shelfLifeDays">
+                                <label class="form-label" for="shelfLifeDays">Shelf Life (days)</label>
+                                <input type="number" class="form-control" id="shelfLifeDays" aria-label="Shelf life in days" placeholder="0">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">HS Code</label>
-                                <input type="text" class="form-control" id="hsCode">
+                                <label class="form-label" for="hsCode">HS Code</label>
+                                <input type="text" class="form-control" id="hsCode" aria-label="HS code" placeholder="Enter HS code">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Country of Origin</label>
-                                <input type="text" class="form-control" id="countryOfOrigin">
+                                <label class="form-label" for="countryOfOrigin">Country of Origin</label>
+                                <input type="text" class="form-control" id="countryOfOrigin" aria-label="Country of origin" placeholder="Enter country">
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Manufacturer</label>
-                                <input type="text" class="form-control" id="manufacturer">
+                                <label class="form-label" for="manufacturer">Manufacturer</label>
+                                <input type="text" class="form-control" id="manufacturer" aria-label="Manufacturer" placeholder="Enter manufacturer">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Brand</label>
-                                <input type="text" class="form-control" id="brand">
+                                <label class="form-label" for="brand">Brand</label>
+                                <input type="text" class="form-control" id="brand" aria-label="Brand" placeholder="Enter brand">
                             </div>
                         </div>
                         
@@ -698,10 +684,45 @@
             loadSuppliers();
             
             // Load user info in navbar
-            const navUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (navUser) {
-                document.getElementById('navUserName').textContent = navUser.firstName + ' ' + navUser.lastName;
-                document.getElementById('navUserRole').textContent = navUser.role;
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                const navUser = JSON.parse(userData);
+                // Create display name with fallbacks
+                let displayName = 'User';
+                if (navUser.firstName && navUser.lastName) {
+                    displayName = `${navUser.firstName} ${navUser.lastName}`;
+                } else if (navUser.displayName) {
+                    displayName = navUser.displayName;
+                } else if (navUser.username) {
+                    displayName = navUser.username;
+                } else if (navUser.email) {
+                    displayName = navUser.email.split('@')[0];
+                }
+                
+                // Set role with fallback
+                const role = navUser.role || navUser.typeName || 'User';
+                
+                // Update navbar
+                const nameElement = document.getElementById('navUserName');
+                const roleElement = document.getElementById('navUserRole');
+                
+                if (nameElement) {
+                    nameElement.textContent = displayName;
+                }
+                if (roleElement) {
+                    roleElement.textContent = role;
+                }
+            } else {
+                // No user data - set defaults
+                const nameElement = document.getElementById('navUserName');
+                const roleElement = document.getElementById('navUserRole');
+                
+                if (nameElement) {
+                    nameElement.textContent = 'Guest User';
+                }
+                if (roleElement) {
+                    roleElement.textContent = 'Guest';
+                }
             }
             loadStats();
             
@@ -715,9 +736,23 @@
         
         // Check authentication
         function checkAuth() {
-            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            if (!user.id) {
-                window.location.href = 'login.html';
+            const userData = localStorage.getItem('currentUser');
+            if (!userData) {
+                // No user data at all - redirect to login
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userData);
+                if (!user.id && !user.username) {
+                    // Invalid user data - redirect to login
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                // Invalid JSON - redirect to login
+                window.location.href = 'index.html';
             }
         }
         
@@ -1177,5 +1212,8 @@
             window.location.href = 'login.html';
         }
     </script>
+    
+    <!-- Global Keyboard Shortcuts -->
+    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>

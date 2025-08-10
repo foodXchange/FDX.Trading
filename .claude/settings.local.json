@@ -76,7 +76,9 @@
       "Bash(del C:FDX.TradingServicesCsvImportService.cs)",
       "Bash(mv:*)",
       "Bash(del \"C:\\FDX.Trading\\Models\\Supplier.cs\")",
-      "Bash(del nul)"
+      "Bash(del nul)",
+      "Bash(C:FDX.Tradingadd-keyboard-shortcuts.bat)",
+      "Bash(wc:*)"
     ],
     "deny": []
   }

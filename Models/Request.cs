@@ -21,7 +21,10 @@ public class Request
     [Required]
     public int BuyerId { get; set; }
     
-    // Buyer Company Information
+    // Buyer Information
+    [MaxLength(200)]
+    public string? BuyerName { get; set; }
+    
     [MaxLength(200)]
     public string? BuyerCompany { get; set; }
     
@@ -104,6 +107,7 @@ public class CreateRequestDto
 {
     [Required]
     public string Title { get; set; } = "";
+    public string? BuyerName { get; set; }
     public string? BuyerCompany { get; set; }
     public string? Description { get; set; }
     public List<CreateRequestItemDto> Items { get; set; } = new();

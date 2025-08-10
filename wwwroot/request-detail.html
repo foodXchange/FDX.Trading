@@ -127,6 +127,11 @@
             color: #721c24;
         }
 
+        .status-archived {
+            background: #6c757d;
+            color: white;
+        }
+
         .status-actions {
             display: flex;
             gap: 10px;
@@ -157,6 +162,24 @@
 
         .btn-warning:hover {
             background: #e0a800;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .btn-archive {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-archive:hover {
+            background: #5a6268;
         }
 
         .content {
@@ -334,8 +357,17 @@
                     <button class="btn btn-secondary" onclick="goBack()">
                         ← Back to Requests
                     </button>
-                    <button id="editBtn" class="btn btn-primary" onclick="editRequest()" style="display: none;">
-                        ✏️ Edit Request
+                    <button id="editBtn" class="btn btn-primary" onclick="editRequest()">
+                        ✏️ Edit
+                    </button>
+                    <button id="duplicateBtn" class="btn btn-info" onclick="duplicateRequest()">
+                        📋 Duplicate
+                    </button>
+                    <button id="archiveBtn" class="btn btn-archive" onclick="archiveRequest()">
+                        📁 Archive
+                    </button>
+                    <button id="deleteBtn" class="btn btn-danger" onclick="deleteRequestPermanently()">
+                        🗑️ Delete
                     </button>
                 </div>
             </div>
@@ -360,7 +392,12 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">Buyer</span>
-                            <span class="info-value" id="buyerName"></span>
+                            <div class="info-value" style="display: flex; align-items: center; gap: 10px;">
+                                <span id="buyerName"></span>
+                                <button class="btn btn-sm" onclick="showChangeBuyerModal()" style="padding: 4px 10px; font-size: 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;" title="Change buyer">
+                                    ✏️ Change
+                                </button>
+                            </div>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Company</span>
@@ -411,6 +448,42 @@
         </div>
     </div>
 
+    <!-- Change Buyer Modal -->
+    <div id="changeBuyerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 15px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 style="color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <span style="color: #667eea;">👤</span> Change Buyer
+            </h2>
+            <p style="color: #666; margin-bottom: 20px;">Select a contact from <strong id="modalCompanyName"></strong>:</p>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">Select Contact:</label>
+                <select id="contactSelect" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                    <option value="">Loading contacts...</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;" id="newContactForm">
+                <h4 style="margin-bottom: 15px; color: #333;">Add New Contact</h4>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <input type="text" id="newContactName" placeholder="Contact Name *" style="padding: 8px; border: 1px solid #dee2e6; border-radius: 5px;">
+                    <input type="email" id="newContactEmail" placeholder="Email (optional)" style="padding: 8px; border: 1px solid #dee2e6; border-radius: 5px;">
+                    <input type="tel" id="newContactPhone" placeholder="Phone (optional)" style="padding: 8px; border: 1px solid #dee2e6; border-radius: 5px;">
+                    <input type="text" id="newContactRole" placeholder="Role/Title (optional)" style="padding: 8px; border: 1px solid #dee2e6; border-radius: 5px;">
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="cancelChangeBuyer()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                    Cancel
+                </button>
+                <button onclick="confirmChangeBuyer()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentRequest = null;
         const urlParams = new URLSearchParams(window.location.search);
@@ -453,7 +526,6 @@
             statusActions.innerHTML = '';
             
             if (request.status === 0) { // Draft
-                document.getElementById('editBtn').style.display = 'inline-flex';
                 statusActions.innerHTML = `
                     <button class="btn btn-success" onclick="changeStatus(1)">
                         ✅ Publish Request
@@ -472,6 +544,12 @@
                 statusActions.innerHTML = `
                     <button class="btn btn-warning" onclick="changeStatus(1)">
                         🔄 Reopen Request
+                    </button>
+                `;
+            } else if (request.status === 3) { // Archived
+                statusActions.innerHTML = `
+                    <button class="btn btn-warning" onclick="changeStatus(1)">
+                        🔄 Restore to Active
                     </button>
                 `;
             }
@@ -534,6 +612,8 @@
                 addTimelineItem(request.updatedAt, 'Request published and made active');
             } else if (request.status === 2) {
                 addTimelineItem(request.updatedAt, 'Request closed');
+            } else if (request.status === 3) {
+                addTimelineItem(request.updatedAt, 'Request archived');
             }
         }
 
@@ -555,7 +635,8 @@
             const statusMap = {
                 0: '<span class="status-badge status-draft">Draft</span>',
                 1: '<span class="status-badge status-active">Active</span>',
-                2: '<span class="status-badge status-closed">Closed</span>'
+                2: '<span class="status-badge status-closed">Closed</span>',
+                3: '<span class="status-badge status-archived">Archived</span>'
             };
             return statusMap[status] || '';
         }
@@ -572,7 +653,13 @@
         }
 
         async function changeStatus(newStatus) {
-            const statusNames = {0: 'Draft', 1: 'Active', 2: 'Closed'};
+            // If closing request, show the modal instead
+            if (newStatus === 2) {
+                showCloseRequestModal();
+                return;
+            }
+            
+            const statusNames = {0: 'Draft', 1: 'Active', 2: 'Closed', 3: 'Archived'};
             const action = statusNames[newStatus];
             
             if (!confirm(`Are you sure you want to change the status to ${action}?`)) return;
@@ -623,6 +710,462 @@
         function goBack() {
             window.location.href = '/requests.html';
         }
+
+        // Change Buyer Functionality
+        async function showChangeBuyerModal() {
+            const modal = document.getElementById('changeBuyerModal');
+            const companyName = currentRequest.buyerCompany;
+            
+            document.getElementById('modalCompanyName').textContent = companyName;
+            modal.style.display = 'flex';
+            
+            // Load contacts for this company
+            await loadCompanyContacts(companyName);
+        }
+
+        async function loadCompanyContacts(companyName) {
+            const select = document.getElementById('contactSelect');
+            select.innerHTML = '<option value="">Loading contacts...</option>';
+            
+            try {
+                const response = await fetch(`/api/company-contacts/by-company/${encodeURIComponent(companyName)}`);
+                const contacts = await response.json();
+                
+                select.innerHTML = '';
+                
+                // Add current buyer if not in list
+                const currentBuyerInList = contacts.some(c => c.contactName === currentRequest.buyerName);
+                if (!currentBuyerInList && currentRequest.buyerName) {
+                    // Auto-add current buyer to contacts
+                    await addContactToCompany(currentRequest.buyerName, companyName, '', '', '');
+                    // Reload contacts
+                    const reloadResponse = await fetch(`/api/company-contacts/by-company/${encodeURIComponent(companyName)}`);
+                    const reloadedContacts = await reloadResponse.json();
+                    contacts.length = 0;
+                    contacts.push(...reloadedContacts);
+                }
+                
+                // Populate dropdown
+                contacts.forEach(contact => {
+                    const option = document.createElement('option');
+                    option.value = contact.contactName;
+                    option.textContent = contact.contactName;
+                    if (contact.contactRole) {
+                        option.textContent += ` - ${contact.contactRole}`;
+                    }
+                    if (contact.contactName === currentRequest.buyerName) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+                
+                // Add "Add New Contact" option
+                const addNewOption = document.createElement('option');
+                addNewOption.value = '__new__';
+                addNewOption.textContent = '➕ Add New Contact';
+                select.appendChild(addNewOption);
+                
+                // Handle selection change
+                select.onchange = function() {
+                    const newContactForm = document.getElementById('newContactForm');
+                    if (this.value === '__new__') {
+                        newContactForm.style.display = 'block';
+                        document.getElementById('newContactName').focus();
+                    } else {
+                        newContactForm.style.display = 'none';
+                    }
+                };
+                
+            } catch (error) {
+                console.error('Error loading contacts:', error);
+                select.innerHTML = '<option value="">Failed to load contacts</option>';
+            }
+        }
+
+        async function addContactToCompany(name, company, email, phone, role) {
+            try {
+                const response = await fetch('/api/company-contacts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        companyName: company,
+                        contactName: name,
+                        contactEmail: email || null,
+                        contactPhone: phone || null,
+                        contactRole: role || null
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                throw error;
+            }
+        }
+
+        function cancelChangeBuyer() {
+            document.getElementById('changeBuyerModal').style.display = 'none';
+            document.getElementById('newContactForm').style.display = 'none';
+            // Clear new contact form
+            document.getElementById('newContactName').value = '';
+            document.getElementById('newContactEmail').value = '';
+            document.getElementById('newContactPhone').value = '';
+            document.getElementById('newContactRole').value = '';
+        }
+
+        async function confirmChangeBuyer() {
+            const select = document.getElementById('contactSelect');
+            let newBuyerName = select.value;
+            
+            // Handle new contact creation
+            if (newBuyerName === '__new__') {
+                const name = document.getElementById('newContactName').value.trim();
+                if (!name) {
+                    alert('Please enter a contact name');
+                    return;
+                }
+                
+                const email = document.getElementById('newContactEmail').value.trim();
+                const phone = document.getElementById('newContactPhone').value.trim();
+                const role = document.getElementById('newContactRole').value.trim();
+                
+                try {
+                    // Add the new contact
+                    await addContactToCompany(name, currentRequest.buyerCompany, email, phone, role);
+                    newBuyerName = name;
+                } catch (error) {
+                    alert('Failed to add new contact: ' + error.message);
+                    return;
+                }
+            }
+            
+            if (!newBuyerName || newBuyerName === '__new__') {
+                alert('Please select a contact');
+                return;
+            }
+            
+            // Update the request with new buyer name
+            try {
+                const response = await fetch(`/api/requests/${requestId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        buyerName: newBuyerName,
+                        updatedAt: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update buyer');
+                
+                alert('Buyer updated successfully!');
+                cancelChangeBuyer();
+                loadRequest(requestId); // Reload the request
+                
+            } catch (error) {
+                console.error('Error updating buyer:', error);
+                alert('Failed to update buyer');
+            }
+        }
+
+        async function duplicateRequest() {
+            if (!confirm('Are you sure you want to duplicate this request? A new draft copy will be created.')) return;
+            
+            try {
+                // Fetch the current request details
+                const response = await fetch(`/api/requests/${requestId}`);
+                if (!response.ok) throw new Error('Failed to fetch request');
+                const request = await response.json();
+                
+                // Create a duplicate with all data copied from original, but as draft status
+                const duplicateData = {
+                    // Copy all main fields
+                    title: `${request.title} (Copy)`,
+                    buyerId: request.buyerId,
+                    buyerName: request.buyerName,
+                    buyerCompany: request.buyerCompany,
+                    buyerEmail: request.buyerEmail,
+                    buyerPhone: request.buyerPhone,
+                    
+                    // Set as draft status
+                    status: 0, // Draft status
+                    
+                    // Copy description and notes
+                    description: request.description,
+                    notes: request.notes,
+                    
+                    // Copy delivery and payment terms
+                    deliveryTerms: request.deliveryTerms,
+                    paymentTerms: request.paymentTerms,
+                    deliveryLocation: request.deliveryLocation,
+                    deliveryDate: request.deliveryDate,
+                    
+                    // Copy additional fields
+                    priority: request.priority,
+                    category: request.category,
+                    budget: request.budget,
+                    currency: request.currency,
+                    
+                    // Set new timestamps
+                    createdDate: new Date().toISOString(),
+                    updatedDate: new Date().toISOString(),
+                    
+                    // Copy all items with all their fields
+                    items: request.items ? request.items.map(item => ({
+                        productId: item.productId,
+                        productCode: item.productCode,
+                        productName: item.productName,
+                        productCategory: item.productCategory,
+                        quantity: item.quantity,
+                        unit: item.unit,
+                        targetPrice: item.targetPrice,
+                        maxPrice: item.maxPrice,
+                        minPrice: item.minPrice,
+                        description: item.description,
+                        notes: item.notes,
+                        specifications: item.specifications,
+                        brand: item.brand,
+                        origin: item.origin,
+                        certifications: item.certifications,
+                        packagingType: item.packagingType,
+                        packagingSize: item.packagingSize
+                    })) : []
+                };
+                
+                // Remove undefined fields to avoid sending null values
+                Object.keys(duplicateData).forEach(key => {
+                    if (duplicateData[key] === undefined || duplicateData[key] === null) {
+                        delete duplicateData[key];
+                    }
+                });
+                
+                // Clean up items as well
+                if (duplicateData.items) {
+                    duplicateData.items = duplicateData.items.map(item => {
+                        Object.keys(item).forEach(key => {
+                            if (item[key] === undefined || item[key] === null) {
+                                delete item[key];
+                            }
+                        });
+                        return item;
+                    });
+                }
+                
+                const createResponse = await fetch('/api/requests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(duplicateData)
+                });
+                
+                if (!createResponse.ok) throw new Error('Failed to create duplicate');
+                const newRequest = await createResponse.json();
+                
+                alert('Request duplicated successfully!');
+                window.location.href = `/request-detail.html?id=${newRequest.id}`;
+            } catch (error) {
+                console.error('Error duplicating request:', error);
+                alert('Failed to duplicate request');
+            }
+        }
+
+        async function archiveRequest() {
+            if (!confirm('Are you sure you want to archive this request? It will be moved to archived status.')) return;
+            
+            try {
+                // Update request status to archived (using status 3 for archived)
+                const response = await fetch(`/api/requests/${requestId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        status: 3, // Archived status
+                        updatedDate: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to archive request');
+                
+                alert('Request archived successfully!');
+                window.location.reload();
+            } catch (error) {
+                console.error('Error archiving request:', error);
+                alert('Failed to archive request');
+            }
+        }
+
+        async function deleteRequestPermanently() {
+            if (!confirm('Are you sure you want to permanently delete this request? This action cannot be undone.')) {
+                return;
+            }
+            
+            if (!confirm('This will PERMANENTLY delete the request and all its items. Are you absolutely sure?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/requests/${requestId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete request');
+                
+                alert('Request deleted successfully!');
+                window.location.href = '/requests.html';
+            } catch (error) {
+                console.error('Error deleting request:', error);
+                alert('Failed to delete request');
+            }
+        }
+
+        // Close Request Modal Functions
+        function showCloseRequestModal() {
+            const modal = document.getElementById('closeRequestModal');
+            modal.style.display = 'flex';
+            
+            // Add event listener for radio buttons
+            const radioButtons = document.querySelectorAll('input[name="closeReason"]');
+            const otherReasonText = document.getElementById('otherReasonText');
+            
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'Other') {
+                        otherReasonText.style.display = 'block';
+                        otherReasonText.focus();
+                    } else {
+                        otherReasonText.style.display = 'none';
+                        otherReasonText.value = '';
+                    }
+                });
+            });
+        }
+
+        function cancelCloseRequest() {
+            document.getElementById('closeRequestModal').style.display = 'none';
+            // Reset form
+            document.querySelectorAll('input[name="closeReason"]').forEach(radio => radio.checked = false);
+            document.getElementById('otherReasonText').value = '';
+            document.getElementById('otherReasonText').style.display = 'none';
+        }
+
+        async function confirmCloseRequest() {
+            const selectedReason = document.querySelector('input[name="closeReason"]:checked');
+            
+            if (!selectedReason) {
+                alert('Please select a reason for closing the request');
+                return;
+            }
+            
+            let closeReason = selectedReason.value;
+            
+            if (closeReason === 'Other') {
+                const otherText = document.getElementById('otherReasonText').value.trim();
+                if (!otherText) {
+                    alert('Please enter a reason for closing the request');
+                    return;
+                }
+                
+                // Limit to 10 words
+                const words = otherText.split(/\s+/);
+                if (words.length > 10) {
+                    alert('Please limit your reason to 10 words or less');
+                    return;
+                }
+                
+                closeReason = `Other: ${otherText}`;
+            }
+            
+            try {
+                // Close the request with the reason
+                const response = await fetch(`/api/requests/${requestId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        status: 2, // Closed status
+                        closeReason: closeReason
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to close request');
+                
+                alert(`Request closed successfully!\nReason: ${closeReason}`);
+                cancelCloseRequest(); // Hide modal
+                loadRequest(requestId);
+            } catch (error) {
+                console.error('Error closing request:', error);
+                alert('Failed to close request');
+            }
+        }
     </script>
+
+    <!-- Close Request Modal -->
+    <div id="closeRequestModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 15px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <h2 style="color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <span style="color: #dc3545;">❌</span> Close Request
+            </h2>
+            <p style="color: #666; margin-bottom: 25px;">Please select a reason for closing this request:</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                    <input type="radio" name="closeReason" value="Supplier wasn't found" style="margin-right: 10px;">
+                    <span style="color: #333;">Supplier wasn't found</span>
+                </label>
+                
+                <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                    <input type="radio" name="closeReason" value="Supplier found but didn't answer" style="margin-right: 10px;">
+                    <span style="color: #333;">Supplier found but didn't answer</span>
+                </label>
+                
+                <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                    <input type="radio" name="closeReason" value="Buyer cancelled request" style="margin-right: 10px;">
+                    <span style="color: #333;">Buyer cancelled request</span>
+                </label>
+                
+                <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                    <input type="radio" name="closeReason" value="Other" style="margin-right: 10px;">
+                    <span style="color: #333;">Other (specify below)</span>
+                </label>
+                
+                <input type="text" id="otherReasonText" placeholder="Enter reason (max 10 words)" maxlength="100" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; display: none;">
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="cancelCloseRequest()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                    Cancel
+                </button>
+                <button onclick="confirmCloseRequest()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                    Close Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #closeRequestModal label:hover {
+            background: #f8f9fa;
+            border-color: #667eea !important;
+        }
+        
+        #closeRequestModal input[type="radio"]:checked + span {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        #closeRequestModal input[type="radio"]:checked ~ span {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        #closeRequestModal label:has(input[type="radio"]:checked) {
+            background: #f0f4ff;
+            border-color: #667eea !important;
+        }
+    </style>
+    
+    <!-- Global Keyboard Shortcuts -->
+    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>

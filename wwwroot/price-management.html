@@ -244,12 +244,13 @@
                 <a href="/users.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="text-align: right;">
-                    <div style="font-weight: 600; color: #333;" id="navUserName">Loading...</div>
-                    <div style="font-size: 0.85rem; color: #666;" id="navUserRole">Role</div>
-                </div>
-                <button onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Logout</button>
+            <div class="navbar-user" style="display: flex; align-items: center; gap: 10px;">
+                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
+                    <div class="user-info" style="cursor: pointer;">
+                        <div class="user-avatar-small" id="navUserAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">U</div>
+                    </div>
+                </a>
+                <button class="logout-btn" onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; margin-left: 15px;">Logout</button>
             </div>
         </div>
     </nav>
@@ -360,12 +361,70 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadProducts();
             
-            // Load user info in navbar
-            const navUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (navUser) {
-                document.getElementById('navUserName').textContent = navUser.firstName + ' ' + navUser.lastName;
-                document.getElementById('navUserRole').textContent = navUser.role;
+            // Initialize user display in navbar
+            function initializeUserDisplay() {
+                const userData = localStorage.getItem('currentUser');
+                if (userData) {
+                    try {
+                        const user = JSON.parse(userData);
+                        
+                        // Determine display name with fallbacks
+                        let displayName = 'User';
+                        if (user.firstName && user.lastName) {
+                            displayName = `${user.firstName} ${user.lastName}`;
+                        } else if (user.displayName) {
+                            displayName = user.displayName;
+                        } else if (user.username) {
+                            displayName = user.username;
+                        } else if (user.email) {
+                            displayName = user.email.split('@')[0];
+                        }
+                        
+                        // Determine role
+                        const role = user.role || user.typeName || 'User';
+                        
+                        // Create initials for avatar
+                        let initials = 'U';
+                        if (user.firstName && user.lastName) {
+                            initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+                        } else if (displayName && displayName !== 'User') {
+                            const nameParts = displayName.split(' ');
+                            if (nameParts.length >= 2) {
+                                initials = `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+                            } else {
+                                initials = displayName.substring(0, 2).toUpperCase();
+                            }
+                        }
+                        
+                        // Update navbar elements
+                        const firstNameElement = document.getElementById('navUserFirstName');
+                        const avatarElement = document.getElementById('navUserAvatar');
+                        
+                        if (firstNameElement) {
+                            const firstName = user.firstName || displayName.split(' ')[0] || 'User';
+                            firstNameElement.textContent = firstName;
+                        }
+                        if (avatarElement) avatarElement.textContent = initials;
+                    } catch (error) {
+                        console.error('Error parsing user data:', error);
+                        setDefaultUser();
+                    }
+                } else {
+                    setDefaultUser();
+                }
             }
+            
+            // Set default user display
+            function setDefaultUser() {
+                const firstNameElement = document.getElementById('navUserFirstName');
+                const avatarElement = document.getElementById('navUserAvatar');
+                
+                if (firstNameElement) firstNameElement.textContent = 'Guest';
+                if (avatarElement) avatarElement.textContent = 'GU';
+            }
+            
+            // Initialize user display
+            initializeUserDisplay();
             document.getElementById('effectiveDate').value = new Date().toISOString().split('T')[0];
             
             // Check if productId in URL
@@ -586,5 +645,8 @@
             window.location.href = '/index.html';
         }
     </script>
+    
+    <!-- Global Keyboard Shortcuts -->
+    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>

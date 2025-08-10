@@ -20,7 +20,7 @@
         
         .container {
             max-width: 1400px;
-            margin: 0 auto;
+            margin: 20px auto 0;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -380,6 +380,17 @@
             border-radius: 10px;
             max-width: 500px;
             width: 90%;
+            position: relative;
+        }
+        
+        .modal-content::before {
+            content: "Press ESC to cancel";
+            position: absolute;
+            top: 10px;
+            right: 30px;
+            font-size: 11px;
+            color: #999;
+            font-style: italic;
         }
         
         .modal h2 {
@@ -446,15 +457,27 @@
                 <a href="/products.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
                 <a href="/supplier-catalog.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
                 <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
+                <div style="position: relative; display: inline-block;">
+                    <button onclick="toggleContactsDropdown()" style="padding: 8px 16px; color: #555; background: none; border: none; text-decoration: none; border-radius: 5px; font-weight: 500; cursor: pointer;">
+                        Contacts ▼
+                    </button>
+                    <div id="contactsDropdown" style="display: none; position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 5px; min-width: 150px; z-index: 1000;">
+                        <a href="#" onclick="viewContactsByType('all')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">All Contacts</a>
+                        <a href="#" onclick="viewContactsByType('buyers')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">Buyer Contacts</a>
+                        <a href="#" onclick="viewContactsByType('contractors')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">Contractor Contacts</a>
+                        <a href="#" onclick="viewContactsByType('suppliers')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">Supplier Contacts</a>
+                    </div>
+                </div>
                 <a href="/users.html" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="text-align: right;">
-                    <div style="font-weight: 600; color: #333;" id="navUserName">Loading...</div>
-                    <div style="font-size: 0.85rem; color: #666;" id="navUserRole">Role</div>
-                </div>
-                <button onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Logout</button>
+            <div class="navbar-user" style="display: flex; align-items: center; gap: 10px;">
+                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
+                    <div class="user-info" style="cursor: pointer;">
+                        <div class="user-avatar-small" id="navUserAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">U</div>
+                    </div>
+                </a>
+                <button class="logout-btn" onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; margin-left: 15px;">Logout</button>
             </div>
         </div>
     </nav>
@@ -674,6 +697,19 @@
                     <button type="button" class="modal-btn cancel" onclick="closeProfileModal()">Cancel</button>
                 </div>
             </form>
+            
+            <!-- Organization Contacts Section - Outside the form -->
+            <div style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #667eea; padding-bottom: 5px;">
+                    <h3 style="color: #667eea; margin: 0;">Organization Contacts</h3>
+                    <button type="button" onclick="addNewContact()" style="padding: 6px 16px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                        + Add Contact
+                    </button>
+                </div>
+                <div id="profileContactsList" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin-top: 15px;">
+                    <div class="loading" style="text-align: center; color: #999;">Loading contacts...</div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -684,6 +720,173 @@
             <div id="productsContainer" style="max-height: 400px; overflow-y: auto;"></div>
             <div class="modal-buttons">
                 <button class="modal-btn cancel" onclick="closeSupplierModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="addContactModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2>Add New Contact</h2>
+            <div id="addContactCompanyInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <div style="font-size: 14px; color: #666;">Adding contact to:</div>
+                <div style="font-size: 18px; font-weight: bold;" id="addContactCompanyName"></div>
+            </div>
+            <form id="addContactForm">
+                <input type="hidden" id="addContactCompany">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Contact Name <span style="color: red;">*</span></label>
+                        <input type="text" id="newContactName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required placeholder="John Doe">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+                        <input type="email" id="newContactEmail" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="john@company.com">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone</label>
+                        <input type="tel" id="newContactPhone" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="+1 234 567 8900">
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Role/Position</label>
+                        <input type="text" id="newContactRole" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="e.g., Purchasing Manager">
+                    </div>
+                    
+                    <div style="grid-column: span 2; margin-top: 10px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">Permissions</h4>
+                        
+                        <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 10px;">
+                            <input type="checkbox" id="newContactIsActive" checked style="margin-right: 10px;">
+                            <span>Active Contact</span>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 10px;">
+                            <input type="checkbox" id="newContactIsAdmin" style="margin-right: 10px;">
+                            <span>Organization Admin</span>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="newContactCanManage" style="margin-right: 10px;">
+                            <span>Can Manage Contacts</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="submit" class="modal-btn confirm">Add Contact</button>
+                    <button type="button" class="modal-btn cancel" onclick="closeAddContactModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="contactPermissionsModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <h2>Edit Contact Details</h2>
+            <div id="contactInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;" id="contactNameDisplay"></div>
+                <div style="color: #666;" id="contactCompanyDisplay"></div>
+            </div>
+            <form id="contactPermissionsForm">
+                <input type="hidden" id="contactId">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <!-- Contact Details Section -->
+                    <div style="grid-column: span 2;">
+                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px; margin-bottom: 15px;">Contact Information</h3>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Contact Name</label>
+                        <input type="text" id="editContactName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Role/Position</label>
+                        <input type="text" id="editContactRole" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="e.g., Purchasing Manager">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+                        <input type="email" id="editContactEmail" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="contact@company.com">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone</label>
+                        <input type="tel" id="editContactPhone" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="+1 234 567 8900">
+                    </div>
+                    
+                    <!-- Status Section -->
+                    <div style="grid-column: span 2; margin-top: 10px;">
+                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px; margin-bottom: 15px;">Status & Permissions</h3>
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #d4edda; border: 2px solid #28a745; border-radius: 8px; margin-bottom: 10px;">
+                            <input type="checkbox" id="editContactIsActive" style="margin-right: 15px; width: 20px; height: 20px;">
+                            <div>
+                                <strong style="font-size: 16px;">Active Contact</strong>
+                                <div style="font-size: 14px; color: #666; margin-top: 3px;">Contact is currently active and can access the system</div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; margin-bottom: 10px;">
+                            <input type="checkbox" id="isOrganizationAdmin" style="margin-right: 15px; width: 20px; height: 20px;">
+                            <div>
+                                <strong style="font-size: 16px;">Organization Admin</strong>
+                                <div style="font-size: 14px; color: #666; margin-top: 3px;">Full administrative access to all company data and users</div>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    <div style="grid-column: span 2;">
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #d1ecf1; border: 2px solid #17a2b8; border-radius: 8px;">
+                            <input type="checkbox" id="canManageContacts" style="margin-right: 15px; width: 20px; height: 20px;">
+                            <div>
+                                <strong style="font-size: 16px;">Contact Manager</strong>
+                                <div style="font-size: 14px; color: #666; margin-top: 3px;">Can add, edit, and remove contacts for this company</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn" style="background: #dc3545; color: white;" onclick="deleteContact()">Delete Contact</button>
+                    <button type="submit" class="modal-btn confirm">Save Changes</button>
+                    <button type="button" class="modal-btn cancel" onclick="closeContactPermissionsModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="companyContactsModal">
+        <div class="modal-content" style="max-width: 900px; max-height: 80vh; overflow-y: auto;">
+            <h2>Company Contacts</h2>
+            <div id="companyContactsInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;"></div>
+            <div id="companyContactsContainer"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeCompanyContactsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="contactsByTypeModal">
+        <div class="modal-content" style="max-width: 1200px; max-height: 85vh; overflow-y: auto;">
+            <h2 id="contactsTypeTitle">Contacts</h2>
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="contactsSearchInput" placeholder="Search contacts by name, company, email..." 
+                       style="width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 8px; font-size: 14px;"
+                       onkeyup="filterContactsTable()">
+            </div>
+            <div id="contactsTypeContainer" style="overflow-x: auto;"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn" style="background: #17a2b8; color: white;" onclick="exportContactsToCSV()">Export to CSV</button>
+                <button class="modal-btn cancel" onclick="closeContactsByTypeModal()">Close</button>
             </div>
         </div>
     </div>
@@ -728,10 +931,30 @@
         let allUsers = [];
         let currentFilter = 'all';
         
+        let companyContacts = {};
+        let allContactsData = [];
+        let currentContactsType = 'all';
+        
         async function loadUsers() {
             try {
-                const response = await fetch('/api/users');
-                const users = await response.json();
+                // Load users and company contacts in parallel
+                const [usersResponse, contactsResponse] = await Promise.all([
+                    fetch('/api/users'),
+                    fetch('/api/company-contacts')
+                ]);
+                
+                const users = await usersResponse.json();
+                const contacts = await contactsResponse.json();
+                
+                // Group contacts by company
+                companyContacts = {};
+                contacts.forEach(contact => {
+                    if (!companyContacts[contact.companyName]) {
+                        companyContacts[contact.companyName] = [];
+                    }
+                    companyContacts[contact.companyName].push(contact);
+                });
+                
                 allUsers = users;
                 displayUsers(users);
                 updateStats(users);
@@ -760,12 +983,26 @@
                     const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
                     const borderColor = user.type === 0 ? '#ffc107' : user.type === 1 ? '#17a2b8' : user.type === 2 ? '#28a745' : '#6f42c1';
                     
+                    // Get contact count for this company
+                    const contactCount = user.companyName && companyContacts[user.companyName] ? companyContacts[user.companyName].length : 0;
+                    const adminCount = user.companyName && companyContacts[user.companyName] ? 
+                        companyContacts[user.companyName].filter(c => c.isOrganizationAdmin).length : 0;
+                    
                     html += `
                         <div class="user-card" style="background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid ${borderColor}; cursor: pointer;" onclick="viewUserProfile(${user.id})">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                                 <div>
                                     <strong style="font-size: 16px;">${user.companyName || user.username}</strong>
                                     <span class="user-type ${typeClass}" style="margin-left: 10px;">${user.typeName}</span>
+                                    ${contactCount > 0 ? 
+                                        `<div style="margin-top: 5px;">
+                                            <span style="display: inline-block; padding: 3px 10px; background: white; border: 1px solid #dee2e6; border-radius: 12px; font-size: 12px;">
+                                                <strong>${contactCount}</strong> contact${contactCount > 1 ? 's' : ''}
+                                                ${adminCount > 0 ? ` • <span style="color: #ffc107;">${adminCount} admin${adminCount > 1 ? 's' : ''}</span>` : ''}
+                                            </span>
+                                        </div>` : 
+                                        ''
+                                    }
                                 </div>
                                 <span class="status-badge ${statusClass}">${user.isActive ? 'Active' : 'Inactive'}</span>
                             </div>
@@ -779,6 +1016,7 @@
                                 <button class="action-btn toggle" style="flex: 1;" onclick="toggleUser(${user.id})">
                                     ${user.isActive ? 'Deactivate' : 'Activate'}
                                 </button>
+                                ${contactCount > 0 ? `<button class="action-btn" style="flex: 1; background: #28a745; color: white;" onclick="viewCompanyContacts('${user.companyName.replace(/'/g, "\\'")}')">View Contacts</button>` : ''}
                                 ${user.type === 3 ? `<button class="action-btn" style="flex: 1; background: #6f42c1; color: white;" onclick="viewSupplierProducts(${user.id})">Products</button>` : ''}
                                 ${user.type !== 0 ? `<button class="action-btn delete" style="flex: 1;" onclick="deleteUser(${user.id})">Delete</button>` : ''}
                             </div>
@@ -801,7 +1039,7 @@
                                 <th>Email</th>
                                 <th>Type</th>
                                 <th>Country</th>
-                                <th>Category</th>
+                                <th>Contacts</th>
                                 <th>Last Login</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -815,15 +1053,29 @@
                     const statusClass = user.isActive ? 'active' : 'inactive';
                     const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
                     
+                    // Get contact count and admin count for this company
+                    const contactCount = user.companyName && companyContacts[user.companyName] ? companyContacts[user.companyName].length : 0;
+                    const adminCount = user.companyName && companyContacts[user.companyName] ? 
+                        companyContacts[user.companyName].filter(c => c.isOrganizationAdmin).length : 0;
+                    
                     html += `
                         <tr style="cursor: pointer;" onclick="viewUserProfile(${user.id})">
                             <td>${user.id}</td>
-                            <td>${user.username}</td>
+                            <td><strong>${user.username}</strong></td>
                             <td>${user.companyName || '-'}</td>
                             <td>${user.email}</td>
                             <td><span class="user-type ${typeClass}">${user.typeName}</span></td>
                             <td>${user.country || '-'}</td>
-                            <td>${user.category || '-'}</td>
+                            <td>
+                                ${contactCount > 0 ? 
+                                    `<button onclick="event.stopPropagation(); viewCompanyContacts('${user.companyName.replace(/'/g, "\\'")}')" 
+                                            style="padding: 4px 12px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 15px; cursor: pointer; font-size: 12px;">
+                                        <strong>${contactCount}</strong> contacts
+                                        ${adminCount > 0 ? `<span style="color: #ffc107; margin-left: 4px;">(${adminCount} admin${adminCount > 1 ? 's' : ''})</span>` : ''}
+                                    </button>` : 
+                                    '<span style="color: #999; font-size: 12px;">No contacts</span>'
+                                }
+                            </td>
                             <td>${lastLogin}</td>
                             <td><span class="status-badge ${statusClass}">${user.isActive ? 'Active' : 'Inactive'}</span></td>
                             <td onclick="event.stopPropagation()">
@@ -1144,6 +1396,13 @@
                 // Disable type change for admin users
                 document.getElementById('profileType').disabled = user.type === 0;
                 
+                // Load organization contacts if company exists
+                if (user.companyName) {
+                    loadOrganizationContacts(user.companyName);
+                } else {
+                    document.getElementById('profileContactsList').innerHTML = '<div style="text-align: center; color: #999;">No company associated with this user</div>';
+                }
+                
                 // Show modal
                 document.getElementById('userProfileModal').classList.add('active');
                 
@@ -1153,9 +1412,196 @@
             }
         }
         
+        async function loadOrganizationContacts(companyName) {
+            const contactsListDiv = document.getElementById('profileContactsList');
+            contactsListDiv.innerHTML = '<div class="loading" style="text-align: center; color: #999;">Loading contacts...</div>';
+            
+            try {
+                const response = await fetch(`/api/company-contacts/by-company/${encodeURIComponent(companyName)}`);
+                if (!response.ok) {
+                    contactsListDiv.innerHTML = '<div style="text-align: center; color: #dc3545;">Error loading contacts</div>';
+                    return;
+                }
+                
+                const contacts = await response.json();
+                
+                if (contacts.length === 0) {
+                    contactsListDiv.innerHTML = '<div style="text-align: center; color: #999;">No contacts found for this organization</div>';
+                    return;
+                }
+                
+                let html = `
+                    <table style="width: 100%; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #ddd;">
+                                <th style="text-align: left; padding: 8px;">Name</th>
+                                <th style="text-align: left; padding: 8px;">Role</th>
+                                <th style="text-align: left; padding: 8px;">Contact</th>
+                                <th style="text-align: left; padding: 8px;">Permissions</th>
+                                <th style="text-align: left; padding: 8px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                contacts.forEach(contact => {
+                    const statusIcon = contact.isActive ? 
+                        '<span style="color: #28a745;">✓</span>' : 
+                        '<span style="color: #dc3545;">✗</span>';
+                    
+                    html += `
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 8px;">
+                                ${statusIcon} ${contact.contactName}
+                            </td>
+                            <td style="padding: 8px;">${contact.contactRole || '-'}</td>
+                            <td style="padding: 8px;">
+                                ${contact.contactEmail ? `<div style="font-size: 11px;">${contact.contactEmail}</div>` : ''}
+                                ${contact.contactPhone ? `<div style="font-size: 11px;">${contact.contactPhone}</div>` : ''}
+                            </td>
+                            <td style="padding: 8px;">
+                                ${contact.isOrganizationAdmin ? '<span style="background: #ffc107; color: #856404; padding: 2px 6px; border-radius: 10px; font-size: 10px;">ADMIN</span>' : ''}
+                                ${contact.canManageContacts ? '<span style="background: #17a2b8; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 2px;">MGR</span>' : ''}
+                                ${!contact.isOrganizationAdmin && !contact.canManageContacts ? '<span style="color: #999; font-size: 11px;">None</span>' : ''}
+                            </td>
+                            <td style="padding: 8px;">
+                                <button type="button" onclick="event.preventDefault(); event.stopPropagation(); manageContactPermissionsFromProfile(${contact.id}, '${companyName.replace(/'/g, "\\'")}', '${contact.contactName.replace(/'/g, "\\'")}')" 
+                                        style="padding: 3px 8px; font-size: 11px; background: #6c757d; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                    Manage
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right;">
+                        <strong>Total Contacts:</strong> ${contacts.length} 
+                        | <strong>Active:</strong> ${contacts.filter(c => c.isActive).length}
+                        | <strong>Admins:</strong> ${contacts.filter(c => c.isOrganizationAdmin).length}
+                    </div>
+                `;
+                
+                contactsListDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error loading organization contacts:', error);
+                contactsListDiv.innerHTML = '<div style="text-align: center; color: #dc3545;">Error loading contacts</div>';
+            }
+        }
+        
+        function manageContactPermissionsFromProfile(contactId, companyName, contactName) {
+            // Prevent any form submission
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Close the profile modal first
+            document.getElementById('userProfileModal').classList.remove('active');
+            // Then open the permissions modal
+            manageContactPermissions(contactId, companyName, contactName);
+        }
+        
         function closeProfileModal() {
             document.getElementById('userProfileModal').classList.remove('active');
         }
+        
+        function addNewContact() {
+            const companyName = document.getElementById('profileCompanyName').value;
+            
+            if (!companyName) {
+                alert('Cannot add contact: No company associated with this user');
+                return;
+            }
+            
+            // Set company info in the add contact modal
+            document.getElementById('addContactCompanyName').textContent = companyName;
+            document.getElementById('addContactCompany').value = companyName;
+            
+            // Clear the form
+            document.getElementById('addContactForm').reset();
+            document.getElementById('newContactIsActive').checked = true; // Default to active
+            
+            // Show the modal
+            document.getElementById('addContactModal').classList.add('active');
+        }
+        
+        function closeAddContactModal() {
+            document.getElementById('addContactModal').classList.remove('active');
+        }
+        
+        // Handle add contact form submission
+        document.getElementById('addContactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const contactData = {
+                companyName: document.getElementById('addContactCompany').value,
+                contactName: document.getElementById('newContactName').value,
+                contactEmail: document.getElementById('newContactEmail').value || null,
+                contactPhone: document.getElementById('newContactPhone').value || null,
+                contactRole: document.getElementById('newContactRole').value || null
+            };
+            
+            try {
+                const response = await fetch('/api/company-contacts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(contactData)
+                });
+                
+                if (response.ok) {
+                    const newContact = await response.json();
+                    
+                    // If permissions were set, update them
+                    const isAdmin = document.getElementById('newContactIsAdmin').checked;
+                    const canManage = document.getElementById('newContactCanManage').checked;
+                    const isActive = document.getElementById('newContactIsActive').checked;
+                    
+                    if (isAdmin || canManage || !isActive) {
+                        await fetch(`/api/company-contacts/${newContact.id}/full-update`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                contactName: contactData.contactName,
+                                contactRole: contactData.contactRole,
+                                contactEmail: contactData.contactEmail,
+                                contactPhone: contactData.contactPhone,
+                                isActive: isActive,
+                                isOrganizationAdmin: isAdmin,
+                                canManageContacts: canManage
+                            })
+                        });
+                    }
+                    
+                    alert('Contact added successfully');
+                    closeAddContactModal();
+                    
+                    // Reload contacts in the profile
+                    const companyName = document.getElementById('profileCompanyName').value;
+                    if (companyName) {
+                        loadOrganizationContacts(companyName);
+                    }
+                    
+                    // Reload users to update contact counts
+                    loadUsers();
+                } else {
+                    const error = await response.text();
+                    if (error.includes('already exists')) {
+                        alert('A contact with this name already exists for this company');
+                    } else {
+                        alert('Error adding contact');
+                    }
+                }
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                alert('Error adding contact');
+            }
+        });
         
         // Handle profile form submission
         document.getElementById('userProfileForm').addEventListener('submit', async function(e) {
@@ -1207,6 +1653,349 @@
             }
         });
         
+        async function manageContactPermissions(contactId, companyName, contactName) {
+            try {
+                const response = await fetch(`/api/company-contacts/${contactId}`);
+                if (!response.ok) {
+                    alert('Error loading contact details');
+                    return;
+                }
+                
+                const contact = await response.json();
+                
+                // Set display info
+                document.getElementById('contactNameDisplay').textContent = contactName;
+                document.getElementById('contactCompanyDisplay').textContent = companyName;
+                document.getElementById('contactId').value = contactId;
+                
+                // Set contact details
+                document.getElementById('editContactName').value = contact.contactName || '';
+                document.getElementById('editContactRole').value = contact.contactRole || '';
+                document.getElementById('editContactEmail').value = contact.contactEmail || '';
+                document.getElementById('editContactPhone').value = contact.contactPhone || '';
+                
+                // Set checkboxes
+                document.getElementById('editContactIsActive').checked = contact.isActive !== false;
+                document.getElementById('isOrganizationAdmin').checked = contact.isOrganizationAdmin || false;
+                document.getElementById('canManageContacts').checked = contact.canManageContacts || false;
+                
+                // Show modal
+                document.getElementById('contactPermissionsModal').classList.add('active');
+                
+            } catch (error) {
+                console.error('Error loading contact:', error);
+                alert('Error loading contact details');
+            }
+        }
+        
+        function closeContactPermissionsModal() {
+            document.getElementById('contactPermissionsModal').classList.remove('active');
+        }
+        
+        // Handle contact permissions form submission
+        document.getElementById('contactPermissionsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const contactId = document.getElementById('contactId').value;
+            const updateData = {
+                contactName: document.getElementById('editContactName').value,
+                contactRole: document.getElementById('editContactRole').value,
+                contactEmail: document.getElementById('editContactEmail').value,
+                contactPhone: document.getElementById('editContactPhone').value,
+                isActive: document.getElementById('editContactIsActive').checked,
+                isOrganizationAdmin: document.getElementById('isOrganizationAdmin').checked,
+                canManageContacts: document.getElementById('canManageContacts').checked
+            };
+            
+            try {
+                const response = await fetch(`/api/company-contacts/${contactId}/full-update`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    alert('Contact updated successfully');
+                    closeContactPermissionsModal();
+                    loadUsers(); // Reload to show updated data
+                    
+                    // If profile modal was open, reload its contacts
+                    if (document.getElementById('userProfileModal').classList.contains('active')) {
+                        const companyName = document.getElementById('profileCompanyName').value;
+                        if (companyName) {
+                            loadOrganizationContacts(companyName);
+                        }
+                    }
+                } else {
+                    alert('Error updating contact');
+                }
+            } catch (error) {
+                console.error('Error updating contact:', error);
+                alert('Error updating contact');
+            }
+        });
+        
+        async function deleteContact() {
+            const contactId = document.getElementById('contactId').value;
+            const contactName = document.getElementById('editContactName').value;
+            
+            if (!confirm(`Are you sure you want to delete contact "${contactName}"? This action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/company-contacts/${contactId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('Contact deleted successfully');
+                    closeContactPermissionsModal();
+                    loadUsers(); // Reload to show updated data
+                    
+                    // If profile modal was open, reload its contacts
+                    if (document.getElementById('userProfileModal').classList.contains('active')) {
+                        const companyName = document.getElementById('profileCompanyName').value;
+                        if (companyName) {
+                            loadOrganizationContacts(companyName);
+                        }
+                    }
+                } else {
+                    alert('Error deleting contact');
+                }
+            } catch (error) {
+                console.error('Error deleting contact:', error);
+                alert('Error deleting contact');
+            }
+        }
+        
+        async function viewCompanyContacts(companyName) {
+            try {
+                const response = await fetch(`/api/company-contacts/by-company/${encodeURIComponent(companyName)}`);
+                if (!response.ok) {
+                    alert('Error loading company contacts');
+                    return;
+                }
+                
+                const contacts = await response.json();
+                
+                // Display company info
+                document.getElementById('companyContactsInfo').innerHTML = `
+                    <h3>${companyName}</h3>
+                    <div>Total Contacts: ${contacts.length}</div>
+                `;
+                
+                // Display contacts table
+                let html = '';
+                if (contacts.length > 0) {
+                    html = `
+                        <table class="users-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Contact Name</th>
+                                    <th>Role</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Permissions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    contacts.forEach(contact => {
+                        html += `
+                            <tr>
+                                <td>${contact.contactName}</td>
+                                <td>${contact.contactRole || '-'}</td>
+                                <td>${contact.contactEmail || '-'}</td>
+                                <td>${contact.contactPhone || '-'}</td>
+                                <td>
+                                    ${contact.isOrganizationAdmin ? '<span style="background: #ffc107; color: #856404; padding: 3px 8px; border-radius: 12px; font-size: 11px;">ORG ADMIN</span>' : ''}
+                                    ${contact.canManageContacts ? '<span style="background: #17a2b8; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; margin-left: 5px;">CONTACT MGR</span>' : ''}
+                                    ${!contact.isOrganizationAdmin && !contact.canManageContacts ? '<span style="color: #999;">None</span>' : ''}
+                                </td>
+                                <td>
+                                    <button onclick="manageContactPermissions(${contact.id}, '${companyName.replace(/'/g, "\\'")}', '${contact.contactName.replace(/'/g, "\\'")}')" style="padding: 4px 10px; font-size: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Manage Permissions</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += '</tbody></table>';
+                } else {
+                    html = '<div class="empty">No contacts found for this company</div>';
+                }
+                
+                document.getElementById('companyContactsContainer').innerHTML = html;
+                document.getElementById('companyContactsModal').classList.add('active');
+                
+            } catch (error) {
+                console.error('Error loading company contacts:', error);
+                alert('Error loading company contacts');
+            }
+        }
+        
+        function closeCompanyContactsModal() {
+            document.getElementById('companyContactsModal').classList.remove('active');
+        }
+        
+        function toggleContactsDropdown() {
+            const dropdown = document.getElementById('contactsDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('contactsDropdown');
+            const button = event.target.closest('button');
+            if (!button || !button.onclick || !button.onclick.toString().includes('toggleContactsDropdown')) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        async function viewContactsByType(type) {
+            currentContactsType = type;
+            const dropdown = document.getElementById('contactsDropdown');
+            dropdown.style.display = 'none';
+            
+            try {
+                // Load all contacts and users
+                const [contactsResponse, usersResponse] = await Promise.all([
+                    fetch('/api/company-contacts'),
+                    fetch('/api/users')
+                ]);
+                
+                const contacts = await contactsResponse.json();
+                const users = await usersResponse.json();
+                
+                // Create a map of companies to user types
+                const companyToUserType = {};
+                users.forEach(user => {
+                    if (user.companyName) {
+                        companyToUserType[user.companyName] = user.type;
+                    }
+                });
+                
+                // Filter contacts based on type
+                let filteredContacts = contacts;
+                let title = 'All Contacts';
+                
+                if (type === 'buyers') {
+                    filteredContacts = contacts.filter(c => companyToUserType[c.companyName] === 2);
+                    title = 'Buyer Contacts';
+                } else if (type === 'contractors') {
+                    filteredContacts = contacts.filter(c => companyToUserType[c.companyName] === 1);
+                    title = 'Contractor Contacts';
+                } else if (type === 'suppliers') {
+                    filteredContacts = contacts.filter(c => companyToUserType[c.companyName] === 3);
+                    title = 'Supplier Contacts';
+                }
+                
+                allContactsData = filteredContacts;
+                
+                // Update modal title
+                document.getElementById('contactsTypeTitle').textContent = title;
+                
+                // Display contacts
+                displayContactsTable(filteredContacts);
+                
+                // Show modal
+                document.getElementById('contactsByTypeModal').classList.add('active');
+                
+            } catch (error) {
+                console.error('Error loading contacts:', error);
+                alert('Error loading contacts');
+            }
+        }
+        
+        function displayContactsTable(contacts) {
+            let html = '';
+            
+            if (contacts.length === 0) {
+                html = '<div class="empty">No contacts found</div>';
+            } else {
+                html = `
+                    <table class="users-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Contact Name</th>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Permissions</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTableBody">
+                `;
+                
+                contacts.forEach(contact => {
+                    const statusClass = contact.isActive ? 'active' : 'inactive';
+                    html += `
+                        <tr>
+                            <td><strong>${contact.companyName}</strong></td>
+                            <td>${contact.contactName}</td>
+                            <td>${contact.contactRole || '-'}</td>
+                            <td>${contact.contactEmail || '-'}</td>
+                            <td>${contact.contactPhone || '-'}</td>
+                            <td>
+                                ${contact.isOrganizationAdmin ? '<span style="background: #ffc107; color: #856404; padding: 3px 8px; border-radius: 12px; font-size: 11px;">ORG ADMIN</span>' : ''}
+                                ${contact.canManageContacts ? '<span style="background: #17a2b8; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; margin-left: 5px;">CONTACT MGR</span>' : ''}
+                                ${!contact.isOrganizationAdmin && !contact.canManageContacts ? '<span style="color: #999;">None</span>' : ''}
+                            </td>
+                            <td><span class="status-badge ${statusClass}">${contact.isActive ? 'Active' : 'Inactive'}</span></td>
+                            <td>
+                                <button onclick="manageContactPermissions(${contact.id}, '${contact.companyName.replace(/'/g, "\\'")}', '${contact.contactName.replace(/'/g, "\\'")}')" 
+                                        style="padding: 4px 10px; font-size: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Manage
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+            }
+            
+            document.getElementById('contactsTypeContainer').innerHTML = html;
+        }
+        
+        function filterContactsTable() {
+            const searchTerm = document.getElementById('contactsSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#contactsTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+        
+        function closeContactsByTypeModal() {
+            document.getElementById('contactsByTypeModal').classList.remove('active');
+            document.getElementById('contactsSearchInput').value = '';
+        }
+        
+        function exportContactsToCSV() {
+            let csv = 'Company,Contact Name,Role,Email,Phone,Is Admin,Is Contact Manager,Status\n';
+            
+            allContactsData.forEach(contact => {
+                csv += `"${contact.companyName}","${contact.contactName}","${contact.contactRole || ''}","${contact.contactEmail || ''}","${contact.contactPhone || ''}","${contact.isOrganizationAdmin ? 'Yes' : 'No'}","${contact.canManageContacts ? 'Yes' : 'No'}","${contact.isActive ? 'Active' : 'Inactive'}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentContactsType}_contacts_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
         async function resetPassword() {
             const userId = document.getElementById('profileUserId').value;
             const newPassword = prompt('Enter new password for the user:');
@@ -1245,12 +2034,74 @@
             window.location.href = '/index.html';
         }
         
-        // Load user info in navbar
-        const navUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (navUser) {
-            document.getElementById('navUserName').textContent = navUser.firstName + ' ' + navUser.lastName;
-            document.getElementById('navUserRole').textContent = navUser.role;
+        // Initialize user display in navbar
+        function initializeUserDisplay() {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    
+                    // Determine display name with fallbacks
+                    let displayName = 'User';
+                    if (user.firstName && user.lastName) {
+                        displayName = `${user.firstName} ${user.lastName}`;
+                    } else if (user.displayName) {
+                        displayName = user.displayName;
+                    } else if (user.username) {
+                        displayName = user.username;
+                    } else if (user.email) {
+                        displayName = user.email.split('@')[0];
+                    }
+                    
+                    // Determine role
+                    const role = user.role || user.typeName || 'User';
+                    
+                    // Create initials for avatar
+                    let initials = 'U';
+                    if (user.firstName && user.lastName) {
+                        initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+                    } else if (displayName && displayName !== 'User') {
+                        const nameParts = displayName.split(' ');
+                        if (nameParts.length >= 2) {
+                            initials = `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+                        } else {
+                            initials = displayName.substring(0, 2).toUpperCase();
+                        }
+                    }
+                    
+                    // Update navbar elements
+                    const firstNameElement = document.getElementById('navUserFirstName');
+                    const avatarElement = document.getElementById('navUserAvatar');
+                    const currentUserElement = document.getElementById('currentUser');
+                    
+                    if (firstNameElement) {
+                        const firstName = user.firstName || displayName.split(' ')[0] || 'User';
+                        firstNameElement.textContent = firstName;
+                    }
+                    if (avatarElement) avatarElement.textContent = initials;
+                    if (currentUserElement) currentUserElement.textContent = displayName;
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    setDefaultUser();
+                }
+            } else {
+                setDefaultUser();
+            }
         }
+        
+        // Set default user display
+        function setDefaultUser() {
+            const firstNameElement = document.getElementById('navUserFirstName');
+            const avatarElement = document.getElementById('navUserAvatar');
+            const currentUserElement = document.getElementById('currentUser');
+            
+            if (firstNameElement) firstNameElement.textContent = 'Guest';
+            if (avatarElement) avatarElement.textContent = 'GU';
+            if (currentUserElement) currentUserElement.textContent = 'Guest';
+        }
+        
+        // Initialize user display
+        initializeUserDisplay();
         
         // Reload display on window resize for responsive changes
         let resizeTimeout;
@@ -1262,6 +2113,87 @@
                 }
             }, 250);
         });
+        
+        // Function to close modal and reset its data
+        function closeModalAndReset(modal) {
+            modal.classList.remove('active');
+            
+            // Reset form data in modals
+            const modalId = modal.id;
+            
+            switch(modalId) {
+                case 'userProfileModal':
+                    // Reset user profile form without saving
+                    document.getElementById('userProfileForm').reset();
+                    // Clear contacts list
+                    document.getElementById('profileContactsList').innerHTML = '<div class="loading" style="text-align: center; color: #999;">Loading contacts...</div>';
+                    break;
+                    
+                case 'contactPermissionsModal':
+                    // Reset contact permissions form without saving
+                    document.getElementById('contactPermissionsForm').reset();
+                    break;
+                    
+                case 'addContactModal':
+                    // Reset add contact form without saving
+                    document.getElementById('addContactForm').reset();
+                    break;
+                    
+                case 'companyContactsModal':
+                    // Just close, no form to reset
+                    break;
+                    
+                case 'contactsByTypeModal':
+                    // Clear search input
+                    document.getElementById('contactsSearchInput').value = '';
+                    break;
+                    
+                case 'supplierProductsModal':
+                    // Just close, no form to reset
+                    break;
+                    
+                case 'importModal':
+                    // Clear import results if any
+                    document.getElementById('importResults').innerHTML = '';
+                    break;
+            }
+        }
+        
+        // ESC key handler to close modals
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.keyCode === 27) {
+                // Close any open modal
+                const modals = document.querySelectorAll('.modal.active');
+                modals.forEach(modal => {
+                    closeModalAndReset(modal);
+                });
+                
+                // Also close any dropdown menus
+                const contactsDropdown = document.getElementById('contactsDropdown');
+                if (contactsDropdown) {
+                    contactsDropdown.style.display = 'none';
+                }
+            }
+        });
+        
+        // Click outside modal to close
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeModalAndReset(event.target);
+            }
+        });
+        
+        // Prevent form submission on ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.keyCode === 27) {
+                // Prevent any default actions
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
     </script>
+    
+    <!-- Global Keyboard Shortcuts -->
+    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>
