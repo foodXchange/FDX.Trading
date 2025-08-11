@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procurement Requests - FDX Trading</title>
-    <!-- Modern UI System -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Console Management - FDX Trading</title>
     <link rel="stylesheet" href="/css/smart-navigation.css">
-    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        /* Request-specific styles */
+        /* Console-specific styles */
         .filters-bar {
             background: white;
             border-radius: 12px;
@@ -67,47 +64,48 @@
             color: #94a3b8;
         }
 
-        .requests-grid {
+        .consoles-grid {
             display: grid;
             gap: 20px;
         }
 
-        .request-card {
+        .console-card {
             background: white;
             border-radius: 12px;
             padding: 24px;
             transition: all 0.3s ease;
             border: 2px solid transparent;
             cursor: pointer;
+            position: relative;
         }
 
-        .request-card:hover {
+        .console-card:hover {
             border-color: #6366f1;
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
         }
 
-        .request-header {
+        .console-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
             margin-bottom: 16px;
         }
 
-        .request-number {
+        .console-code {
             font-size: 14px;
             font-weight: 600;
             color: #6366f1;
         }
 
-        .request-title {
+        .console-title {
             font-size: 18px;
             font-weight: 600;
             color: #1e293b;
             margin: 8px 0;
         }
 
-        .request-meta {
+        .console-meta {
             display: flex;
             gap: 24px;
             margin-bottom: 16px;
@@ -121,20 +119,47 @@
             gap: 6px;
         }
 
-        .request-description {
-            color: #64748b;
-            line-height: 1.6;
+        .progress-section {
             margin-bottom: 16px;
         }
 
-        .request-items {
+        .progress-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .console-stages {
             display: flex;
             gap: 8px;
             margin-bottom: 16px;
             flex-wrap: wrap;
         }
 
-        .item-tag {
+        .stage-tag {
             padding: 4px 12px;
             background: #f1f5f9;
             border-radius: 20px;
@@ -142,14 +167,19 @@
             color: #475569;
         }
 
-        .request-actions {
+        .stage-current {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+
+        .console-actions {
             display: flex;
             gap: 12px;
             padding-top: 16px;
             border-top: 1px solid #e2e8f0;
         }
 
-        .request-btn {
+        .console-btn {
             padding: 8px 16px;
             border-radius: 8px;
             font-size: 14px;
@@ -171,12 +201,12 @@
             background: #e2e8f0;
         }
 
-        .btn-console {
+        .btn-manage {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             color: white;
         }
 
-        .btn-console:hover {
+        .btn-manage:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
@@ -189,17 +219,12 @@
             display: inline-block;
         }
 
-        .status-draft {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
         .status-active {
             background: #d1fae5;
             color: #10b981;
         }
 
-        .status-pending {
+        .status-paused {
             background: #fed7aa;
             color: #f97316;
         }
@@ -218,8 +243,12 @@
             border-radius: 12px 0 0 12px;
         }
 
-        .priority-high {
+        .priority-critical {
             background: #ef4444;
+        }
+
+        .priority-high {
+            background: #f97316;
         }
 
         .priority-medium {
@@ -303,19 +332,19 @@
             <div class="page-breadcrumb">
                 <a href="/dashboard.html" class="breadcrumb-link">Home</a>
                 <span>›</span>
-                <span>Procurement Requests</span>
+                <span>Console Management</span>
             </div>
-            <h1 class="page-title">My Requests</h1>
-            <p class="page-subtitle">Manage your procurement requests and track their progress</p>
+            <h1 class="page-title">Consoles</h1>
+            <p class="page-subtitle">Manage and monitor your procurement consoles</p>
         </div>
         <div class="page-actions">
-            <button class="btn btn-secondary" onclick="refreshRequests()">
+            <button class="btn btn-secondary" onclick="refreshConsoles()">
                 <span>🔄</span>
                 <span>Refresh</span>
             </button>
-            <button class="btn btn-primary" onclick="window.location.href='/request-create.html'">
-                <span>➕</span>
-                <span>New Request</span>
+            <button class="btn btn-primary" onclick="window.location.href='/requests.html'">
+                <span>📝</span>
+                <span>View Requests</span>
             </button>
         </div>
     </div>
@@ -323,31 +352,31 @@
     <!-- Quick Stats -->
     <div class="stats-row">
         <div class="stat-mini">
-            <div class="stat-mini-icon">📝</div>
+            <div class="stat-mini-icon">🎛️</div>
             <div class="stat-mini-content">
-                <div class="stat-mini-value" id="totalRequests">0</div>
-                <div class="stat-mini-label">Total Requests</div>
-            </div>
-        </div>
-        <div class="stat-mini">
-            <div class="stat-mini-icon">⏳</div>
-            <div class="stat-mini-content">
-                <div class="stat-mini-value" id="pendingRequests">0</div>
-                <div class="stat-mini-label">Pending</div>
+                <div class="stat-mini-value" id="totalConsoles">0</div>
+                <div class="stat-mini-label">Total Consoles</div>
             </div>
         </div>
         <div class="stat-mini">
             <div class="stat-mini-icon">✅</div>
             <div class="stat-mini-content">
-                <div class="stat-mini-value" id="completedRequests">0</div>
-                <div class="stat-mini-label">Completed</div>
+                <div class="stat-mini-value" id="activeConsoles">0</div>
+                <div class="stat-mini-label">Active</div>
             </div>
         </div>
         <div class="stat-mini">
-            <div class="stat-mini-icon">🎛️</div>
+            <div class="stat-mini-icon">⏸️</div>
             <div class="stat-mini-content">
-                <div class="stat-mini-value" id="activeConsoles">0</div>
-                <div class="stat-mini-label">Active Consoles</div>
+                <div class="stat-mini-value" id="pausedConsoles">0</div>
+                <div class="stat-mini-label">Paused</div>
+            </div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-icon">📊</div>
+            <div class="stat-mini-content">
+                <div class="stat-mini-value" id="avgProgress">0%</div>
+                <div class="stat-mini-label">Avg Progress</div>
             </div>
         </div>
     </div>
@@ -357,7 +386,7 @@
         <div class="filter-group search-box">
             <div style="position: relative;">
                 <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" id="searchInput" placeholder="Search requests...">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search consoles...">
             </div>
         </div>
         
@@ -365,10 +394,9 @@
             <label class="filter-label">Status</label>
             <select class="filter-select" id="statusFilter">
                 <option value="">All Status</option>
-                <option value="0">Draft</option>
-                <option value="1">Active</option>
+                <option value="0">Active</option>
+                <option value="1">Paused</option>
                 <option value="2">Completed</option>
-                <option value="3">Cancelled</option>
             </select>
         </div>
         
@@ -376,104 +404,137 @@
             <label class="filter-label">Priority</label>
             <select class="filter-select" id="priorityFilter">
                 <option value="">All Priority</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
+                <option value="0">Critical</option>
+                <option value="1">High</option>
+                <option value="2">Medium</option>
+                <option value="3">Low</option>
             </select>
         </div>
         
         <div class="filter-group">
-            <label class="filter-label">Date Range</label>
-            <select class="filter-select" id="dateFilter">
-                <option value="">All Time</option>
-                <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
+            <label class="filter-label">Stage</label>
+            <select class="filter-select" id="stageFilter">
+                <option value="">All Stages</option>
+                <option value="early">Early (0-30%)</option>
+                <option value="mid">Mid (31-70%)</option>
+                <option value="late">Late (71-99%)</option>
+                <option value="complete">Complete (100%)</option>
             </select>
         </div>
     </div>
 
-    <!-- Requests List -->
-    <div id="requestsList" class="requests-grid">
-        <!-- Requests will be loaded here -->
+    <!-- Consoles List -->
+    <div id="consolesList" class="consoles-grid">
+        <!-- Consoles will be loaded here -->
     </div>
 
     <!-- Empty State -->
     <div id="emptyState" class="content-card empty-state" style="display: none;">
-        <div class="empty-icon">📋</div>
-        <h2 class="empty-title">No Requests Found</h2>
-        <p class="empty-text">Start by creating your first procurement request</p>
-        <button class="btn btn-primary" onclick="window.location.href='/request-create.html'">
-            Create First Request
+        <div class="empty-icon">🎛️</div>
+        <h2 class="empty-title">No Consoles Found</h2>
+        <p class="empty-text">Consoles will appear here when you create them from approved requests</p>
+        <button class="btn btn-primary" onclick="window.location.href='/requests.html'">
+            Go to Requests
         </button>
     </div>
 
     <!-- Load Smart Navigation -->
     <script src="/js/smart-navigation.js"></script>
     
-    <!-- Modern UI System -->
-    <script src="/js/modern-ui.js"></script>
-    
     <!-- Page-specific JavaScript -->
     <script>
-        let allRequests = [];
-        let filteredRequests = [];
+        let allConsoles = [];
+        let filteredConsoles = [];
 
-        async function loadRequests() {
+        async function loadConsoles() {
             try {
-                const response = await fetch('/api/requests');
-                if (!response.ok) throw new Error('Failed to load requests');
+                const response = await fetch('/api/consoles');
+                if (!response.ok) throw new Error('Failed to load consoles');
                 
-                allRequests = await response.json();
+                allConsoles = await response.json();
                 applyFilters();
                 updateStats();
             } catch (error) {
-                console.error('Error loading requests:', error);
-                showEmptyState('Error loading requests. Please try again.');
+                console.error('Error loading consoles:', error);
+                showEmptyState('Error loading consoles. Please try again.');
             }
         }
 
         function updateStats() {
-            document.getElementById('totalRequests').textContent = allRequests.length;
-            document.getElementById('pendingRequests').textContent = 
-                allRequests.filter(r => r.status === 1).length;
-            document.getElementById('completedRequests').textContent = 
-                allRequests.filter(r => r.status === 2).length;
-            
-            // Count active consoles (would need separate API call)
+            document.getElementById('totalConsoles').textContent = allConsoles.length;
             document.getElementById('activeConsoles').textContent = 
-                Math.floor(allRequests.length * 0.3); // Mock data
+                allConsoles.filter(c => c.status === 0).length;
+            document.getElementById('pausedConsoles').textContent = 
+                allConsoles.filter(c => c.status === 1).length;
+            
+            if (allConsoles.length > 0) {
+                const avgProgress = allConsoles.reduce((sum, c) => {
+                    const progress = c.totalStages > 0 
+                        ? (c.completedStages / c.totalStages) * 100 
+                        : 0;
+                    return sum + progress;
+                }, 0) / allConsoles.length;
+                document.getElementById('avgProgress').textContent = Math.round(avgProgress) + '%';
+            } else {
+                document.getElementById('avgProgress').textContent = '0%';
+            }
         }
 
         function applyFilters() {
-            filteredRequests = [...allRequests];
+            filteredConsoles = [...allConsoles];
             
             // Search filter
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             if (searchTerm) {
-                filteredRequests = filteredRequests.filter(r => 
-                    r.title.toLowerCase().includes(searchTerm) ||
-                    r.requestNumber.toLowerCase().includes(searchTerm) ||
-                    r.description?.toLowerCase().includes(searchTerm)
+                filteredConsoles = filteredConsoles.filter(c => 
+                    c.title.toLowerCase().includes(searchTerm) ||
+                    c.consoleCode.toLowerCase().includes(searchTerm) ||
+                    c.ownerName?.toLowerCase().includes(searchTerm)
                 );
             }
             
             // Status filter
             const statusFilter = document.getElementById('statusFilter').value;
             if (statusFilter) {
-                filteredRequests = filteredRequests.filter(r => 
-                    r.status === parseInt(statusFilter)
+                filteredConsoles = filteredConsoles.filter(c => 
+                    c.status === parseInt(statusFilter)
                 );
             }
             
-            displayRequests();
+            // Priority filter
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            if (priorityFilter) {
+                filteredConsoles = filteredConsoles.filter(c => 
+                    c.priority === parseInt(priorityFilter)
+                );
+            }
+            
+            // Stage filter
+            const stageFilter = document.getElementById('stageFilter').value;
+            if (stageFilter) {
+                filteredConsoles = filteredConsoles.filter(c => {
+                    const progress = c.totalStages > 0 
+                        ? (c.completedStages / c.totalStages) * 100 
+                        : 0;
+                    
+                    switch(stageFilter) {
+                        case 'early': return progress <= 30;
+                        case 'mid': return progress > 30 && progress <= 70;
+                        case 'late': return progress > 70 && progress < 100;
+                        case 'complete': return progress === 100;
+                        default: return true;
+                    }
+                });
+            }
+            
+            displayConsoles();
         }
 
-        function displayRequests() {
-            const container = document.getElementById('requestsList');
+        function displayConsoles() {
+            const container = document.getElementById('consolesList');
             const emptyState = document.getElementById('emptyState');
             
-            if (filteredRequests.length === 0) {
+            if (filteredConsoles.length === 0) {
                 container.style.display = 'none';
                 emptyState.style.display = 'block';
                 return;
@@ -482,55 +543,73 @@
             container.style.display = 'grid';
             emptyState.style.display = 'none';
             
-            container.innerHTML = filteredRequests.map(request => {
-                const statusClass = ['draft', 'active', 'completed', 'cancelled'][request.status] || 'draft';
-                const statusText = ['Draft', 'Active', 'Completed', 'Cancelled'][request.status] || 'Draft';
-                const priority = request.priority || 'medium';
+            container.innerHTML = filteredConsoles.map(console => {
+                const progress = console.totalStages > 0 
+                    ? Math.round((console.completedStages / console.totalStages) * 100) 
+                    : 0;
+                
+                const statusClass = ['active', 'paused', 'completed'][console.status] || 'active';
+                const statusText = ['Active', 'Paused', 'Completed'][console.status] || 'Active';
+                const statusIcon = ['✅', '⏸️', '✔️'][console.status] || '✅';
+                
+                const priorityClass = ['critical', 'high', 'medium', 'low'][console.priority] || 'medium';
+                const priorityText = ['Critical', 'High', 'Medium', 'Low'][console.priority] || 'Medium';
                 
                 return `
-                    <div class="request-card" onclick="viewRequest(${request.id})" style="position: relative;">
-                        <div class="priority-indicator priority-${priority}"></div>
-                        <div class="request-header">
+                    <div class="console-card" onclick="viewConsole(${console.id})">
+                        <div class="priority-indicator priority-${priorityClass}"></div>
+                        <div class="console-header">
                             <div>
-                                <div class="request-number">${request.requestNumber}</div>
-                                <h3 class="request-title">${request.title}</h3>
+                                <div class="console-code">${console.consoleCode}</div>
+                                <h3 class="console-title">${console.title}</h3>
                             </div>
-                            <span class="status-badge status-${statusClass}">${statusText}</span>
+                            <span class="status-badge status-${statusClass}">${statusIcon} ${statusText}</span>
                         </div>
                         
-                        <div class="request-meta">
+                        <div class="console-meta">
                             <div class="meta-item">
                                 <span>👤</span>
-                                <span>${request.buyerName || 'Unknown'}</span>
+                                <span>${console.ownerName || 'Unknown'}</span>
                             </div>
                             <div class="meta-item">
                                 <span>📅</span>
-                                <span>${new Date(request.createdAt).toLocaleDateString()}</span>
+                                <span>${new Date(console.createdAt).toLocaleDateString()}</span>
                             </div>
                             <div class="meta-item">
-                                <span>📦</span>
-                                <span>${request.itemCount || 0} items</span>
+                                <span>⚡</span>
+                                <span>${priorityText} Priority</span>
                             </div>
                         </div>
                         
-                        ${request.description ? `
-                            <p class="request-description">${request.description.substring(0, 150)}${request.description.length > 150 ? '...' : ''}</p>
-                        ` : ''}
-                        
-                        <div class="request-items">
-                            ${request.isKosher ? '<span class="item-tag">✅ Kosher</span>' : ''}
-                            ${request.incoterms ? `<span class="item-tag">📦 ${request.incoterms}</span>` : ''}
-                            ${request.preferredCountries ? `<span class="item-tag">🌍 ${request.preferredCountries}</span>` : ''}
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                <span>Stage ${console.currentStageNumber} of ${console.totalStages}</span>
+                                <span>${progress}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%">
+                                    ${progress > 10 ? progress + '%' : ''}
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="request-actions">
-                            <button class="request-btn btn-view" onclick="event.stopPropagation(); viewRequest(${request.id})">
+                        <div class="console-stages">
+                            ${console.currentStageName ? `
+                                <span class="stage-tag stage-current">Current: ${console.currentStageName}</span>
+                            ` : ''}
+                            ${console.nextStageName ? `
+                                <span class="stage-tag">Next: ${console.nextStageName}</span>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="console-actions">
+                            <button class="console-btn btn-view" onclick="event.stopPropagation(); viewConsole(${console.id})">
                                 <span>👁️</span>
                                 <span>View Details</span>
                             </button>
-                            <button class="request-btn btn-console" onclick="event.stopPropagation(); createConsole(${request.id})">
-                                <span>🎛️</span>
-                                <span>Create Console</span>
+                            <button class="console-btn btn-manage" onclick="event.stopPropagation(); manageConsole(${console.id})">
+                                <span>⚙️</span>
+                                <span>Manage</span>
                             </button>
                         </div>
                     </div>
@@ -538,36 +617,21 @@
             }).join('');
         }
 
-        function viewRequest(id) {
-            window.location.href = `/request-detail.html?id=${id}`;
+        function viewConsole(id) {
+            window.location.href = `/console-detail.html?id=${id}`;
         }
 
-        async function createConsole(requestId) {
-            if (!confirm('Create a console for this request?')) return;
-            
-            try {
-                const response = await fetch('/api/consoles/create-from-request', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ requestId: requestId })
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    window.location.href = `/console-detail.html?id=${result.consoleId}`;
-                }
-            } catch (error) {
-                console.error('Error creating console:', error);
-                alert('Failed to create console');
-            }
+        function manageConsole(id) {
+            // Navigate to console management page
+            window.location.href = `/console-manage.html?id=${id}`;
         }
 
-        function refreshRequests() {
-            loadRequests();
+        function refreshConsoles() {
+            loadConsoles();
         }
 
         function showEmptyState(message) {
-            const container = document.getElementById('requestsList');
+            const container = document.getElementById('consolesList');
             const emptyState = document.getElementById('emptyState');
             
             container.style.display = 'none';
@@ -582,10 +646,13 @@
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('statusFilter').addEventListener('change', applyFilters);
         document.getElementById('priorityFilter').addEventListener('change', applyFilters);
-        document.getElementById('dateFilter').addEventListener('change', applyFilters);
+        document.getElementById('stageFilter').addEventListener('change', applyFilters);
 
-        // Load requests on page load
-        loadRequests();
+        // Load consoles on page load
+        loadConsoles();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadConsoles, 30000);
     </script>
 </body>
 </html>

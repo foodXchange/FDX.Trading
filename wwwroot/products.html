@@ -3,1217 +3,849 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products - FDX Trading</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Product Catalog - FDX Trading</title>
+    <link rel="stylesheet" href="/css/smart-navigation.css">
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* Navbar styling moved to inline styles */
-        
-        .main-container {
-            padding: 20px;
-        }
-        
+        /* Product-specific styles */
         .filters-sidebar {
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
         }
-        
+
+        .filter-section {
+            margin-bottom: 24px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+
+        .filter-option input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .filter-option label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #64748b;
+            flex: 1;
+        }
+
+        .filter-count {
+            font-size: 12px;
+            color: #94a3b8;
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .price-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .results-info {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .view-btn {
+            padding: 6px 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .view-btn.active {
+            background: #6366f1;
+            color: white;
+        }
+
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
-        
+
+        .products-list {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .products-list.active {
+            display: flex;
+        }
+
+        .products-grid.list-view {
+            display: none;
+        }
+
         .product-card {
             background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            position: relative;
+            border-radius: 12px;
             overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
         }
-        
+
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            border-color: #6366f1;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
-        
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #6366f1;
         }
-        
-        .product-code {
-            font-size: 0.9rem;
-            color: #6c757d;
-            font-weight: 500;
+
+        .product-body {
+            padding: 16px;
         }
-        
+
+        .product-category {
+            font-size: 12px;
+            color: #6366f1;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
         .product-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-            margin: 10px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .product-description {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+            line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        
-        .product-category {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #f0f0f0;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .product-certifications {
+
+        .product-meta {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 10px 0;
-        }
-        
-        .cert-badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        .cert-kosher {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-        
-        .cert-organic {
-            background: #e8f5e9;
-            color: #388e3c;
-        }
-        
-        .cert-vegan {
-            background: #f3e5f5;
-            color: #7b1fa2;
-        }
-        
-        .cert-gluten-free {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-        
-        .product-price {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-        }
-        
-        .product-suppliers {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .product-status {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        .status-active {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-inactive {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .search-box {
-            position: relative;
-        }
-        
-        .search-box input {
-            padding-left: 40px;
-            border-radius: 25px;
-            border: 2px solid #e0e0e0;
-            transition: border-color 0.3s ease;
-        }
-        
-        .search-box input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-        }
-        
-        .stats-row {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stat-card {
-            text-align: center;
-            padding: 15px;
-            border-right: 1px solid #e0e0e0;
-        }
-        
-        .stat-card:last-child {
-            border-right: none;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-        
-        .filter-section {
-            margin-bottom: 25px;
-        }
-        
-        .filter-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .custom-checkbox {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-        
-        .custom-checkbox input[type="checkbox"] {
-            margin-right: 8px;
-        }
-        
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .no-results i {
-            font-size: 4rem;
-            color: #ccc;
-            margin-bottom: 20px;
-        }
-        
-        .loading-spinner {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px;
-        }
-        
-        .btn-add-product {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .btn-add-product:hover {
-            transform: scale(1.1);
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #94a3b8;
         }
 
-        /* Product Detail Modal */
-        .modal-content {
-            border-radius: 15px;
-            border: none;
-        }
-        
-        .modal-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 15px 15px 0 0;
-            border: none;
-        }
-        
-        .modal-body {
-            padding: 30px;
-        }
-        
-        .detail-section {
-            margin-bottom: 25px;
-        }
-        
-        .detail-section h6 {
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 8px;
-        }
-        
-        .detail-row {
+        .meta-item {
             display: flex;
-            margin-bottom: 10px;
+            align-items: center;
+            gap: 4px;
         }
-        
-        .detail-label {
-            flex: 0 0 150px;
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .product-unit {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .product-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 500;
-            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
         }
-        
-        .detail-value {
+
+        .btn-favorite {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .btn-favorite:hover {
+            background: #fecaca;
+        }
+
+        .btn-cart {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+
+        .btn-cart:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .badge-new {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .badge-sale {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .badge-kosher {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        /* List view styles */
+        .product-list-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .product-list-item:hover {
+            border-color: #6366f1;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .product-list-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #6366f1;
+            flex-shrink: 0;
+        }
+
+        .product-list-content {
             flex: 1;
-            color: #333;
         }
-        
-        .supplier-list {
-            max-height: 300px;
-            overflow-y: auto;
+
+        .product-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
         }
-        
-        .supplier-item {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+
+        .product-list-details {
+            display: flex;
+            gap: 24px;
+            margin-top: 12px;
         }
-        
-        .proposal-timeline {
+
+        .detail-item {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            margin-bottom: 24px;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
             position: relative;
-            padding-left: 30px;
         }
-        
-        .proposal-timeline::before {
-            content: '';
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-icon {
             position: absolute;
-            left: 10px;
-            top: 10px;
-            bottom: 10px;
-            width: 2px;
-            background: #e0e0e0;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
         }
-        
-        .timeline-item {
-            position: relative;
-            margin-bottom: 20px;
+
+        .content-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
         }
-        
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -24px;
-            top: 5px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #667eea;
-            border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+        @media (max-width: 768px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-sidebar {
+                order: 2;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; padding: 10px 20px;">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-            <a href="/dashboard.html" style="display: flex; align-items: center; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.5rem;">
-                <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
-                <span>FDX Trading</span>
-            </a>
-            
-            <div style="display: flex; gap: 5px;">
-                <a href="/dashboard.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Dashboard</a>
-                <a href="/requests.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Requests</a>
-                <a href="/products.html" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
-                <a href="/supplier-catalog.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
-                <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
-                <a href="/users.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-section">
+            <div class="page-breadcrumb">
+                <a href="/dashboard.html" class="breadcrumb-link">Home</a>
+                <span>›</span>
+                <span>Product Catalog</span>
             </div>
+            <h1 class="page-title">Products</h1>
+            <p class="page-subtitle">Browse our extensive catalog of quality products</p>
+        </div>
+        <div class="page-actions">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="productSearch" placeholder="Search products...">
+            </div>
+            <button class="btn btn-primary" onclick="showAddProduct()">
+                <span>➕</span>
+                <span>Add Product</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="content-layout">
+        <!-- Filters Sidebar -->
+        <div class="filters-sidebar">
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Filters</h3>
             
-            <div class="navbar-user" style="display: flex; align-items: center; gap: 10px;">
-                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
-                    <div class="user-info" style="cursor: pointer;">
-                        <div class="user-avatar-small" id="navUserAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">U</div>
-                    </div>
-                </a>
-                <button class="logout-btn" onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; margin-left: 15px;">Logout</button>
+            <!-- Categories -->
+            <div class="filter-section">
+                <div class="filter-title">Categories</div>
+                <div class="filter-option">
+                    <input type="checkbox" id="cat-food">
+                    <label for="cat-food">Food & Beverages</label>
+                    <span class="filter-count">124</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="cat-dairy">
+                    <label for="cat-dairy">Dairy Products</label>
+                    <span class="filter-count">87</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="cat-meat">
+                    <label for="cat-meat">Meat & Poultry</label>
+                    <span class="filter-count">65</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="cat-produce">
+                    <label for="cat-produce">Fresh Produce</label>
+                    <span class="filter-count">92</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="cat-frozen">
+                    <label for="cat-frozen">Frozen Foods</label>
+                    <span class="filter-count">43</span>
+                </div>
+            </div>
+
+            <!-- Kosher Filter -->
+            <div class="filter-section">
+                <div class="filter-title">Kosher Certification</div>
+                <div class="filter-option">
+                    <input type="checkbox" id="kosher-yes">
+                    <label for="kosher-yes">Kosher Certified</label>
+                    <span class="filter-count">156</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="kosher-pending">
+                    <label for="kosher-pending">Certification Pending</label>
+                    <span class="filter-count">23</span>
+                </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="filter-section">
+                <div class="filter-title">Price Range</div>
+                <div class="price-range">
+                    <input type="number" class="price-input" placeholder="Min" id="priceMin">
+                    <span>-</span>
+                    <input type="number" class="price-input" placeholder="Max" id="priceMax">
+                </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="filter-section">
+                <div class="filter-title">Availability</div>
+                <div class="filter-option">
+                    <input type="checkbox" id="avail-stock">
+                    <label for="avail-stock">In Stock</label>
+                    <span class="filter-count">298</span>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="avail-order">
+                    <label for="avail-order">Available to Order</label>
+                    <span class="filter-count">89</span>
+                </div>
+            </div>
+
+            <!-- Apply/Reset -->
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="applyFilters()">Apply Filters</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="resetFilters()">Reset</button>
             </div>
         </div>
-    </nav>
 
-    <div class="main-container">
-        <!-- Statistics Row -->
-        <div class="stats-row">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalProducts">0</div>
-                        <div class="stat-label">Total Products</div>
-                    </div>
+        <!-- Products Section -->
+        <div>
+            <!-- Products Header -->
+            <div class="products-header">
+                <div class="results-info">
+                    Showing <strong id="resultCount">24</strong> of <strong id="totalCount">412</strong> products
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-value" id="activeProducts">0</div>
-                        <div class="stat-label">Active Products</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalCategories">0</div>
-                        <div class="stat-label">Categories</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-value" id="activeProposals">0</div>
-                        <div class="stat-label">Active Proposals</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- Filters Sidebar -->
-            <div class="col-lg-3">
-                <div class="filters-sidebar">
-                    <h5 class="mb-4">Filters</h5>
-                    
-                    <!-- Search -->
-                    <div class="filter-section">
-                        <div class="filter-title">Search</div>
-                        <div class="search-box">
-                            <i class="bi bi-search"></i>
-                            <input type="text" class="form-control" id="searchInput" placeholder="Search products...">
-                        </div>
-                    </div>
-                    
-                    <!-- Category Filter -->
-                    <div class="filter-section">
-                        <div class="filter-title">Category</div>
-                        <select class="form-select" id="categoryFilter" aria-label="Filter by category" title="Filter products by category">
-                            <option value="">All Categories</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Status Filter -->
-                    <div class="filter-section">
-                        <div class="filter-title">Status</div>
-                        <select class="form-select" id="statusFilter" aria-label="Filter by status" title="Filter products by status">
-                            <option value="">All Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Discontinued">Discontinued</option>
-                            <option value="OutOfStock">Out of Stock</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Certifications Filter -->
-                    <div class="filter-section">
-                        <div class="filter-title">Certifications</div>
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="kosherFilter">
-                            <span>Kosher</span>
-                        </label>
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="organicFilter">
-                            <span>Organic</span>
-                        </label>
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="veganFilter">
-                            <span>Vegan</span>
-                        </label>
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="glutenFreeFilter">
-                            <span>Gluten Free</span>
-                        </label>
-                    </div>
-                    
-                    <!-- Supplier Filter -->
-                    <div class="filter-section">
-                        <div class="filter-title">Supplier</div>
-                        <select class="form-select" id="supplierFilter" aria-label="Filter by supplier" title="Filter products by supplier">
-                            <option value="">All Suppliers</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Apply/Clear Buttons -->
-                    <div class="d-grid gap-2 mt-4">
-                        <button class="btn btn-primary" onclick="applyFilters()">
-                            <i class="bi bi-funnel"></i> Apply Filters
+                <div class="sort-controls">
+                    <select class="sort-select" id="sortSelect" onchange="sortProducts()">
+                        <option value="relevance">Most Relevant</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name">Name: A-Z</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="setView('grid')">
+                            <span>⊞</span>
                         </button>
-                        <button class="btn btn-outline-secondary" onclick="clearFilters()">
-                            <i class="bi bi-x-circle"></i> Clear All
+                        <button class="view-btn" onclick="setView('list')">
+                            <span>☰</span>
                         </button>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Products Grid -->
-            <div class="col-lg-9">
-                <div class="products-grid" id="productsGrid">
-                    <div class="loading-spinner">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-3">Loading products...</p>
-                    </div>
-                </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Product cards will be loaded here -->
+            </div>
+
+            <!-- Products List (hidden by default) -->
+            <div class="products-list" id="productsList">
+                <!-- Product list items will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="content-card empty-state" style="display: none;">
+                <div class="empty-icon">📦</div>
+                <h2 class="empty-title">No Products Found</h2>
+                <p class="empty-text">Try adjusting your filters or search terms</p>
+                <button class="btn btn-primary" onclick="resetFilters()">Clear Filters</button>
             </div>
         </div>
     </div>
 
-    <!-- Add Product Button -->
-    <button class="btn-add-product" onclick="showAddProductModal()" aria-label="Add new product" title="Add new product">
-        <i class="bi bi-plus"></i>
-    </button>
-
-    <!-- Product Detail Modal -->
-    <div class="modal fade" id="productDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Product Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" title="Close dialog"></button>
-                </div>
-                <div class="modal-body" id="productDetailContent">
-                    <!-- Content will be dynamically loaded -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="editProduct()">
-                        <i class="bi bi-pencil"></i> Edit Product
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addProductTitle">Add New Product</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" title="Close dialog"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="productForm">
-                        <input type="hidden" id="productId">
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="productCode">Product Code *</label>
-                                <input type="text" class="form-control" id="productCode" required aria-label="Product code" placeholder="Enter product code">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="productName">Product Name *</label>
-                                <input type="text" class="form-control" id="productName" required aria-label="Product name" placeholder="Enter product name">
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="productCategory">Category</label>
-                                <input type="text" class="form-control" id="productCategory" aria-label="Product category" placeholder="Enter category">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="productSubCategory">Sub-Category</label>
-                                <input type="text" class="form-control" id="productSubCategory" aria-label="Product sub-category" placeholder="Enter sub-category">
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label" for="productDescription">Description</label>
-                            <textarea class="form-control" id="productDescription" rows="3" aria-label="Product description" placeholder="Enter product description"></textarea>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Unit of Measure</label>
-                                <input type="text" class="form-control" id="unitOfMeasure" placeholder="kg, liter, etc">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label" for="netWeight">Net Weight</label>
-                                <input type="number" class="form-control" id="netWeight" step="0.001" aria-label="Net weight" placeholder="0.000">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label" for="grossWeight">Gross Weight</label>
-                                <input type="number" class="form-control" id="grossWeight" step="0.001" aria-label="Gross weight" placeholder="0.000">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label" for="unitsPerCarton">Units/Carton</label>
-                                <input type="number" class="form-control" id="unitsPerCarton" aria-label="Units per carton" placeholder="0">
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="isKosher">
-                                    <label class="form-check-label" for="isKosher">Kosher</label>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="isOrganic">
-                                    <label class="form-check-label" for="isOrganic">Organic</label>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="isVegan">
-                                    <label class="form-check-label" for="isVegan">Vegan</label>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="isGlutenFree">
-                                    <label class="form-check-label" for="isGlutenFree">Gluten Free</label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label" for="shelfLifeDays">Shelf Life (days)</label>
-                                <input type="number" class="form-control" id="shelfLifeDays" aria-label="Shelf life in days" placeholder="0">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label" for="hsCode">HS Code</label>
-                                <input type="text" class="form-control" id="hsCode" aria-label="HS code" placeholder="Enter HS code">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label" for="countryOfOrigin">Country of Origin</label>
-                                <input type="text" class="form-control" id="countryOfOrigin" aria-label="Country of origin" placeholder="Enter country">
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="manufacturer">Manufacturer</label>
-                                <input type="text" class="form-control" id="manufacturer" aria-label="Manufacturer" placeholder="Enter manufacturer">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="brand">Brand</label>
-                                <input type="text" class="form-control" id="brand" aria-label="Brand" placeholder="Enter brand">
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Product Images (URLs)</label>
-                            <input type="text" class="form-control" id="productImages" placeholder="Comma-separated URLs">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveProduct()">
-                        <i class="bi bi-save"></i> Save Product
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
+    
+    <!-- Page-specific JavaScript -->
     <script>
         let products = [];
-        let suppliers = [];
-        let currentProductId = null;
-        
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuth();
-            loadProducts();
-            loadCategories();
-            loadSuppliers();
+        let filteredProducts = [];
+        let currentView = 'grid';
+
+        async function loadProducts() {
+            // Mock data for demonstration
+            products = [
+                {
+                    id: 1,
+                    name: 'Premium Olive Oil',
+                    category: 'Food & Beverages',
+                    price: 24.99,
+                    unit: 'per liter',
+                    description: 'Extra virgin olive oil from Mediterranean orchards',
+                    kosher: true,
+                    inStock: true,
+                    badge: 'new',
+                    supplier: 'Mediterranean Imports',
+                    minOrder: '12 units'
+                },
+                {
+                    id: 2,
+                    name: 'Organic Whole Milk',
+                    category: 'Dairy Products',
+                    price: 4.99,
+                    unit: 'per gallon',
+                    description: 'Fresh organic whole milk from local farms',
+                    kosher: true,
+                    inStock: true,
+                    badge: 'kosher',
+                    supplier: 'Local Dairy Co.',
+                    minOrder: '6 units'
+                },
+                {
+                    id: 3,
+                    name: 'Premium Beef Cuts',
+                    category: 'Meat & Poultry',
+                    price: 18.99,
+                    unit: 'per kg',
+                    description: 'High-quality beef cuts, grass-fed and hormone-free',
+                    kosher: true,
+                    inStock: false,
+                    badge: 'sale',
+                    supplier: 'Quality Meats Inc.',
+                    minOrder: '20 kg'
+                },
+                {
+                    id: 4,
+                    name: 'Fresh Tomatoes',
+                    category: 'Fresh Produce',
+                    price: 3.49,
+                    unit: 'per kg',
+                    description: 'Vine-ripened tomatoes, perfect for salads and cooking',
+                    kosher: false,
+                    inStock: true,
+                    supplier: 'Green Valley Farms',
+                    minOrder: '10 kg'
+                },
+                {
+                    id: 5,
+                    name: 'Frozen Mixed Vegetables',
+                    category: 'Frozen Foods',
+                    price: 6.99,
+                    unit: 'per bag',
+                    description: 'Premium quality frozen vegetable mix',
+                    kosher: true,
+                    inStock: true,
+                    badge: 'kosher',
+                    supplier: 'FrostFresh Foods',
+                    minOrder: '24 bags'
+                },
+                {
+                    id: 6,
+                    name: 'Artisan Bread',
+                    category: 'Food & Beverages',
+                    price: 5.99,
+                    unit: 'per loaf',
+                    description: 'Freshly baked artisan bread with traditional recipes',
+                    kosher: true,
+                    inStock: true,
+                    badge: 'new',
+                    supplier: 'Bakery Delights',
+                    minOrder: '12 loaves'
+                }
+            ];
             
-            // Load user info in navbar
-            const userData = localStorage.getItem('currentUser');
-            if (userData) {
-                const navUser = JSON.parse(userData);
-                // Create display name with fallbacks
-                let displayName = 'User';
-                if (navUser.firstName && navUser.lastName) {
-                    displayName = `${navUser.firstName} ${navUser.lastName}`;
-                } else if (navUser.displayName) {
-                    displayName = navUser.displayName;
-                } else if (navUser.username) {
-                    displayName = navUser.username;
-                } else if (navUser.email) {
-                    displayName = navUser.email.split('@')[0];
-                }
-                
-                // Set role with fallback
-                const role = navUser.role || navUser.typeName || 'User';
-                
-                // Update navbar
-                const nameElement = document.getElementById('navUserName');
-                const roleElement = document.getElementById('navUserRole');
-                
-                if (nameElement) {
-                    nameElement.textContent = displayName;
-                }
-                if (roleElement) {
-                    roleElement.textContent = role;
-                }
-            } else {
-                // No user data - set defaults
-                const nameElement = document.getElementById('navUserName');
-                const roleElement = document.getElementById('navUserRole');
-                
-                if (nameElement) {
-                    nameElement.textContent = 'Guest User';
-                }
-                if (roleElement) {
-                    roleElement.textContent = 'Guest';
-                }
-            }
-            loadStats();
+            // Duplicate for more items
+            products = [...products, ...products.map(p => ({...p, id: p.id + 100}))];
             
-            // Add event listeners
-            document.getElementById('searchInput').addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    applyFilters();
-                }
-            });
-        });
-        
-        // Check authentication
-        function checkAuth() {
-            const userData = localStorage.getItem('currentUser');
-            if (!userData) {
-                // No user data at all - redirect to login
-                window.location.href = 'index.html';
+            filteredProducts = [...products];
+            displayProducts();
+        }
+
+        function displayProducts() {
+            const gridContainer = document.getElementById('productsGrid');
+            const listContainer = document.getElementById('productsList');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (filteredProducts.length === 0) {
+                gridContainer.style.display = 'none';
+                listContainer.style.display = 'none';
+                emptyState.style.display = 'block';
                 return;
             }
             
-            try {
-                const user = JSON.parse(userData);
-                if (!user.id && !user.username) {
-                    // Invalid user data - redirect to login
-                    window.location.href = 'index.html';
-                }
-            } catch (error) {
-                console.error('Error parsing user data:', error);
-                // Invalid JSON - redirect to login
-                window.location.href = 'index.html';
-            }
-        }
-        
-        // Load products
-        async function loadProducts() {
-            try {
-                const response = await fetch('/api/products');
-                if (response.ok) {
-                    products = await response.json();
-                    displayProducts(products);
-                }
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showError('Failed to load products');
-            }
-        }
-        
-        // Display products in grid
-        function displayProducts(productsToShow) {
-            const grid = document.getElementById('productsGrid');
+            emptyState.style.display = 'none';
             
-            if (productsToShow.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <i class="bi bi-inbox"></i>
-                        <h4>No Products Found</h4>
-                        <p>Try adjusting your filters or add a new product</p>
+            // Update counts
+            document.getElementById('resultCount').textContent = filteredProducts.length;
+            document.getElementById('totalCount').textContent = products.length;
+            
+            // Grid view
+            gridContainer.innerHTML = filteredProducts.map(product => {
+                const badgeHtml = product.badge ? `
+                    <span class="product-badge badge-${product.badge}">
+                        ${product.badge === 'new' ? 'NEW' : product.badge === 'sale' ? 'SALE' : 'KOSHER'}
+                    </span>
+                ` : '';
+                
+                return `
+                    <div class="product-card" onclick="viewProduct(${product.id})" style="position: relative;">
+                        ${badgeHtml}
+                        <div class="product-image">📦</div>
+                        <div class="product-body">
+                            <div class="product-category">${product.category}</div>
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-description">${product.description}</div>
+                            <div class="product-meta">
+                                <div class="meta-item">
+                                    <span>🏢</span>
+                                    <span>${product.supplier}</span>
+                                </div>
+                                ${product.kosher ? '<div class="meta-item"><span>✅</span><span>Kosher</span></div>' : ''}
+                            </div>
+                            <div class="product-footer">
+                                <div>
+                                    <div class="product-price">$${product.price}</div>
+                                    <div class="product-unit">${product.unit}</div>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="product-btn btn-favorite" onclick="event.stopPropagation(); toggleFavorite(${product.id})">
+                                        ❤️
+                                    </button>
+                                    <button class="product-btn btn-cart" onclick="event.stopPropagation(); addToCart(${product.id})">
+                                        🛒
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
-                return;
-            }
+            }).join('');
             
-            grid.innerHTML = productsToShow.map(product => `
-                <div class="product-card" onclick="viewProductDetail(${product.id})">
-                    <div class="product-status status-${product.status.toLowerCase()}">${product.status}</div>
-                    <div class="product-code">${product.productCode}</div>
-                    <div class="product-name">${product.productName}</div>
-                    ${product.category ? `<div class="product-category">${product.category}</div>` : ''}
-                    
-                    <div class="product-certifications">
-                        ${product.isKosher ? '<span class="cert-badge cert-kosher">Kosher</span>' : ''}
-                        ${product.isOrganic ? '<span class="cert-badge cert-organic">Organic</span>' : ''}
-                        ${product.isVegan ? '<span class="cert-badge cert-vegan">Vegan</span>' : ''}
-                        ${product.isGlutenFree ? '<span class="cert-badge cert-gluten-free">Gluten Free</span>' : ''}
-                    </div>
-                    
-                    ${product.lowestPrice ? `
-                        <div class="product-price">$${product.lowestPrice.toFixed(2)}</div>
-                    ` : ''}
-                    
-                    <div class="product-suppliers">
-                        <i class="bi bi-building"></i> ${product.suppliers ? product.suppliers.length : 0} Supplier(s)
-                    </div>
-                    
-                    ${product.proposals && product.proposals.length > 0 ? `
-                        <div class="mt-2">
-                            <small class="text-muted">
-                                <i class="bi bi-file-text"></i> ${product.proposals.length} Proposal(s)
-                            </small>
+            // List view
+            listContainer.innerHTML = filteredProducts.map(product => `
+                <div class="product-list-item" onclick="viewProduct(${product.id})">
+                    <div class="product-list-image">📦</div>
+                    <div class="product-list-content">
+                        <div class="product-list-header">
+                            <div>
+                                <div class="product-category">${product.category}</div>
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-description">${product.description}</div>
+                            </div>
+                            <div>
+                                <div class="product-price">$${product.price}</div>
+                                <div class="product-unit">${product.unit}</div>
+                            </div>
                         </div>
-                    ` : ''}
+                        <div class="product-list-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Supplier:</span> ${product.supplier}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Min Order:</span> ${product.minOrder}
+                            </div>
+                            ${product.kosher ? '<div class="detail-item"><span class="detail-label">✅ Kosher Certified</span></div>' : ''}
+                            <div class="detail-item">
+                                <span class="detail-label">Status:</span> ${product.inStock ? '✅ In Stock' : '❌ Out of Stock'}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `).join('');
         }
-        
-        // Load categories for filter
-        async function loadCategories() {
-            try {
-                const response = await fetch('/api/products/categories');
-                if (response.ok) {
-                    const categories = await response.json();
-                    const select = document.getElementById('categoryFilter');
-                    categories.forEach(category => {
-                        if (category) {
-                            select.innerHTML += `<option value="${category}">${category}</option>`;
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading categories:', error);
+
+        function setView(view) {
+            currentView = view;
+            const gridContainer = document.getElementById('productsGrid');
+            const listContainer = document.getElementById('productsList');
+            const viewButtons = document.querySelectorAll('.view-btn');
+            
+            viewButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === 'grid') {
+                gridContainer.style.display = 'grid';
+                listContainer.classList.remove('active');
+            } else {
+                gridContainer.style.display = 'none';
+                listContainer.classList.add('active');
             }
         }
-        
-        // Load suppliers for filter
-        async function loadSuppliers() {
-            try {
-                const response = await fetch('/api/users?type=supplier');
-                if (response.ok) {
-                    suppliers = await response.json();
-                    const select = document.getElementById('supplierFilter');
-                    suppliers.forEach(supplier => {
-                        select.innerHTML += `<option value="${supplier.id}">${supplier.companyName || supplier.username}</option>`;
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading suppliers:', error);
+
+        function viewProduct(id) {
+            alert(`View product ${id} details`);
+        }
+
+        function toggleFavorite(id) {
+            alert(`Toggle favorite for product ${id}`);
+        }
+
+        function addToCart(id) {
+            alert(`Add product ${id} to cart`);
+        }
+
+        function applyFilters() {
+            // Apply filters logic
+            alert('Filters applied');
+        }
+
+        function resetFilters() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('priceMin').value = '';
+            document.getElementById('priceMax').value = '';
+            filteredProducts = [...products];
+            displayProducts();
+        }
+
+        function sortProducts() {
+            const sortValue = document.getElementById('sortSelect').value;
+            
+            switch(sortValue) {
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'name':
+                    filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'newest':
+                    filteredProducts.sort((a, b) => b.id - a.id);
+                    break;
+                default:
+                    filteredProducts = [...products];
             }
+            
+            displayProducts();
         }
-        
-        // Load statistics
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/products/stats');
-                if (response.ok) {
-                    const stats = await response.json();
-                    document.getElementById('totalProducts').textContent = stats.totalProducts || 0;
-                    document.getElementById('activeProducts').textContent = stats.activeProducts || 0;
-                    document.getElementById('totalCategories').textContent = stats.totalCategories || 0;
-                    document.getElementById('activeProposals').textContent = stats.confirmedProposals || 0;
-                }
-            } catch (error) {
-                console.error('Error loading stats:', error);
+
+        function showAddProduct() {
+            alert('Add product functionality coming soon');
+        }
+
+        // Search functionality
+        document.getElementById('productSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm) {
+                filteredProducts = products.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    p.category.toLowerCase().includes(searchTerm) ||
+                    p.description.toLowerCase().includes(searchTerm) ||
+                    p.supplier.toLowerCase().includes(searchTerm)
+                );
+            } else {
+                filteredProducts = [...products];
             }
-        }
-        
-        // Apply filters
-        async function applyFilters() {
-            const params = new URLSearchParams();
             
-            const search = document.getElementById('searchInput').value;
-            if (search) params.append('search', search);
-            
-            const category = document.getElementById('categoryFilter').value;
-            if (category) params.append('category', category);
-            
-            const status = document.getElementById('statusFilter').value;
-            if (status) params.append('status', status);
-            
-            const supplier = document.getElementById('supplierFilter').value;
-            if (supplier) params.append('supplierId', supplier);
-            
-            if (document.getElementById('kosherFilter').checked) params.append('isKosher', 'true');
-            if (document.getElementById('organicFilter').checked) params.append('isOrganic', 'true');
-            
-            try {
-                const response = await fetch(`/api/products?${params}`);
-                if (response.ok) {
-                    const filteredProducts = await response.json();
-                    displayProducts(filteredProducts);
-                }
-            } catch (error) {
-                console.error('Error applying filters:', error);
-            }
-        }
-        
-        // Clear all filters
-        function clearFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('categoryFilter').value = '';
-            document.getElementById('statusFilter').value = '';
-            document.getElementById('supplierFilter').value = '';
-            document.getElementById('kosherFilter').checked = false;
-            document.getElementById('organicFilter').checked = false;
-            document.getElementById('veganFilter').checked = false;
-            document.getElementById('glutenFreeFilter').checked = false;
-            
-            loadProducts();
-        }
-        
-        // View product detail
-        async function viewProductDetail(productId) {
-            // Redirect to product detail page
-            window.location.href = `/product-detail.html?id=${productId}`;
-            return;
-            
-            // Original modal code (kept for reference)
-            try {
-                const response = await fetch(`/api/products/${productId}`);
-                if (response.ok) {
-                    const product = await response.json();
-                    currentProductId = productId;
-                    displayProductDetail(product);
-                    const modal = new bootstrap.Modal(document.getElementById('productDetailModal'));
-                    modal.show();
-                }
-            } catch (error) {
-                console.error('Error loading product detail:', error);
-            }
-        }
-        
-        // Display product detail
-        function displayProductDetail(product) {
-            const content = document.getElementById('productDetailContent');
-            
-            const images = product.productImages ? product.productImages.split(',') : [];
-            
-            content.innerHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="detail-section">
-                            <h6>Basic Information</h6>
-                            <div class="detail-row">
-                                <span class="detail-label">Product Code:</span>
-                                <span class="detail-value">${product.productCode}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Product Name:</span>
-                                <span class="detail-value">${product.productName}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Category:</span>
-                                <span class="detail-value">${product.category || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Sub-Category:</span>
-                                <span class="detail-value">${product.subCategory || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Status:</span>
-                                <span class="detail-value"><span class="badge bg-success">${product.status}</span></span>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-section">
-                            <h6>Specifications</h6>
-                            <div class="detail-row">
-                                <span class="detail-label">Unit of Measure:</span>
-                                <span class="detail-value">${product.unitOfMeasure || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Net Weight:</span>
-                                <span class="detail-value">${product.netWeight || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Gross Weight:</span>
-                                <span class="detail-value">${product.grossWeight || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Units/Carton:</span>
-                                <span class="detail-value">${product.unitsPerCarton || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Shelf Life:</span>
-                                <span class="detail-value">${product.shelfLifeDays ? product.shelfLifeDays + ' days' : 'N/A'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="detail-section">
-                            <h6>Certifications</h6>
-                            <div class="d-flex gap-2 flex-wrap">
-                                ${product.isKosher ? '<span class="cert-badge cert-kosher">Kosher</span>' : ''}
-                                ${product.isOrganic ? '<span class="cert-badge cert-organic">Organic</span>' : ''}
-                                ${product.isVegan ? '<span class="cert-badge cert-vegan">Vegan</span>' : ''}
-                                ${product.isGlutenFree ? '<span class="cert-badge cert-gluten-free">Gluten Free</span>' : ''}
-                            </div>
-                        </div>
-                        
-                        <div class="detail-section">
-                            <h6>Origin & Manufacturing</h6>
-                            <div class="detail-row">
-                                <span class="detail-label">Country of Origin:</span>
-                                <span class="detail-value">${product.countryOfOrigin || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Manufacturer:</span>
-                                <span class="detail-value">${product.manufacturer || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Brand:</span>
-                                <span class="detail-value">${product.brand || 'N/A'}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">HS Code:</span>
-                                <span class="detail-value">${product.hsCode || 'N/A'}</span>
-                            </div>
-                        </div>
-                        
-                        ${product.description ? `
-                        <div class="detail-section">
-                            <h6>Description</h6>
-                            <p>${product.description}</p>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
-                
-                ${product.suppliers && product.suppliers.length > 0 ? `
-                <div class="detail-section">
-                    <h6>Suppliers (${product.suppliers.length})</h6>
-                    <div class="supplier-list">
-                        ${product.suppliers.map(supplier => `
-                            <div class="supplier-item">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <strong>${supplier.supplierName}</strong><br>
-                                        <small class="text-muted">${supplier.country || 'N/A'}</small>
-                                    </div>
-                                    <div class="col-md-6 text-end">
-                                        <strong>$${supplier.unitPrice || 0}</strong> ${supplier.currency || 'USD'}<br>
-                                        <small class="text-muted">MOQ: ${supplier.moq || 0} units</small>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                ` : ''}
-                
-                ${product.proposals && product.proposals.length > 0 ? `
-                <div class="detail-section">
-                    <h6>Price Proposals (${product.proposals.length})</h6>
-                    <div class="proposal-timeline">
-                        ${product.proposals.map(proposal => `
-                            <div class="timeline-item">
-                                <strong>${proposal.supplierName}</strong> - ${proposal.status}<br>
-                                <span class="text-primary">$${proposal.currentPrice} ${proposal.currency}</span><br>
-                                <small class="text-muted">
-                                    MOQ: ${proposal.moq} ${proposal.unit} | 
-                                    Lead: ${proposal.leadTimeDays} days | 
-                                    ${proposal.incoterms}
-                                </small>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                ` : ''}
-            `;
-        }
-        
-        // Show add product modal
-        function showAddProductModal() {
-            currentProductId = null;
-            document.getElementById('productForm').reset();
-            document.getElementById('addProductTitle').textContent = 'Add New Product';
-            const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
-            modal.show();
-        }
-        
-        // Edit product
-        async function editProduct() {
-            if (!currentProductId) return;
-            
-            try {
-                const response = await fetch(`/api/products/${currentProductId}`);
-                if (response.ok) {
-                    const product = await response.json();
-                    
-                    // Populate form
-                    document.getElementById('productId').value = product.id;
-                    document.getElementById('productCode').value = product.productCode;
-                    document.getElementById('productName').value = product.productName;
-                    document.getElementById('productCategory').value = product.category || '';
-                    document.getElementById('productSubCategory').value = product.subCategory || '';
-                    document.getElementById('productDescription').value = product.description || '';
-                    document.getElementById('unitOfMeasure').value = product.unitOfMeasure || '';
-                    document.getElementById('netWeight').value = product.netWeight || '';
-                    document.getElementById('grossWeight').value = product.grossWeight || '';
-                    document.getElementById('unitsPerCarton').value = product.unitsPerCarton || '';
-                    document.getElementById('isKosher').checked = product.isKosher;
-                    document.getElementById('isOrganic').checked = product.isOrganic;
-                    document.getElementById('isVegan').checked = product.isVegan;
-                    document.getElementById('isGlutenFree').checked = product.isGlutenFree;
-                    document.getElementById('shelfLifeDays').value = product.shelfLifeDays || '';
-                    document.getElementById('hsCode').value = product.hsCode || '';
-                    document.getElementById('countryOfOrigin').value = product.countryOfOrigin || '';
-                    document.getElementById('manufacturer').value = product.manufacturer || '';
-                    document.getElementById('brand').value = product.brand || '';
-                    document.getElementById('productImages').value = product.productImages || '';
-                    
-                    document.getElementById('addProductTitle').textContent = 'Edit Product';
-                    
-                    // Close detail modal and show edit modal
-                    bootstrap.Modal.getInstance(document.getElementById('productDetailModal')).hide();
-                    const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
-                    modal.show();
-                }
-            } catch (error) {
-                console.error('Error loading product for edit:', error);
-            }
-        }
-        
-        // Save product
-        async function saveProduct() {
-            const productId = document.getElementById('productId').value;
-            const isEdit = !!productId;
-            
-            const productData = {
-                productCode: document.getElementById('productCode').value,
-                productName: document.getElementById('productName').value,
-                category: document.getElementById('productCategory').value,
-                subCategory: document.getElementById('productSubCategory').value,
-                description: document.getElementById('productDescription').value,
-                unitOfMeasure: document.getElementById('unitOfMeasure').value,
-                netWeight: parseFloat(document.getElementById('netWeight').value) || null,
-                grossWeight: parseFloat(document.getElementById('grossWeight').value) || null,
-                unitsPerCarton: parseInt(document.getElementById('unitsPerCarton').value) || null,
-                isKosher: document.getElementById('isKosher').checked,
-                isOrganic: document.getElementById('isOrganic').checked,
-                isVegan: document.getElementById('isVegan').checked,
-                isGlutenFree: document.getElementById('isGlutenFree').checked,
-                shelfLifeDays: parseInt(document.getElementById('shelfLifeDays').value) || null,
-                hsCode: document.getElementById('hsCode').value,
-                countryOfOrigin: document.getElementById('countryOfOrigin').value,
-                manufacturer: document.getElementById('manufacturer').value,
-                brand: document.getElementById('brand').value,
-                productImages: document.getElementById('productImages').value
-            };
-            
-            try {
-                const url = isEdit ? `/api/products/${productId}` : '/api/products';
-                const method = isEdit ? 'PUT' : 'POST';
-                
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(productData)
-                });
-                
-                if (response.ok) {
-                    bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
-                    showSuccess(isEdit ? 'Product updated successfully' : 'Product added successfully');
-                    loadProducts();
-                    loadStats();
-                } else {
-                    const error = await response.text();
-                    showError('Failed to save product: ' + error);
-                }
-            } catch (error) {
-                console.error('Error saving product:', error);
-                showError('Failed to save product');
-            }
-        }
-        
-        // Show success message
-        function showSuccess(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
-            alert.style.zIndex = '9999';
-            alert.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.body.appendChild(alert);
-            setTimeout(() => alert.remove(), 3000);
-        }
-        
-        // Show error message
-        function showError(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
-            alert.style.zIndex = '9999';
-            alert.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.body.appendChild(alert);
-            setTimeout(() => alert.remove(), 5000);
-        }
-        
-        // Logout
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
-        }
+            displayProducts();
+        });
+
+        // Load products on page load
+        loadProducts();
     </script>
-    
-    <!-- Global Keyboard Shortcuts -->
-    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>

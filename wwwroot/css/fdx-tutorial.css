@@ -1,0 +1,250 @@
+/* FDX University - Tutorial Styles */
+
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    animation: fadeIn 0.3s ease;
+}
+
+.tutorial-highlight {
+    position: relative;
+    z-index: 9999;
+    box-shadow: 0 0 0 4px #667eea, 0 0 0 6px rgba(102, 126, 234, 0.3);
+    border-radius: 4px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 4px #667eea, 0 0 0 6px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 0 4px #667eea, 0 0 0 12px rgba(102, 126, 234, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 0 4px #667eea, 0 0 0 6px rgba(102, 126, 234, 0.3);
+    }
+}
+
+.tutorial-tooltip {
+    position: fixed;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+}
+
+.tutorial-tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.tutorial-step-number {
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tutorial-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.tutorial-close:hover {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.tutorial-tooltip-content {
+    padding: 20px;
+}
+
+.tutorial-tooltip-content h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.tutorial-tooltip-content p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.tutorial-tooltip-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.tutorial-btn-prev,
+.tutorial-btn-next {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tutorial-btn-prev {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.tutorial-btn-prev:hover {
+    background: #e9ecef;
+}
+
+.tutorial-btn-next {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-left: auto;
+}
+
+.tutorial-btn-next:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.tutorial-completion {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10001;
+    animation: bounceIn 0.5s ease;
+}
+
+.completion-content {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    min-width: 400px;
+}
+
+.completion-content h2 {
+    margin: 0 0 15px 0;
+    color: #28a745;
+    font-size: 28px;
+}
+
+.completion-content p {
+    margin: 0 0 25px 0;
+    color: #666;
+    font-size: 16px;
+}
+
+.completion-content button {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.completion-content button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    60% {
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Tutorial launcher button */
+.tutorial-launcher {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tutorial-launcher:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.tutorial-launcher.pulse {
+    animation: launcherPulse 2s infinite;
+}
+
+@keyframes launcherPulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.6);
+    }
+}

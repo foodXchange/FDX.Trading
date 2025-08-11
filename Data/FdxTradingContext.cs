@@ -22,6 +22,18 @@ public class FdxTradingContext : DbContext
     public DbSet<Request> Requests { get; set; }
     public DbSet<RequestItem> RequestItems { get; set; }
     public DbSet<CompanyContact> CompanyContacts { get; set; }
+    
+    // Console module entities
+    public DbSet<ProjectConsole> Consoles { get; set; }
+    public DbSet<WorkflowStage> WorkflowStages { get; set; }
+    public DbSet<ConsoleParticipant> ConsoleParticipants { get; set; }
+    public DbSet<ConsoleAction> ConsoleActions { get; set; }
+    public DbSet<ConsoleDocument> ConsoleDocuments { get; set; }
+    
+    // Communication foundation
+    public DbSet<ConsoleMessage> ConsoleMessages { get; set; }
+    public DbSet<NotificationQueue> NotificationQueues { get; set; }
+    public DbSet<CommunicationTemplate> CommunicationTemplates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -393,6 +405,141 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => e.CompanyName);
             entity.HasIndex(e => new { e.CompanyName, e.ContactName });
             entity.HasIndex(e => e.IsActive);
+        });
+
+        // Configure Console entity
+        modelBuilder.Entity<ProjectConsole>(entity =>
+        {
+            entity.ToTable("Consoles");
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.ConsoleCode)
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(500);
+            
+            entity.HasOne(c => c.Owner)
+                .WithMany()
+                .HasForeignKey(c => c.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(c => c.SourceRequest)
+                .WithMany()
+                .HasForeignKey(c => c.SourceId)
+                .HasPrincipalKey(r => r.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+            
+            entity.HasIndex(e => e.ConsoleCode).IsUnique();
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.Type);
+            entity.HasIndex(e => e.Priority);
+            entity.HasIndex(e => e.OwnerId);
+        });
+
+        // Configure WorkflowStage entity
+        modelBuilder.Entity<WorkflowStage>(entity =>
+        {
+            entity.ToTable("WorkflowStages");
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.StageName)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.HasOne(ws => ws.Console)
+                .WithMany(c => c.WorkflowStages)
+                .HasForeignKey(ws => ws.ConsoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(ws => ws.AssignedUser)
+                .WithMany()
+                .HasForeignKey(ws => ws.AssignedUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+            
+            entity.HasIndex(e => e.ConsoleId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.StageType);
+            entity.HasIndex(e => new { e.ConsoleId, e.StageNumber });
+        });
+
+        // Configure ConsoleParticipant entity
+        modelBuilder.Entity<ConsoleParticipant>(entity =>
+        {
+            entity.ToTable("ConsoleParticipants");
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(cp => cp.Console)
+                .WithMany(c => c.ConsoleParticipants)
+                .HasForeignKey(cp => cp.ConsoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(cp => cp.User)
+                .WithMany()
+                .HasForeignKey(cp => cp.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasIndex(e => new { e.ConsoleId, e.UserId }).IsUnique();
+            entity.HasIndex(e => e.Role);
+            entity.HasIndex(e => e.IsActive);
+        });
+
+        // Configure ConsoleAction entity
+        modelBuilder.Entity<ConsoleAction>(entity =>
+        {
+            entity.ToTable("ConsoleActions");
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(ca => ca.Console)
+                .WithMany(c => c.ConsoleActions)
+                .HasForeignKey(ca => ca.ConsoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(ca => ca.Stage)
+                .WithMany()
+                .HasForeignKey(ca => ca.StageId)
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            entity.HasOne(ca => ca.User)
+                .WithMany()
+                .HasForeignKey(ca => ca.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasIndex(e => e.ConsoleId);
+            entity.HasIndex(e => e.ActionType);
+            entity.HasIndex(e => e.Timestamp);
+        });
+
+        // Configure ConsoleDocument entity
+        modelBuilder.Entity<ConsoleDocument>(entity =>
+        {
+            entity.ToTable("ConsoleDocuments");
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.FileName)
+                .IsRequired()
+                .HasMaxLength(500);
+            
+            entity.HasOne(cd => cd.Console)
+                .WithMany(c => c.ConsoleDocuments)
+                .HasForeignKey(cd => cd.ConsoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(cd => cd.Stage)
+                .WithMany()
+                .HasForeignKey(cd => cd.StageId)
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            entity.HasOne(cd => cd.UploadedBy)
+                .WithMany()
+                .HasForeignKey(cd => cd.UploadedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasIndex(e => e.ConsoleId);
+            entity.HasIndex(e => e.DocumentType);
+            entity.HasIndex(e => e.UploadedAt);
         });
     }
 }

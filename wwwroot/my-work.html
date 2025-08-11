@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Work - FDX Trading</title>
+    
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-surface);
+            margin: 0;
+            padding: 0;
+        }
+
+        .work-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .work-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .work-subtitle {
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .work-container {
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .work-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .tab-button:hover {
+            background: var(--bg-surface-2);
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            background: var(--bg-primary);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            margin-left: 8px;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .work-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .work-item {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all var(--transition-base);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .work-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .work-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .work-item.priority-high::before {
+            background: var(--danger);
+        }
+
+        .work-item.priority-medium::before {
+            background: var(--warning);
+        }
+
+        .work-item.priority-low::before {
+            background: var(--success);
+        }
+
+        .work-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .work-item-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .work-item-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .work-item-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .work-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .work-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-mini {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-mini-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-mini-content {
+            flex: 1;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-mini-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .empty-state-description {
+            margin-bottom: 2rem;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all var(--transition-fast);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Smart Navigation -->
+    <div id="smart-nav-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Work Header -->
+        <div class="work-header">
+            <h1>
+                <span>👤</span>
+                My Work
+            </h1>
+            <div class="work-subtitle">Track your assigned tasks, requests, and consoles in one place</div>
+        </div>
+
+        <!-- Container -->
+        <div class="work-container">
+            <!-- Statistics -->
+            <div class="work-stats">
+                <div class="stat-mini">
+                    <div class="stat-mini-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                        📋
+                    </div>
+                    <div class="stat-mini-content">
+                        <div class="stat-mini-value" id="totalTasks">12</div>
+                        <div class="stat-mini-label">Total Tasks</div>
+                    </div>
+                </div>
+                
+                <div class="stat-mini">
+                    <div class="stat-mini-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                        ⏳
+                    </div>
+                    <div class="stat-mini-content">
+                        <div class="stat-mini-value" id="pendingTasks">5</div>
+                        <div class="stat-mini-label">Pending</div>
+                    </div>
+                </div>
+                
+                <div class="stat-mini">
+                    <div class="stat-mini-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--info);">
+                        🔄
+                    </div>
+                    <div class="stat-mini-content">
+                        <div class="stat-mini-value" id="inProgressTasks">4</div>
+                        <div class="stat-mini-label">In Progress</div>
+                    </div>
+                </div>
+                
+                <div class="stat-mini">
+                    <div class="stat-mini-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                        ✅
+                    </div>
+                    <div class="stat-mini-content">
+                        <div class="stat-mini-value" id="completedTasks">3</div>
+                        <div class="stat-mini-label">Completed</div>
+                    </div>
+                </div>
+                
+                <div class="stat-mini">
+                    <div class="stat-mini-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                        🔥
+                    </div>
+                    <div class="stat-mini-content">
+                        <div class="stat-mini-value" id="urgentTasks">2</div>
+                        <div class="stat-mini-label">Urgent</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="work-tabs">
+                <button class="tab-button active" onclick="switchTab('tasks')">
+                    My Tasks
+                    <span class="tab-badge">5</span>
+                </button>
+                <button class="tab-button" onclick="switchTab('requests')">
+                    My Requests
+                    <span class="tab-badge">3</span>
+                </button>
+                <button class="tab-button" onclick="switchTab('consoles')">
+                    My Consoles
+                    <span class="tab-badge">2</span>
+                </button>
+                <button class="tab-button" onclick="switchTab('approvals')">
+                    Pending Approvals
+                    <span class="tab-badge">4</span>
+                </button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="search-box" style="position: relative;">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search your work..." id="workSearch">
+                </div>
+                <select class="filter-select" id="priorityFilter">
+                    <option value="">All Priorities</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <select class="filter-select" id="dateFilter">
+                    <option value="">All Dates</option>
+                    <option value="today">Due Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="tasks-tab" class="tab-content active">
+                <div class="work-grid">
+                    <!-- Task Item 1 -->
+                    <div class="work-item priority-high">
+                        <div class="work-item-header">
+                            <h3 class="work-item-title">Review Pasta Supplier Quotes</h3>
+                            <span class="badge-modern badge-danger">HIGH</span>
+                        </div>
+                        <div class="work-item-meta">
+                            <span>📦 Console: CON-2025-0002</span>
+                            <span>📅 Due: Today</span>
+                            <span>⏱️ 2 hours</span>
+                        </div>
+                        <div class="work-item-description">
+                            Analyze and compare quotes from 5 pasta suppliers for the 40-container order. Focus on pricing, delivery terms, and quality certifications.
+                        </div>
+                        <div class="work-item-actions">
+                            <button class="btn-modern btn-modern-primary">Start Task</button>
+                            <button class="btn-modern btn-modern-secondary">View Details</button>
+                        </div>
+                    </div>
+
+                    <!-- Task Item 2 -->
+                    <div class="work-item priority-medium">
+                        <div class="work-item-header">
+                            <h3 class="work-item-title">Validate Cereal Product Specifications</h3>
+                            <span class="badge-modern badge-warning">MEDIUM</span>
+                        </div>
+                        <div class="work-item-meta">
+                            <span>📦 Console: CON-2025-0001</span>
+                            <span>📅 Due: Tomorrow</span>
+                            <span>⏱️ 1 hour</span>
+                        </div>
+                        <div class="work-item-description">
+                            Verify product specifications for organic cereals match our requirements. Check nutritional values, packaging, and shelf life.
+                        </div>
+                        <div class="work-item-actions">
+                            <button class="btn-modern btn-modern-primary">Continue</button>
+                            <button class="btn-modern btn-modern-secondary">View Details</button>
+                        </div>
+                    </div>
+
+                    <!-- Task Item 3 -->
+                    <div class="work-item priority-low">
+                        <div class="work-item-header">
+                            <h3 class="work-item-title">Update Supplier Database</h3>
+                            <span class="badge-modern badge-success">LOW</span>
+                        </div>
+                        <div class="work-item-meta">
+                            <span>🏢 Suppliers</span>
+                            <span>📅 Due: This Week</span>
+                            <span>⏱️ 30 mins</span>
+                        </div>
+                        <div class="work-item-description">
+                            Add new contact information for recently onboarded suppliers and update existing supplier certifications.
+                        </div>
+                        <div class="work-item-actions">
+                            <button class="btn-modern btn-modern-primary">Start Task</button>
+                            <button class="btn-modern btn-modern-secondary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="requests-tab" class="tab-content">
+                <div class="work-grid">
+                    <!-- Request Item -->
+                    <div class="work-item priority-high">
+                        <div class="work-item-header">
+                            <h3 class="work-item-title">Premium Pasta Supply - 40 Containers</h3>
+                            <span class="badge-modern badge-info">ACTIVE</span>
+                        </div>
+                        <div class="work-item-meta">
+                            <span>📋 REQ-2025-0577</span>
+                            <span>🏢 Metro Supermarkets</span>
+                            <span>💰 $120,000</span>
+                        </div>
+                        <div class="work-item-description">
+                            Urgent supply of 40 containers of premium Italian pasta for supermarket chain. Multiple varieties required with immediate delivery.
+                        </div>
+                        <div class="work-item-actions">
+                            <button class="btn-modern btn-modern-primary">View Request</button>
+                            <button class="btn-modern btn-modern-secondary">Track Progress</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="consoles-tab" class="tab-content">
+                <div class="work-grid">
+                    <!-- Console Item -->
+                    <div class="work-item priority-medium">
+                        <div class="work-item-header">
+                            <h3 class="work-item-title">Procurement Console: Premium Pasta Supply</h3>
+                            <span class="badge-modern badge-success">ACTIVE</span>
+                        </div>
+                        <div class="work-item-meta">
+                            <span>📦 CON-2025-0002</span>
+                            <span>📊 Stage: Supplier Discovery</span>
+                            <span>👥 3 Participants</span>
+                        </div>
+                        <div class="work-item-description">
+                            Managing procurement for 40 containers of pasta. Currently in supplier discovery phase with 5 potential suppliers identified.
+                        </div>
+                        <div class="work-item-actions">
+                            <button class="btn-modern btn-modern-primary">Open Console</button>
+                            <button class="btn-modern btn-modern-secondary">View Workflow</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="approvals-tab" class="tab-content">
+                <div class="work-grid">
+                    <!-- Approval Item -->
+                    <div class="work-item priority-high">
+                        <div class="work-item-header">
+                            <h3 class="work-item-title">Approve Purchase Order #PO-2025-1234</h3>
+                            <span class="badge-modern badge-danger">URGENT</span>
+                        </div>
+                        <div class="work-item-meta">
+                            <span>💰 Amount: $145,000</span>
+                            <span>🏢 Supplier: Italian Foods Co.</span>
+                            <span>⏰ Expires: 2 hours</span>
+                        </div>
+                        <div class="work-item-description">
+                            Purchase order for 40 containers of premium pasta requires your approval. All compliance checks have passed.
+                        </div>
+                        <div class="work-item-actions">
+                            <button class="btn-modern btn-modern-success">Approve</button>
+                            <button class="btn-modern btn-modern-secondary">Review Details</button>
+                            <button class="btn-modern btn-modern-outline">Reject</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/smart-navigation.js"></script>
+    <script src="/js/modern-ui.js"></script>
+    <script src="/js/global-enhancements.js"></script>
+    
+    <script>
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Mark button as active
+            event.target.classList.add('active');
+        }
+
+        // Search functionality
+        document.getElementById('workSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.work-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter functionality
+        function applyFilters() {
+            const priority = document.getElementById('priorityFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const date = document.getElementById('dateFilter').value;
+            
+            // Apply filters logic here
+            window.toast.info('Filters applied');
+        }
+
+        document.getElementById('priorityFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+        document.getElementById('dateFilter').addEventListener('change', applyFilters);
+
+        // Load user's work items
+        async function loadMyWork() {
+            try {
+                // This would normally fetch from API
+                // const response = await fetch('/api/my-work');
+                // const data = await response.json();
+                
+                // For now, using dummy data
+                window.toast.success('Your work items loaded successfully');
+            } catch (error) {
+                window.toast.error('Failed to load work items');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMyWork();
+            
+            // Add keyboard shortcuts
+            window.shortcuts.register('alt+t', (e) => {
+                e.preventDefault();
+                switchTab('tasks');
+            }, 'Switch to tasks');
+            
+            window.shortcuts.register('alt+r', (e) => {
+                e.preventDefault();
+                switchTab('requests');
+            }, 'Switch to requests');
+            
+            window.shortcuts.register('alt+c', (e) => {
+                e.preventDefault();
+                switchTab('consoles');
+            }, 'Switch to consoles');
+            
+            // Refresh data every minute
+            setInterval(loadMyWork, 60000);
+        });
+    </script>
+</body>
+</html>

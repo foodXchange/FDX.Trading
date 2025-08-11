@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FDX.Trading.Models;
 using FDX.Trading.Data;
+using FDX.Trading.Services;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -14,10 +15,12 @@ namespace FDX.Trading.Controllers;
 public class RequestsController : ControllerBase
 {
     private readonly FdxTradingContext _context;
+    private readonly ConsoleService _consoleService;
     
-    public RequestsController(FdxTradingContext context)
+    public RequestsController(FdxTradingContext context, ConsoleService consoleService)
     {
         _context = context;
+        _consoleService = consoleService;
     }
 
     // GET: api/requests
@@ -201,12 +204,27 @@ public class RequestsController : ControllerBase
         _context.Requests.Add(request);
         await _context.SaveChangesAsync();
 
+        // Auto-create console for this request
+        ProjectConsole? console = null;
+        try
+        {
+            console = await _consoleService.CreateConsoleFromRequest(request);
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't fail the request creation
+            // In production, you'd want proper logging here
+            Console.WriteLine($"Failed to create console for request {request.Id}: {ex.Message}");
+        }
+
         return Ok(new
         {
             success = true,
             message = "Request created successfully",
             requestId = request.Id,
-            requestNumber = request.RequestNumber
+            requestNumber = request.RequestNumber,
+            consoleId = console?.Id,
+            consoleCode = console?.ConsoleCode
         });
     }
 

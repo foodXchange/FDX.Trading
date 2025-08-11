@@ -35,6 +35,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<CsvProductImportService>();
 builder.Services.AddScoped<SupplierProductImportService>();
 builder.Services.AddScoped<PriceBookImportService>();
+builder.Services.AddHttpClient<AzureAIService>();
+builder.Services.AddScoped<ConsoleService>();
 
 var app = builder.Build();
 

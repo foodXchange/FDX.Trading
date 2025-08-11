@@ -78,7 +78,9 @@
       "Bash(del \"C:\\FDX.Trading\\Models\\Supplier.cs\")",
       "Bash(del nul)",
       "Bash(C:FDX.Tradingadd-keyboard-shortcuts.bat)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(del:*)"
     ],
     "deny": []
   }

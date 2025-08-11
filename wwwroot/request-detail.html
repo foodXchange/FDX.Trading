@@ -379,6 +379,9 @@
                     <button class="btn btn-secondary" onclick="goBack()">
                         ← Back to Requests
                     </button>
+                    <button id="createConsoleBtn" class="btn btn-primary" onclick="createConsole()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        🎛️ Create Console
+                    </button>
                     <button id="editBtn" class="btn btn-primary" onclick="editRequest()">
                         ✏️ Edit
                     </button>
@@ -414,24 +417,27 @@
 
             <div class="content">
                 <div class="info-section">
-                    <h2>Request Information</h2>
+                    <h2 style="display: flex; justify-content: space-between; align-items: center;">
+                        Request Information
+                        <button onclick="toggleMasterEdit()" id="masterEditBtn" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;">
+                            ✏️ Edit All
+                        </button>
+                    </h2>
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">Title</span>
                             <span class="info-value" id="requestTitle"></span>
+                            <input type="text" id="editRequestTitle" class="edit-input" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;" />
                         </div>
                         <div class="info-item">
                             <span class="info-label">Buyer</span>
-                            <div class="info-value" style="display: flex; align-items: center; gap: 10px;">
-                                <span id="buyerName"></span>
-                                <button class="btn btn-sm" onclick="showChangeBuyerModal()" style="padding: 4px 10px; font-size: 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;" title="Change buyer">
-                                    ✏️ Change
-                                </button>
-                            </div>
+                            <span class="info-value" id="buyerName"></span>
+                            <input type="text" id="editBuyerName" class="edit-input" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;" />
                         </div>
                         <div class="info-item">
                             <span class="info-label">Company</span>
                             <span class="info-value" id="buyerCompany"></span>
+                            <input type="text" id="editBuyerCompany" class="edit-input" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;" />
                         </div>
                         <div class="info-item">
                             <span class="info-label">Created Date</span>
@@ -449,6 +455,7 @@
                     <div class="info-item">
                         <span class="info-label">Description</span>
                         <div class="description-box" id="requestDescription"></div>
+                        <textarea id="editRequestDescription" class="edit-input" style="display: none; width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; min-height: 100px; font-family: inherit;"></textarea>
                     </div>
                 </div>
 
@@ -463,9 +470,7 @@
                                 <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🧪</span>
                                 Product Specifications
                             </div>
-                            <button onclick="toggleEditProductSpecs()" id="editProductSpecsBtn" class="btn btn-sm" style="padding: 6px 12px; font-size: 13px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                ✏️ Edit
-                            </button>
+                            <!-- Edit button removed - now controlled by master edit -->
                         </h3>
                         
                         <div class="info-grid" style="gap: 25px;">
@@ -551,9 +556,7 @@
                                 <span style="font-size: 20px;">🚚</span>
                                 Shipping & Logistics
                             </div>
-                            <button onclick="toggleEditLogistics()" id="editLogisticsBtn" class="btn btn-sm" style="padding: 6px 12px; font-size: 13px; background: #17a2b8; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
-                                ✏️ Edit
-                            </button>
+                            <!-- Edit button removed - now controlled by master edit -->
                         </h3>
                         
                         <div class="info-grid">
@@ -606,9 +609,7 @@
                                 <span style="font-size: 20px;">🌍</span>
                                 Sourcing Location Preferences
                             </div>
-                            <button onclick="toggleEditCountries()" id="editCountriesBtn" class="btn btn-sm" style="padding: 6px 12px; font-size: 13px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
-                                ✏️ Edit
-                            </button>
+                            <!-- Edit button removed - now controlled by master edit -->
                         </h3>
                         
                         <div class="info-grid">
@@ -642,15 +643,16 @@
                         </div>
                     </div>
                     
-                    <!-- Save/Cancel buttons for editing -->
-                    <div id="productSpecsActions" style="display: none; margin-top: 20px; text-align: right;">
-                        <button onclick="cancelEditProductSpecs()" class="btn btn-secondary" style="margin-right: 10px;">Cancel</button>
-                        <button onclick="saveProductSpecs()" class="btn btn-primary">Save Changes</button>
-                    </div>
+                    <!-- Save/Cancel buttons moved to master control -->
                 </div>
 
                 <div class="info-section">
-                    <h2>Request Items</h2>
+                    <h2 style="display: flex; justify-content: space-between; align-items: center;">
+                        Request Items
+                        <button onclick="addNewItem()" id="addItemBtn" class="btn btn-success" style="display: none; padding: 6px 12px; font-size: 13px;">
+                            ➕ Add Item
+                        </button>
+                    </h2>
                     <table class="items-table">
                         <thead>
                             <tr>
@@ -665,6 +667,12 @@
                         <tbody id="itemsTableBody">
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Master Save/Cancel buttons for editing -->
+                <div id="masterEditActions" style="display: none; margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); border: 2px solid #667eea; border-radius: 10px; text-align: center;">
+                    <button onclick="cancelMasterEdit()" class="btn btn-secondary" style="margin-right: 10px; padding: 10px 20px;">Cancel</button>
+                    <button onclick="saveMasterEdit()" class="btn btn-primary" style="padding: 10px 20px;">💾 Save All Changes</button>
                 </div>
 
                 <div class="timeline-section" id="timelineSection">
@@ -1027,70 +1035,380 @@
             }
         }
         
-        // Edit Product Specifications functions
-        function toggleEditProductSpecs() {
-            const isEditing = document.getElementById('productSpecsActions').style.display === 'none';
+        // Master Edit Functions
+        let isInEditMode = false;
+        let originalRequestData = null;
+        
+        function toggleMasterEdit() {
+            if (isInEditMode) {
+                cancelMasterEdit();
+            } else {
+                enterEditMode();
+            }
+        }
+        
+        function enterEditMode() {
+            isInEditMode = true;
+            originalRequestData = JSON.parse(JSON.stringify(currentRequest)); // Deep clone
             
-            // If clicking "Done" button without saving, just toggle back to view mode
-            if (!isEditing) {
-                // Switch to view mode without saving
-                document.getElementById('productSpecsActions').style.display = 'none';
-                document.getElementById('editProductSpecsBtn').textContent = '✏️ Edit';
-                document.getElementById('editLogisticsBtn').style.display = 'none';
-                document.getElementById('editCountriesBtn').style.display = 'none';
+            // Change button text
+            document.getElementById('masterEditBtn').innerHTML = '✓ Done Editing';
+            document.getElementById('masterEditBtn').className = 'btn btn-success';
+            
+            // Show save/cancel buttons
+            document.getElementById('masterEditActions').style.display = 'block';
+            
+            // Show add item button
+            document.getElementById('addItemBtn').style.display = 'inline-block';
+            
+            // Enable editing for Request Information
+            document.getElementById('requestTitle').style.display = 'none';
+            document.getElementById('editRequestTitle').style.display = 'block';
+            document.getElementById('editRequestTitle').value = currentRequest.title || '';
+            
+            document.getElementById('buyerName').style.display = 'none';
+            document.getElementById('editBuyerName').style.display = 'block';
+            document.getElementById('editBuyerName').value = currentRequest.buyerName || '';
+            
+            document.getElementById('buyerCompany').style.display = 'none';
+            document.getElementById('editBuyerCompany').style.display = 'block';
+            document.getElementById('editBuyerCompany').value = currentRequest.buyerCompany || '';
+            
+            document.getElementById('requestDescription').style.display = 'none';
+            document.getElementById('editRequestDescription').style.display = 'block';
+            document.getElementById('editRequestDescription').value = currentRequest.description || '';
+            
+            // Enable editing for Product & Shipping Requirements
+            enableProductSpecsEdit();
+            
+            // Enable editing for Request Items
+            enableItemsEdit();
+        }
+        
+        function exitEditMode() {
+            isInEditMode = false;
+            
+            // Change button text back
+            document.getElementById('masterEditBtn').innerHTML = '✏️ Edit All';
+            document.getElementById('masterEditBtn').className = 'btn btn-primary';
+            
+            // Hide save/cancel buttons
+            document.getElementById('masterEditActions').style.display = 'none';
+            
+            // Hide add item button
+            document.getElementById('addItemBtn').style.display = 'none';
+            
+            // Disable editing for Request Information
+            document.getElementById('requestTitle').style.display = 'block';
+            document.getElementById('editRequestTitle').style.display = 'none';
+            
+            document.getElementById('buyerName').style.display = 'block';
+            document.getElementById('editBuyerName').style.display = 'none';
+            
+            document.getElementById('buyerCompany').style.display = 'block';
+            document.getElementById('editBuyerCompany').style.display = 'none';
+            
+            document.getElementById('requestDescription').style.display = 'block';
+            document.getElementById('editRequestDescription').style.display = 'none';
+            
+            // Disable editing for Product & Shipping Requirements
+            disableProductSpecsEdit();
+            
+            // Disable editing for Request Items
+            disableItemsEdit();
+        }
+        
+        function cancelMasterEdit() {
+            if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
+                // Restore original data
+                if (originalRequestData) {
+                    currentRequest = originalRequestData;
+                    displayRequest(currentRequest);
+                }
+                exitEditMode();
+            }
+        }
+        
+        async function saveMasterEdit() {
+            // Collect all data
+            const updateData = {
+                title: document.getElementById('editRequestTitle').value,
+                buyerName: document.getElementById('editBuyerName').value,
+                buyerCompany: document.getElementById('editBuyerCompany').value,
+                description: document.getElementById('editRequestDescription').value,
+                items: collectItemsData(),
+                // Product specifications
+                isKosher: document.getElementById('editIsKosher').checked,
+                kosherPreference: document.getElementById('editIsKosher').checked ? 
+                    document.getElementById('editKosherPreference').value : null,
+                isFreeFrom: false,
+                freeFromOptions: null,
+                incoterms: document.getElementById('editIncoterms').value || null,
+                containerLoading: document.getElementById('editContainerLoading').value || null,
+                palletSize: document.getElementById('editContainerLoading').value === 'Palletized' ? 
+                    document.getElementById('editPalletSize').value : null,
+                preferredCountries: null,
+                notPreferredCountries: null
+            };
+            
+            // Collect free from options
+            const freeFromOptions = [];
+            document.querySelectorAll('input[name="editFreeFrom"]:checked').forEach(cb => {
+                freeFromOptions.push(cb.value);
+                if (cb.value === 'Sugar Free') {
+                    document.querySelectorAll('input[name="editSugarType"]:checked').forEach(sugar => {
+                        freeFromOptions.push(sugar.value);
+                    });
+                }
+            });
+            
+            if (freeFromOptions.length > 0) {
+                updateData.isFreeFrom = true;
+                updateData.freeFromOptions = JSON.stringify(freeFromOptions);
+            }
+            
+            // Collect countries
+            if (document.getElementById('editSupplierRecommended').checked) {
+                updateData.preferredCountries = JSON.stringify(['SUPPLIER_RECOMMENDED']);
+            } else {
+                const preferred = document.getElementById('editPreferredCountries').value.trim();
+                if (preferred) {
+                    updateData.preferredCountries = JSON.stringify(
+                        preferred.split(',').map(c => c.trim()).filter(c => c)
+                    );
+                }
+            }
+            
+            const restricted = document.getElementById('editNotPreferredCountries').value.trim();
+            if (restricted) {
+                updateData.notPreferredCountries = JSON.stringify(
+                    restricted.split(',').map(c => c.trim()).filter(c => c)
+                );
+            }
+            
+            try {
+                // Update request
+                const response = await fetch(`/api/requests/${requestId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
                 
-                // Show all display elements and hide all edit elements
-                document.getElementById('kosherDisplay').style.display = 'block';
-                document.getElementById('kosherEdit').style.display = 'none';
-                document.getElementById('freeFromDisplay').style.display = 'block';
-                document.getElementById('freeFromEdit').style.display = 'none';
-                document.getElementById('incotermsDisplay').style.display = 'block';
-                document.getElementById('incotermsEdit').style.display = 'none';
-                document.getElementById('containerLoadingDisplay').style.display = 'block';
-                document.getElementById('containerEdit').style.display = 'none';
-                document.getElementById('preferredCountriesDisplay').style.display = 'block';
-                document.getElementById('preferredCountriesEdit').style.display = 'none';
-                document.getElementById('notPreferredCountriesDisplay').style.display = 'block';
-                document.getElementById('restrictedCountriesEdit').style.display = 'none';
-                return;
+                if (response.ok) {
+                    // Reload the request to show updated values
+                    await loadRequest(requestId);
+                    exitEditMode();
+                    showNotification('Request updated successfully!', 'success');
+                } else {
+                    const errorData = await response.text();
+                    console.error('Update failed:', errorData);
+                    showNotification('Failed to update request', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating request:', error);
+                showNotification('Error updating request', 'error');
+            }
+        }
+        
+        function collectItemsData() {
+            const items = [];
+            document.querySelectorAll('#itemsTableBody tr').forEach(row => {
+                if (row.querySelector('.item-edit-row')) {
+                    const item = {
+                        productName: row.querySelector('.edit-item-name').value,
+                        quantity: parseFloat(row.querySelector('.edit-item-quantity').value) || 0,
+                        unit: row.querySelector('.edit-item-unit').value,
+                        description: row.querySelector('.edit-item-description').value,
+                        targetPrice: parseFloat(row.querySelector('.edit-item-price').value) || null
+                    };
+                    if (!row.classList.contains('new-item')) {
+                        item.id = row.dataset.itemId;
+                    }
+                    items.push(item);
+                }
+            });
+            return items;
+        }
+        
+        function collectProductSpecsData() {
+            const data = {};
+            
+            // Collect kosher data
+            const isKosherCheckbox = document.getElementById('isKosherCheckbox');
+            if (isKosherCheckbox) {
+                data.isKosher = isKosherCheckbox.checked;
+                if (data.isKosher) {
+                    const kosherPref = document.getElementById('kosherPreference');
+                    data.kosherPreference = kosherPref ? kosherPref.value : null;
+                } else {
+                    data.kosherPreference = null;
+                }
             }
             
-            // Toggle visibility of edit sections
-            document.getElementById('productSpecsActions').style.display = isEditing ? 'block' : 'none';
-            document.getElementById('editProductSpecsBtn').textContent = isEditing ? '✓ Done' : '✏️ Edit';
-            document.getElementById('editLogisticsBtn').style.display = isEditing ? 'inline-block' : 'none';
-            document.getElementById('editCountriesBtn').style.display = isEditing ? 'inline-block' : 'none';
-            
-            // Toggle Product Specs fields
-            document.getElementById('kosherDisplay').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('kosherEdit').style.display = isEditing ? 'block' : 'none';
-            document.getElementById('freeFromDisplay').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('freeFromEdit').style.display = isEditing ? 'block' : 'none';
-            
-            // Toggle Logistics fields
-            document.getElementById('incotermsDisplay').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('incotermsEdit').style.display = isEditing ? 'block' : 'none';
-            document.getElementById('containerLoadingDisplay').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('containerEdit').style.display = isEditing ? 'block' : 'none';
-            
-            // Toggle Countries fields
-            document.getElementById('preferredCountriesDisplay').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('preferredCountriesEdit').style.display = isEditing ? 'block' : 'none';
-            document.getElementById('notPreferredCountriesDisplay').style.display = isEditing ? 'none' : 'block';
-            document.getElementById('restrictedCountriesEdit').style.display = isEditing ? 'block' : 'none';
-            
-            if (isEditing) {
-                // Load current values into edit fields
-                loadCurrentValues();
+            // Collect free from data
+            const isFreeFromCheckbox = document.getElementById('isFreeFromCheckbox');
+            if (isFreeFromCheckbox) {
+                data.isFreeFrom = isFreeFromCheckbox.checked;
+                if (data.isFreeFrom) {
+                    const selectedOptions = [];
+                    document.querySelectorAll('#freeFromOptions input[type="checkbox"]:checked').forEach(cb => {
+                        selectedOptions.push(cb.value);
+                    });
+                    data.freeFromOptions = selectedOptions.length > 0 ? JSON.stringify(selectedOptions) : null;
+                } else {
+                    data.freeFromOptions = null;
+                }
             }
+            
+            // Collect logistics data
+            const incoterms = document.getElementById('incoterms');
+            data.incoterms = incoterms ? incoterms.value : null;
+            
+            const containerLoading = document.getElementById('containerLoading');
+            data.containerLoading = containerLoading ? containerLoading.value : null;
+            
+            if (data.containerLoading === 'Palletized') {
+                const palletSize = document.getElementById('palletSize');
+                data.palletSize = palletSize ? palletSize.value : null;
+            } else {
+                data.palletSize = null;
+            }
+            
+            // Collect country preferences
+            const preferredCountries = document.getElementById('preferredCountries');
+            if (preferredCountries && preferredCountries.value) {
+                const selectedCountries = Array.from(preferredCountries.selectedOptions).map(opt => opt.value);
+                data.preferredCountries = selectedCountries.length > 0 ? JSON.stringify(selectedCountries) : null;
+            } else {
+                data.preferredCountries = null;
+            }
+            
+            const restrictedCountries = document.getElementById('restrictedCountries');
+            if (restrictedCountries && restrictedCountries.value) {
+                const selectedRestricted = Array.from(restrictedCountries.selectedOptions).map(opt => opt.value);
+                data.notPreferredCountries = selectedRestricted.length > 0 ? JSON.stringify(selectedRestricted) : null;
+            } else {
+                data.notPreferredCountries = null;
+            }
+            
+            return data;
+        }
+        
+        function enableProductSpecsEdit() {
+            // Show edit fields for Product & Shipping Requirements
+            document.getElementById('kosherDisplay').style.display = 'none';
+            document.getElementById('kosherEdit').style.display = 'block';
+            document.getElementById('freeFromDisplay').style.display = 'none';
+            document.getElementById('freeFromEdit').style.display = 'block';
+            document.getElementById('incotermsDisplay').style.display = 'none';
+            document.getElementById('incotermsEdit').style.display = 'block';
+            document.getElementById('containerLoadingDisplay').style.display = 'none';
+            document.getElementById('containerEdit').style.display = 'block';
+            document.getElementById('preferredCountriesDisplay').style.display = 'none';
+            document.getElementById('preferredCountriesEdit').style.display = 'block';
+            document.getElementById('notPreferredCountriesDisplay').style.display = 'none';
+            document.getElementById('restrictedCountriesEdit').style.display = 'block';
+            
+            // Load current values
+            loadCurrentValues();
+        }
+        
+        function disableProductSpecsEdit() {
+            // Hide edit fields for Product & Shipping Requirements
+            document.getElementById('kosherDisplay').style.display = 'block';
+            document.getElementById('kosherEdit').style.display = 'none';
+            document.getElementById('freeFromDisplay').style.display = 'block';
+            document.getElementById('freeFromEdit').style.display = 'none';
+            document.getElementById('incotermsDisplay').style.display = 'block';
+            document.getElementById('incotermsEdit').style.display = 'none';
+            document.getElementById('containerLoadingDisplay').style.display = 'block';
+            document.getElementById('containerEdit').style.display = 'none';
+            document.getElementById('preferredCountriesDisplay').style.display = 'block';
+            document.getElementById('preferredCountriesEdit').style.display = 'none';
+            document.getElementById('notPreferredCountriesDisplay').style.display = 'block';
+            document.getElementById('restrictedCountriesEdit').style.display = 'none';
+        }
+        
+        function enableItemsEdit() {
+            // Convert items table to editable
+            const tbody = document.getElementById('itemsTableBody');
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows.forEach((row, index) => {
+                if (row.cells.length > 1) { // Skip "no items" row
+                    const item = currentRequest.items ? currentRequest.items[index] : null;
+                    if (item) {
+                        row.dataset.itemId = item.id;
+                        row.innerHTML = `
+                            <td><span class="item-number">${index + 1}</span></td>
+                            <td colspan="5" class="item-edit-row">
+                                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 2fr auto; gap: 10px; align-items: center;">
+                                    <input type="text" class="edit-item-name" value="${item.productName}" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                                    <input type="number" class="edit-item-quantity" value="${item.quantity}" step="0.01" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                                    <input type="text" class="edit-item-unit" value="${item.unit}" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                                    <input type="number" class="edit-item-price" value="${item.targetPrice || ''}" step="0.01" placeholder="Price" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                                    <input type="text" class="edit-item-description" value="${item.description || ''}" placeholder="Description" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                                    <button onclick="removeItem(this)" class="btn btn-danger btn-sm">🗑️</button>
+                                </div>
+                            </td>
+                        `;
+                    }
+                }
+            });
+        }
+        
+        function disableItemsEdit() {
+            // Rebuild items table from current data
+            displayRequest(currentRequest);
+        }
+        
+        function addNewItem() {
+            const tbody = document.getElementById('itemsTableBody');
+            const itemCount = tbody.querySelectorAll('tr').length;
+            const newRow = document.createElement('tr');
+            newRow.className = 'new-item';
+            newRow.innerHTML = `
+                <td><span class="item-number">${itemCount + 1}</span></td>
+                <td colspan="5" class="item-edit-row">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 2fr auto; gap: 10px; align-items: center;">
+                        <input type="text" class="edit-item-name" placeholder="Product name" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                        <input type="number" class="edit-item-quantity" placeholder="Qty" step="0.01" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                        <input type="text" class="edit-item-unit" placeholder="Unit" value="pcs" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                        <input type="number" class="edit-item-price" step="0.01" placeholder="Price" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                        <input type="text" class="edit-item-description" placeholder="Description" style="padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;" />
+                        <button onclick="removeItem(this)" class="btn btn-danger btn-sm">🗑️</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        }
+        
+        function removeItem(button) {
+            if (confirm('Are you sure you want to remove this item?')) {
+                button.closest('tr').remove();
+                // Renumber items
+                document.querySelectorAll('#itemsTableBody .item-number').forEach((num, index) => {
+                    num.textContent = index + 1;
+                });
+            }
+        }
+        
+        // Edit Product Specifications functions (modified to work with master edit)
+        function toggleEditProductSpecs() {
+            // This function is now handled by master edit
+            toggleMasterEdit();
         }
         
         function toggleEditLogistics() {
-            toggleEditProductSpecs();
+            // This function is now handled by master edit
+            toggleMasterEdit();
         }
         
         function toggleEditCountries() {
-            toggleEditProductSpecs();
+            // This function is now handled by master edit
+            toggleMasterEdit();
         }
         
         function loadCurrentValues() {
@@ -1440,6 +1758,44 @@
 
         function goBack() {
             window.location.href = '/requests.html';
+        }
+        
+        async function createConsole() {
+            if (!currentRequest) {
+                showNotification('Request not loaded', 'error');
+                return;
+            }
+            
+            if (confirm(`Create a new console for "${currentRequest.title}"?\n\nThis will start the sourcing workflow for this request.`)) {
+                try {
+                    const response = await fetch('/api/consoles/create-from-request', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            requestId: requestId,
+                            priority: 2 // Medium priority by default
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        showNotification(`Console ${result.consoleCode} created successfully!`, 'success');
+                        
+                        // Redirect to console list after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = '/console-list.html';
+                        }, 2000);
+                    } else {
+                        const error = await response.json();
+                        showNotification(error.message || 'Failed to create console', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error creating console:', error);
+                    showNotification('Error creating console', 'error');
+                }
+            }
         }
 
         // Change Buyer Functionality

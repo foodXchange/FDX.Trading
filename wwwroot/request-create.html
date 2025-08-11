@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Request - FDX Trading</title>
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
         * {
             margin: 0;
@@ -1420,6 +1423,80 @@
             
             saveRequest();
         }
+    </script>
+    
+    <!-- Modern UI System -->
+    <script src="/js/modern-ui.js"></script>
+    
+    <!-- Auto-save functionality -->
+    <script>
+        // Initialize auto-save for the request form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-save setup
+            const autoSave = new AutoSaveManager('#requestForm', async (data) => {
+                // Save to localStorage as draft
+                localStorage.setItem('requestDraft', JSON.stringify(data));
+                
+                // If editing existing request, save to server
+                const requestId = new URLSearchParams(window.location.search).get('id');
+                if (requestId) {
+                    try {
+                        const response = await fetch(`/api/requests/${requestId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to auto-save');
+                        
+                        return true;
+                    } catch (error) {
+                        console.error('Auto-save error:', error);
+                        throw error;
+                    }
+                }
+            }, 3000); // Auto-save every 3 seconds of inactivity
+            
+            // Load draft from localStorage if exists
+            const draft = localStorage.getItem('requestDraft');
+            if (draft && !new URLSearchParams(window.location.search).get('id')) {
+                const draftData = JSON.parse(draft);
+                if (confirm('You have an unsaved draft. Would you like to restore it?')) {
+                    // Restore form data
+                    Object.keys(draftData).forEach(key => {
+                        const field = document.querySelector(`[name="${key}"]`);
+                        if (field) field.value = draftData[key];
+                    });
+                    window.toast.info('Draft restored');
+                }
+            }
+            
+            // Clear draft on successful submission
+            const originalSave = window.saveRequest;
+            window.saveRequest = async function() {
+                const result = await originalSave.apply(this, arguments);
+                if (result !== false) {
+                    localStorage.removeItem('requestDraft');
+                }
+                return result;
+            };
+            
+            // Keyboard shortcuts
+            window.shortcuts.register('ctrl+enter', (e) => {
+                e.preventDefault();
+                document.querySelector('.btn-primary').click();
+            }, 'Submit request');
+            
+            // Enhanced form validation
+            new FormValidator('#requestForm');
+            
+            // Show success toast when items are added
+            const originalAddItem = window.addItem;
+            window.addItem = function() {
+                originalAddItem.apply(this, arguments);
+                window.toast.success('Item added to request');
+            };
+        });
     </script>
 </body>
 </html>

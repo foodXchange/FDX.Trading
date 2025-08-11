@@ -4,1384 +4,974 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - FDX Trading</title>
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            /* Modern Color Palette - No black on dark grey */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --secondary-light: #f472b6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Grays with good contrast */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Backgrounds */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            
+            /* Text colors with proper contrast */
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --text-on-primary: #ffffff;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        /* Navbar Styles */
-        .navbar {
-            background: rgba(255, 255, 255, 0.98);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 0;
-        }
-        
-        .navbar-container {
-            max-width: 1400px;
+
+        /* Dashboard specific styles */
+        .dashboard-container {
+            padding: 24px;
+            max-width: 1600px;
             margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
         }
-        
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-            transition: transform 0.3s;
-        }
-        
-        .navbar-brand:hover {
-            transform: scale(1.05);
-        }
-        
-        .navbar-logo {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .navbar-nav {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        
-        .nav-link {
-            padding: 8px 16px;
-            color: #555;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .nav-link:hover {
-            background: #f0f0f0;
-            color: #667eea;
-        }
-        
-        .nav-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .navbar-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .welcome-message {
-            font-size: 0.95rem;
-        }
-        
-        .user-info {
-            text-align: right;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .user-role {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .logout-btn {
-            padding: 8px 16px;
-            background: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background: #cc0000;
-        }
-        
-        /* Mobile menu toggle */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #667eea;
-            cursor: pointer;
-        }
-        
-        @media (max-width: 768px) {
-            .navbar-nav {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                flex-direction: column;
-                padding: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            
-            .navbar-nav.active {
-                display: flex;
-            }
-            
-            .mobile-menu-toggle {
-                display: block;
-            }
-            
-            .navbar-user {
-                display: none;
-            }
-        }
-        
-        /* Header */
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            margin-top: 10px;
-        }
-        
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
+
+        /* Welcome Section with Gradient */
         .welcome-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        
-        .welcome-text h1 {
-            font-size: 1.5em;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .welcome-text p {
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .role-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            background: #667eea;
-            color: white;
-            border-radius: 15px;
-            font-size: 0.8em;
-            margin-left: 10px;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .notification-bell {
-            position: relative;
-            cursor: pointer;
-            font-size: 1.5em;
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ff4444;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7em;
-            font-weight: bold;
-        }
-        
-        .global-search {
-            position: relative;
-            width: 300px;
-        }
-        
-        .global-search input {
-            width: 100%;
-            padding: 10px 40px 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 14px;
-        }
-        
-        .global-search .search-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-        }
-        
-        .logout-btn {
-            padding: 10px 20px;
-            background: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background: #cc0000;
-        }
-        
-        /* Stats Bar */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-        
-        .stat-value {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        .stat-label {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        /* Main Layout */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            gap: 20px;
-        }
-        
-        /* Module Grid */
-        .module-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-        }
-        
-        .module-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .module-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-        
-        .module-header {
-            padding: 20px;
-            background: linear-gradient(135deg, var(--module-color) 0%, var(--module-color-dark) 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: var(--text-on-primary);
+            margin-bottom: 32px;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-xl);
         }
-        
-        .module-header::before {
+
+        .welcome-section::before {
             content: '';
             position: absolute;
             top: -50%;
             right: -10%;
-            width: 50%;
+            width: 60%;
             height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(35deg);
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
         }
-        
-        .module-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 32px;
+            align-items: center;
         }
-        
-        .module-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 5px;
+
+        .welcome-text h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
-        
-        .module-description {
-            font-size: 0.9em;
+
+        .welcome-subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        .welcome-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+        }
+
+        .welcome-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .welcome-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .welcome-stat-label {
+            font-size: 14px;
             opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .module-stats {
-            padding: 15px 20px;
-            background: #f8f9fa;
+
+        .welcome-actions {
             display: flex;
-            justify-content: space-around;
-            border-bottom: 1px solid #e0e0e0;
+            gap: 16px;
         }
-        
-        .module-stat {
-            text-align: center;
-        }
-        
-        .module-stat-value {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .module-stat-label {
-            font-size: 0.75em;
-            color: #666;
-            margin-top: 3px;
-        }
-        
-        .module-actions {
-            padding: 15px 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .quick-action {
-            flex: 1;
-            min-width: 100px;
-            padding: 8px 12px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 0.85em;
-            color: #333;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .quick-action:hover {
-            background: var(--module-color);
+
+        .welcome-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
             color: white;
-            border-color: var(--module-color);
-        }
-        
-        .module-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff4444;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-        
-        /* Activity Sidebar */
-        .activity-sidebar {
-            width: 350px;
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            height: fit-content;
-            position: sticky;
-            top: 100px;
-        }
-        
-        .sidebar-section {
-            margin-bottom: 30px;
-        }
-        
-        .sidebar-title {
-            font-size: 1.1em;
+            border-radius: 12px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .activity-list {
-            list-style: none;
+
+        .welcome-btn:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
-        
+
+        .welcome-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Quick Actions Grid */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quick-action-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .quick-action-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .quick-action-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-action-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .quick-action-desc {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .stat-icon.primary {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: var(--primary);
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: var(--success);
+        }
+
+        .stat-icon.warning {
+            background: linear-gradient(135deg, #fed7aa, #fbbf24);
+            color: var(--warning);
+        }
+
+        .stat-icon.info {
+            background: linear-gradient(135deg, #dbeafe, #93c5fd);
+            color: var(--info);
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .trend-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        .trend-down {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .trend-text {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* Activity Timeline */
+        .activity-section {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-action {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .section-action:hover {
+            color: var(--primary-dark);
+        }
+
+        .activity-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .activity-item {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            transition: background 0.3s;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            transition: all 0.2s;
         }
-        
+
         .activity-item:hover {
-            background: #e8e9ea;
+            background: var(--bg-tertiary);
+            transform: translateX(4px);
         }
-        
+
         .activity-icon {
-            font-size: 1.5em;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-        
+
+        .activity-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
         .activity-content {
             flex: 1;
         }
-        
+
         .activity-title {
-            font-size: 0.9em;
-            color: #333;
-            margin-bottom: 3px;
-        }
-        
-        .activity-description {
-            font-size: 0.8em;
-            color: #666;
-        }
-        
-        .activity-time {
-            font-size: 0.75em;
-            color: #999;
-            margin-top: 3px;
-        }
-        
-        .notification-list {
-            list-style: none;
-        }
-        
-        .notification-item {
-            padding: 12px;
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .notification-item.info {
-            background: #d1ecf1;
-            border-left-color: #17a2b8;
-        }
-        
-        .notification-item.warning {
-            background: #fff3cd;
-            border-left-color: #ffc107;
-        }
-        
-        .notification-item.error {
-            background: #f8d7da;
-            border-left-color: #dc3545;
-        }
-        
-        .notification-item:hover {
-            transform: translateX(5px);
-        }
-        
-        .notification-title {
-            font-size: 0.9em;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 3px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
-        
-        .notification-message {
-            font-size: 0.8em;
-            color: #666;
+
+        .activity-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
         }
-        
-        /* Loading State */
-        .loading-skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Charts Container */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+        }
+
+        /* New User Tip */
+        .new-user-tip {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .new-user-tip svg {
+            flex-shrink: 0;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .welcome-content {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-stats {
+                flex-wrap: wrap;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* Learn Badge */
+        .learn-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, var(--danger), var(--secondary));
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Loading States */
+        .skeleton {
+            background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-300) 50%, var(--gray-200) 75%);
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
-            border-radius: 5px;
+            border-radius: 8px;
         }
-        
+
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-        
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-container {
-                flex-direction: column;
-            }
-            
-            .activity-sidebar {
-                width: 100%;
-                position: static;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header-top {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .global-search {
-                width: 100%;
-            }
-            
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .module-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .activity-sidebar {
-                display: none;
-            }
-        }
-        
-        /* Mobile Menu */
-        .mobile-menu-toggle {
-            display: none;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
-        
-        @media (max-width: 768px) {
-            .mobile-menu-toggle {
-                display: block;
-            }
-            
-            .header-actions {
-                display: none;
-            }
-            
-            .header-actions.mobile-visible {
-                display: flex;
-                position: fixed;
-                top: 80px;
-                right: 20px;
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-                flex-direction: column;
-                z-index: 1001;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Unified Navbar with Welcome Message -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="/dashboard.html" class="navbar-brand">
-                <div class="navbar-logo">FDX</div>
-                <span>FDX Trading</span>
-            </a>
-            
-            <div class="navbar-nav" id="navbarNav">
-                <a href="/dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/requests.html" class="nav-link">Requests</a>
-                <a href="/products.html" class="nav-link">Products</a>
-                <a href="/supplier-catalog.html" class="nav-link">Suppliers</a>
-                <a href="/price-management.html" class="nav-link">Pricing</a>
-                <a href="/users.html" class="nav-link">Users</a>
-            </div>
-            
-            <div class="navbar-user">
-                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
-                    <div class="user-info" style="cursor: pointer;">
-                        <div class="user-avatar-small" id="navUserAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">AU</div>
+    <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section animate-fade-in">
+            <div class="welcome-content">
+                <div class="welcome-text">
+                    <h1>Welcome back, <span id="userName">User</span>!</h1>
+                    <p class="welcome-subtitle">Here's what's happening with your business today</p>
+                    
+                    <!-- New User Tip -->
+                    <div id="newUserTip" class="new-user-tip" style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                        <span>New to FDX Trading? <a href="/system-workflow.html" style="color: white; text-decoration: underline;">Understand how it works</a> or <a href="/console-introduction.html" style="color: white; text-decoration: underline;">learn the basics</a></span>
                     </div>
-                </a>
-                <div class="notification-bell" onclick="toggleNotifications()" style="margin-left: 15px; cursor: pointer; position: relative;">
-                    🔔
-                    <span class="notification-badge" id="notificationCount" style="position: absolute; top: -5px; right: -5px; background: #ff4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold;">3</span>
-                </div>
-                <button class="logout-btn" onclick="logout()" style="margin-left: 15px;">Logout</button>
-            </div>
-            
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-        </div>
-    </nav>
-    
-    <!-- Simplified Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="header-top" style="justify-content: center;">
-                <div class="global-search" style="width: 400px;">
-                    <input type="text" placeholder="Search products, suppliers, users..." id="globalSearch">
-                    <span class="search-icon">🔍</span>
-                </div>
-            </div>
-            
-            <!-- Stats Bar -->
-            <div class="stats-bar" id="statsBar">
-                <div class="stat-item">
-                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
-                    <div class="stat-label">Total Products</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
-                    <div class="stat-label">Active Suppliers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
-                    <div class="stat-label">Total Users</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
-                    <div class="stat-label">Categories</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
-                    <div class="stat-label">New This Week</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value loading-skeleton" style="height: 30px; width: 60px; margin: 0 auto;"></div>
-                    <div class="stat-label">Pending Tasks</div>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; display: none;">
-        <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
-            <div style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
-            <p style="color: #667eea; font-weight: bold;">Loading Dashboard...</p>
-            <p id="loadingStatus" style="color: #888; font-size: 0.9em; margin-top: 10px;"></p>
-        </div>
-    </div>
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-    
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Module Grid -->
-        <div class="module-grid" id="moduleGrid">
-            <!-- Modules will be loaded dynamically -->
-        </div>
-        
-        <!-- Activity Sidebar -->
-        <aside class="activity-sidebar">
-            <!-- Recent Activity -->
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Recent Activity</h3>
-                <ul class="activity-list" id="activityList">
-                    <li class="activity-item">
-                        <span class="activity-icon">⏳</span>
-                        <div class="activity-content">
-                            <div class="loading-skeleton" style="height: 14px; width: 80%; margin-bottom: 5px;"></div>
-                            <div class="loading-skeleton" style="height: 12px; width: 60%;"></div>
+                    
+                    <div class="welcome-stats">
+                        <div class="welcome-stat">
+                            <div class="welcome-stat-value">24</div>
+                            <div class="welcome-stat-label">Active Requests</div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <!-- Notifications -->
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Notifications</h3>
-                <ul class="notification-list" id="notificationList">
-                    <li class="notification-item warning">
-                        <div class="loading-skeleton" style="height: 14px; width: 80%; margin-bottom: 5px;"></div>
-                        <div class="loading-skeleton" style="height: 12px; width: 60%;"></div>
-                    </li>
-                </ul>
-            </div>
-        </aside>
-    </div>
-    
-    <script>
-        // State Management
-        let state = {
-            user: null,
-            stats: null,
-            modules: [],
-            activities: [],
-            notifications: [],
-            refreshInterval: null
-        };
-        
-        // Initialize Dashboard
-        document.addEventListener('DOMContentLoaded', async () => {
-            initializeUser();
-            setCurrentDate();
-            await loadDashboardData();
-            startAutoRefresh();
-        });
-        
-        // Initialize User
-        function initializeUser() {
-            // Get user from localStorage or session
-            const userData = localStorage.getItem('currentUser');
-            if (userData) {
-                const user = JSON.parse(userData);
-                state.user = {
-                    name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.displayName || user.username || 'User',
-                    firstName: user.firstName || (user.displayName || user.username || 'User').split(' ')[0],
-                    email: user.email || 'user@fdx.com',
-                    role: user.role || user.typeName || 'User',
-                    initials: user.firstName && user.lastName ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : 'U'
-                };
-                updateUserDisplay();
-            } else {
-                // Default user for demo
-                state.user = {
-                    name: 'Admin User',
-                    firstName: 'Admin',
-                    email: 'admin@fdx.com',
-                    role: 'Admin',
-                    initials: 'AU'
-                };
-                updateUserDisplay();
-            }
-        }
-        
-        // Update User Display
-        function updateUserDisplay() {
-            // Extract first name from full name
-            const firstName = state.user.firstName || state.user.name.split(' ')[0] || 'User';
-            
-            // Update avatar initials
-            const initials = state.user.initials || state.user.name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
-            const avatarElement = document.getElementById('navUserAvatar');
-            if (avatarElement) {
-                avatarElement.textContent = initials;
-            }
-        }
-        
-        // Set Current Date
-        function setCurrentDate() {
-            // This function is called but the element doesn't exist - just log the date
-            const today = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            console.log('Today:', today.toLocaleDateString('en-US', options));
-        }
-        
-        // Show loading indicator
-        function showLoading(message = '') {
-            const indicator = document.getElementById('loadingIndicator');
-            const status = document.getElementById('loadingStatus');
-            if (indicator) {
-                indicator.style.display = 'block';
-                if (status && message) {
-                    status.textContent = message;
-                }
-            }
-        }
-        
-        // Hide loading indicator
-        function hideLoading() {
-            const indicator = document.getElementById('loadingIndicator');
-            if (indicator) {
-                indicator.style.display = 'none';
-            }
-        }
-        
-        // Load Dashboard Data
-        async function loadDashboardData() {
-            console.log('Starting dashboard data load...');
-            const startTime = Date.now();
-            showLoading('Connecting to server...');
-            
-            // Set a timeout to show if loading is taking too long
-            const warningTimeout = setTimeout(() => {
-                showLoading('Still loading... The server might be slow to respond.');
-            }, 3000);
-            
-            try {
-                // Use Promise.allSettled to handle individual failures
-                const [stats, modules, activities, notifications] = await Promise.allSettled([
-                    loadStats(),
-                    loadModules(),
-                    loadActivities(),
-                    loadNotifications()
-                ]);
-                
-                clearTimeout(warningTimeout);
-                const loadTime = Date.now() - startTime;
-                console.log(`Dashboard loaded in ${loadTime}ms`);
-                
-                // Process results even if some failed
-                state.stats = stats.status === 'fulfilled' ? stats.value : null;
-                state.modules = modules.status === 'fulfilled' ? modules.value : [];
-                state.activities = activities.status === 'fulfilled' ? activities.value : [];
-                state.notifications = notifications.status === 'fulfilled' ? notifications.value : [];
-                
-                // Hide loading indicator
-                hideLoading();
-                
-                // Render components
-                renderStats(state.stats);
-                renderModules(state.modules);
-                renderActivities(state.activities);
-                renderNotifications(state.notifications);
-                updateNotificationCount();
-                
-                // Show error message if any requests failed
-                const failures = [stats, modules, activities, notifications].filter(r => r.status === 'rejected');
-                if (failures.length > 0) {
-                    console.error('Some dashboard components failed to load:', failures);
-                }
-            } catch (error) {
-                console.error('Critical error loading dashboard data:', error);
-                hideLoading();
-                // Show error message to user
-                alert('Failed to load dashboard. Please refresh the page or try again later.');
-            }
-        }
-        
-        // Load Stats
-        async function loadStats() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-                
-                const response = await fetch('/api/dashboard/stats', {
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return await response.json();
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.error('Stats request timed out after 5 seconds');
-                } else {
-                    console.error('Error loading stats:', error);
-                }
-                // Return mock data instead of null to prevent UI errors
-                return {
-                    totalProducts: 0,
-                    activeSuppliers: 0,
-                    totalUsers: 0,
-                    totalCategories: 0,
-                    newProductsThisWeek: 0,
-                    pendingVerifications: 0,
-                    pendingRequests: 0,
-                    activeProducts: 0,
-                    totalSuppliers: 0,
-                    suppliersWithProducts: 0,
-                    usersByType: [],
-                    activeRequests: 0,
-                    activeProposals: 0,
-                    pendingApprovals: 0,
-                    recentImportDate: null
-                };
-            }
-        }
-        
-        // Load Modules
-        async function loadModules() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-                
-                const response = await fetch(`/api/dashboard/modules?userRole=${state.user.role}`, {
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return await response.json();
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.error('Modules request timed out after 5 seconds');
-                } else {
-                    console.error('Error loading modules:', error);
-                }
-                // Return default modules instead of empty array
-                return [
-                    {
-                        id: 'requests',
-                        title: 'Procurement Requests',
-                        description: 'Manage purchase requests and RFQs',
-                        icon: '📋',
-                        color: '#667eea',
-                        url: '/requests.html',
-                        quickActions: [
-                            { label: 'New Request', url: '/request-create.html' },
-                            { label: 'View All', url: '/requests.html' }
-                        ]
-                    },
-                    {
-                        id: 'products',
-                        title: 'Product Management',
-                        description: 'Browse and manage product catalog',
-                        icon: '📦',
-                        color: '#28a745',
-                        url: '/products.html',
-                        quickActions: [
-                            { label: 'Add Product', url: '/products.html#add' },
-                            { label: 'Browse', url: '/products.html' }
-                        ]
-                    },
-                    {
-                        id: 'suppliers',
-                        title: 'Supplier Catalog',
-                        description: 'Manage suppliers and vendors',
-                        icon: '🏭',
-                        color: '#ff6b6b',
-                        url: '/supplier-catalog.html',
-                        quickActions: [
-                            { label: 'Add Supplier', url: '/supplier-catalog.html#add' },
-                            { label: 'Directory', url: '/supplier-catalog.html' }
-                        ]
-                    },
-                    {
-                        id: 'users',
-                        title: 'User Management',
-                        description: 'Manage users and permissions',
-                        icon: '👥',
-                        color: '#764ba2',
-                        url: '/users.html',
-                        quickActions: [
-                            { label: 'Add User', url: '/users.html#add' },
-                            { label: 'View All', url: '/users.html' }
-                        ]
-                    }
-                ];
-            }
-        }
-        
-        // Load Activities
-        async function loadActivities() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-                
-                const response = await fetch('/api/dashboard/activity?limit=5', {
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return await response.json();
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.error('Activities request timed out after 5 seconds');
-                } else {
-                    console.error('Error loading activities:', error);
-                }
-                return [];
-            }
-        }
-        
-        // Load Notifications
-        async function loadNotifications() {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-                
-                const response = await fetch('/api/dashboard/notifications', {
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const notifications = await response.json();
-                updateNotificationCount();
-                return notifications;
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.error('Notifications request timed out after 5 seconds');
-                } else {
-                    console.error('Error loading notifications:', error);
-                }
-                return [];
-            }
-        }
-        
-        // Render Stats
-        function renderStats(stats) {
-            if (!stats) return;
-            
-            const statsBar = document.getElementById('statsBar');
-            statsBar.innerHTML = `
-                <div class="stat-item">
-                    <div class="stat-value">${stats.totalProducts}</div>
-                    <div class="stat-label">Total Products</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.activeSuppliers}</div>
-                    <div class="stat-label">Active Suppliers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.totalUsers}</div>
-                    <div class="stat-label">Total Users</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.totalCategories}</div>
-                    <div class="stat-label">Categories</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.newProductsThisWeek}</div>
-                    <div class="stat-label">New This Week</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.pendingVerifications + stats.pendingRequests}</div>
-                    <div class="stat-label">Pending Tasks</div>
-                </div>
-            `;
-        }
-        
-        // Render Modules
-        function renderModules(modules) {
-            const moduleGrid = document.getElementById('moduleGrid');
-            
-            moduleGrid.innerHTML = modules.map(module => {
-                // Get module-specific stats
-                const moduleStats = getModuleStats(module.id);
-                
-                return `
-                    <div class="module-card" onclick="navigateToModule('${module.url}')" style="--module-color: ${module.color}; --module-color-dark: ${adjustColor(module.color, -20)};">
-                        <div class="module-header">
-                            ${moduleStats.badge ? `<span class="module-badge">${moduleStats.badge}</span>` : ''}
-                            <div class="module-icon">${module.icon}</div>
-                            <div class="module-title">${module.title}</div>
-                            <div class="module-description">${module.description}</div>
+                        <div class="welcome-stat">
+                            <div class="welcome-stat-value">$45.2K</div>
+                            <div class="welcome-stat-label">This Month</div>
                         </div>
-                        <div class="module-stats">
-                            ${moduleStats.stats.map(stat => `
-                                <div class="module-stat">
-                                    <div class="module-stat-value">${stat.value}</div>
-                                    <div class="module-stat-label">${stat.label}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="module-actions">
-                            ${module.quickActions.map(action => `
-                                <a href="${action.url}" class="quick-action" onclick="event.stopPropagation();" style="--module-color: ${module.color};">
-                                    ${action.label}
-                                </a>
-                            `).join('')}
+                        <div class="welcome-stat">
+                            <div class="welcome-stat-value">89%</div>
+                            <div class="welcome-stat-label">Success Rate</div>
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
-        
-        // Get Module Stats
-        function getModuleStats(moduleId) {
-            if (!state.stats) return { stats: [], badge: null };
-            
-            switch (moduleId) {
-                case 'products':
-                    return {
-                        stats: [
-                            { value: state.stats.totalProducts, label: 'Total' },
-                            { value: state.stats.activeProducts, label: 'Active' },
-                            { value: state.stats.newProductsThisWeek, label: 'New' }
-                        ],
-                        badge: state.stats.newProductsThisWeek > 0 ? `${state.stats.newProductsThisWeek} New` : null
-                    };
-                case 'suppliers':
-                    return {
-                        stats: [
-                            { value: state.stats.totalSuppliers, label: 'Total' },
-                            { value: state.stats.activeSuppliers, label: 'Active' },
-                            { value: state.stats.suppliersWithProducts, label: 'With Products' }
-                        ],
-                        badge: null
-                    };
-                case 'users':
-                    return {
-                        stats: [
-                            { value: state.stats.totalUsers, label: 'Total' },
-                            { value: state.stats.pendingVerifications, label: 'Pending' },
-                            { value: state.stats.usersByType.length, label: 'Types' }
-                        ],
-                        badge: state.stats.pendingVerifications > 0 ? `${state.stats.pendingVerifications}` : null
-                    };
-                case 'requests':
-                    return {
-                        stats: [
-                            { value: state.stats.activeRequests, label: 'Active' },
-                            { value: state.stats.pendingRequests, label: 'Pending' },
-                            { value: '-', label: 'Completed' }
-                        ],
-                        badge: state.stats.pendingRequests > 0 ? `${state.stats.pendingRequests}` : null
-                    };
-                case 'proposals':
-                    return {
-                        stats: [
-                            { value: state.stats.activeProposals, label: 'Active' },
-                            { value: state.stats.pendingApprovals, label: 'Pending' },
-                            { value: '-', label: 'Approved' }
-                        ],
-                        badge: state.stats.pendingApprovals > 0 ? `${state.stats.pendingApprovals}` : null
-                    };
-                case 'categories':
-                    return {
-                        stats: [
-                            { value: state.stats.totalCategories, label: 'Categories' },
-                            { value: state.stats.totalProducts, label: 'Products' },
-                            { value: '-', label: 'Uncategorized' }
-                        ],
-                        badge: null
-                    };
-                case 'reports':
-                    return {
-                        stats: [
-                            { value: state.stats.totalProducts, label: 'Products' },
-                            { value: state.stats.totalSuppliers, label: 'Suppliers' },
-                            { value: state.stats.totalUsers, label: 'Users' }
-                        ],
-                        badge: null
-                    };
-                case 'import':
-                    const lastImport = state.stats.recentImportDate ? new Date(state.stats.recentImportDate).toLocaleDateString() : 'Never';
-                    return {
-                        stats: [
-                            { value: lastImport, label: 'Last Import' },
-                            { value: state.stats.totalProducts, label: 'Records' },
-                            { value: '✓', label: 'Status' }
-                        ],
-                        badge: null
-                    };
-                case 'settings':
-                    return {
-                        stats: [
-                            { value: '100%', label: 'Profile' },
-                            { value: '✓', label: 'Verified' },
-                            { value: 'Active', label: 'Status' }
-                        ],
-                        badge: null
-                    };
-                default:
-                    return { stats: [], badge: null };
-            }
-        }
-        
-        // Render Activities
-        function renderActivities(activities) {
-            const activityList = document.getElementById('activityList');
-            
-            if (activities.length === 0) {
-                activityList.innerHTML = '<li class="activity-item">No recent activity</li>';
-                return;
-            }
-            
-            activityList.innerHTML = activities.map(activity => `
-                <li class="activity-item">
-                    <span class="activity-icon">${activity.icon}</span>
+                </div>
+
+                <div class="welcome-actions">
+                    <button class="welcome-btn" onclick="window.location.href='/request-create.html'">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="16"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                        New Request
+                    </button>
+                    <button class="welcome-btn" onclick="window.location.href='/console-list.html'">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <line x1="9" y1="9" x2="15" y2="9"/>
+                            <line x1="9" y1="15" x2="15" y2="15"/>
+                        </svg>
+                        View Consoles
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="quick-action-card" onclick="window.location.href='/requests.html'">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                </div>
+                <div class="quick-action-title">Requests</div>
+                <div class="quick-action-desc">Manage procurement</div>
+            </div>
+
+            <div class="quick-action-card" onclick="window.location.href='/products.html'">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                </div>
+                <div class="quick-action-title">Products</div>
+                <div class="quick-action-desc">Browse catalog</div>
+            </div>
+
+            <div class="quick-action-card" onclick="window.location.href='/supplier-catalog.html'">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="quick-action-title">Suppliers</div>
+                <div class="quick-action-desc">Find partners</div>
+            </div>
+
+            <div class="quick-action-card" onclick="window.location.href='/price-management.html'">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <div class="quick-action-title">Pricing</div>
+                <div class="quick-action-desc">Manage prices</div>
+            </div>
+
+            <div class="quick-action-card" onclick="window.location.href='/university-dashboard.html'" style="position: relative;">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                </div>
+                <div class="quick-action-title">Learn</div>
+                <div class="quick-action-desc">Training center</div>
+                <div id="learnBadge" class="learn-badge" style="display: none;">NEW</div>
+            </div>
+
+            <div class="quick-action-card" onclick="window.location.href='/user-profile.html'">
+                <div class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 9.54l4.24 4.24M3.88 3.88l4.24 4.24m7.76 7.76l4.24 4.24"/>
+                    </svg>
+                </div>
+                <div class="quick-action-title">Settings</div>
+                <div class="quick-action-desc">Preferences</div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-info">
+                        <h3>Total Requests</h3>
+                        <div class="stat-value">156</div>
+                    </div>
+                    <div class="stat-icon primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="stat-trend">
+                    <span class="trend-badge trend-up">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        </svg>
+                        12%
+                    </span>
+                    <span class="trend-text">vs last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-info">
+                        <h3>Active Consoles</h3>
+                        <div class="stat-value">24</div>
+                    </div>
+                    <div class="stat-icon success">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <line x1="9" y1="9" x2="15" y2="9"/>
+                            <line x1="9" y1="15" x2="15" y2="15"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="stat-trend">
+                    <span class="trend-badge trend-up">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        </svg>
+                        8%
+                    </span>
+                    <span class="trend-text">increase this week</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-info">
+                        <h3>Total Suppliers</h3>
+                        <div class="stat-value">89</div>
+                    </div>
+                    <div class="stat-icon warning">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="stat-trend">
+                    <span class="trend-badge trend-down">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+                        </svg>
+                        3%
+                    </span>
+                    <span class="trend-text">less than target</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-info">
+                        <h3>Monthly Volume</h3>
+                        <div class="stat-value">$142K</div>
+                    </div>
+                    <div class="stat-icon info">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="stat-trend">
+                    <span class="trend-badge trend-up">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        </svg>
+                        23%
+                    </span>
+                    <span class="trend-text">growth rate</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Activity</h2>
+                <a class="section-action" href="/activity.html">View All</a>
+            </div>
+            <div class="activity-timeline">
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: var(--primary);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
                     <div class="activity-content">
-                        <div class="activity-title">${activity.title}</div>
-                        <div class="activity-description">${activity.description}</div>
-                        <div class="activity-time">${formatTime(activity.timestamp)}</div>
+                        <div class="activity-title">New Request Created</div>
+                        <div class="activity-desc">Request #REQ-2024-089 for office supplies</div>
+                        <div class="activity-time">2 hours ago</div>
                     </div>
-                </li>
-            `).join('');
-        }
-        
-        // Render Notifications
-        function renderNotifications(notifications) {
-            const notificationList = document.getElementById('notificationList');
-            
-            if (notifications.length === 0) {
-                notificationList.innerHTML = '<li class="notification-item info"><div class="notification-title">All caught up!</div><div class="notification-message">No new notifications</div></li>';
-                return;
-            }
-            
-            notificationList.innerHTML = notifications.map(notification => `
-                <li class="notification-item ${notification.type}" onclick="navigateToModule('${notification.url}')">
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-message">${notification.message}</div>
-                </li>
-            `).join('');
-        }
-        
-        // Navigate to Module
-        function navigateToModule(url) {
-            window.location.href = url;
-        }
-        
-        // Format Time
-        function formatTime(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diff = now - date;
-            
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
-            
-            if (minutes < 1) return 'Just now';
-            if (minutes < 60) return `${minutes} min ago`;
-            if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-            if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
-            
-            return date.toLocaleDateString();
-        }
-        
-        // Adjust Color
-        function adjustColor(color, percent) {
-            const num = parseInt(color.replace('#', ''), 16);
-            const amt = Math.round(2.55 * percent);
-            const R = (num >> 16) + amt;
-            const G = (num >> 8 & 0x00FF) + amt;
-            const B = (num & 0x0000FF) + amt;
-            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-                (B < 255 ? B < 1 ? 0 : B : 255))
-                .toString(16).slice(1);
-        }
-        
-        // Toggle Mobile Menu
-        function toggleMobileMenu() {
-            const nav = document.getElementById('navbarNav');
-            nav.classList.toggle('active');
-        }
-        
-        // Toggle Notifications
-        function toggleNotifications() {
-            // In a real app, this would open a notification panel
-            alert(`You have ${state.notifications.length} notifications`);
-        }
-        
-        // Global Search
-        document.getElementById('globalSearch').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            if (searchTerm.length > 2) {
-                // Filter modules based on search
-                const filteredModules = state.modules.filter(module => 
-                    module.title.toLowerCase().includes(searchTerm) ||
-                    module.description.toLowerCase().includes(searchTerm)
-                );
-                renderModules(filteredModules);
-            } else {
-                renderModules(state.modules);
-            }
-        });
-        
-        // Start Auto Refresh
-        function startAutoRefresh() {
-            // Refresh stats every 30 seconds
-            state.refreshInterval = setInterval(async () => {
-                const stats = await loadStats();
-                if (stats) {
-                    state.stats = stats;
-                    renderStats(stats);
-                    // Update module stats
-                    renderModules(state.modules);
-                }
-            }, 30000);
-        }
-        
-        // Logout
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('currentUser');
-                clearInterval(state.refreshInterval);
-                window.location.href = '/index.html';
-            }
-        }
-        
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (state.refreshInterval) {
-                clearInterval(state.refreshInterval);
-            }
-        });
-        
-        // Update notification count from state
-        function updateNotificationCount() {
-            const count = state.notifications ? state.notifications.length : 0;
-            const badge = document.getElementById('notificationCount');
-            if (badge) {
-                badge.textContent = count;
-                badge.style.display = count > 0 ? 'flex' : 'none';
-            }
-        }
-    </script>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: var(--success);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Console Completed</div>
+                        <div class="activity-desc">Console #CON-2024-045 successfully closed</div>
+                        <div class="activity-time">4 hours ago</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: linear-gradient(135deg, #fed7aa, #fbbf24); color: var(--warning);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">New Supplier Added</div>
+                        <div class="activity-desc">Tech Solutions Inc. joined as verified supplier</div>
+                        <div class="activity-time">Yesterday</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: linear-gradient(135deg, #dbeafe, #93c5fd); color: var(--info);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Price Update</div>
+                        <div class="activity-desc">15 product prices updated in catalog</div>
+                        <div class="activity-time">2 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="section-header">
+                    <h2 class="section-title">Request Trends</h2>
+                    <select style="padding: 6px 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px;">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>Last 90 days</option>
+                    </select>
+                </div>
+                <div class="chart-placeholder">
+                    <svg width="300" height="200" viewBox="0 0 300 200">
+                        <polyline points="0,150 50,120 100,140 150,80 200,100 250,40 300,60" 
+                                  fill="none" 
+                                  stroke="var(--primary)" 
+                                  stroke-width="2"/>
+                        <polyline points="0,150 50,120 100,140 150,80 200,100 250,40 300,60 300,200 0,200" 
+                                  fill="url(#gradient)" 
+                                  opacity="0.3"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.5" />
+                                <stop offset="100%" style="stop-color:var(--primary);stop-opacity:0" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="section-header">
+                    <h2 class="section-title">Category Distribution</h2>
+                    <span class="section-action">Details</span>
+                </div>
+                <div class="chart-placeholder">
+                    <svg width="200" height="200" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--gray-200)" stroke-width="30"/>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--primary)" stroke-width="30"
+                                stroke-dasharray="150 251.2" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--success)" stroke-width="30"
+                                stroke-dasharray="60 251.2" stroke-dashoffset="-150" transform="rotate(-90 100 100)"/>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="var(--warning)" stroke-width="30"
+                                stroke-dasharray="41.2 251.2" stroke-dashoffset="-210" transform="rotate(-90 100 100)"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
     
-    <!-- Global Keyboard Shortcuts -->
-    <script src="/js/keyboard-shortcuts.js"></script>
+    <!-- Modern UI System -->
+    <script src="/js/modern-ui.js"></script>
+    
+    <!-- Page-specific JavaScript -->
+    <script>
+        // Load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            document.getElementById('userName').textContent = user.name || 'User';
+            
+            // Check if user has seen the introduction
+            const hasSeenIntro = localStorage.getItem('hasSeenConsoleIntro');
+            const isNewUser = localStorage.getItem('isNewUser') !== 'false';
+            
+            if (!hasSeenIntro || isNewUser) {
+                // Show new user tip
+                const newUserTip = document.getElementById('newUserTip');
+                if (newUserTip) {
+                    newUserTip.style.display = 'flex';
+                }
+                
+                // Show badge on learn button
+                const learnBadge = document.getElementById('learnBadge');
+                if (learnBadge) {
+                    learnBadge.style.display = 'block';
+                }
+            }
+            
+            // Add animation to elements
+            const cards = document.querySelectorAll('.stat-card, .quick-action-card, .activity-item');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+            
+            // Simulate loading real data
+            loadDashboardData();
+        });
+
+        async function loadDashboardData() {
+            try {
+                // This would normally fetch from your API
+                // For now, we'll use the displayed mock data
+                console.log('Dashboard loaded successfully');
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Add interactive hover effects
+        document.querySelectorAll('.quick-action-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
 </body>
 </html>

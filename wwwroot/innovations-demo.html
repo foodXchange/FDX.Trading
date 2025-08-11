@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovations Demo - FDX Trading</title>
+    
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .demo-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+        }
+        
+        .demo-section {
+            margin-bottom: 3rem;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .demo-card {
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demo-button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Smart Navigation -->
+    <div id="smart-nav-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="demo-container">
+            <!-- Header -->
+            <div class="demo-header">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">🚀 See All Innovations</h1>
+                <p style="font-size: 1.2rem; opacity: 0.9;">Experience the modern features of FDX Trading</p>
+            </div>
+
+            <!-- Toast Notifications Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">1. Toast Notifications</h2>
+                <div class="demo-card">
+                    <p>Click buttons to see beautiful toast notifications:</p>
+                    <div class="demo-button-group">
+                        <button class="btn-modern btn-modern-success" onclick="toast.success('Operation completed successfully!')">
+                            Success Toast
+                        </button>
+                        <button class="btn-modern btn-modern-primary" onclick="toast.info('Here is some useful information')">
+                            Info Toast
+                        </button>
+                        <button class="btn-modern btn-modern-outline" style="border-color: #f59e0b; color: #f59e0b;" onclick="toast.warning('Please review before continuing')">
+                            Warning Toast
+                        </button>
+                        <button class="btn-modern" style="background: #ef4444; color: white;" onclick="toast.error('Something went wrong!')">
+                            Error Toast
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Mode Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">2. Dark Mode Toggle</h2>
+                <div class="demo-card">
+                    <p>Look for the floating button in the bottom-right corner! Click it to toggle between light and dark themes.</p>
+                    <p style="margin-top: 1rem; padding: 1rem; background: #f3f4f6; border-radius: 8px;">
+                        💡 <strong>Tip:</strong> Your theme preference is saved automatically and persists across sessions.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Auto-Save Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">3. Auto-Save Forms</h2>
+                <div class="demo-card">
+                    <form id="demoForm">
+                        <div class="form-modern">
+                            <label class="form-modern-label">Product Name (type and wait 3 seconds)</label>
+                            <input type="text" class="form-modern-input" name="productName" placeholder="Start typing...">
+                        </div>
+                        <div class="form-modern" style="margin-top: 1rem;">
+                            <label class="form-modern-label">Description</label>
+                            <textarea class="form-modern-input" name="description" rows="3" placeholder="Type here and see auto-save in action..."></textarea>
+                        </div>
+                    </form>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;">
+                        ✨ Form automatically saves after 3 seconds of inactivity
+                    </p>
+                </div>
+            </div>
+
+            <!-- Loading States Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">4. Loading States</h2>
+                <div class="demo-card">
+                    <div class="demo-button-group">
+                        <button class="btn-modern btn-modern-primary" onclick="loading.show('Processing your request...'); setTimeout(() => loading.hide(), 3000)">
+                            Show Loading Overlay (3 seconds)
+                        </button>
+                    </div>
+                    <div style="margin-top: 2rem;">
+                        <p style="margin-bottom: 1rem;">Skeleton Loading:</p>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Shortcuts Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">5. Keyboard Shortcuts</h2>
+                <div class="demo-card">
+                    <p>Try these keyboard shortcuts:</p>
+                    <ul style="line-height: 2;">
+                        <li><kbd>Ctrl</kbd> + <kbd>/</kbd> - Show all shortcuts</li>
+                        <li><kbd>Ctrl</kbd> + <kbd>K</kbd> - Quick search</li>
+                        <li><kbd>Ctrl</kbd> + <kbd>S</kbd> - Save current form</li>
+                        <li><kbd>Alt</kbd> + <kbd>N</kbd> - Create new item</li>
+                        <li><kbd>Esc</kbd> - Close modals</li>
+                    </ul>
+                    <button class="btn-modern btn-modern-primary" style="margin-top: 1rem;" onclick="shortcuts.showShortcutsList()">
+                        View All Shortcuts
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Validation Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">6. Real-time Form Validation</h2>
+                <div class="demo-card">
+                    <form id="validationForm">
+                        <div class="form-modern">
+                            <label class="form-modern-label">Email (required)</label>
+                            <input type="email" class="form-modern-input" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-modern" style="margin-top: 1rem;">
+                            <label class="form-modern-label">Phone (pattern: xxx-xxx-xxxx)</label>
+                            <input type="tel" class="form-modern-input" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" 
+                                   placeholder="123-456-7890" data-pattern-message="Format: 123-456-7890">
+                        </div>
+                        <div class="form-modern" style="margin-top: 1rem;">
+                            <label class="form-modern-label">Quantity (1-100)</label>
+                            <input type="number" class="form-modern-input" min="1" max="100" placeholder="Enter quantity">
+                        </div>
+                    </form>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;">
+                        ✅ Validation happens as you type with helpful error messages
+                    </p>
+                </div>
+            </div>
+
+            <!-- Animation Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">7. Smooth Animations</h2>
+                <div class="demo-grid">
+                    <div class="modern-card hover-lift">
+                        <h3>Hover Lift Card</h3>
+                        <p>Hover over this card to see it lift up</p>
+                    </div>
+                    <div class="modern-card hover-grow">
+                        <h3>Hover Grow Card</h3>
+                        <p>Hover over this card to see it grow</p>
+                    </div>
+                    <div class="modern-card" style="animation: fadeIn 1s ease-out;">
+                        <h3>Fade In Animation</h3>
+                        <p>This card faded in when the page loaded</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modern UI Components -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">8. Modern UI Components</h2>
+                <div class="demo-grid">
+                    <!-- Progress Bar -->
+                    <div class="demo-card">
+                        <h4 style="margin-bottom: 1rem;">Progress Bar</h4>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 75%;"></div>
+                        </div>
+                        <p style="margin-top: 0.5rem; font-size: 0.875rem;">75% Complete</p>
+                    </div>
+                    
+                    <!-- Status Badges -->
+                    <div class="demo-card">
+                        <h4 style="margin-bottom: 1rem;">Status Badges</h4>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <span class="badge-modern badge-success">Active</span>
+                            <span class="badge-modern badge-warning">Pending</span>
+                            <span class="badge-modern badge-danger">Urgent</span>
+                            <span class="badge-modern badge-info">New</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Modern Table -->
+                    <div class="demo-card" style="grid-column: span 2;">
+                        <h4 style="margin-bottom: 1rem;">Modern Table</h4>
+                        <table class="table-modern">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Premium Pasta</td>
+                                    <td><span class="badge-modern badge-success">In Stock</span></td>
+                                    <td>$45.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Organic Cereal</td>
+                                    <td><span class="badge-modern badge-warning">Low Stock</span></td>
+                                    <td>$38.50</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Integration Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">9. Smart API Integration</h2>
+                <div class="demo-card">
+                    <p>All API calls automatically show loading states and toast notifications:</p>
+                    <div class="demo-button-group">
+                        <button class="btn-modern btn-modern-primary" onclick="testAPICall()">
+                            Test API Call (with auto loading/toast)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copy to Clipboard Demo -->
+            <div class="demo-section">
+                <h2 style="margin-bottom: 1rem;">10. Copy to Clipboard</h2>
+                <div class="demo-card">
+                    <p>Click on any of these to copy:</p>
+                    <div style="margin-top: 1rem;">
+                        <code data-copy="REQ-2025-0577" style="padding: 0.5rem; background: #f3f4f6; border-radius: 4px; cursor: pointer;">
+                            REQ-2025-0577
+                        </code>
+                        <span style="margin-left: 0.5rem; font-size: 0.875rem; color: #6b7280;">← Click to copy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/smart-navigation.js"></script>
+    <script src="/js/modern-ui.js"></script>
+    <script src="/js/global-enhancements.js"></script>
+    
+    <script>
+        // Initialize auto-save for demo form
+        new AutoSaveManager('#demoForm', async (data) => {
+            console.log('Auto-saving:', data);
+            toast.success('Form auto-saved!');
+        }, 3000);
+        
+        // Initialize form validation
+        new FormValidator('#validationForm');
+        
+        // Test API call
+        async function testAPICall() {
+            try {
+                const response = await fetch('/api/requests/stats');
+                const data = await response.json();
+                toast.success(`Loaded stats: ${data.total} total requests`);
+            } catch (error) {
+                toast.error('API call failed - this is expected in demo');
+            }
+        }
+        
+        // Show welcome message
+        setTimeout(() => {
+            toast.info('Welcome to the Innovations Demo! Try all the features.', 'Hello!');
+        }, 1000);
+    </script>
+</body>
+</html>

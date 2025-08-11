@@ -4,6 +4,7 @@ using FDX.Trading.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FDX.Trading.Migrations
 {
     [DbContext(typeof(FdxTradingContext))]
-    partial class FdxTradingContextModelSnapshot : ModelSnapshot
+    [Migration("20250811113615_AddConsoleModule")]
+    partial class AddConsoleModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,80 +24,6 @@ namespace FDX.Trading.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("FDX.Trading.Models.CommunicationTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AllowedRoles")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AvailableVariables")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CreatedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DefaultValues")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSystem")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime?>("LastUsedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("TemplateName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UsageCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.ToTable("CommunicationTemplates");
-                });
 
             modelBuilder.Entity("FDX.Trading.Models.CompanyContact", b =>
                 {
@@ -286,92 +215,6 @@ namespace FDX.Trading.Migrations
                     b.ToTable("ConsoleDocuments", (string)null);
                 });
 
-            modelBuilder.Entity("FDX.Trading.Models.ConsoleMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AttachmentName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ConsoleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("EmailSent")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("EmailSentAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MentionedUsers")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MessageType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Metadata")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ParentMessageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ReadAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("RecipientId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("RepliedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("RequiresEmail")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConsoleId");
-
-                    b.HasIndex("ParentMessageId");
-
-                    b.HasIndex("RecipientId");
-
-                    b.HasIndex("SenderId");
-
-                    b.HasIndex("StageId");
-
-                    b.ToTable("ConsoleMessages");
-                });
-
             modelBuilder.Entity("FDX.Trading.Models.ConsoleParticipant", b =>
                 {
                     b.Property<int>("Id")
@@ -429,86 +272,6 @@ namespace FDX.Trading.Migrations
                         .IsUnique();
 
                     b.ToTable("ConsoleParticipants", (string)null);
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.NotificationQueue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Channel")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ConsoleId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Data")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailCc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailTemplate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailTo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsProcessed")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("MessageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ProcessedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RecipientUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RetryCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ScheduledFor")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConsoleId");
-
-                    b.HasIndex("MessageId");
-
-                    b.HasIndex("RecipientUserId");
-
-                    b.ToTable("NotificationQueues");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.PriceHistory", b =>
@@ -1724,15 +1487,6 @@ namespace FDX.Trading.Migrations
                     b.ToTable("WorkflowStages", (string)null);
                 });
 
-            modelBuilder.Entity("FDX.Trading.Models.CommunicationTemplate", b =>
-                {
-                    b.HasOne("FDX.Trading.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.Navigation("CreatedBy");
-                });
-
             modelBuilder.Entity("FDX.Trading.Models.CompanyContact", b =>
                 {
                     b.HasOne("FDX.Trading.Models.User", "User")
@@ -1794,43 +1548,6 @@ namespace FDX.Trading.Migrations
                     b.Navigation("UploadedBy");
                 });
 
-            modelBuilder.Entity("FDX.Trading.Models.ConsoleMessage", b =>
-                {
-                    b.HasOne("FDX.Trading.Models.ProjectConsole", "Console")
-                        .WithMany()
-                        .HasForeignKey("ConsoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FDX.Trading.Models.ConsoleMessage", "ParentMessage")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentMessageId");
-
-                    b.HasOne("FDX.Trading.Models.User", "Recipient")
-                        .WithMany()
-                        .HasForeignKey("RecipientId");
-
-                    b.HasOne("FDX.Trading.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FDX.Trading.Models.WorkflowStage", "Stage")
-                        .WithMany()
-                        .HasForeignKey("StageId");
-
-                    b.Navigation("Console");
-
-                    b.Navigation("ParentMessage");
-
-                    b.Navigation("Recipient");
-
-                    b.Navigation("Sender");
-
-                    b.Navigation("Stage");
-                });
-
             modelBuilder.Entity("FDX.Trading.Models.ConsoleParticipant", b =>
                 {
                     b.HasOne("FDX.Trading.Models.ProjectConsole", "Console")
@@ -1848,29 +1565,6 @@ namespace FDX.Trading.Migrations
                     b.Navigation("Console");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.NotificationQueue", b =>
-                {
-                    b.HasOne("FDX.Trading.Models.ProjectConsole", "Console")
-                        .WithMany()
-                        .HasForeignKey("ConsoleId");
-
-                    b.HasOne("FDX.Trading.Models.ConsoleMessage", "Message")
-                        .WithMany()
-                        .HasForeignKey("MessageId");
-
-                    b.HasOne("FDX.Trading.Models.User", "RecipientUser")
-                        .WithMany()
-                        .HasForeignKey("RecipientUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Console");
-
-                    b.Navigation("Message");
-
-                    b.Navigation("RecipientUser");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.PriceHistory", b =>
@@ -2060,11 +1754,6 @@ namespace FDX.Trading.Migrations
                     b.Navigation("AssignedUser");
 
                     b.Navigation("Console");
-                });
-
-            modelBuilder.Entity("FDX.Trading.Models.ConsoleMessage", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.PriceProposal", b =>

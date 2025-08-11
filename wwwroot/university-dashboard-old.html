@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDX University - Learn the Platform</title>
+    <link rel="stylesheet" href="css/fdx-tutorial.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .university-header {
+            background: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .university-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .university-logo h1 {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .university-logo span {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .user-progress {
+            text-align: right;
+        }
+
+        .user-name {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .overall-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s;
+        }
+
+        .role-selector {
+            background: white;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .role-tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .role-tab:hover {
+            background: #f8f9fa;
+        }
+
+        .role-tab.active {
+            color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .learning-paths {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .path-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .path-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .path-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .path-number {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .path-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .path-duration {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .path-content {
+            padding: 20px;
+        }
+
+        .path-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .lessons-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .lesson-item.completed {
+            color: #28a745;
+            text-decoration: line-through;
+        }
+
+        .lesson-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .lesson-item.completed .lesson-icon {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .path-footer {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .path-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .start-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-btn.continue {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .start-btn.completed {
+            background: #6c757d;
+            cursor: default;
+        }
+
+        .quick-actions {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .quick-actions h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            color: #495057;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: #fff;
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="university-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="university-logo">
+                    <h1>🎓 FDX University</h1>
+                    <span>Master the FDX Trading Platform</span>
+                </div>
+                <div class="user-progress">
+                    <div class="user-name">Welcome, <span id="userName">User</span>!</div>
+                    <div class="overall-progress">
+                        <span>Overall Progress:</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
+                        </div>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="role-selector">
+            <div class="role-tabs">
+                <button class="role-tab active" data-role="buyer">🛒 Buyer Training</button>
+                <button class="role-tab" data-role="supplier">📦 Supplier Training</button>
+                <button class="role-tab" data-role="expert">🔍 Expert Training</button>
+                <button class="role-tab" data-role="agent">🤝 Agent Training</button>
+                <button class="role-tab" data-role="admin">⚙️ Admin Training</button>
+            </div>
+            <p id="roleDescription" style="color: #666; margin-top: 10px;">
+                Learn how to create requests, manage procurement workflows, and work with suppliers effectively.
+            </p>
+        </div>
+
+        <div class="learning-paths" id="learningPaths">
+            <!-- Paths will be loaded dynamically -->
+        </div>
+
+        <div class="quick-actions">
+            <h2>Quick Tutorials</h2>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="startQuickTutorial('create-request')">
+                    <i>📝</i>
+                    Create Your First Request
+                </button>
+                <button class="action-btn" onclick="startQuickTutorial('manage-console')">
+                    <i>🎛️</i>
+                    Manage Console Workflow
+                </button>
+                <button class="action-btn" onclick="startQuickTutorial('supplier-products')">
+                    <i>📦</i>
+                    Add Products (Suppliers)
+                </button>
+                <button class="action-btn" onclick="openPracticeMode()">
+                    <i>🎮</i>
+                    Practice Mode
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/fdx-tutorial.js"></script>
+    <script>
+        // Learning paths for each role
+        const learningPaths = {
+            buyer: [
+                {
+                    id: 'buyer-basics',
+                    number: 'Module 1',
+                    title: 'Getting Started as a Buyer',
+                    duration: '30 minutes',
+                    description: 'Learn the fundamentals of the FDX Trading platform from a buyer perspective.',
+                    lessons: [
+                        { id: 'b1-1', title: 'Creating your account', completed: false },
+                        { id: 'b1-2', title: 'Setting up company profile', completed: false },
+                        { id: 'b1-3', title: 'Understanding the dashboard', completed: false },
+                        { id: 'b1-4', title: 'Navigation basics', completed: false }
+                    ]
+                },
+                {
+                    id: 'buyer-requests',
+                    number: 'Module 2',
+                    title: 'Creating & Managing Requests',
+                    duration: '45 minutes',
+                    description: 'Master the art of creating detailed procurement requests.',
+                    lessons: [
+                        { id: 'b2-1', title: 'Request types and categories', completed: false },
+                        { id: 'b2-2', title: 'Adding product specifications', completed: false },
+                        { id: 'b2-3', title: 'Setting delivery requirements', completed: false },
+                        { id: 'b2-4', title: 'Publishing to suppliers', completed: false }
+                    ]
+                },
+                {
+                    id: 'buyer-console',
+                    number: 'Module 3',
+                    title: 'Console Workflow Management',
+                    duration: '60 minutes',
+                    description: 'Learn to manage procurement workflows through the console system.',
+                    lessons: [
+                        { id: 'b3-1', title: 'Creating consoles from requests', completed: false },
+                        { id: 'b3-2', title: 'Understanding workflow stages', completed: false },
+                        { id: 'b3-3', title: 'Progressing through stages', completed: false },
+                        { id: 'b3-4', title: 'Communicating with suppliers', completed: false }
+                    ]
+                }
+            ],
+            supplier: [
+                {
+                    id: 'supplier-basics',
+                    number: 'Module 1',
+                    title: 'Supplier Onboarding',
+                    duration: '30 minutes',
+                    description: 'Get started as a supplier on FDX Trading platform.',
+                    lessons: [
+                        { id: 's1-1', title: 'Creating supplier account', completed: false },
+                        { id: 's1-2', title: 'Company verification process', completed: false },
+                        { id: 's1-3', title: 'Setting up business details', completed: false },
+                        { id: 's1-4', title: 'Adding certifications', completed: false }
+                    ]
+                },
+                {
+                    id: 'supplier-products',
+                    number: 'Module 2',
+                    title: 'Product Management',
+                    duration: '45 minutes',
+                    description: 'Learn to add and manage your product catalog.',
+                    lessons: [
+                        { id: 's2-1', title: 'Adding products', completed: false },
+                        { id: 's2-2', title: 'Setting pricing', completed: false },
+                        { id: 's2-3', title: 'Managing inventory', completed: false },
+                        { id: 's2-4', title: 'Product visibility', completed: false }
+                    ]
+                },
+                {
+                    id: 'supplier-quotes',
+                    number: 'Module 3',
+                    title: 'Responding to Requests',
+                    duration: '40 minutes',
+                    description: 'Master the art of winning procurement deals.',
+                    lessons: [
+                        { id: 's3-1', title: 'Finding relevant requests', completed: false },
+                        { id: 's3-2', title: 'Submitting quotes', completed: false },
+                        { id: 's3-3', title: 'Negotiation process', completed: false },
+                        { id: 's3-4', title: 'Order fulfillment', completed: false }
+                    ]
+                }
+            ],
+            expert: [
+                {
+                    id: 'expert-basics',
+                    number: 'Module 1',
+                    title: 'Expert Role Overview',
+                    duration: '25 minutes',
+                    description: 'Understanding your role as a kosher/quality expert.',
+                    lessons: [
+                        { id: 'e1-1', title: 'Expert responsibilities', completed: false },
+                        { id: 'e1-2', title: 'Certification process', completed: false },
+                        { id: 'e1-3', title: 'Review workflows', completed: false },
+                        { id: 'e1-4', title: 'Compliance standards', completed: false }
+                    ]
+                }
+            ],
+            agent: [
+                {
+                    id: 'agent-basics',
+                    number: 'Module 1',
+                    title: 'Agent Operations',
+                    duration: '35 minutes',
+                    description: 'Learn to facilitate deals between buyers and suppliers.',
+                    lessons: [
+                        { id: 'a1-1', title: 'Agent role overview', completed: false },
+                        { id: 'a1-2', title: 'Managing client accounts', completed: false },
+                        { id: 'a1-3', title: 'Deal facilitation', completed: false },
+                        { id: 'a1-4', title: 'Commission structure', completed: false }
+                    ]
+                }
+            ],
+            admin: [
+                {
+                    id: 'admin-basics',
+                    number: 'Module 1',
+                    title: 'Platform Administration',
+                    duration: '60 minutes',
+                    description: 'Complete platform administration and management.',
+                    lessons: [
+                        { id: 'ad1-1', title: 'User management', completed: false },
+                        { id: 'ad1-2', title: 'System configuration', completed: false },
+                        { id: 'ad1-3', title: 'Reports and analytics', completed: false },
+                        { id: 'ad1-4', title: 'Platform maintenance', completed: false }
+                    ]
+                }
+            ]
+        };
+
+        const roleDescriptions = {
+            buyer: 'Learn how to create requests, manage procurement workflows, and work with suppliers effectively.',
+            supplier: 'Master product listing, quote submission, and order fulfillment on the FDX platform.',
+            expert: 'Understand kosher certification, quality standards, and compliance verification processes.',
+            agent: 'Learn to facilitate deals, manage client relationships, and maximize transaction success.',
+            admin: 'Complete platform administration including user management, configuration, and analytics.'
+        };
+
+        let currentRole = 'buyer';
+        let userProgress = {};
+
+        // Load user progress from localStorage
+        function loadUserProgress() {
+            const saved = localStorage.getItem('fdx_university_progress');
+            if (saved) {
+                userProgress = JSON.parse(saved);
+            }
+            updateOverallProgress();
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('fdx_university_progress', JSON.stringify(userProgress));
+            updateOverallProgress();
+        }
+
+        // Update overall progress display
+        function updateOverallProgress() {
+            let totalLessons = 0;
+            let completedLessons = 0;
+            
+            Object.values(learningPaths).forEach(rolePaths => {
+                rolePaths.forEach(path => {
+                    path.lessons.forEach(lesson => {
+                        totalLessons++;
+                        if (userProgress[lesson.id]) {
+                            completedLessons++;
+                        }
+                    });
+                });
+            });
+            
+            const percent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+            document.getElementById('overallProgress').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+        }
+
+        // Display learning paths for selected role
+        function displayPaths(role) {
+            const container = document.getElementById('learningPaths');
+            const paths = learningPaths[role] || [];
+            
+            container.innerHTML = paths.map(path => {
+                const completedLessons = path.lessons.filter(l => userProgress[l.id]).length;
+                const progress = Math.round((completedLessons / path.lessons.length) * 100);
+                const isCompleted = progress === 100;
+                const isInProgress = progress > 0 && progress < 100;
+                
+                return `
+                    <div class="path-card">
+                        <div class="path-header">
+                            <div class="path-number">${path.number}</div>
+                            <div class="path-title">${path.title}</div>
+                            <div class="path-duration">⏱️ ${path.duration}</div>
+                        </div>
+                        <div class="path-content">
+                            <p class="path-description">${path.description}</p>
+                            <ul class="lessons-list">
+                                ${path.lessons.map(lesson => `
+                                    <li class="lesson-item ${userProgress[lesson.id] ? 'completed' : ''}">
+                                        <span class="lesson-icon">${userProgress[lesson.id] ? '✓' : ''}</span>
+                                        <span>${lesson.title}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <div class="path-footer">
+                            <div class="path-progress">
+                                <div class="progress-bar" style="width: 100px;">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                                <span>${progress}%</span>
+                            </div>
+                            <button class="start-btn ${isCompleted ? 'completed' : isInProgress ? 'continue' : ''}" 
+                                    onclick="startPath('${path.id}')">
+                                ${isCompleted ? 'Completed' : isInProgress ? 'Continue' : 'Start'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle role tab switching
+        document.querySelectorAll('.role-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentRole = tab.dataset.role;
+                document.getElementById('roleDescription').textContent = roleDescriptions[currentRole];
+                displayPaths(currentRole);
+            });
+        });
+
+        // Start a learning path
+        function startPath(pathId) {
+            // Find the path and its first incomplete lesson
+            let targetPath = null;
+            let targetLesson = null;
+            
+            Object.values(learningPaths).forEach(rolePaths => {
+                rolePaths.forEach(path => {
+                    if (path.id === pathId) {
+                        targetPath = path;
+                        targetLesson = path.lessons.find(l => !userProgress[l.id]);
+                    }
+                });
+            });
+            
+            if (targetPath && targetLesson) {
+                // Start the interactive tutorial for this lesson
+                alert(`Starting lesson: ${targetLesson.title}\n\nThis would launch an interactive tutorial guiding you through the actual platform features.`);
+                
+                // Mark as completed (for demo)
+                userProgress[targetLesson.id] = true;
+                saveProgress();
+                displayPaths(currentRole);
+            }
+        }
+
+        // Start quick tutorial
+        function startQuickTutorial(tutorialId) {
+            // Map tutorial to appropriate page
+            const tutorialPages = {
+                'create-request': '/requests.html',
+                'manage-console': '/console-list.html',
+                'supplier-products': '/products.html'
+            };
+            
+            if (tutorialPages[tutorialId]) {
+                // Store tutorial to start
+                localStorage.setItem('fdx_start_tutorial', tutorialId);
+                // Navigate to the page
+                window.location.href = tutorialPages[tutorialId];
+            } else {
+                // Start tutorial on current page
+                fdxTutorial.start(tutorialId);
+            }
+        }
+
+        // Open practice mode
+        function openPracticeMode() {
+            if (confirm('Practice Mode will create a sandbox environment where you can safely experiment with all platform features without affecting real data.\n\nWould you like to enter Practice Mode?')) {
+                localStorage.setItem('fdx_practice_mode', 'true');
+                alert('Practice Mode activated! You can now explore the platform freely. All actions will use test data.');
+                window.location.href = '/';
+            }
+        }
+
+        // Initialize
+        loadUserProgress();
+        displayPaths(currentRole);
+        
+        // Set user name if available
+        if (window.currentUser) {
+            document.getElementById('userName').textContent = window.currentUser.displayName || window.currentUser.username;
+        }
+    </script>
+</body>
+</html>

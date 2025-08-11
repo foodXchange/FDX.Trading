@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How FDX Trading Works - Complete System Workflow</title>
+    <link rel="stylesheet" href="/css/smart-navigation.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+        }
+
+        .workflow-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            margin-left: 280px; /* Account for fixed sidebar */
+            min-height: 100vh;
+        }
+
+        /* Ensure content is not hidden behind sidebar */
+        body {
+            padding-left: 0;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 24px;
+            padding: 60px 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: rotate(30deg) translateY(0px); }
+            50% { transform: rotate(30deg) translateY(-10px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle-large {
+            font-size: 20px;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .hero-stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Problem Statement Section */
+        .problem-section {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-radius: 24px;
+            padding: 60px 40px;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .problem-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        .problem-subtitle {
+            font-size: 18px;
+            color: var(--gray-700);
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .problem-item {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 4px solid var(--danger);
+            text-align: left;
+        }
+
+        .problem-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .problem-item-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .problem-item-desc {
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Overview Cards */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .overview-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 16px 16px 0 0;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .overview-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .overview-card {
+            position: relative;
+        }
+
+        .overview-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .overview-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 12px;
+        }
+
+        .overview-desc {
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .overview-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .overview-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+            padding: 4px 0;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .overview-features li:hover {
+            background: var(--gray-50);
+            padding-left: 8px;
+        }
+
+        .feature-detail {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .feature-detail h4 {
+            color: var(--primary-dark);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .feature-detail p {
+            color: var(--gray-600);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Workflow Steps */
+        .workflow-section {
+            margin-bottom: 80px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 24px;
+            padding: 60px 40px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gray-800);
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .workflow-timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .workflow-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--primary-light));
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .workflow-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .workflow-step:nth-child(even) .step-content {
+            text-align: right;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .step-content {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin: 0 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--gray-200);
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 12px;
+        }
+
+        .step-description {
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .step-details {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .step-example {
+            background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--info);
+        }
+
+        .step-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .step-metric {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+
+        .step-metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .step-metric-label {
+            font-size: 11px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .interactive-demo {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid var(--primary-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .interactive-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+        }
+
+        .demo-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 4px;
+            background: var(--primary-light);
+            transform: translateX(-50%);
+            border-radius: 2px;
+            animation: progressFill 3s ease-in-out infinite;
+        }
+
+        @keyframes progressFill {
+            0% { height: 0%; }
+            50% { height: 100%; }
+            100% { height: 100%; }
+        }
+
+        .step-details h4 {
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .step-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-details li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        /* User Types Section */
+        .user-types-section {
+            background: var(--gray-50);
+            border-radius: 24px;
+            padding: 60px 40px;
+            margin-bottom: 60px;
+        }
+
+        .user-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .user-type-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .user-type-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .user-type-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        .buyer-icon { background: linear-gradient(135deg, var(--info), var(--primary)); }
+        .supplier-icon { background: linear-gradient(135deg, var(--success), var(--info)); }
+        .expert-icon { background: linear-gradient(135deg, var(--warning), var(--danger)); }
+        .admin-icon { background: linear-gradient(135deg, var(--danger), var(--primary)); }
+
+        .user-type-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 12px;
+        }
+
+        .user-type-desc {
+            color: var(--gray-600);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .user-permissions {
+            text-align: left;
+        }
+
+        .user-permissions h5 {
+            color: var(--gray-700);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            border-radius: 24px;
+            padding: 60px 40px;
+            margin-bottom: 60px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .benefit-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .benefit-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .benefit-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .benefit-desc {
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--gray-800);
+            color: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-text {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--gray-800);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--gray-800);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .workflow-container {
+                margin-left: 0;
+                padding: 20px 16px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .workflow-timeline::before {
+                left: 30px;
+            }
+
+            .workflow-step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .workflow-step:nth-child(even) {
+                flex-direction: column;
+            }
+
+            .workflow-step:nth-child(even) .step-content {
+                text-align: center;
+            }
+
+            .step-content {
+                margin: 20px 0 0 0;
+            }
+
+            .step-number {
+                position: relative;
+                left: -35px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workflow-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">How FDX Trading Works</h1>
+                <p class="hero-subtitle">The Complete Procurement Transformation Guide</p>
+                <p class="hero-subtitle-large">From chaotic emails and spreadsheets to organized, automated procurement that saves time and money. Learn exactly how our platform revolutionizes the way companies buy and sell.</p>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">70%</span>
+                        <span class="hero-stat-label">Time Saved</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">30%</span>
+                        <span class="hero-stat-label">Cost Reduction</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">95%</span>
+                        <span class="hero-stat-label">User Satisfaction</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="problem-section">
+            <h2 class="problem-title">The Procurement Problem</h2>
+            <p class="problem-subtitle">Before FDX Trading, companies struggled with chaotic, inefficient procurement processes that wasted time, money, and resources. Sound familiar?</p>
+            
+            <div class="problems-grid">
+                <div class="problem-item">
+                    <span class="problem-icon">📧</span>
+                    <h4 class="problem-item-title">Email Chaos</h4>
+                    <p class="problem-item-desc">Endless email chains with suppliers, lost messages, unclear communication, and no central tracking of conversations.</p>
+                </div>
+                
+                <div class="problem-item">
+                    <span class="problem-icon">📊</span>
+                    <h4 class="problem-item-title">Spreadsheet Hell</h4>
+                    <p class="problem-item-desc">Manual price comparisons in Excel, outdated information, version conflicts, and human errors in calculations.</p>
+                </div>
+                
+                <div class="problem-item">
+                    <span class="problem-icon">🕐</span>
+                    <h4 class="problem-item-title">Endless Delays</h4>
+                    <p class="problem-item-desc">Waiting for quotes, chasing suppliers, unclear timelines, and missed deadlines that impact business operations.</p>
+                </div>
+                
+                <div class="problem-item">
+                    <span class="problem-icon">💸</span>
+                    <h4 class="problem-item-title">Money Left on Table</h4>
+                    <p class="problem-item-desc">Poor negotiation, limited supplier options, no leverage, and missing out on better deals due to time constraints.</p>
+                </div>
+                
+                <div class="problem-item">
+                    <span class="problem-icon">😰</span>
+                    <h4 class="problem-item-title">Constant Stress</h4>
+                    <p class="problem-item-desc">No visibility into process status, surprised managers, last-minute rushes, and employees working overtime unnecessarily.</p>
+                </div>
+                
+                <div class="problem-item">
+                    <span class="problem-icon">🔍</span>
+                    <h4 class="problem-item-title">No Learning</h4>
+                    <p class="problem-item-desc">Each procurement starts from scratch, no process improvement, repeated mistakes, and institutional knowledge lost when people leave.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Overview -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 class="section-title">FDX Trading: The Solution</h2>
+            <p style="font-size: 18px; color: var(--gray-600); max-width: 800px; margin: 0 auto;">Our platform transforms these pain points into competitive advantages through smart automation and organized workflows.</p>
+        </div>
+        
+        <div class="overview-grid">
+            <div class="overview-card">
+                <div class="overview-icon">🛒</div>
+                <h3 class="overview-title">Request-Based System</h3>
+                <p class="overview-desc">Everything starts with a simple procurement request. No more hunting through emails or wondering "who's handling this?" - every need becomes an organized, trackable request.</p>
+                <ul class="overview-features">
+                    <li>✓ One-click request creation with smart templates</li>
+                    <li>✓ Automatic supplier matching based on requirements</li>
+                    <li>✓ Real-time progress tracking for all stakeholders</li>
+                    <li>✓ Integration with existing approval workflows</li>
+                </ul>
+                <div class="feature-detail">
+                    <h4>Real-World Example:</h4>
+                    <p>"I need 40 containers of premium olive oil for my supermarket chain" becomes REQ-2024-089 with automatic routing to 5 qualified suppliers, budget validation, and delivery timeline matching.</p>
+                </div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">🎛️</div>
+                <h3 class="overview-title">Console Management</h3>
+                <p class="overview-desc">Think Mission Control for procurement. Each request gets its own intelligent console that orchestrates suppliers, manages negotiations, and ensures nothing falls through the cracks.</p>
+                <ul class="overview-features">
+                    <li>✓ Automated workflow stages with smart transitions</li>
+                    <li>✓ Centralized supplier communication hub</li>
+                    <li>✓ Side-by-side price comparison with negotiation tools</li>
+                    <li>✓ Document management and contract generation</li>
+                </ul>
+                <div class="feature-detail">
+                    <h4>Console Power:</h4>
+                    <p>One console can coordinate 10+ food distributors, track 20+ quotes for container loads, manage cold-chain logistics, and handle quality certifications - all while you focus on store operations.</p>
+                </div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">🤝</div>
+                <h3 class="overview-title">AI-Powered Matching</h3>
+                <p class="overview-desc">No more manually searching for suppliers or wondering if you're getting the best deals. Our AI analyzes requirements and instantly connects you with optimal suppliers.</p>
+                <ul class="overview-features">
+                    <li>✓ Machine learning analyzes product specifications</li>
+                    <li>✓ Performance ratings and historical delivery data</li>
+                    <li>✓ Geographic optimization for shipping costs</li>
+                    <li>✓ Capacity matching to ensure suppliers can deliver</li>
+                </ul>
+                <div class="feature-detail">
+                    <h4>Smart Algorithm:</h4>
+                    <p>Our system evaluates 50+ factors including price history, delivery performance, quality ratings, and geographic proximity to find your perfect suppliers.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Workflow -->
+        <div class="workflow-section">
+            <h2 class="section-title">Complete Procurement Workflow</h2>
+            
+            <div class="workflow-timeline">
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Create a Request</h3>
+                        <p class="step-description">A buyer identifies what they need and creates a procurement request. This isn't just filling out a form - it's launching an intelligent procurement process.</p>
+                        
+                        <div class="step-details">
+                            <h4>Detailed Process:</h4>
+                            <ul>
+                                <li>✓ Smart form with auto-complete based on past purchases</li>
+                                <li>✓ Automatic budget validation against approved spending</li>
+                                <li>✓ AI suggests similar products and alternative specifications</li>
+                                <li>✓ System assigns unique tracking number (REQ-2024-089)</li>
+                                <li>✓ Stakeholders automatically notified based on purchase type</li>
+                                <li>✓ Integration with approval workflows and expense systems</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-example">
+                            <h4>Real Scenario:</h4>
+                            <p><strong>David from Supermarket Procurement needs 35 containers of premium pasta for his grocery chain.</strong></p>
+                            <p>He starts typing "premium pasta containers" and the system immediately suggests past purchases, shows budget availability ($145,000 remaining), and recommends specifications based on shelf life, packaging requirements, and customer preferences. The request is created in 3 minutes instead of 30.</p>
+                        </div>
+
+                        <div class="step-metrics">
+                            <div class="step-metric">
+                                <span class="step-metric-value">3min</span>
+                                <span class="step-metric-label">Avg Creation</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">95%</span>
+                                <span class="step-metric-label">Auto-Approve</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">Zero</span>
+                                <span class="step-metric-label">Lost Requests</span>
+                            </div>
+                        </div>
+
+                        <div class="interactive-demo" onclick="alert('Interactive demo: Request creation form would open here with guided tour')">
+                            <div class="demo-title">
+                                <span>🎯</span>
+                                Try Interactive Demo: Create a Sample Request
+                            </div>
+                            <p style="color: var(--gray-600); font-size: 14px;">Click to see how easy it is to create your first procurement request</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Intelligent Console Creation</h3>
+                        <p class="step-description">Within seconds, an AI-powered console springs into action. Think of it as hiring a dedicated procurement specialist who never sleeps, never forgets, and works at lightning speed.</p>
+                        
+                        <div class="step-details">
+                            <h4>Console Intelligence:</h4>
+                            <ul>
+                                <li>✓ Analyzes request complexity and creates custom workflow stages</li>
+                                <li>✓ Assigns console to expert based on product category and workload</li>
+                                <li>✓ Sets up automated milestone tracking and deadline management</li>
+                                <li>✓ Creates communication channels for all stakeholders</li>
+                                <li>✓ Initializes supplier database search based on requirements</li>
+                                <li>✓ Sets up comparison matrices and evaluation criteria</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-example">
+                            <h4>Behind the Scenes:</h4>
+                            <p><strong>For David's pasta request, Console CON-2024-089 instantly:</strong></p>
+                            <p>Identifies this as a "Food > Dry Goods" category, assigns to procurement expert Lisa who specializes in grocery distribution, creates a 6-stage workflow (Research → Quote → Compare → Negotiate → Approve → Order), and sets up automatic reminders for the 2-week delivery deadline.</p>
+                        </div>
+
+                        <div class="step-metrics">
+                            <div class="step-metric">
+                                <span class="step-metric-value">5sec</span>
+                                <span class="step-metric-label">Setup Time</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">100%</span>
+                                <span class="step-metric-label">Auto-Assigned</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">24/7</span>
+                                <span class="step-metric-label">Monitoring</span>
+                            </div>
+                        </div>
+
+                        <div class="interactive-demo" onclick="alert('Interactive demo: Console dashboard would open showing real-time workflow progress')">
+                            <div class="demo-title">
+                                <span>🎛️</span>
+                                Explore Console Dashboard
+                            </div>
+                            <p style="color: var(--gray-600); font-size: 14px;">See how a console manages multiple suppliers, tracks progress, and coordinates communications</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">AI-Powered Supplier Discovery</h3>
+                        <p class="step-description">This is where magic happens. Our AI doesn't just find suppliers - it discovers the perfect matches you never knew existed, evaluates their capabilities, and pre-qualifies them for your specific needs.</p>
+                        
+                        <div class="step-details">
+                            <h4>Advanced Matching Algorithm:</h4>
+                            <ul>
+                                <li>✓ Natural language processing analyzes product specifications</li>
+                                <li>✓ Machine learning evaluates supplier performance history</li>
+                                <li>✓ Geographic optimization for shipping costs and delivery times</li>
+                                <li>✓ Capacity analysis ensures suppliers can handle your volume</li>
+                                <li>✓ Quality scoring based on certifications and past deliveries</li>
+                                <li>✓ Financial stability assessment for reliable partnerships</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-example">
+                            <h4>Smart Discovery in Action:</h4>
+                            <p><strong>For David's 35 containers of premium pasta:</strong></p>
+                            <p>The AI identifies 12 potential food distributors from our database of 10,000+. It eliminates 4 who can't deliver container quantities by the deadline, 2 who don't have premium brand partnerships, and ranks the remaining 6 by price, delivery reliability, and brand reputation. The top 5 suppliers receive automated invitations within 2 minutes.</p>
+                        </div>
+
+                        <div class="step-metrics">
+                            <div class="step-metric">
+                                <span class="step-metric-value">50+</span>
+                                <span class="step-metric-label">Factors Analyzed</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">92%</span>
+                                <span class="step-metric-label">Match Success</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">2min</span>
+                                <span class="step-metric-label">Processing Time</span>
+                            </div>
+                        </div>
+
+                        <div class="interactive-demo" onclick="alert('Interactive demo: Supplier matching interface showing algorithm scoring and selection criteria')">
+                            <div class="demo-title">
+                                <span>🤖</span>
+                                Watch AI Supplier Matching
+                            </div>
+                            <p style="color: var(--gray-600); font-size: 14px;">See how our algorithm evaluates and ranks suppliers in real-time</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Smart Quote Collection & Validation</h3>
+                        <p class="step-description">Suppliers don't just send quotes - they participate in an intelligent bidding process that ensures completeness, comparability, and competitive pricing through automated validation and gentle nudging.</p>
+                        
+                        <div class="step-details">
+                            <h4>Intelligent Quote Management:</h4>
+                            <ul>
+                                <li>✓ Standardized quote templates ensure all details are captured</li>
+                                <li>✓ Real-time validation prevents incomplete or unclear proposals</li>
+                                <li>✓ Automated follow-ups for missing information or clarifications</li>
+                                <li>✓ Anonymous bidding option to encourage competitive pricing</li>
+                                <li>✓ Attachment management for certifications and product specs</li>
+                                <li>✓ Version control tracks quote revisions and improvements</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-example">
+                            <h4>Quote Collection Success:</h4>
+                            <p><strong>David's pasta quotes come in over 3 days:</strong></p>
+                            <p>5 distributors submit quotes. The system catches that Supplier B forgot to include shelf-life guarantees and automatically requests it. Supplier D's quote seems unusually low - the system flags it for quality review. All quotes are standardized in a comparison table showing price per container, delivery schedules, brand authenticity, and storage requirements.</p>
+                        </div>
+
+                        <div class="step-metrics">
+                            <div class="step-metric">
+                                <span class="step-metric-value">95%</span>
+                                <span class="step-metric-label">Complete Quotes</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">3.2</span>
+                                <span class="step-metric-label">Avg Days</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">Zero</span>
+                                <span class="step-metric-label">Lost Quotes</span>
+                            </div>
+                        </div>
+
+                        <div class="interactive-demo" onclick="alert('Interactive demo: Quote comparison dashboard with sorting, filtering, and analysis tools')">
+                            <div class="demo-title">
+                                <span>📊</span>
+                                Explore Quote Comparison Tools
+                            </div>
+                            <p style="color: var(--gray-600); font-size: 14px;">See how easy it is to compare quotes side-by-side with advanced filtering</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Data-Driven Decision Making</h3>
+                        <p class="step-description">This isn't just comparing prices in Excel. Our platform provides sophisticated analysis tools that consider total cost of ownership, risk factors, and strategic value to help you make the smartest decision.</p>
+                        
+                        <div class="step-details">
+                            <h4>Advanced Evaluation Tools:</h4>
+                            <ul>
+                                <li>✓ Multi-criteria decision matrix with weighted scoring</li>
+                                <li>✓ Total cost analysis including shipping, taxes, and hidden fees</li>
+                                <li>✓ Risk assessment based on supplier stability and performance</li>
+                                <li>✓ Built-in negotiation tools with suggestion algorithms</li>
+                                <li>✓ Collaborative evaluation with team input and comments</li>
+                                <li>✓ Approval workflow integration with digital signatures</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-example">
+                            <h4>Smart Decision Making:</h4>
+                            <p><strong>David's pasta selection gets interesting:</strong></p>
+                            <p>Supplier A has the lowest price ($3,200/container) but inconsistent delivery history. Supplier C costs $3,650/container but includes premium brand guarantee and has 98% on-time delivery with superior packaging. The system calculates that Supplier C's total value is actually higher when you factor in reduced waste, better shelf presentation, and customer satisfaction. David negotiates with Supplier C using data from Supplier A's quote and gets the price down to $3,450/container.</p>
+                        </div>
+
+                        <div class="step-metrics">
+                            <div class="step-metric">
+                                <span class="step-metric-value">25%</span>
+                                <span class="step-metric-label">Better Deals</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">89%</span>
+                                <span class="step-metric-label">Successful Negotiations</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">2hrs</span>
+                                <span class="step-metric-label">Decision Time</span>
+                            </div>
+                        </div>
+
+                        <div class="interactive-demo" onclick="alert('Interactive demo: Decision matrix tool with scoring, what-if analysis, and negotiation suggestions')">
+                            <div class="demo-title">
+                                <span>🎯</span>
+                                Try Decision Matrix Tool
+                            </div>
+                            <p style="color: var(--gray-600); font-size: 14px;">Experience how data-driven decisions lead to better outcomes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Automated Execution & Delivery Excellence</h3>
+                        <p class="step-description">The finale isn't just "send a purchase order." Our platform orchestrates the entire delivery process, manages expectations, handles issues proactively, and ensures you get exactly what you ordered when you need it.</p>
+                        
+                        <div class="step-details">
+                            <h4>End-to-End Delivery Management:</h4>
+                            <ul>
+                                <li>✓ Auto-generated purchase orders with legal compliance</li>
+                                <li>✓ Real-time shipment tracking with proactive delay notifications</li>
+                                <li>✓ Quality assurance checkpoints and delivery confirmation</li>
+                                <li>✓ Automated invoice matching and payment processing</li>
+                                <li>✓ Performance feedback collection for continuous improvement</li>
+                                <li>✓ Knowledge capture for future similar purchases</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-example">
+                            <h4>Flawless Execution:</h4>
+                            <p><strong>David's pasta delivery success story:</strong></p>
+                            <p>Purchase order sent to Supplier C automatically. David gets updates: "35 containers loaded at warehouse" (Day 3), "Quality & authenticity verified" (Day 4), "Shipped via freight truck" (Day 7), "Delivery scheduled Monday 8-10 AM" (Day 10). All 35 containers arrive on time with perfect packaging, David confirms quality in the app, invoice is automatically matched and approved for payment. Total process: 10 days from request to delivery, with David spending only 45 minutes of his time.</p>
+                        </div>
+
+                        <div class="step-metrics">
+                            <div class="step-metric">
+                                <span class="step-metric-value">98%</span>
+                                <span class="step-metric-label">On-Time Delivery</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">99.5%</span>
+                                <span class="step-metric-label">Quality Match</span>
+                            </div>
+                            <div class="step-metric">
+                                <span class="step-metric-value">45min</span>
+                                <span class="step-metric-label">Total User Time</span>
+                            </div>
+                        </div>
+
+                        <div class="interactive-demo" onclick="alert('Interactive demo: Delivery tracking dashboard with real-time updates and issue resolution')">
+                            <div class="demo-title">
+                                <span>🚚</span>
+                                Track Live Delivery
+                            </div>
+                            <p style="color: var(--gray-600); font-size: 14px;">Follow a shipment from factory to your door with real-time updates</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Types -->
+        <div class="user-types-section">
+            <h2 class="section-title">Who Uses FDX Trading?</h2>
+            <p style="text-align: center; color: var(--gray-600); font-size: 18px; max-width: 800px; margin: 0 auto;">Different types of users have different roles and permissions in the system</p>
+            
+            <div class="user-types-grid">
+                <div class="user-type-card">
+                    <div class="user-type-icon buyer-icon">👤</div>
+                    <h4 class="user-type-title">Buyers</h4>
+                    <p class="user-type-desc">Companies or individuals who need to purchase products or services.</p>
+                    <div class="user-permissions">
+                        <h5>Can:</h5>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ Create procurement requests</li>
+                            <li>✓ View their consoles</li>
+                            <li>✓ Communicate with suppliers</li>
+                            <li>✓ Approve final purchases</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="user-type-card">
+                    <div class="user-type-icon supplier-icon">🏢</div>
+                    <h4 class="user-type-title">Suppliers</h4>
+                    <p class="user-type-desc">Companies that provide products or services to buyers.</p>
+                    <div class="user-permissions">
+                        <h5>Can:</h5>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ View relevant requests</li>
+                            <li>✓ Submit price quotes</li>
+                            <li>✓ Manage product catalogs</li>
+                            <li>✓ Track order status</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="user-type-card">
+                    <div class="user-type-icon expert-icon">🎓</div>
+                    <h4 class="user-type-title">Experts</h4>
+                    <p class="user-type-desc">Procurement specialists who help optimize the buying process.</p>
+                    <div class="user-permissions">
+                        <h5>Can:</h5>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ Manage all consoles</li>
+                            <li>✓ Assist with negotiations</li>
+                            <li>✓ Provide buying advice</li>
+                            <li>✓ Optimize workflows</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="user-type-card">
+                    <div class="user-type-icon admin-icon">⚙️</div>
+                    <h4 class="user-type-title">Admins</h4>
+                    <p class="user-type-desc">System administrators who manage the entire platform.</p>
+                    <div class="user-permissions">
+                        <h5>Can:</h5>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ Manage all users</li>
+                            <li>✓ Configure system settings</li>
+                            <li>✓ View all data and reports</li>
+                            <li>✓ Handle system issues</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Calculator Section -->
+        <div style=\"background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 24px; padding: 60px 40px; margin-bottom: 60px;\">
+            <h2 class=\"section-title\">Calculate Your ROI</h2>
+            <p style=\"text-align: center; color: var(--gray-600); font-size: 18px; max-width: 800px; margin: 0 auto 40px;\">See how much FDX Trading could save your organization</p>
+            
+            <div style=\"max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\">
+                <div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;\">
+                    <div>
+                        <label style=\"display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);\">Monthly Procurement Requests</label>
+                        <input type=\"number\" id=\"monthlyRequests\" value=\"50\" style=\"width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px;\" onchange=\"calculateROI()\">
+                    </div>
+                    <div>
+                        <label style=\"display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);\">Average Request Value</label>
+                        <input type=\"number\" id=\"avgRequestValue\" value=\"5000\" style=\"width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px;\" onchange=\"calculateROI()\">
+                    </div>
+                    <div>
+                        <label style=\"display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);\">Hours per Request (Current)</label>
+                        <input type=\"number\" id=\"currentHours\" value=\"8\" style=\"width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px;\" onchange=\"calculateROI()\">
+                    </div>
+                    <div>
+                        <label style=\"display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);\">Hourly Rate</label>
+                        <input type=\"number\" id=\"hourlyRate\" value=\"50\" style=\"width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px;\" onchange=\"calculateROI()\">
+                    </div>
+                </div>
+                
+                <div id=\"roiResults\" style=\"background: var(--success); color: white; border-radius: 12px; padding: 24px; text-align: center;\">
+                    <div style=\"display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;\">
+                        <div>
+                            <div style=\"font-size: 32px; font-weight: 700; margin-bottom: 8px;\" id=\"timeSaved\">280hrs</div>
+                            <div style=\"font-size: 14px; opacity: 0.9;\">Time Saved/Month</div>
+                        </div>
+                        <div>
+                            <div style=\"font-size: 32px; font-weight: 700; margin-bottom: 8px;\" id=\"costSaved\">$52,500</div>
+                            <div style=\"font-size: 14px; opacity: 0.9;\">Annual Savings</div>
+                        </div>
+                        <div>
+                            <div style=\"font-size: 32px; font-weight: 700; margin-bottom: 8px;\" id=\"roiPercent\">420%</div>
+                            <div style=\"font-size: 14px; opacity: 0.9;\">ROI in Year 1</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p style=\"text-align: center; color: var(--gray-600); font-size: 14px; margin-top: 20px; line-height: 1.5;\">*Based on 70% time reduction, 20% cost savings, and $12,000 annual platform cost. Results vary by organization size and complexity.</p>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="benefits-section">
+            <h2 class="section-title">Why Use FDX Trading?</h2>
+            <p style="text-align: center; color: var(--gray-600); font-size: 18px; max-width: 800px; margin: 0 auto;">Our system transforms chaotic procurement into organized, efficient workflows</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">⚡</div>
+                    <h4 class="benefit-title">70% Faster</h4>
+                    <p class="benefit-desc">Automated workflows eliminate manual coordination between buyers and suppliers</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">💰</div>
+                    <h4 class="benefit-title">Save 15-30%</h4>
+                    <p class="benefit-desc">Easy price comparison and negotiation tools help you get better deals</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">📊</div>
+                    <h4 class="benefit-title">Full Visibility</h4>
+                    <p class="benefit-desc">Track every step of your procurement process in real-time</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🤖</div>
+                    <h4 class="benefit-title">Smart Automation</h4>
+                    <p class="benefit-desc">AI-powered supplier matching finds the best partners for your needs</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">📈</div>
+                    <h4 class="benefit-title">Better Decisions</h4>
+                    <p class="benefit-desc">Data-driven insights help you make smarter procurement choices</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔄</div>
+                    <h4 class="benefit-title">Reusable Process</h4>
+                    <p class="benefit-desc">Once set up, similar purchases follow the same proven workflow</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="cta-title">Ready to Transform Your Procurement?</h2>
+            <p class="cta-text">Start with our simple introduction, then dive into hands-on tutorials to master the system.</p>
+            <div class="cta-buttons">
+                <a href="/console-introduction.html" class="cta-btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    Start with Basics
+                </a>
+                <a href="/university-dashboard.html" class="cta-btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                    Learn Advanced Features
+                </a>
+                <a href="/dashboard.html" class="cta-btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="9" y1="9" x2="15" y2="9"/>
+                        <line x1="9" y1="15" x2="15" y2="15"/>
+                    </svg>
+                    Go to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
+
+    <script>
+        // Mark workflow overview as viewed
+        localStorage.setItem('hasViewedWorkflow', 'true');
+
+        // ROI Calculator
+        function calculateROI() {
+            const monthlyRequests = parseInt(document.getElementById('monthlyRequests').value) || 0;
+            const avgRequestValue = parseInt(document.getElementById('avgRequestValue').value) || 0;
+            const currentHours = parseInt(document.getElementById('currentHours').value) || 0;
+            const hourlyRate = parseInt(document.getElementById('hourlyRate').value) || 0;
+
+            // Calculations
+            const currentMonthlyHours = monthlyRequests * currentHours;
+            const newMonthlyHours = currentMonthlyHours * 0.3; // 70% time reduction
+            const timeSavedMonthly = currentMonthlyHours - newMonthlyHours;
+            const laborSavingsMonthly = timeSavedMonthly * hourlyRate;
+            
+            const monthlyVolume = monthlyRequests * avgRequestValue;
+            const costSavingsMonthly = monthlyVolume * 0.2; // 20% cost savings
+            
+            const totalMonthlySavings = laborSavingsMonthly + costSavingsMonthly;
+            const annualSavings = totalMonthlySavings * 12;
+            
+            const platformCost = 12000; // Annual platform cost
+            const netSavings = annualSavings - platformCost;
+            const roiPercent = Math.round((netSavings / platformCost) * 100);
+
+            // Update display
+            document.getElementById('timeSaved').textContent = Math.round(timeSavedMonthly) + 'hrs';
+            document.getElementById('costSaved').textContent = '$' + Math.round(annualSavings).toLocaleString();
+            document.getElementById('roiPercent').textContent = roiPercent + '%';
+        }
+
+        // Initialize calculator
+        calculateROI();
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Add animation to cards when they come into view
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and steps
+        document.querySelectorAll('.overview-card, .workflow-step, .user-type-card, .benefit-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease-out';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
