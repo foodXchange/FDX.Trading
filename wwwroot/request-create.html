@@ -286,6 +286,71 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+                transform: translateY(0);
+            }
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 10px 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #764ba2 transparent transparent transparent;
+        }
     </style>
 </head>
 <body>
@@ -315,7 +380,7 @@
                 <div class="form-group">
                     <label for="buyerName" class="required">Buyer Name</label>
                     <div style="display: flex; gap: 10px;">
-                        <select id="buyerName" name="buyerName" style="flex: 1;" required>
+                        <select id="buyerName" name="buyerName" aria-label="Select buyer name" title="Select buyer name" style="flex: 1;" required>
                             <option value="">Select or type a name...</option>
                         </select>
                         <button type="button" class="btn btn-sm" onclick="showAddContactModal()" style="padding: 8px 15px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
@@ -345,6 +410,197 @@
                             <p>Click "Add Item" to start adding products to this request</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Product & Shipping Requirements Section -->
+            <div class="form-section" style="background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%); border: 1px solid #e8e8f0; border-radius: 12px; padding: 25px;">
+                <h2 style="display: flex; align-items: center; gap: 10px; color: #2d3748; margin-bottom: 25px;">
+                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🧪</span>
+                    Product Specifications
+                </h2>
+                
+                <!-- Kosher Requirements Card -->
+                <div class="form-group" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #f0f0f5; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-size: 24px;">🍴</span>
+                        <div style="flex: 1;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; color: #2d3748;">
+                                <input type="checkbox" id="isKosher" name="isKosher" onchange="toggleKosherPreference()" style="width: 18px; height: 18px; cursor: pointer;">
+                                <span>Kosher Certification Required</span>
+                            </label>
+                            <p style="margin: 5px 0 0 28px; font-size: 13px; color: #718096;">Product must meet kosher dietary standards</p>
+                        </div>
+                        <select id="kosherPreference" name="kosherPreference" aria-label="Select kosher preference level" title="Select kosher preference level" style="display: none; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 8px; background: white; color: #2d3748; font-size: 14px; min-width: 150px; transition: all 0.3s ease;">
+                            <option value="Regular">Regular Kosher</option>
+                            <option value="Super Kosher">✨ Super Kosher</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Free From Requirements Card -->
+                <div class="form-group" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #f0f0f5;">
+                    <div style="display: flex; align-items: start; gap: 15px; margin-bottom: 15px;">
+                        <span style="font-size: 24px;">⚠️</span>
+                        <div style="flex: 1;">
+                            <label style="font-weight: 500; color: #2d3748; font-size: 16px;">Allergen & Ingredient Restrictions</label>
+                            <p style="margin: 5px 0 0 0; font-size: 13px; color: #718096;">Select all dietary restrictions that apply to this product</p>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-left: 39px;">
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#edf2f7'" onmouseout="this.style.background='#f7fafc'">
+                            <input type="checkbox" name="freeFrom" value="Gluten Free" onchange="updateFreeFrom()" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="display: flex; align-items: center; gap: 5px;">
+                                <span>🌾</span> Gluten Free
+                            </span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#edf2f7'" onmouseout="this.style.background='#f7fafc'">
+                            <input type="checkbox" name="freeFrom" value="Sugar Free" onchange="toggleSugarFreeOptions(this)" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="display: flex; align-items: center; gap: 5px;">
+                                <span>🍬</span> Sugar Free
+                            </span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#edf2f7'" onmouseout="this.style.background='#f7fafc'">
+                            <input type="checkbox" name="freeFrom" value="Dairy Free" onchange="updateFreeFrom()" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="display: flex; align-items: center; gap: 5px;">
+                                <span>🥛</span> Dairy Free
+                            </span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#edf2f7'" onmouseout="this.style.background='#f7fafc'">
+                            <input type="checkbox" name="freeFrom" value="Nut Free" onchange="updateFreeFrom()" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="display: flex; align-items: center; gap: 5px;">
+                                <span>🥜</span> Nut Free
+                            </span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#edf2f7'" onmouseout="this.style.background='#f7fafc'">
+                            <input type="checkbox" name="freeFrom" value="Egg Free" onchange="updateFreeFrom()" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="display: flex; align-items: center; gap: 5px;">
+                                <span>🥚</span> Egg Free
+                            </span>
+                        </label>
+                    </div>
+                    <div id="sugarFreeOptions" style="margin: 15px 0 0 39px; padding: 15px; background: #fef5e7; border: 1px solid #fad7a0; border-radius: 8px; display: none; transition: all 0.3s ease;">
+                        <p style="margin: 0 0 10px 0; font-size: 14px; color: #7a6120; font-weight: 500;">🍬 Sugar Free Options:</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                                <input type="checkbox" name="sugarFreeType" value="For Diabetics" style="cursor: pointer;">
+                                <span>💉 For Diabetics</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                                <input type="checkbox" name="sugarFreeType" value="Approved Subs Used" style="cursor: pointer;">
+                                <span>✓ Approved Substitutes</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                                <input type="checkbox" name="sugarFreeType" value="No Added Sugar" style="cursor: pointer;">
+                                <span>🚫 No Added Sugar</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Shipping & Logistics</h2>
+                
+                <!-- Incoterms -->
+                <div class="form-group">
+                    <label for="incoterms">Delivery Terms (Incoterms)</label>
+                    <select id="incoterms" name="incoterms" aria-label="Select delivery terms (Incoterms)" title="Select delivery terms (Incoterms)">
+                        <option value="">Select delivery terms...</option>
+                        <option value="FOB">FOB - Free On Board</option>
+                        <option value="EXW">EXW - Ex Works</option>
+                        <option value="CIF">CIF - Cost, Insurance & Freight</option>
+                        <option value="DAP">DAP - Delivered at Place</option>
+                        <option value="DDP">DDP - Delivered Duty Paid</option>
+                    </select>
+                </div>
+                
+                <!-- Container Loading -->
+                <div class="form-group">
+                    <label for="containerLoading">Packaging Method</label>
+                    <select id="containerLoading" name="containerLoading" aria-label="Select container loading method" title="Select container loading method" onchange="togglePalletSize()">
+                        <option value="">Supplier's Standard Packaging</option>
+                        <option value="Floor Loaded">Floor Loaded - Maximum Units</option>
+                        <option value="Palletized">Palletized</option>
+                    </select>
+                    
+                    <div id="palletSizeContainer" style="margin-top: 10px; display: none;">
+                        <label for="palletSize">Pallet Size</label>
+                        <select id="palletSize" name="palletSize" aria-label="Select pallet size" title="Select pallet size">
+                            <option value="">Select pallet size...</option>
+                            <option value="Euro Pallet (1200×800mm)" title="Common in Europe; widely accepted in EU ports">Euro Pallet (EUR/EPAL 1) - 1200×800mm</option>
+                            <option value="Standard ISO (1200×1000mm)" title="Popular in Asia, UK, Middle East/Africa">Standard ISO Pallet - 1200×1000mm</option>
+                            <option value="CHEP Blue (1200×1000mm)" title="Rental pallets for retail/FMCG">CHEP Pallet (Blue) - 1200×1000mm</option>
+                            <option value="CHEP Blue (1200×800mm)" title="Rental pallets for retail/FMCG">CHEP Pallet (Blue) - 1200×800mm</option>
+                            <option value="Plastic Hygienic (1200×800mm)" title="For frozen/chilled/high-hygiene products">Plastic Hygienic - 1200×800mm</option>
+                            <option value="Plastic Hygienic (1200×1000mm)" title="For frozen/chilled/high-hygiene products">Plastic Hygienic - 1200×1000mm</option>
+                        </select>
+                        <small style="color: #6c757d; display: block; margin-top: 5px;">
+                            <i>ℹ️ Hover over options for details about each pallet type</i>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Sourcing Location Preferences</h2>
+                
+                <!-- Preferred Countries -->
+                <div class="form-group">
+                    <label for="preferredCountries">Preferred Source Countries</label>
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: inline-block; margin-right: 15px;">
+                            <input type="radio" name="countryPreference" value="SUPPLIER_RECOMMENDED" checked onchange="toggleCountrySelects()">
+                            Open to Supplier Recommendations
+                        </label>
+                        <label style="display: inline-block; margin-right: 15px;">
+                            <input type="radio" name="countryPreference" value="NO_PREFERENCE" onchange="toggleCountrySelects()">
+                            No Preference - Any Country
+                        </label>
+                        <label style="display: inline-block;">
+                            <input type="radio" name="countryPreference" value="SPECIFIC" onchange="toggleCountrySelects()">
+                            Specific Countries
+                        </label>
+                    </div>
+                    <select id="preferredCountries" name="preferredCountries" aria-label="Select preferred countries" title="Select preferred countries (hold Ctrl/Cmd for multiple)" multiple style="height: 120px; display: none;">
+                        <option value="Italy">Italy (e.g., Pizza, Pasta)</option>
+                        <option value="France">France (e.g., Cookies, Pastries)</option>
+                        <option value="Belgium">Belgium (e.g., Chocolate)</option>
+                        <option value="Switzerland">Switzerland (e.g., Chocolate, Cheese)</option>
+                        <option value="Germany">Germany (e.g., Sausages, Beer)</option>
+                        <option value="Spain">Spain (e.g., Olive Oil)</option>
+                        <option value="Greece">Greece (e.g., Feta, Olives)</option>
+                        <option value="Turkey">Turkey (e.g., Dried Fruits, Nuts)</option>
+                        <option value="USA">USA</option>
+                        <option value="Mexico">Mexico (e.g., Avocados, Tequila)</option>
+                        <option value="Brazil">Brazil (e.g., Coffee, Sugar)</option>
+                        <option value="India">India (e.g., Spices, Tea)</option>
+                        <option value="China">China</option>
+                        <option value="Japan">Japan (e.g., Seafood, Sake)</option>
+                        <option value="Thailand">Thailand (e.g., Rice, Coconut)</option>
+                        <option value="Vietnam">Vietnam (e.g., Coffee, Seafood)</option>
+                    </select>
+                    <small style="color: #6c757d; display: block; margin-top: 5px;">
+                        Hold Ctrl/Cmd to select multiple countries
+                    </small>
+                </div>
+                
+                <!-- Countries to Avoid -->
+                <div class="form-group">
+                    <label for="notPreferredCountries">Restricted Countries (Do Not Source From)</label>
+                    <select id="notPreferredCountries" name="notPreferredCountries" aria-label="Select restricted countries" title="Select restricted countries (hold Ctrl/Cmd for multiple)" multiple style="height: 100px;">
+                        <option value="Iran">Iran</option>
+                        <option value="North Korea">North Korea</option>
+                        <option value="Syria">Syria</option>
+                        <option value="Russia">Russia</option>
+                        <option value="Belarus">Belarus</option>
+                        <option value="Cuba">Cuba</option>
+                        <option value="Venezuela">Venezuela</option>
+                        <option value="Myanmar">Myanmar</option>
+                    </select>
+                    <small style="color: #6c757d; display: block; margin-top: 5px;">
+                        Select countries with trade restrictions or embargoes
+                    </small>
                 </div>
             </div>
         </div>
@@ -432,6 +688,95 @@
                     buyerSelect.required = false;
                 }
                 
+                // Load Product Attributes
+                if (request.isKosher) {
+                    document.getElementById('isKosher').checked = true;
+                    document.getElementById('kosherPreference').style.display = 'inline-block';
+                    document.getElementById('kosherPreference').value = request.kosherPreference || 'Regular';
+                }
+                
+                // Load Free From options
+                if (request.freeFromOptions) {
+                    try {
+                        const freeFromOptions = JSON.parse(request.freeFromOptions);
+                        freeFromOptions.forEach(option => {
+                            if (option.startsWith('Sugar Free -')) {
+                                // Check Sugar Free and its sub-options
+                                const sugarFreeCheckbox = document.querySelector('input[name="freeFrom"][value="Sugar Free"]');
+                                if (sugarFreeCheckbox) {
+                                    sugarFreeCheckbox.checked = true;
+                                    document.getElementById('sugarFreeOptions').style.display = 'block';
+                                    const subOption = option.replace('Sugar Free - ', '');
+                                    const subCheckbox = document.querySelector(`input[name="sugarFreeType"][value="${subOption}"]`);
+                                    if (subCheckbox) subCheckbox.checked = true;
+                                }
+                            } else {
+                                const checkbox = document.querySelector(`input[name="freeFrom"][value="${option}"]`);
+                                if (checkbox) checkbox.checked = true;
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Error parsing free from options:', e);
+                    }
+                }
+                
+                // Load Logistic Attributes
+                if (request.incoterms) {
+                    document.getElementById('incoterms').value = request.incoterms;
+                }
+                if (request.containerLoading) {
+                    document.getElementById('containerLoading').value = request.containerLoading;
+                    if (request.containerLoading === 'Palletized') {
+                        document.getElementById('palletSizeContainer').style.display = 'block';
+                        if (request.palletSize) {
+                            document.getElementById('palletSize').value = request.palletSize;
+                        }
+                    }
+                }
+                
+                // Load Country Preferences
+                if (request.preferredCountries) {
+                    try {
+                        const countries = JSON.parse(request.preferredCountries);
+                        if (countries.includes('SUPPLIER_RECOMMENDED')) {
+                            document.querySelector('input[name="countryPreference"][value="SUPPLIER_RECOMMENDED"]').checked = true;
+                        } else if (countries.includes('NO_PREFERENCE')) {
+                            document.querySelector('input[name="countryPreference"][value="NO_PREFERENCE"]').checked = true;
+                        } else if (countries.length > 0) {
+                            document.querySelector('input[name="countryPreference"][value="SPECIFIC"]').checked = true;
+                            document.getElementById('preferredCountries').style.display = 'block';
+                            const select = document.getElementById('preferredCountries');
+                            countries.forEach(country => {
+                                for (let option of select.options) {
+                                    if (option.value === country) {
+                                        option.selected = true;
+                                        break;
+                                    }
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.error('Error parsing preferred countries:', e);
+                    }
+                }
+                
+                if (request.notPreferredCountries) {
+                    try {
+                        const countries = JSON.parse(request.notPreferredCountries);
+                        const select = document.getElementById('notPreferredCountries');
+                        countries.forEach(country => {
+                            for (let option of select.options) {
+                                if (option.value === country) {
+                                    option.selected = true;
+                                    break;
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Error parsing not preferred countries:', e);
+                    }
+                }
+                
                 // Load items
                 items = [];
                 itemCounter = 0;
@@ -455,6 +800,51 @@
                 console.error('Error loading request:', error);
                 alert('Failed to load request');
                 goBack();
+            }
+        }
+
+        // Product & Shipping Requirements Functions
+        function toggleKosherPreference() {
+            const checkbox = document.getElementById('isKosher');
+            const preference = document.getElementById('kosherPreference');
+            preference.style.display = checkbox.checked ? 'inline-block' : 'none';
+            if (!checkbox.checked) {
+                preference.value = 'Regular';
+            }
+        }
+        
+        function toggleSugarFreeOptions(checkbox) {
+            const options = document.getElementById('sugarFreeOptions');
+            options.style.display = checkbox.checked ? 'block' : 'none';
+            if (!checkbox.checked) {
+                document.querySelectorAll('input[name="sugarFreeType"]').forEach(cb => cb.checked = false);
+            }
+            updateFreeFrom();
+        }
+        
+        function updateFreeFrom() {
+            // This will be called when any free-from option changes
+            // Can be used to update a hidden field or for validation
+        }
+        
+        function togglePalletSize() {
+            const containerLoading = document.getElementById('containerLoading');
+            const palletSizeContainer = document.getElementById('palletSizeContainer');
+            palletSizeContainer.style.display = containerLoading.value === 'Palletized' ? 'block' : 'none';
+            if (containerLoading.value !== 'Palletized') {
+                document.getElementById('palletSize').value = '';
+            }
+        }
+        
+        function toggleCountrySelects() {
+            const preference = document.querySelector('input[name="countryPreference"]:checked').value;
+            const preferredCountries = document.getElementById('preferredCountries');
+            
+            if (preference === 'SPECIFIC') {
+                preferredCountries.style.display = 'block';
+            } else {
+                preferredCountries.style.display = 'none';
+                preferredCountries.selectedIndex = -1; // Clear selection
             }
         }
 
@@ -666,7 +1056,8 @@
         }
 
         async function saveRequest(publish = false) {
-            if (!validateForm()) return;
+            // Only validate for publishing, not for drafts
+            if (publish && !validateForm()) return;
             
             // Get the actual buyer name
             const buyerSelect = document.getElementById('buyerName');
@@ -679,6 +1070,41 @@
                 buyerName = buyerSelect.value;
             }
             
+            // Collect Free From options
+            const freeFromCheckboxes = document.querySelectorAll('input[name="freeFrom"]:checked');
+            const freeFromOptions = [];
+            freeFromCheckboxes.forEach(cb => {
+                if (cb.value === 'Sugar Free') {
+                    // Add sugar free sub-options
+                    const sugarFreeTypes = document.querySelectorAll('input[name="sugarFreeType"]:checked');
+                    if (sugarFreeTypes.length > 0) {
+                        sugarFreeTypes.forEach(st => {
+                            freeFromOptions.push(`Sugar Free - ${st.value}`);
+                        });
+                    } else {
+                        freeFromOptions.push('Sugar Free');
+                    }
+                } else {
+                    freeFromOptions.push(cb.value);
+                }
+            });
+            
+            // Collect preferred countries based on selection
+            let preferredCountries = [];
+            const countryPreference = document.querySelector('input[name="countryPreference"]:checked').value;
+            if (countryPreference === 'SPECIFIC') {
+                const selected = document.getElementById('preferredCountries').selectedOptions;
+                preferredCountries = Array.from(selected).map(opt => opt.value);
+            } else if (countryPreference !== 'SUPPLIER_RECOMMENDED' && countryPreference !== 'NO_PREFERENCE') {
+                preferredCountries = [countryPreference];
+            } else {
+                preferredCountries = [countryPreference];
+            }
+            
+            // Collect not preferred countries
+            const notPreferredSelected = document.getElementById('notPreferredCountries').selectedOptions;
+            const notPreferredCountries = Array.from(notPreferredSelected).map(opt => opt.value);
+            
             const requestData = {
                 title: document.getElementById('title').value.trim(),
                 buyerName: buyerName,
@@ -690,7 +1116,19 @@
                     unit: item.unit,
                     description: item.description.trim(),
                     targetPrice: item.targetPrice || null
-                }))
+                })),
+                // Product Attributes
+                isKosher: document.getElementById('isKosher').checked,
+                kosherPreference: document.getElementById('isKosher').checked ? document.getElementById('kosherPreference').value : null,
+                isFreeFrom: freeFromOptions.length > 0,
+                freeFromOptions: freeFromOptions.length > 0 ? JSON.stringify(freeFromOptions) : null,
+                // Logistic Attributes
+                incoterms: document.getElementById('incoterms').value || null,
+                containerLoading: document.getElementById('containerLoading').value || null,
+                palletSize: document.getElementById('containerLoading').value === 'Palletized' ? document.getElementById('palletSize').value : null,
+                // Countries
+                preferredCountries: preferredCountries.length > 0 ? JSON.stringify(preferredCountries) : null,
+                notPreferredCountries: notPreferredCountries.length > 0 ? JSON.stringify(notPreferredCountries) : null
             };
             
             try {

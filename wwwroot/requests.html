@@ -838,6 +838,13 @@
                                 <span class="sort-down">↓</span>
                             </span>
                         </th>
+                        <th class="sortable" onclick="sortTable('completion')" title="Click to sort by Completion">
+                            Progress
+                            <span class="sort-icon" id="sort-completion">
+                                <span class="sort-up">↑</span>
+                                <span class="sort-down">↓</span>
+                            </span>
+                        </th>
                         <th class="sortable" onclick="sortTable('status')" title="Click to sort by Status">
                             Status
                             <span class="sort-icon" id="sort-status">
@@ -1009,10 +1016,11 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><span class="request-number">${request.requestNumber}</span></td>
-                    <td>${request.title}</td>
+                    <td>${request.title || '<i style="color: #999;">Untitled Request</i>'}</td>
                     <td>${request.buyerName}</td>
                     <td>${request.buyerCompany}</td>
                     <td><span class="item-count">${request.itemCount}</span></td>
+                    <td>${getCompletionBadge(request.completionPercentage || 0)}</td>
                     <td>${getStatusBadge(request.status)}</td>
                     <td title="${formatDateTime(request.createdAt || request.createdDate)}">${formatDateTime(request.createdAt || request.createdDate)}</td>
                     <td title="${formatDateTime(request.updatedAt || request.updatedDate || request.createdAt || request.createdDate)}">${formatDateTime(request.updatedAt || request.updatedDate || request.createdAt || request.createdDate)}</td>
@@ -1033,6 +1041,39 @@
             });
         }
 
+        function getCompletionBadge(percentage) {
+            let color, bgColor, text;
+            
+            if (percentage === 100) {
+                color = '#fff';
+                bgColor = '#28a745';
+                text = '✓ 100%';
+            } else if (percentage >= 75) {
+                color = '#fff';
+                bgColor = '#17a2b8';
+                text = `${percentage}%`;
+            } else if (percentage >= 50) {
+                color = '#212529';
+                bgColor = '#ffc107';
+                text = `${percentage}%`;
+            } else if (percentage >= 25) {
+                color = '#fff';
+                bgColor = '#fd7e14';
+                text = `${percentage}%`;
+            } else {
+                color = '#fff';
+                bgColor = '#6c757d';
+                text = `${percentage}%`;
+            }
+            
+            return `
+                <div style="position: relative; width: 80px; height: 22px; background: #e9ecef; border-radius: 11px; overflow: hidden; margin: 0 auto;">
+                    <div style="position: absolute; left: 0; top: 0; width: ${percentage}%; height: 100%; background: ${bgColor}; transition: width 0.3s ease;"></div>
+                    <span style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 600; color: ${percentage > 50 ? '#fff' : '#333'}; z-index: 1; white-space: nowrap;">${text}</span>
+                </div>
+            `;
+        }
+        
         function getStatusBadge(status) {
             const statusMap = {
                 0: '<span class="status-badge status-draft">Draft</span>',

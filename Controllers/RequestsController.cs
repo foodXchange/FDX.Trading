@@ -51,7 +51,9 @@ public class RequestsController : ControllerBase
                 Status = r.Status,
                 ItemCount = r.RequestItems.Count,
                 CreatedAt = r.CreatedAt,
-                UpdatedAt = r.UpdatedAt
+                UpdatedAt = r.UpdatedAt,
+                CompletionPercentage = r.CompletionPercentage,
+                IsComplete = r.IsComplete
             })
             .ToListAsync();
 
@@ -95,7 +97,22 @@ public class RequestsController : ControllerBase
                 Description = i.Description,
                 TargetPrice = i.TargetPrice,
                 CreatedAt = i.CreatedAt
-            }).ToList()
+            }).ToList(),
+            // Product Attributes
+            IsKosher = request.IsKosher,
+            KosherPreference = request.KosherPreference,
+            IsFreeFrom = request.IsFreeFrom,
+            FreeFromOptions = request.FreeFromOptions,
+            // Logistic Attributes
+            Incoterms = request.Incoterms,
+            ContainerLoading = request.ContainerLoading,
+            PalletSize = request.PalletSize,
+            // Countries Preferred
+            PreferredCountries = request.PreferredCountries,
+            NotPreferredCountries = request.NotPreferredCountries,
+            // Completion tracking
+            CompletionPercentage = request.CompletionPercentage,
+            IsComplete = request.IsComplete
         };
 
         return Ok(requestDto);
@@ -141,15 +158,31 @@ public class RequestsController : ControllerBase
         var request = new Request
         {
             RequestNumber = requestNumber,
-            Title = dto.Title,
+            Title = dto.Title ?? "",
             Description = dto.Description,
             BuyerId = buyerId,
             BuyerName = dto.BuyerName ?? buyer.DisplayName ?? buyer.Username,
             BuyerCompany = dto.BuyerCompany ?? buyer.CompanyName,
             Status = ProcurementRequestStatus.Draft,
             CreatedAt = DateTime.Now,
-            UpdatedAt = DateTime.Now
+            UpdatedAt = DateTime.Now,
+            // Product Attributes
+            IsKosher = dto.IsKosher,
+            KosherPreference = dto.KosherPreference,
+            IsFreeFrom = dto.IsFreeFrom,
+            FreeFromOptions = dto.FreeFromOptions,
+            // Logistic Attributes
+            Incoterms = dto.Incoterms,
+            ContainerLoading = dto.ContainerLoading,
+            PalletSize = dto.PalletSize,
+            // Countries Preferred
+            PreferredCountries = dto.PreferredCountries,
+            NotPreferredCountries = dto.NotPreferredCountries
         };
+        
+        // Calculate completion percentage
+        request.CompletionPercentage = CalculateCompletionPercentage(request);
+        request.IsComplete = request.CompletionPercentage == 100;
 
         // Add request items
         foreach (var itemDto in dto.Items)
@@ -197,6 +230,22 @@ public class RequestsController : ControllerBase
         request.BuyerName = dto.BuyerName;
         request.BuyerCompany = dto.BuyerCompany;
         request.UpdatedAt = DateTime.Now;
+        // Product Attributes
+        request.IsKosher = dto.IsKosher;
+        request.KosherPreference = dto.KosherPreference;
+        request.IsFreeFrom = dto.IsFreeFrom;
+        request.FreeFromOptions = dto.FreeFromOptions;
+        // Logistic Attributes
+        request.Incoterms = dto.Incoterms;
+        request.ContainerLoading = dto.ContainerLoading;
+        request.PalletSize = dto.PalletSize;
+        // Countries Preferred
+        request.PreferredCountries = dto.PreferredCountries;
+        request.NotPreferredCountries = dto.NotPreferredCountries;
+        
+        // Calculate completion percentage
+        request.CompletionPercentage = CalculateCompletionPercentage(request);
+        request.IsComplete = request.CompletionPercentage == 100;
 
         // Remove existing items
         _context.RequestItems.RemoveRange(request.RequestItems);
@@ -246,10 +295,71 @@ public class RequestsController : ControllerBase
             request.UpdatedAt = DateTime.Now;
         }
 
+        // Product Attributes
+        if (patchData.TryGetProperty("isKosher", out JsonElement isKosherElement))
+        {
+            request.IsKosher = isKosherElement.GetBoolean();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("kosherPreference", out JsonElement kosherPrefElement))
+        {
+            request.KosherPreference = kosherPrefElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("isFreeFrom", out JsonElement isFreeFromElement))
+        {
+            request.IsFreeFrom = isFreeFromElement.GetBoolean();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("freeFromOptions", out JsonElement freeFromElement))
+        {
+            request.FreeFromOptions = freeFromElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        // Logistic Attributes
+        if (patchData.TryGetProperty("incoterms", out JsonElement incotermsElement))
+        {
+            request.Incoterms = incotermsElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("containerLoading", out JsonElement containerElement))
+        {
+            request.ContainerLoading = containerElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("palletSize", out JsonElement palletElement))
+        {
+            request.PalletSize = palletElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        // Countries Preferred
+        if (patchData.TryGetProperty("preferredCountries", out JsonElement countriesElement))
+        {
+            request.PreferredCountries = countriesElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("notPreferredCountries", out JsonElement notCountriesElement))
+        {
+            request.NotPreferredCountries = notCountriesElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
         if (patchData.TryGetProperty("updatedAt", out JsonElement updatedAtElement))
         {
             request.UpdatedAt = DateTime.Now;
         }
+        
+        // Recalculate completion percentage after updates
+        request.CompletionPercentage = CalculateCompletionPercentage(request);
+        request.IsComplete = request.CompletionPercentage == 100;
 
         await _context.SaveChangesAsync();
 
@@ -632,5 +742,48 @@ public class RequestsController : ControllerBase
 
         values.Add(currentValue.ToString());
         return values.ToArray();
+    }
+    
+    private int CalculateCompletionPercentage(Request request)
+    {
+        int totalFields = 0;
+        int filledFields = 0;
+        
+        // Required fields (must have for completion)
+        if (!string.IsNullOrWhiteSpace(request.Title)) filledFields++; else if (string.IsNullOrWhiteSpace(request.Title)) totalFields--;
+        totalFields++; // Title
+        
+        if (!string.IsNullOrWhiteSpace(request.BuyerName)) filledFields++;
+        totalFields++; // BuyerName
+        
+        if (!string.IsNullOrWhiteSpace(request.BuyerCompany)) filledFields++;
+        totalFields++; // BuyerCompany
+        
+        // Optional but tracked fields
+        if (!string.IsNullOrWhiteSpace(request.Description)) filledFields++;
+        totalFields++; // Description
+        
+        if (request.RequestItems != null && request.RequestItems.Count > 0) filledFields++;
+        totalFields++; // At least one item
+        
+        // Product Attributes (optional)
+        if (request.IsKosher || request.IsFreeFrom) filledFields++;
+        totalFields++; // Product specs
+        
+        // Logistic Attributes (optional)
+        if (!string.IsNullOrWhiteSpace(request.Incoterms)) filledFields++;
+        totalFields++; // Incoterms
+        
+        if (!string.IsNullOrWhiteSpace(request.ContainerLoading)) filledFields++;
+        totalFields++; // Container Loading
+        
+        // Country Preferences (optional)
+        if (!string.IsNullOrWhiteSpace(request.PreferredCountries) || 
+            !string.IsNullOrWhiteSpace(request.NotPreferredCountries)) filledFields++;
+        totalFields++; // Country preferences
+        
+        // Calculate percentage
+        if (totalFields == 0) return 0;
+        return (int)Math.Round((double)filledFields / totalFields * 100);
     }
 }

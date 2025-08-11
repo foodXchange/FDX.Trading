@@ -4,6 +4,7 @@ using FDX.Trading.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FDX.Trading.Migrations
 {
     [DbContext(typeof(FdxTradingContext))]
-    partial class FdxTradingContextModelSnapshot : ModelSnapshot
+    [Migration("20250811050818_AddRequestAttributes")]
+    partial class AddRequestAttributes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -605,9 +608,6 @@ namespace FDX.Trading.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("CompletionPercentage")
-                        .HasColumnType("int");
-
                     b.Property<string>("ContainerLoading")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -626,9 +626,6 @@ namespace FDX.Trading.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsFreeFrom")
                         .HasColumnType("bit");
 
@@ -638,9 +635,6 @@ namespace FDX.Trading.Migrations
                     b.Property<string>("KosherPreference")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("NotPreferredCountries")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PalletSize")
                         .HasMaxLength(100)

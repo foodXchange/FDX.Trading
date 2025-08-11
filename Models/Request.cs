@@ -34,6 +34,32 @@ public class Request
     
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
     
+    // Form Completion Tracking
+    public int CompletionPercentage { get; set; } = 0;
+    public bool IsComplete { get; set; } = false;
+    
+    // Product Attributes
+    public bool IsKosher { get; set; } = false;
+    [MaxLength(50)]
+    public string? KosherPreference { get; set; } // "Super Kosher" or "Regular"
+    
+    public bool IsFreeFrom { get; set; } = false;
+    public string? FreeFromOptions { get; set; } // JSON array of selected options
+    
+    // Logistic Attributes
+    [MaxLength(50)]
+    public string? Incoterms { get; set; } // FOB, EXW, CIF, DAP, DDP
+    
+    [MaxLength(50)]
+    public string? ContainerLoading { get; set; } // "Floor Loaded" or "Palletized"
+    
+    [MaxLength(100)]
+    public string? PalletSize { get; set; } // Euro Pallet, Standard ISO, CHEP, etc.
+    
+    // Countries Preferred
+    public string? PreferredCountries { get; set; } // JSON array of country codes
+    public string? NotPreferredCountries { get; set; } // JSON array of countries not to work with
+    
     // Navigation properties
     public virtual User Buyer { get; set; } = null!;
     public virtual ICollection<RequestItem> RequestItems { get; set; } = new List<RequestItem>();
@@ -89,6 +115,25 @@ public class RequestDto
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public List<RequestItemDto> Items { get; set; } = new();
+    
+    // Form Completion
+    public int CompletionPercentage { get; set; }
+    public bool IsComplete { get; set; }
+    
+    // Product Attributes
+    public bool IsKosher { get; set; }
+    public string? KosherPreference { get; set; }
+    public bool IsFreeFrom { get; set; }
+    public string? FreeFromOptions { get; set; }
+    
+    // Logistic Attributes
+    public string? Incoterms { get; set; }
+    public string? ContainerLoading { get; set; }
+    public string? PalletSize { get; set; }
+    
+    // Countries Preferred
+    public string? PreferredCountries { get; set; }
+    public string? NotPreferredCountries { get; set; }
 }
 
 public class RequestItemDto
@@ -105,12 +150,26 @@ public class RequestItemDto
 
 public class CreateRequestDto
 {
-    [Required]
-    public string Title { get; set; } = "";
+    public string? Title { get; set; }
     public string? BuyerName { get; set; }
     public string? BuyerCompany { get; set; }
     public string? Description { get; set; }
     public List<CreateRequestItemDto> Items { get; set; } = new();
+    
+    // Product Attributes
+    public bool IsKosher { get; set; }
+    public string? KosherPreference { get; set; }
+    public bool IsFreeFrom { get; set; }
+    public string? FreeFromOptions { get; set; }
+    
+    // Logistic Attributes
+    public string? Incoterms { get; set; }
+    public string? ContainerLoading { get; set; }
+    public string? PalletSize { get; set; }
+    
+    // Countries Preferred
+    public string? PreferredCountries { get; set; }
+    public string? NotPreferredCountries { get; set; }
 }
 
 public class CreateRequestItemDto

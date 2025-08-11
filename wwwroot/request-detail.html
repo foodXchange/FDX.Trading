@@ -338,6 +338,28 @@
             font-size: 14px;
             color: #333;
         }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
 <body>
@@ -376,6 +398,14 @@
                 <div class="status-info">
                     <span>Current Status:</span>
                     <span id="statusBadge"></span>
+                    <div style="margin-left: 30px; display: flex; align-items: center; gap: 15px;">
+                        <span style="font-size: 14px; color: #6c757d;">Form Completion:</span>
+                        <div style="position: relative; width: 200px; height: 24px; background: #e9ecef; border-radius: 12px; overflow: hidden;">
+                            <div id="completionBar" style="position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 12px; transition: width 0.3s ease;"></div>
+                            <span id="completionText" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 600; color: #333; z-index: 1;">0%</span>
+                        </div>
+                        <span id="completionStatus" style="font-size: 13px; color: #6c757d; font-style: italic;"></span>
+                    </div>
                 </div>
                 <div class="status-actions" id="statusActions">
                     <!-- Status action buttons will be added dynamically -->
@@ -422,6 +452,203 @@
                     </div>
                 </div>
 
+                <!-- Request Attributes Section -->
+                <div class="info-section">
+                    <h2>Product & Shipping Requirements</h2>
+                    
+                    <!-- Product Attributes Subsection -->
+                    <div class="subsection" style="margin-top: 20px; background: linear-gradient(135deg, #667eea05 0%, #764ba205 100%); border-radius: 12px; padding: 20px; border: 1px solid #e8e8f0;">
+                        <h3 style="font-size: 1.2rem; color: #2d3748; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #667eea; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🧪</span>
+                                Product Specifications
+                            </div>
+                            <button onclick="toggleEditProductSpecs()" id="editProductSpecsBtn" class="btn btn-sm" style="padding: 6px 12px; font-size: 13px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                ✏️ Edit
+                            </button>
+                        </h3>
+                        
+                        <div class="info-grid" style="gap: 25px;">
+                            <!-- Kosher Field -->
+                            <div class="info-item" style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #f0f0f5;">
+                                <span class="info-label" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                                    <span style="font-size: 20px;">🥘</span>
+                                    <span style="font-weight: 600; color: #4a5568;">Dietary Certification</span>
+                                </span>
+                                <div class="info-value" id="kosherDisplay" style="padding: 8px 0; min-height: 32px; display: flex; align-items: center;">
+                                    <span class="no-description">No Special Requirements</span>
+                                </div>
+                                <div id="kosherEdit" style="display: none;">
+                                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                        <input type="checkbox" id="editIsKosher" onchange="toggleEditKosherPreference()" style="width: 16px; height: 16px;">
+                                        <span>Kosher Required</span>
+                                    </label>
+                                    <select id="editKosherPreference" aria-label="Select kosher preference level" title="Select kosher preference level" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                        <option value="Regular">Regular Kosher</option>
+                                        <option value="Super Kosher">✨ Super Kosher</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Free From Field -->
+                            <div class="info-item" style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #f0f0f5;">
+                                <span class="info-label" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                                    <span style="font-size: 20px;">⚠️</span>
+                                    <span style="font-weight: 600; color: #4a5568;">Allergen & Ingredient Restrictions</span>
+                                </span>
+                                <div class="info-value" id="freeFromDisplay" style="padding: 8px 0; min-height: 32px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                                    <span class="no-description">No Restrictions</span>
+                                </div>
+                                <div id="freeFromEdit" style="display: none;">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                            <input type="checkbox" name="editFreeFrom" value="Gluten Free">
+                                            <span>🌾 Gluten Free</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                            <input type="checkbox" name="editFreeFrom" value="Sugar Free" onchange="toggleEditSugarOptions(this)">
+                                            <span>🍬 Sugar Free</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                            <input type="checkbox" name="editFreeFrom" value="Dairy Free">
+                                            <span>🥛 Dairy Free</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                            <input type="checkbox" name="editFreeFrom" value="Nut Free">
+                                            <span>🥜 Nut Free</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                            <input type="checkbox" name="editFreeFrom" value="Egg Free">
+                                            <span>🥚 Egg Free</span>
+                                        </label>
+                                    </div>
+                                    <div id="editSugarOptions" style="display: none; margin-top: 10px; padding: 10px; background: #fef5e7; border-radius: 6px;">
+                                        <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 500;">Sugar Free Options:</p>
+                                        <div style="display: grid; gap: 6px;">
+                                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                                                <input type="checkbox" name="editSugarType" value="For Diabetics">
+                                                <span>💉 For Diabetics</span>
+                                            </label>
+                                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                                                <input type="checkbox" name="editSugarType" value="Approved Subs Used">
+                                                <span>✓ Approved Substitutes</span>
+                                            </label>
+                                            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                                                <input type="checkbox" name="editSugarType" value="No Added Sugar">
+                                                <span>🚫 No Added Sugar</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logistic Attributes Subsection -->
+                    <div class="subsection" style="margin-top: 25px; background: white; border-radius: 12px; padding: 20px; border: 1px solid #e8e8f0;">
+                        <h3 style="font-size: 1.1rem; color: #495057; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">🚚</span>
+                                Shipping & Logistics
+                            </div>
+                            <button onclick="toggleEditLogistics()" id="editLogisticsBtn" class="btn btn-sm" style="padding: 6px 12px; font-size: 13px; background: #17a2b8; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
+                                ✏️ Edit
+                            </button>
+                        </h3>
+                        
+                        <div class="info-grid">
+                            <!-- Incoterms Field -->
+                            <div class="info-item">
+                                <span class="info-label">Delivery Terms</span>
+                                <div class="info-value" id="incotermsDisplay">
+                                    <span class="no-description">To Be Determined</span>
+                                </div>
+                                <div id="incotermsEdit" style="display: none;">
+                                    <select id="editIncoterms" aria-label="Select delivery terms (Incoterms)" title="Select delivery terms (Incoterms)" style="width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                        <option value="">Select Incoterms</option>
+                                        <option value="FOB">FOB - Free On Board</option>
+                                        <option value="EXW">EXW - Ex Works</option>
+                                        <option value="CIF">CIF - Cost, Insurance & Freight</option>
+                                        <option value="DAP">DAP - Delivered at Place</option>
+                                        <option value="DDP">DDP - Delivered Duty Paid</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Container Loading Field -->
+                            <div class="info-item">
+                                <span class="info-label">Packaging Method</span>
+                                <div class="info-value" id="containerLoadingDisplay">
+                                    <span class="no-description">Supplier's Standard Packaging</span>
+                                </div>
+                                <div id="containerEdit" style="display: none;">
+                                    <select id="editContainerLoading" aria-label="Select container loading method" title="Select container loading method" onchange="toggleEditPalletSize()" style="width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 8px;">
+                                        <option value="">Select Loading Method</option>
+                                        <option value="Floor Loaded">Floor Loaded</option>
+                                        <option value="Palletized">Palletized</option>
+                                    </select>
+                                    <select id="editPalletSize" aria-label="Select pallet size" title="Select pallet size" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                        <option value="">Select Pallet Size</option>
+                                        <option value="Euro Pallet">Euro Pallet (1200x800mm)</option>
+                                        <option value="Standard ISO">Standard ISO (1200x1000mm)</option>
+                                        <option value="CHEP">CHEP Pallet</option>
+                                        <option value="Plastic Hygienic">Plastic Hygienic Pallet</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Countries Preferences Subsection -->
+                    <div class="subsection" style="margin-top: 25px; background: white; border-radius: 12px; padding: 20px; border: 1px solid #e8e8f0;">
+                        <h3 style="font-size: 1.1rem; color: #495057; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">🌍</span>
+                                Sourcing Location Preferences
+                            </div>
+                            <button onclick="toggleEditCountries()" id="editCountriesBtn" class="btn btn-sm" style="padding: 6px 12px; font-size: 13px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
+                                ✏️ Edit
+                            </button>
+                        </h3>
+                        
+                        <div class="info-grid">
+                            <!-- Preferred Countries -->
+                            <div class="info-item">
+                                <span class="info-label">Preferred Source Countries</span>
+                                <div class="info-value" id="preferredCountriesDisplay">
+                                    <span class="no-description">Open to Supplier Recommendations</span>
+                                </div>
+                                <div id="preferredCountriesEdit" style="display: none;">
+                                    <div style="margin-bottom: 8px;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                            <input type="checkbox" id="editSupplierRecommended" onchange="toggleEditCountrySelects()">
+                                            <span>Open to Supplier Recommendations</span>
+                                        </label>
+                                    </div>
+                                    <input type="text" id="editPreferredCountries" placeholder="Enter preferred countries (comma-separated)" style="width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; display: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- Not Preferred Countries -->
+                            <div class="info-item">
+                                <span class="info-label">Restricted Countries</span>
+                                <div class="info-value" id="notPreferredCountriesDisplay">
+                                    <span class="no-description">No Restrictions Applied</span>
+                                </div>
+                                <div id="restrictedCountriesEdit" style="display: none;">
+                                    <input type="text" id="editNotPreferredCountries" placeholder="Enter restricted countries (comma-separated)" style="width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Save/Cancel buttons for editing -->
+                    <div id="productSpecsActions" style="display: none; margin-top: 20px; text-align: right;">
+                        <button onclick="cancelEditProductSpecs()" class="btn btn-secondary" style="margin-right: 10px;">Cancel</button>
+                        <button onclick="saveProductSpecs()" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+
                 <div class="info-section">
                     <h2>Request Items</h2>
                     <table class="items-table">
@@ -458,7 +685,7 @@
             
             <div style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">Select Contact:</label>
-                <select id="contactSelect" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                <select id="contactSelect" aria-label="Select contact to change buyer" title="Select contact to change buyer" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
                     <option value="">Loading contacts...</option>
                 </select>
             </div>
@@ -486,8 +713,9 @@
 
     <script>
         let currentRequest = null;
+        let requestId = null;
         const urlParams = new URLSearchParams(window.location.search);
-        const requestId = urlParams.get('id');
+        requestId = urlParams.get('id');
 
         if (!requestId) {
             alert('No request ID provided');
@@ -593,6 +821,509 @@
             
             // Timeline
             displayTimeline(request);
+            
+            // Display Request Attributes
+            displayRequestAttributes(request);
+            
+            // Display Completion Status
+            displayCompletionStatus(request);
+        }
+        
+        function displayCompletionStatus(request) {
+            const percentage = request.completionPercentage || 0;
+            const completionBar = document.getElementById('completionBar');
+            const completionText = document.getElementById('completionText');
+            const completionStatus = document.getElementById('completionStatus');
+            
+            // Update progress bar
+            completionBar.style.width = percentage + '%';
+            completionText.textContent = percentage + '%';
+            
+            // Update bar color based on percentage
+            if (percentage === 100) {
+                completionBar.style.background = 'linear-gradient(90deg, #28a745 0%, #20c997 100%)';
+                completionStatus.textContent = '✓ Form Complete';
+                completionStatus.style.color = '#28a745';
+            } else if (percentage >= 75) {
+                completionBar.style.background = 'linear-gradient(90deg, #17a2b8 0%, #20c997 100%)';
+                completionStatus.textContent = 'Almost Complete';
+                completionStatus.style.color = '#17a2b8';
+            } else if (percentage >= 50) {
+                completionBar.style.background = 'linear-gradient(90deg, #ffc107 0%, #fd7e14 100%)';
+                completionStatus.textContent = 'Partially Complete';
+                completionStatus.style.color = '#ffc107';
+            } else if (percentage >= 25) {
+                completionBar.style.background = 'linear-gradient(90deg, #fd7e14 0%, #dc3545 100%)';
+                completionStatus.textContent = 'Just Started';
+                completionStatus.style.color = '#fd7e14';
+            } else {
+                completionBar.style.background = 'linear-gradient(90deg, #6c757d 0%, #495057 100%)';
+                completionStatus.textContent = 'Not Started';
+                completionStatus.style.color = '#6c757d';
+            }
+        }
+        
+        function displayRequestAttributes(request) {
+            console.log('Displaying request attributes:', {
+                isKosher: request.isKosher,
+                kosherPreference: request.kosherPreference,
+                isFreeFrom: request.isFreeFrom,
+                freeFromOptions: request.freeFromOptions,
+                incoterms: request.incoterms,
+                containerLoading: request.containerLoading,
+                palletSize: request.palletSize,
+                preferredCountries: request.preferredCountries,
+                notPreferredCountries: request.notPreferredCountries
+            });
+            
+            // Kosher Display
+            const kosherDisplay = document.getElementById('kosherDisplay');
+            if (request.isKosher) {
+                const preference = request.kosherPreference || 'Regular';
+                const kosherIcon = preference === 'Super Kosher' ? '✨' : '✓';
+                const kosherColor = preference === 'Super Kosher' ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+                kosherDisplay.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="background: ${kosherColor}; color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                            ${kosherIcon} Kosher Certified
+                        </span>
+                        <span style="background: #f7fafc; color: #4a5568; padding: 4px 10px; border-radius: 12px; font-size: 13px; border: 1px solid #e2e8f0;">
+                            ${preference}
+                        </span>
+                    </div>`;
+            } else {
+                kosherDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">✗ No Special Requirements</span>';
+            }
+            
+            // Free From Display
+            const freeFromDisplay = document.getElementById('freeFromDisplay');
+            if (request.isFreeFrom && request.freeFromOptions) {
+                try {
+                    const options = JSON.parse(request.freeFromOptions);
+                    if (options && options.length > 0) {
+                        const iconMap = {
+                            'Gluten Free': '🌾',
+                            'Sugar Free': '🍬',
+                            'For Diabetics': '💉',
+                            'Approved Subs Used': '✓',
+                            'No Added Sugar': '🚫',
+                            'Dairy Free': '🥛',
+                            'Nut Free': '🥜',
+                            'Egg Free': '🥚'
+                        };
+                        const colorMap = {
+                            'Gluten Free': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                            'Sugar Free': 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                            'Dairy Free': 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
+                            'Nut Free': 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)',
+                            'Egg Free': 'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)'
+                        };
+                        const badges = options.map(opt => {
+                            const icon = iconMap[opt] || '✓';
+                            const color = colorMap[opt] || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                            return `<span style="background: ${color}; color: white; padding: 5px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                ${icon} ${opt}
+                            </span>`;
+                        }).join('');
+                        freeFromDisplay.innerHTML = badges;
+                    } else {
+                        freeFromDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">✗ Not specified</span>';
+                    }
+                } catch (e) {
+                    freeFromDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">✗ No Restrictions</span>';
+                }
+            } else {
+                freeFromDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">✗ No Restrictions Applied</span>';
+            }
+            
+            // Incoterms Display
+            const incotermsDisplay = document.getElementById('incotermsDisplay');
+            if (request.incoterms) {
+                const incotermsMap = {
+                    'FOB': 'FOB - Free On Board',
+                    'EXW': 'EXW - Ex Works',
+                    'CIF': 'CIF - Cost, Insurance & Freight',
+                    'DAP': 'DAP - Delivered at Place',
+                    'DDP': 'DDP - Delivered Duty Paid'
+                };
+                const display = incotermsMap[request.incoterms] || request.incoterms;
+                incotermsDisplay.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                            📦 ${display}
+                        </span>
+                    </div>`;
+            } else {
+                incotermsDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">📦 To Be Determined</span>';
+            }
+            
+            // Container Loading Display
+            const containerLoadingDisplay = document.getElementById('containerLoadingDisplay');
+            if (request.containerLoading) {
+                let displayText = request.containerLoading;
+                let icon = request.containerLoading === 'Palletized' ? '🎯' : '📦';
+                if (request.containerLoading === 'Palletized' && request.palletSize) {
+                    displayText = `${request.containerLoading} - ${request.palletSize}`;
+                }
+                containerLoadingDisplay.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                            ${icon} ${displayText}
+                        </span>
+                    </div>`;
+            } else {
+                containerLoadingDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">📦 Supplier\'s Standard Packaging</span>';
+            }
+            
+            // Preferred Countries Display
+            const preferredCountriesDisplay = document.getElementById('preferredCountriesDisplay');
+            if (request.preferredCountries) {
+                try {
+                    const countries = JSON.parse(request.preferredCountries);
+                    if (countries && countries.length > 0) {
+                        if (countries.includes('SUPPLIER_RECOMMENDED')) {
+                            preferredCountriesDisplay.innerHTML = `
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                                        ✓ Open to Supplier Recommendations
+                                    </span>
+                                </div>`;
+                        } else if (countries.includes('NO_PREFERENCE')) {
+                            preferredCountriesDisplay.innerHTML = '<span style="color: #6c757d; font-style: italic;">🌍 No Preference - Any Country Acceptable</span>';
+                        } else {
+                            const flags = countries.map(c => 
+                                `<span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 5px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; margin-right: 5px; margin-bottom: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">🌍 ${c}</span>`
+                            ).join('');
+                            preferredCountriesDisplay.innerHTML = `<div style="display: flex; flex-wrap: wrap; gap: 5px;">${flags}</div>`;
+                        }
+                    } else {
+                        preferredCountriesDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">🌍 Open to Supplier Recommendations</span>';
+                    }
+                } catch (e) {
+                    preferredCountriesDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">🌍 Open to Supplier Recommendations</span>';
+                }
+            } else {
+                preferredCountriesDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">🌍 Open to Supplier Recommendations</span>';
+            }
+            
+            // Not Preferred Countries Display
+            const notPreferredCountriesDisplay = document.getElementById('notPreferredCountriesDisplay');
+            if (request.notPreferredCountries) {
+                try {
+                    const countries = JSON.parse(request.notPreferredCountries);
+                    if (countries && countries.length > 0) {
+                        const flags = countries.map(c => 
+                            `<span style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 5px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; margin-right: 5px; margin-bottom: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">⚠️ ${c}</span>`
+                        ).join('');
+                        notPreferredCountriesDisplay.innerHTML = `<div style="display: flex; flex-wrap: wrap; gap: 5px;">${flags}</div>`;
+                    } else {
+                        notPreferredCountriesDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">✓ No Restrictions Applied</span>';
+                    }
+                } catch (e) {
+                    notPreferredCountriesDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">✓ No Restrictions Applied</span>';
+                }
+            } else {
+                notPreferredCountriesDisplay.innerHTML = '<span style="color: #a0aec0; font-style: italic; font-size: 14px;">✓ No Restrictions Applied</span>';
+            }
+        }
+        
+        // Edit Product Specifications functions
+        function toggleEditProductSpecs() {
+            const isEditing = document.getElementById('productSpecsActions').style.display === 'none';
+            
+            // If clicking "Done" button without saving, just toggle back to view mode
+            if (!isEditing) {
+                // Switch to view mode without saving
+                document.getElementById('productSpecsActions').style.display = 'none';
+                document.getElementById('editProductSpecsBtn').textContent = '✏️ Edit';
+                document.getElementById('editLogisticsBtn').style.display = 'none';
+                document.getElementById('editCountriesBtn').style.display = 'none';
+                
+                // Show all display elements and hide all edit elements
+                document.getElementById('kosherDisplay').style.display = 'block';
+                document.getElementById('kosherEdit').style.display = 'none';
+                document.getElementById('freeFromDisplay').style.display = 'block';
+                document.getElementById('freeFromEdit').style.display = 'none';
+                document.getElementById('incotermsDisplay').style.display = 'block';
+                document.getElementById('incotermsEdit').style.display = 'none';
+                document.getElementById('containerLoadingDisplay').style.display = 'block';
+                document.getElementById('containerEdit').style.display = 'none';
+                document.getElementById('preferredCountriesDisplay').style.display = 'block';
+                document.getElementById('preferredCountriesEdit').style.display = 'none';
+                document.getElementById('notPreferredCountriesDisplay').style.display = 'block';
+                document.getElementById('restrictedCountriesEdit').style.display = 'none';
+                return;
+            }
+            
+            // Toggle visibility of edit sections
+            document.getElementById('productSpecsActions').style.display = isEditing ? 'block' : 'none';
+            document.getElementById('editProductSpecsBtn').textContent = isEditing ? '✓ Done' : '✏️ Edit';
+            document.getElementById('editLogisticsBtn').style.display = isEditing ? 'inline-block' : 'none';
+            document.getElementById('editCountriesBtn').style.display = isEditing ? 'inline-block' : 'none';
+            
+            // Toggle Product Specs fields
+            document.getElementById('kosherDisplay').style.display = isEditing ? 'none' : 'block';
+            document.getElementById('kosherEdit').style.display = isEditing ? 'block' : 'none';
+            document.getElementById('freeFromDisplay').style.display = isEditing ? 'none' : 'block';
+            document.getElementById('freeFromEdit').style.display = isEditing ? 'block' : 'none';
+            
+            // Toggle Logistics fields
+            document.getElementById('incotermsDisplay').style.display = isEditing ? 'none' : 'block';
+            document.getElementById('incotermsEdit').style.display = isEditing ? 'block' : 'none';
+            document.getElementById('containerLoadingDisplay').style.display = isEditing ? 'none' : 'block';
+            document.getElementById('containerEdit').style.display = isEditing ? 'block' : 'none';
+            
+            // Toggle Countries fields
+            document.getElementById('preferredCountriesDisplay').style.display = isEditing ? 'none' : 'block';
+            document.getElementById('preferredCountriesEdit').style.display = isEditing ? 'block' : 'none';
+            document.getElementById('notPreferredCountriesDisplay').style.display = isEditing ? 'none' : 'block';
+            document.getElementById('restrictedCountriesEdit').style.display = isEditing ? 'block' : 'none';
+            
+            if (isEditing) {
+                // Load current values into edit fields
+                loadCurrentValues();
+            }
+        }
+        
+        function toggleEditLogistics() {
+            toggleEditProductSpecs();
+        }
+        
+        function toggleEditCountries() {
+            toggleEditProductSpecs();
+        }
+        
+        function loadCurrentValues() {
+            if (!currentRequest) {
+                console.error('No current request data available');
+                return;
+            }
+            
+            // Load kosher values
+            document.getElementById('editIsKosher').checked = currentRequest.isKosher || false;
+            if (currentRequest.isKosher) {
+                document.getElementById('editKosherPreference').style.display = 'inline-block';
+                document.getElementById('editKosherPreference').value = currentRequest.kosherPreference || 'Regular';
+            }
+            
+            // Load free from values
+            if (currentRequest.freeFromOptions) {
+                try {
+                    const options = JSON.parse(currentRequest.freeFromOptions);
+                    document.querySelectorAll('input[name="editFreeFrom"]').forEach(cb => {
+                        cb.checked = options.includes(cb.value);
+                        if (cb.value === 'Sugar Free' && cb.checked) {
+                            document.getElementById('editSugarOptions').style.display = 'block';
+                            // Check sugar sub-options
+                            document.querySelectorAll('input[name="editSugarType"]').forEach(sugar => {
+                                sugar.checked = options.includes(sugar.value);
+                            });
+                        }
+                    });
+                } catch (e) {}
+            }
+            
+            // Load logistics values
+            document.getElementById('editIncoterms').value = currentRequest.incoterms || '';
+            document.getElementById('editContainerLoading').value = currentRequest.containerLoading || '';
+            if (currentRequest.containerLoading === 'Palletized') {
+                document.getElementById('editPalletSize').style.display = 'block';
+                document.getElementById('editPalletSize').value = currentRequest.palletSize || '';
+            }
+            
+            // Load countries values
+            if (currentRequest.preferredCountries) {
+                try {
+                    const countries = JSON.parse(currentRequest.preferredCountries);
+                    if (countries.includes('SUPPLIER_RECOMMENDED')) {
+                        document.getElementById('editSupplierRecommended').checked = true;
+                        document.getElementById('editPreferredCountries').style.display = 'none';
+                    } else {
+                        document.getElementById('editPreferredCountries').style.display = 'block';
+                        document.getElementById('editPreferredCountries').value = countries.join(', ');
+                    }
+                } catch (e) {
+                    document.getElementById('editPreferredCountries').value = currentRequest.preferredCountries;
+                }
+            }
+            
+            if (currentRequest.notPreferredCountries) {
+                try {
+                    const countries = JSON.parse(currentRequest.notPreferredCountries);
+                    document.getElementById('editNotPreferredCountries').value = countries.join(', ');
+                } catch (e) {
+                    document.getElementById('editNotPreferredCountries').value = currentRequest.notPreferredCountries;
+                }
+            }
+        }
+        
+        function toggleEditKosherPreference() {
+            const checkbox = document.getElementById('editIsKosher');
+            const select = document.getElementById('editKosherPreference');
+            select.style.display = checkbox.checked ? 'inline-block' : 'none';
+            if (!checkbox.checked) {
+                select.value = 'Regular';
+            }
+        }
+        
+        function toggleEditSugarOptions(checkbox) {
+            const options = document.getElementById('editSugarOptions');
+            options.style.display = checkbox.checked ? 'block' : 'none';
+            if (!checkbox.checked) {
+                document.querySelectorAll('input[name="editSugarType"]').forEach(cb => {
+                    cb.checked = false;
+                });
+            }
+        }
+        
+        function toggleEditPalletSize() {
+            const loading = document.getElementById('editContainerLoading');
+            const palletSize = document.getElementById('editPalletSize');
+            palletSize.style.display = loading.value === 'Palletized' ? 'block' : 'none';
+            if (loading.value !== 'Palletized') {
+                palletSize.value = '';
+            }
+        }
+        
+        function toggleEditCountrySelects() {
+            const supplierRec = document.getElementById('editSupplierRecommended');
+            const countryInput = document.getElementById('editPreferredCountries');
+            countryInput.style.display = supplierRec.checked ? 'none' : 'block';
+            if (supplierRec.checked) {
+                countryInput.value = '';
+            }
+        }
+        
+        function cancelEditProductSpecs() {
+            toggleEditProductSpecs();
+        }
+        
+        async function saveProductSpecs() {
+            // Collect all values
+            const updateData = {
+                isKosher: document.getElementById('editIsKosher').checked,
+                kosherPreference: document.getElementById('editIsKosher').checked ? 
+                    document.getElementById('editKosherPreference').value : null,
+                isFreeFrom: false,
+                freeFromOptions: null,
+                incoterms: document.getElementById('editIncoterms').value || null,
+                containerLoading: document.getElementById('editContainerLoading').value || null,
+                palletSize: document.getElementById('editContainerLoading').value === 'Palletized' ? 
+                    document.getElementById('editPalletSize').value : null,
+                preferredCountries: null,
+                notPreferredCountries: null
+            };
+            
+            // Collect free from options
+            const freeFromOptions = [];
+            document.querySelectorAll('input[name="editFreeFrom"]:checked').forEach(cb => {
+                freeFromOptions.push(cb.value);
+                if (cb.value === 'Sugar Free') {
+                    document.querySelectorAll('input[name="editSugarType"]:checked').forEach(sugar => {
+                        freeFromOptions.push(sugar.value);
+                    });
+                }
+            });
+            
+            if (freeFromOptions.length > 0) {
+                updateData.isFreeFrom = true;
+                updateData.freeFromOptions = JSON.stringify(freeFromOptions);
+            }
+            
+            // Collect countries
+            if (document.getElementById('editSupplierRecommended').checked) {
+                updateData.preferredCountries = JSON.stringify(['SUPPLIER_RECOMMENDED']);
+            } else {
+                const preferred = document.getElementById('editPreferredCountries').value.trim();
+                if (preferred) {
+                    updateData.preferredCountries = JSON.stringify(
+                        preferred.split(',').map(c => c.trim()).filter(c => c)
+                    );
+                }
+            }
+            
+            const restricted = document.getElementById('editNotPreferredCountries').value.trim();
+            if (restricted) {
+                updateData.notPreferredCountries = JSON.stringify(
+                    restricted.split(',').map(c => c.trim()).filter(c => c)
+                );
+            }
+            
+            try {
+                if (!requestId) {
+                    console.error('No request ID available');
+                    showNotification('Error: No request ID found', 'error');
+                    return;
+                }
+                
+                console.log('Saving product specs for request:', requestId);
+                console.log('Update data:', updateData);
+                
+                const response = await fetch(`/api/requests/${requestId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    // Reload the request to show updated values
+                    await loadRequest(requestId);
+                    // Make sure we're in view mode
+                    document.getElementById('productSpecsActions').style.display = 'none';
+                    document.getElementById('editProductSpecsBtn').textContent = '✏️ Edit';
+                    document.getElementById('editLogisticsBtn').style.display = 'none';
+                    document.getElementById('editCountriesBtn').style.display = 'none';
+                    
+                    // Show display divs and hide edit divs
+                    document.getElementById('kosherDisplay').style.display = 'block';
+                    document.getElementById('kosherEdit').style.display = 'none';
+                    document.getElementById('freeFromDisplay').style.display = 'block';
+                    document.getElementById('freeFromEdit').style.display = 'none';
+                    document.getElementById('incotermsDisplay').style.display = 'block';
+                    document.getElementById('incotermsEdit').style.display = 'none';
+                    document.getElementById('containerLoadingDisplay').style.display = 'block';
+                    document.getElementById('containerEdit').style.display = 'none';
+                    document.getElementById('preferredCountriesDisplay').style.display = 'block';
+                    document.getElementById('preferredCountriesEdit').style.display = 'none';
+                    document.getElementById('notPreferredCountriesDisplay').style.display = 'block';
+                    document.getElementById('restrictedCountriesEdit').style.display = 'none';
+                    
+                    showNotification('Product specifications updated successfully!', 'success');
+                } else {
+                    const errorData = await response.text();
+                    console.error('Update failed:', errorData);
+                    showNotification('Failed to update specifications', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating specifications:', error);
+                showNotification('Error updating specifications', 'error');
+            }
+        }
+        
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#28a745' : '#dc3545'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
         function displayTimeline(request) {
