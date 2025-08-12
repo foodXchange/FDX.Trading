@@ -6,7 +6,6 @@ class ModernNavigation {
         this.recentActions = JSON.parse(localStorage.getItem('fdx_recent_actions') || '[]');
         this.favorites = JSON.parse(localStorage.getItem('fdx_favorites') || '[]');
         this.shortcuts = this.initShortcuts();
-        this.commandPaletteOpen = false;
         this.quickActionsOpen = false;
         this.contextMenuOpen = false;
         this.init();
@@ -41,7 +40,7 @@ class ModernNavigation {
                 <!-- Center Section - Smart Search -->
                 <div class="smart-search">
                     <input type="text" class="smart-search-input" id="smartSearch" 
-                           placeholder="Search or type a command..." 
+                           placeholder="Search..." 
                            aria-label="Smart search">
                     <span class="smart-search-shortcut">Ctrl+K</span>
                     <span class="smart-search-icon">🔍</span>
@@ -192,13 +191,6 @@ class ModernNavigation {
             <!-- Mobile Sidebar Overlay -->
             <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-            <!-- Command Palette -->
-            <div class="command-palette" id="commandPalette">
-                <input type="text" class="command-input" id="commandInput" 
-                       placeholder="Type a command or search..." 
-                       autocomplete="off">
-                <div class="command-results" id="commandResults"></div>
-            </div>
 
             <!-- Quick Actions FAB -->
             <div class="quick-actions-fab" id="quickActionsFab">
@@ -263,13 +255,9 @@ class ModernNavigation {
         // Smart Search
         const smartSearch = document.getElementById('smartSearch');
         smartSearch.addEventListener('focus', () => {
-            this.openCommandPalette();
+            window.location.href = '/search.html';
         });
 
-        // Command Palette
-        document.getElementById('commandInput').addEventListener('input', (e) => {
-            this.handleCommandInput(e.target.value);
-        });
 
         // Quick Actions FAB
         document.getElementById('quickActionsFab').addEventListener('click', () => {
@@ -286,9 +274,6 @@ class ModernNavigation {
 
         // Click outside handlers
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.command-palette') && !e.target.closest('.smart-search')) {
-                this.closeCommandPalette();
-            }
             if (!e.target.closest('.quick-actions-fab') && !e.target.closest('.quick-actions-menu')) {
                 this.closeQuickActions();
             }
@@ -305,10 +290,10 @@ class ModernNavigation {
 
     initKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + K - Open Command Palette
+            // Ctrl/Cmd + K - Open Search
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
-                this.toggleCommandPalette();
+                window.location.href = '/search.html';
             }
 
             // Alt + A - AI Assistant
@@ -334,17 +319,6 @@ class ModernNavigation {
                 this.closeAllModals();
             }
 
-            // Arrow keys in command palette
-            if (this.commandPaletteOpen) {
-                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    this.navigateCommandResults(e.key === 'ArrowDown' ? 1 : -1);
-                }
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    this.executeSelectedCommand();
-                }
-            }
         });
     }
 
@@ -366,117 +340,6 @@ class ModernNavigation {
         document.getElementById('sidebarOverlay').classList.remove('active');
     }
 
-    toggleCommandPalette() {
-        this.commandPaletteOpen = !this.commandPaletteOpen;
-        const palette = document.getElementById('commandPalette');
-        
-        if (this.commandPaletteOpen) {
-            palette.classList.add('active');
-            document.getElementById('commandInput').value = '';
-            document.getElementById('commandInput').focus();
-            this.showCommandSuggestions();
-        } else {
-            palette.classList.remove('active');
-        }
-    }
-
-    openCommandPalette() {
-        if (!this.commandPaletteOpen) {
-            this.toggleCommandPalette();
-        }
-    }
-
-    closeCommandPalette() {
-        if (this.commandPaletteOpen) {
-            this.commandPaletteOpen = false;
-            document.getElementById('commandPalette').classList.remove('active');
-        }
-    }
-
-    handleCommandInput(query) {
-        const results = this.searchCommands(query);
-        this.displayCommandResults(results);
-    }
-
-    searchCommands(query) {
-        const commands = [
-            // Navigation commands
-            { icon: '📊', title: 'Go to Dashboard', desc: 'View analytics and overview', action: () => window.location.href = '/dashboard.html', shortcut: 'Alt+D' },
-            { icon: '📝', title: 'Create New Request', desc: 'Start a new procurement request', action: () => window.location.href = '/request-create.html', shortcut: 'Alt+N' },
-            { icon: '🎛️', title: 'Open Console', desc: 'Manage workflow consoles', action: () => window.location.href = '/console-list.html', shortcut: 'Alt+C' },
-            { icon: '📦', title: 'Browse Products', desc: 'View product catalog', action: () => window.location.href = '/products.html' },
-            { icon: '🏢', title: 'Find Suppliers', desc: 'Search supplier directory', action: () => window.location.href = '/suppliers.html' },
-            { icon: '🎓', title: 'Open University', desc: 'Learn platform features', action: () => window.location.href = '/university-dashboard.html', shortcut: 'Alt+U' },
-            
-            // Actions
-            { icon: '➕', title: 'Add Product', desc: 'Add new product to catalog', action: () => window.location.href = '/product-add.html' },
-            { icon: '👤', title: 'My Profile', desc: 'View and edit profile', action: () => window.location.href = '/user-profile.html' },
-            { icon: '⚙️', title: 'Settings', desc: 'Configure preferences', action: () => window.location.href = '/settings.html' },
-            { icon: '🚪', title: 'Logout', desc: 'Sign out of account', action: () => this.logout() },
-            
-            // Recent items
-            ...this.recentActions.map(action => ({
-                icon: action.icon,
-                title: action.title,
-                desc: `Recent: ${action.desc}`,
-                action: () => window.location.href = action.url
-            }))
-        ];
-
-        if (!query) return commands.slice(0, 8);
-
-        return commands.filter(cmd => 
-            cmd.title.toLowerCase().includes(query.toLowerCase()) ||
-            cmd.desc.toLowerCase().includes(query.toLowerCase())
-        ).slice(0, 10);
-    }
-
-    displayCommandResults(results) {
-        const container = document.getElementById('commandResults');
-        
-        if (results.length === 0) {
-            container.innerHTML = '<div class="command-empty">No results found</div>';
-            return;
-        }
-
-        container.innerHTML = results.map((result, index) => `
-            <div class="command-item ${index === 0 ? 'selected' : ''}" data-index="${index}">
-                <div class="command-item-icon">${result.icon}</div>
-                <div class="command-item-content">
-                    <div class="command-item-title">${result.title}</div>
-                    <div class="command-item-desc">${result.desc}</div>
-                </div>
-                ${result.shortcut ? `<span class="command-item-shortcut">${result.shortcut}</span>` : ''}
-            </div>
-        `).join('');
-
-        // Store results for execution
-        this.commandResults = results;
-    }
-
-    navigateCommandResults(direction) {
-        const items = document.querySelectorAll('.command-item');
-        const current = document.querySelector('.command-item.selected');
-        if (!current) return;
-
-        const currentIndex = parseInt(current.dataset.index);
-        const newIndex = Math.max(0, Math.min(items.length - 1, currentIndex + direction));
-
-        items.forEach(item => item.classList.remove('selected'));
-        items[newIndex].classList.add('selected');
-        items[newIndex].scrollIntoView({ block: 'nearest' });
-    }
-
-    executeSelectedCommand() {
-        const selected = document.querySelector('.command-item.selected');
-        if (!selected) return;
-
-        const index = parseInt(selected.dataset.index);
-        if (this.commandResults && this.commandResults[index]) {
-            this.commandResults[index].action();
-            this.closeCommandPalette();
-        }
-    }
 
     toggleQuickActions() {
         this.quickActionsOpen = !this.quickActionsOpen;
@@ -666,14 +529,13 @@ class ModernNavigation {
     }
 
     closeAllModals() {
-        this.closeCommandPalette();
         this.closeQuickActions();
         this.hideContextMenu();
     }
 
     initShortcuts() {
         return {
-            'cmd+k': () => this.toggleCommandPalette(),
+            'cmd+k': () => window.location.href = '/search.html',
             'alt+a': () => this.openAIAssistant(),
             'alt+n': () => window.location.href = '/request-create.html',
             'alt+s': () => this.toggleSidebar(),

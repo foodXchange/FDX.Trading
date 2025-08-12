@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - FDX Trading</title>
+    <!-- Theme Initialization (must be first) -->
+    <script src="/js/theme-init.js"></script>
     <!-- Modern UI System -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/smart-navigation.css">
+    <link rel="stylesheet" href="/css/smart-navigation.css?v=3">
     <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
         :root {
@@ -143,6 +145,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
             backdrop-filter: blur(10px);
             display: inline-flex;
             align-items: center;
@@ -197,6 +200,35 @@
             transform: scaleX(1);
         }
 
+        /* Activity Icon Backgrounds */
+        .activity-icon-primary {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: var(--primary);
+        }
+        
+        .activity-icon-success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: var(--success);
+        }
+        
+        .activity-icon-warning {
+            background: linear-gradient(135deg, #fed7aa, #fbbf24);
+            color: var(--warning);
+        }
+        
+        .activity-icon-info {
+            background: linear-gradient(135deg, #dbeafe, #93c5fd);
+            color: var(--info);
+        }
+        
+        /* Select Styling */
+        .trend-select {
+            padding: 6px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
         .quick-action-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
@@ -459,6 +491,26 @@
             color: var(--text-tertiary);
         }
 
+        /* Hidden Elements */
+        .hidden-initially {
+            display: none;
+        }
+        
+        /* Inline Link Styles */
+        .welcome-link {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .welcome-link:hover {
+            text-decoration: none;
+            opacity: 0.9;
+        }
+        
+        .quick-action-learn {
+            position: relative;
+        }
+        
         /* New User Tip */
         .new-user-tip {
             background: rgba(255,255,255,0.2);
@@ -469,6 +521,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
             backdrop-filter: blur(10px);
             animation: slideInUp 0.5s ease-out;
         }
@@ -570,11 +623,11 @@
                     <p class="welcome-subtitle">Here's what's happening with your business today</p>
                     
                     <!-- New User Tip -->
-                    <div id="newUserTip" class="new-user-tip" style="display: none;">
+                    <div id="newUserTip" class="new-user-tip hidden-initially">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                         </svg>
-                        <span>New to FDX Trading? <a href="/system-workflow.html" style="color: white; text-decoration: underline;">Understand how it works</a> or <a href="/console-introduction.html" style="color: white; text-decoration: underline;">learn the basics</a></span>
+                        <span>New to FDX Trading? <a href="/system-workflow.html" class="welcome-link">Understand how it works</a> or <a href="/console-introduction.html" class="welcome-link">learn the basics</a></span>
                     </div>
                     
                     <div class="welcome-stats">
@@ -664,7 +717,7 @@
                 <div class="quick-action-desc">Manage prices</div>
             </div>
 
-            <div class="quick-action-card" onclick="window.location.href='/university-dashboard.html'" style="position: relative;">
+            <div class="quick-action-card quick-action-learn" onclick="window.location.href='/university-dashboard.html'">
                 <div class="quick-action-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
@@ -673,7 +726,7 @@
                 </div>
                 <div class="quick-action-title">Learn</div>
                 <div class="quick-action-desc">Training center</div>
-                <div id="learnBadge" class="learn-badge" style="display: none;">NEW</div>
+                <div id="learnBadge" class="learn-badge hidden-initially">NEW</div>
             </div>
 
             <div class="quick-action-card" onclick="window.location.href='/user-profile.html'">
@@ -798,7 +851,7 @@
             </div>
             <div class="activity-timeline">
                 <div class="activity-item">
-                    <div class="activity-icon" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: var(--primary);">
+                    <div class="activity-icon activity-icon-primary">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14 2 14 8 20 8"/>
@@ -812,7 +865,7 @@
                 </div>
 
                 <div class="activity-item">
-                    <div class="activity-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: var(--success);">
+                    <div class="activity-icon activity-icon-success">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
@@ -825,7 +878,7 @@
                 </div>
 
                 <div class="activity-item">
-                    <div class="activity-icon" style="background: linear-gradient(135deg, #fed7aa, #fbbf24); color: var(--warning);">
+                    <div class="activity-icon activity-icon-warning">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                             <circle cx="12" cy="7" r="4"/>
@@ -839,7 +892,7 @@
                 </div>
 
                 <div class="activity-item">
-                    <div class="activity-icon" style="background: linear-gradient(135deg, #dbeafe, #93c5fd); color: var(--info);">
+                    <div class="activity-icon activity-icon-info">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="20" x2="18" y2="10"/>
                             <line x1="12" y1="20" x2="12" y2="4"/>
@@ -860,10 +913,10 @@
             <div class="chart-card">
                 <div class="section-header">
                     <h2 class="section-title">Request Trends</h2>
-                    <select style="padding: 6px 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px;">
-                        <option>Last 7 days</option>
-                        <option>Last 30 days</option>
-                        <option>Last 90 days</option>
+                    <select id="trendPeriodSelect" name="trendPeriod" aria-label="Select time period" title="Select time period for trends" class="trend-select">
+                        <option value="7">Last 7 days</option>
+                        <option value="30">Last 30 days</option>
+                        <option value="90">Last 90 days</option>
                     </select>
                 </div>
                 <div class="chart-placeholder">
@@ -877,8 +930,8 @@
                                   opacity="0.3"/>
                         <defs>
                             <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.5" />
-                                <stop offset="100%" style="stop-color:var(--primary);stop-opacity:0" />
+                                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.5" />
+                                <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
                             </linearGradient>
                         </defs>
                     </svg>
@@ -906,17 +959,21 @@
     </div>
 
     <!-- Load Smart Navigation -->
-    <script src="/js/smart-navigation.js"></script>
+    <script src="/js/smart-navigation.js?v=5"></script>
     
     <!-- Modern UI System -->
     <script src="/js/modern-ui.js"></script>
+    
+    <!-- Dashboard Dark Mode -->
+    <script src="/js/dashboard-dark-mode-optimized.js?v=4"></script>
     
     <!-- Page-specific JavaScript -->
     <script>
         // Load user data
         document.addEventListener('DOMContentLoaded', function() {
             const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            document.getElementById('userName').textContent = user.name || 'User';
+            // Use displayName (U.S) as configured in smart navigation
+            document.getElementById('userName').textContent = user.displayName || user.name || 'U.S';
             
             // Check if user has seen the introduction
             const hasSeenIntro = localStorage.getItem('hasSeenConsoleIntro');

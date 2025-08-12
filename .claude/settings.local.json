@@ -80,7 +80,16 @@
       "Bash(C:FDX.Tradingadd-keyboard-shortcuts.bat)",
       "Bash(wc:*)",
       "WebFetch(domain:localhost)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(if [ -f \"$file\" ])",
+      "Bash(then grep -q \"universal-dark-mode\" \"$file\")",
+      "Bash(else echo \"FILE NOT FOUND\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(find:*)",
+      "Bash(move:*)"
     ],
     "deny": []
   }

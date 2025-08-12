@@ -10,17 +10,49 @@
             padding: 0;
             box-sizing: border-box;
         }
+        
+        /* SVG Icon Styles */
+        .icon-svg {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        
+        .icon-svg-small {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .icon-svg-large {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .icon-svg-xlarge {
+            width: 32px;
+            height: 32px;
+        }
+        
+        body.dark-mode .icon-svg {
+            color: #f0f2f5;
+        }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+        }
+
+        /* Dashboard-style container alignment */
+        .main-wrapper {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.1);
@@ -256,10 +288,47 @@
         .items-table tr:hover {
             background: #f8f9fa;
         }
+        
+        /* Dark mode styles for items table */
+        body.dark-mode .items-table {
+            background: transparent;
+        }
+        
+        body.dark-mode .items-table th {
+            background: #2a2d3a;
+            color: #f0f2f5;
+            border-bottom-color: #404450;
+        }
+        
+        body.dark-mode .items-table td {
+            color: #f0f2f5;
+            border-bottom-color: #404450;
+        }
+        
+        body.dark-mode .items-table tr:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+        
+        body.dark-mode .items-table tr:hover td {
+            color: #ffffff;
+        }
+        
+        /* Ensure no header rows get hover effect */
+        body.dark-mode .items-table thead tr:hover {
+            background: #2a2d3a;
+        }
+        
+        body.dark-mode .items-table tbody tr:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
 
         .item-number {
             font-weight: 600;
             color: #667eea;
+        }
+        
+        body.dark-mode .item-number {
+            color: #818cf8;
         }
 
         .quantity-badge {
@@ -269,6 +338,12 @@
             border-radius: 15px;
             font-weight: 600;
         }
+        
+        body.dark-mode .quantity-badge {
+            background: linear-gradient(135deg, #6366f1, #818cf8);
+            color: white;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+        }
 
         .price-badge {
             background: #28a745;
@@ -276,6 +351,12 @@
             padding: 4px 12px;
             border-radius: 15px;
             font-weight: 600;
+        }
+        
+        body.dark-mode .price-badge {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
         }
 
         .loading {
@@ -372,7 +453,12 @@
         <div id="contentDiv" style="display: none;">
             <div class="header">
                 <div>
-                    <h1>📋 Request Details</h1>
+                    <h1>
+                        <svg class="icon-svg icon-svg-xlarge" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 8px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        Request Details
+                    </h1>
                     <div class="request-number" id="requestNumber"></div>
                 </div>
                 <div class="header-actions">
@@ -380,19 +466,39 @@
                         ← Back to Requests
                     </button>
                     <button id="createConsoleBtn" class="btn btn-primary" onclick="createConsole()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                        🎛️ Create Console
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="10" x2="15" y2="10"/>
+                            <line x1="9" y1="14" x2="15" y2="14"/>
+                            <line x1="12" y1="7" x2="12" y2="17"/>
+                        </svg> Create Console
                     </button>
                     <button id="editBtn" class="btn btn-primary" onclick="editRequest()">
-                        ✏️ Edit
+                        <svg class="icon-svg icon-svg-small" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 4px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Edit
                     </button>
                     <button id="duplicateBtn" class="btn btn-info" onclick="duplicateRequest()">
-                        📋 Duplicate
+                        <svg class="icon-svg icon-svg-small" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 4px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Duplicate
                     </button>
                     <button id="archiveBtn" class="btn btn-archive" onclick="archiveRequest()">
-                        📁 Archive
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="21 8 21 21 3 21 3 8"/>
+                            <rect x="1" y="3" width="22" height="5"/>
+                            <line x1="10" y1="12" x2="14" y2="12"/>
+                        </svg> Archive
                     </button>
                     <button id="deleteBtn" class="btn btn-danger" onclick="deleteRequestPermanently()">
-                        🗑️ Delete
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <line x1="10" y1="11" x2="10" y2="17"/>
+                            <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg> Delete
                     </button>
                 </div>
             </div>
@@ -419,8 +525,12 @@
                 <div class="info-section">
                     <h2 style="display: flex; justify-content: space-between; align-items: center;">
                         Request Information
-                        <button onclick="toggleMasterEdit()" id="masterEditBtn" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;">
-                            ✏️ Edit All
+                        <button onclick="toggleMasterEdit()" id="masterEditBtn" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;" title="Ctrl+E">
+                            <svg class="icon-svg icon-svg-small" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 4px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Edit All
+                            <span style="font-size: 11px; opacity: 0.8; margin-left: 5px;">(Ctrl+E)</span>
                         </button>
                     </h2>
                     <div class="info-grid">
@@ -430,14 +540,24 @@
                             <input type="text" id="editRequestTitle" class="edit-input" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;" />
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Buyer</span>
-                            <span class="info-value" id="buyerName"></span>
-                            <input type="text" id="editBuyerName" class="edit-input" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;" />
-                        </div>
-                        <div class="info-item">
                             <span class="info-label">Company</span>
                             <span class="info-value" id="buyerCompany"></span>
-                            <input type="text" id="editBuyerCompany" class="edit-input" style="display: none; width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px;" />
+                            <div style="display: none;" class="edit-wrapper" id="editBuyerCompanyWrapper">
+                                <select id="editBuyerCompany" class="edit-input" style="width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; cursor: pointer;">
+                                    <option value="">Select a company...</option>
+                                </select>
+                                <div class="dropdown-helper">Select from existing buyer companies only</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Buyer Contact</span>
+                            <span class="info-value" id="buyerName"></span>
+                            <div style="display: none;" class="edit-wrapper" id="editBuyerNameWrapper">
+                                <select id="editBuyerName" class="edit-input" style="width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; cursor: pointer;" disabled>
+                                    <option value="">Select company first...</option>
+                                </select>
+                                <div class="dropdown-helper">Contact must be from selected company</div>
+                            </div>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Created Date</span>
@@ -498,7 +618,9 @@
                             <!-- Free From Field -->
                             <div class="info-item" style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #f0f0f5;">
                                 <span class="info-label" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                                    <span style="font-size: 20px;">⚠️</span>
+                                    <svg class="icon-svg icon-svg-large" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #f59e0b;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
                                     <span style="font-weight: 600; color: #4a5568;">Allergen & Ingredient Restrictions</span>
                                 </span>
                                 <div class="info-value" id="freeFromDisplay" style="padding: 8px 0; min-height: 32px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
@@ -606,7 +728,9 @@
                     <div class="subsection" style="margin-top: 25px; background: white; border-radius: 12px; padding: 20px; border: 1px solid #e8e8f0;">
                         <h3 style="font-size: 1.1rem; color: #495057; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 20px;">🌍</span>
+                                <svg class="icon-svg icon-svg-large" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
                                 Sourcing Location Preferences
                             </div>
                             <!-- Edit button removed - now controlled by master edit -->
@@ -650,7 +774,11 @@
                     <h2 style="display: flex; justify-content: space-between; align-items: center;">
                         Request Items
                         <button onclick="addNewItem()" id="addItemBtn" class="btn btn-success" style="display: none; padding: 6px 12px; font-size: 13px;">
-                            ➕ Add Item
+                            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg> Add Item
                         </button>
                     </h2>
                     <table class="items-table">
@@ -671,8 +799,19 @@
 
                 <!-- Master Save/Cancel buttons for editing -->
                 <div id="masterEditActions" style="display: none; margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); border: 2px solid #667eea; border-radius: 10px; text-align: center;">
-                    <button onclick="cancelMasterEdit()" class="btn btn-secondary" style="margin-right: 10px; padding: 10px 20px;">Cancel</button>
-                    <button onclick="saveMasterEdit()" class="btn btn-primary" style="padding: 10px 20px;">💾 Save All Changes</button>
+                    <button onclick="cancelMasterEdit()" class="btn btn-secondary" style="margin-right: 10px; padding: 10px 20px;" title="ESC">
+                        Cancel <span style="font-size: 11px; opacity: 0.8;">(ESC)</span>
+                    </button>
+                    <button onclick="saveMasterEdit()" class="btn btn-primary" style="padding: 10px 20px;" title="Ctrl+S">
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg> Save All Changes <span style="font-size: 11px; opacity: 0.8;">(Ctrl+S)</span>
+                    </button>
+                    <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                        💡 Tip: Use keyboard shortcuts for faster editing
+                    </div>
                 </div>
 
                 <div class="timeline-section" id="timelineSection">
@@ -764,28 +903,47 @@
             if (request.status === 0) { // Draft
                 statusActions.innerHTML = `
                     <button class="btn btn-success" onclick="changeStatus(1)">
-                        ✅ Publish Request
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg> Publish Request
                     </button>
                     <button class="btn btn-danger" onclick="deleteRequest()">
-                        🗑️ Delete
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <line x1="10" y1="11" x2="10" y2="17"/>
+                            <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg> Delete
                     </button>
                 `;
             } else if (request.status === 1) { // Active
                 statusActions.innerHTML = `
                     <button class="btn btn-danger" onclick="changeStatus(2)">
-                        ❌ Close Request
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg> Close Request
                     </button>
                 `;
             } else if (request.status === 2) { // Closed
                 statusActions.innerHTML = `
                     <button class="btn btn-warning" onclick="changeStatus(1)">
-                        🔄 Reopen Request
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg> Reopen Request
                     </button>
                 `;
             } else if (request.status === 3) { // Archived
                 statusActions.innerHTML = `
                     <button class="btn btn-warning" onclick="changeStatus(1)">
-                        🔄 Restore to Active
+                        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg> Restore to Active
                     </button>
                 `;
             }
@@ -1047,12 +1205,89 @@
             }
         }
         
+        // Load buyer companies from database
+        async function loadBuyerCompanies() {
+            try {
+                const response = await fetch('/api/users/buyers/companies');
+                if (response.ok) {
+                    const companies = await response.json();
+                    const companySelect = document.getElementById('editBuyerCompany');
+                    
+                    // Clear existing options
+                    companySelect.innerHTML = '<option value="">Select a company...</option>';
+                    
+                    // Add companies as options
+                    companies.forEach(company => {
+                        const option = document.createElement('option');
+                        option.value = company.companyName;
+                        option.textContent = company.companyName;
+                        if (company.country) {
+                            option.textContent += ` (${company.country})`;
+                        }
+                        option.setAttribute('data-company-id', company.id);
+                        companySelect.appendChild(option);
+                    });
+                    
+                    // Set current value if exists
+                    if (currentRequest.buyerCompany) {
+                        companySelect.value = currentRequest.buyerCompany;
+                        // Load contacts for this company
+                        await loadContactsForCompany(currentRequest.buyerCompany);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading buyer companies:', error);
+            }
+        }
+        
+        // Load contacts for selected company
+        async function loadContactsForCompany(companyName) {
+            if (!companyName) {
+                const contactSelect = document.getElementById('editBuyerName');
+                contactSelect.innerHTML = '<option value="">Select company first...</option>';
+                contactSelect.disabled = true;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/users/buyers/contacts?company=${encodeURIComponent(companyName)}`);
+                if (response.ok) {
+                    const contacts = await response.json();
+                    const contactSelect = document.getElementById('editBuyerName');
+                    
+                    // Clear existing options
+                    contactSelect.innerHTML = '<option value="">Select a contact...</option>';
+                    contactSelect.disabled = false;
+                    
+                    // Add contacts as options
+                    contacts.forEach(contact => {
+                        const option = document.createElement('option');
+                        const displayName = `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || contact.email;
+                        option.value = displayName;
+                        option.textContent = displayName;
+                        if (contact.role) {
+                            option.textContent += ` - ${contact.role}`;
+                        }
+                        option.setAttribute('data-contact-id', contact.id);
+                        contactSelect.appendChild(option);
+                    });
+                    
+                    // Set current value if exists
+                    if (currentRequest.buyerName) {
+                        contactSelect.value = currentRequest.buyerName;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading contacts:', error);
+            }
+        }
+
         function enterEditMode() {
             isInEditMode = true;
             originalRequestData = JSON.parse(JSON.stringify(currentRequest)); // Deep clone
             
             // Change button text
-            document.getElementById('masterEditBtn').innerHTML = '✓ Done Editing';
+            document.getElementById('masterEditBtn').innerHTML = '✓ Done Editing <span style="font-size: 11px; opacity: 0.8; margin-left: 5px;">(Ctrl+S)</span>';
             document.getElementById('masterEditBtn').className = 'btn btn-success';
             
             // Show save/cancel buttons
@@ -1066,13 +1301,20 @@
             document.getElementById('editRequestTitle').style.display = 'block';
             document.getElementById('editRequestTitle').value = currentRequest.title || '';
             
-            document.getElementById('buyerName').style.display = 'none';
-            document.getElementById('editBuyerName').style.display = 'block';
-            document.getElementById('editBuyerName').value = currentRequest.buyerName || '';
-            
+            // Load companies and setup company/buyer dropdowns
             document.getElementById('buyerCompany').style.display = 'none';
-            document.getElementById('editBuyerCompany').style.display = 'block';
-            document.getElementById('editBuyerCompany').value = currentRequest.buyerCompany || '';
+            document.getElementById('editBuyerCompanyWrapper').style.display = 'block';
+            
+            document.getElementById('buyerName').style.display = 'none';
+            document.getElementById('editBuyerNameWrapper').style.display = 'block';
+            
+            // Load buyer companies and set up change handler
+            loadBuyerCompanies();
+            
+            // Add change handler for company selection
+            document.getElementById('editBuyerCompany').onchange = function() {
+                loadContactsForCompany(this.value);
+            };
             
             document.getElementById('requestDescription').style.display = 'none';
             document.getElementById('editRequestDescription').style.display = 'block';
@@ -1089,7 +1331,7 @@
             isInEditMode = false;
             
             // Change button text back
-            document.getElementById('masterEditBtn').innerHTML = '✏️ Edit All';
+            document.getElementById('masterEditBtn').innerHTML = '✏️ Edit All <span style="font-size: 11px; opacity: 0.8; margin-left: 5px;">(Ctrl+E)</span>';
             document.getElementById('masterEditBtn').className = 'btn btn-primary';
             
             // Hide save/cancel buttons
@@ -1103,10 +1345,10 @@
             document.getElementById('editRequestTitle').style.display = 'none';
             
             document.getElementById('buyerName').style.display = 'block';
-            document.getElementById('editBuyerName').style.display = 'none';
+            document.getElementById('editBuyerNameWrapper').style.display = 'none';
             
             document.getElementById('buyerCompany').style.display = 'block';
-            document.getElementById('editBuyerCompany').style.display = 'none';
+            document.getElementById('editBuyerCompanyWrapper').style.display = 'none';
             
             document.getElementById('requestDescription').style.display = 'block';
             document.getElementById('editRequestDescription').style.display = 'none';
@@ -1130,11 +1372,27 @@
         }
         
         async function saveMasterEdit() {
+            // Validate company and buyer selection
+            const companyValue = document.getElementById('editBuyerCompany').value;
+            const buyerValue = document.getElementById('editBuyerName').value;
+            
+            if (!companyValue) {
+                alert('Please select a company from the dropdown. Free text is not allowed.');
+                document.getElementById('editBuyerCompany').focus();
+                return;
+            }
+            
+            if (!buyerValue) {
+                alert('Please select a buyer contact from the dropdown. The contact must be associated with the selected company.');
+                document.getElementById('editBuyerName').focus();
+                return;
+            }
+            
             // Collect all data
             const updateData = {
                 title: document.getElementById('editRequestTitle').value,
-                buyerName: document.getElementById('editBuyerName').value,
-                buyerCompany: document.getElementById('editBuyerCompany').value,
+                buyerName: buyerValue,
+                buyerCompany: companyValue,
                 description: document.getElementById('editRequestDescription').value,
                 items: collectItemsData(),
                 // Product specifications
@@ -2185,6 +2443,60 @@
                 alert('Failed to close request');
             }
         }
+        
+        // Keyboard shortcuts for edit mode
+        document.addEventListener('keydown', function(event) {
+            // ESC key to exit edit mode
+            if (event.key === 'Escape' || event.keyCode === 27) {
+                if (isInEditMode) {
+                    event.preventDefault();
+                    cancelMasterEdit();
+                }
+                // Also close modals if open
+                const closeModal = document.getElementById('closeRequestModal');
+                if (closeModal && closeModal.style.display === 'flex') {
+                    cancelCloseRequest();
+                }
+            }
+            
+            // Ctrl+S or Cmd+S to save
+            if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+                if (isInEditMode) {
+                    event.preventDefault();
+                    saveMasterEdit();
+                }
+            }
+            
+            // Ctrl+E or Cmd+E to enter edit mode
+            if ((event.ctrlKey || event.metaKey) && event.key === 'e') {
+                if (!isInEditMode) {
+                    event.preventDefault();
+                    const editBtn = document.getElementById('masterEditBtn');
+                    if (editBtn && editBtn.style.display !== 'none') {
+                        toggleMasterEdit();
+                    }
+                }
+            }
+        });
+        
+        // Add visual feedback for keyboard shortcuts
+        window.addEventListener('load', function() {
+            // Add tooltips to buttons
+            const editBtn = document.getElementById('masterEditBtn');
+            if (editBtn) {
+                editBtn.title = 'Edit All (Ctrl+E)';
+            }
+            
+            const saveBtn = document.querySelector('[onclick="saveMasterEdit()"]');
+            if (saveBtn) {
+                saveBtn.title = 'Save Changes (Ctrl+S)';
+            }
+            
+            const cancelBtn = document.querySelector('[onclick="cancelMasterEdit()"]');
+            if (cancelBtn) {
+                cancelBtn.title = 'Cancel (ESC)';
+            }
+        });
     </script>
 
     <!-- Close Request Modal -->
@@ -2250,9 +2562,44 @@
             background: #f0f4ff;
             border-color: #667eea !important;
         }
+        
+        /* Enhanced dropdown styling for company/buyer selection */
+        select#editBuyerCompany,
+        select#editBuyerName {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        
+        select#editBuyerCompany:focus,
+        select#editBuyerName:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        select#editBuyerName:disabled {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        /* Helper text styling */
+        .dropdown-helper {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
     </style>
     
     <!-- Global Keyboard Shortcuts -->
     <script src="/js/keyboard-shortcuts.js"></script>
+    <script src="/js/universal-dark-mode-styles.js"></script>
 </body>
 </html>

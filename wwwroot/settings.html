@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - FDX Trading</title>
+    <!-- Theme Initialization (must be first) -->
+    <script src="/js/theme-init.js"></script>
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
+    <style>
+        /* Dashboard-style alignment and spacing */
+        .settings-container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: white;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-mode .page-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        }
+        
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        /* Settings Navigation */
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+        
+        .settings-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            height: fit-content;
+            position: sticky;
+            top: 24px;
+        }
+        
+        body.dark-mode .settings-nav {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            color: #4b5563;
+            text-decoration: none;
+        }
+        
+        body.dark-mode .settings-nav-item {
+            color: #a0a6b0;
+        }
+        
+        .settings-nav-item:hover {
+            background: #f3f4f6;
+            color: #6366f1;
+        }
+        
+        body.dark-mode .settings-nav-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+        }
+        
+        .settings-nav-item.active {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+        
+        .settings-nav-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        
+        /* Settings Content */
+        .settings-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        body.dark-mode .settings-content {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .settings-section {
+            margin-bottom: 48px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        body.dark-mode .section-title {
+            color: #ffffff;
+        }
+        
+        .section-description {
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+        
+        body.dark-mode .section-description {
+            color: #94a3b8;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        body.dark-mode .form-label {
+            color: #b8bdc6;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: white;
+            color: #1f2937;
+        }
+        
+        body.dark-mode .form-input {
+            background: #2a2d3a;
+            border-color: #404450;
+            color: #f0f2f5;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            color: #1f2937;
+            cursor: pointer;
+        }
+        
+        body.dark-mode .form-select {
+            background: #2a2d3a;
+            border-color: #404450;
+            color: #f0f2f5;
+        }
+        
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        body.dark-mode .toggle-group {
+            border-bottom-color: #404450;
+        }
+        
+        .toggle-label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .toggle-title {
+            font-weight: 500;
+            color: #1f2937;
+        }
+        
+        body.dark-mode .toggle-title {
+            color: #f0f2f5;
+        }
+        
+        .toggle-description {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        body.dark-mode .toggle-description {
+            color: #94a3b8;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #d1d5db;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background: #6366f1;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+        
+        body.dark-mode .btn-secondary {
+            background: #2a2d3a;
+            color: #b8bdc6;
+            border-color: #404450;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        
+        body.dark-mode .btn-secondary:hover {
+            background: #32374a;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        
+        /* Color Picker Grid */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .color-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-option.selected {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        /* API Key Section */
+        .api-key-container {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        body.dark-mode .api-key-container {
+            background: #252832;
+            border-color: #404450;
+        }
+        
+        .api-key-display {
+            font-family: monospace;
+            font-size: 14px;
+            color: #6b7280;
+            word-break: break-all;
+        }
+        
+        body.dark-mode .api-key-display {
+            color: #94a3b8;
+        }
+        
+        /* Alert Box */
+        .alert {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        body.dark-mode .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border-color: #3b82f6;
+        }
+        
+        .alert-warning {
+            background: #fed7aa;
+            color: #92400e;
+            border: 1px solid #fb923c;
+        }
+        
+        body.dark-mode .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #fbbf24;
+            border-color: #f59e0b;
+        }
+        
+        /* Responsive */
+        @media (max-width: 968px) {
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-nav {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Settings</h1>
+            <p class="page-subtitle">Manage your account and system preferences</p>
+        </div>
+        
+        <!-- Settings Layout -->
+        <div class="settings-layout">
+            <!-- Settings Navigation -->
+            <nav class="settings-nav">
+                <a href="#profile" class="settings-nav-item active" onclick="showSection('profile', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>Profile</span>
+                </a>
+                <a href="#security" class="settings-nav-item" onclick="showSection('security', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span>Security</span>
+                </a>
+                <a href="#notifications" class="settings-nav-item" onclick="showSection('notifications', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span>Notifications</span>
+                </a>
+                <a href="#company" class="settings-nav-item" onclick="showSection('company', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <span>Company</span>
+                </a>
+                <a href="#approvals" class="settings-nav-item" onclick="showSection('approvals', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Approvals</span>
+                </a>
+                <a href="#integrations" class="settings-nav-item" onclick="showSection('integrations', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+                    </svg>
+                    <span>Integrations</span>
+                </a>
+                <a href="#appearance" class="settings-nav-item" onclick="showSection('appearance', this)">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                    </svg>
+                    <span>Appearance</span>
+                </a>
+            </nav>
+            
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Profile Section -->
+                <div id="profile-section" class="settings-section">
+                    <h2 class="section-title">Profile Settings</h2>
+                    <p class="section-description">Update your personal information and preferences</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" value="John Doe" placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" value="john.doe@fdxtrading.com" placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-input" value="+1 (555) 123-4567" placeholder="Enter your phone number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <select class="form-select">
+                            <option>Procurement</option>
+                            <option>Finance</option>
+                            <option>Operations</option>
+                            <option>Administration</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Timezone</label>
+                        <select class="form-select">
+                            <option>Eastern Time (UTC-5)</option>
+                            <option>Central Time (UTC-6)</option>
+                            <option>Mountain Time (UTC-7)</option>
+                            <option>Pacific Time (UTC-8)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary">Save Changes</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- Security Section -->
+                <div id="security-section" class="settings-section" style="display: none;">
+                    <h2 class="section-title">Security Settings</h2>
+                    <p class="section-description">Manage your password and security preferences</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Security Tip:</strong> Use a strong password and enable two-factor authentication for maximum security.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-input" placeholder="Enter current password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-input" placeholder="Enter new password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-input" placeholder="Confirm new password">
+                    </div>
+                    
+                    <h3 class="section-title" style="font-size: 18px; margin-top: 32px;">Two-Factor Authentication</h3>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Enable 2FA</span>
+                            <span class="toggle-description">Add an extra layer of security to your account</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">SMS Authentication</span>
+                            <span class="toggle-description">Receive codes via SMS</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary">Update Password</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- Notifications Section -->
+                <div id="notifications-section" class="settings-section" style="display: none;">
+                    <h2 class="section-title">Notification Preferences</h2>
+                    <p class="section-description">Choose how you want to be notified</p>
+                    
+                    <h3 class="section-title" style="font-size: 18px;">Email Notifications</h3>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Request Updates</span>
+                            <span class="toggle-description">Get notified when your requests are updated</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Approval Required</span>
+                            <span class="toggle-description">Notify when items need your approval</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Weekly Summary</span>
+                            <span class="toggle-description">Receive weekly procurement summary</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Price Alerts</span>
+                            <span class="toggle-description">Get notified of significant price changes</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary">Save Preferences</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- Company Section -->
+                <div id="company-section" class="settings-section" style="display: none;">
+                    <h2 class="section-title">Company Settings</h2>
+                    <p class="section-description">Configure organization-wide settings</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-input" value="FDX Trading Corporation" placeholder="Enter company name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tax ID / EIN</label>
+                        <input type="text" class="form-input" value="12-3456789" placeholder="Enter tax identification number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fiscal Year Start</label>
+                        <select class="form-select">
+                            <option>January</option>
+                            <option>April</option>
+                            <option>July</option>
+                            <option>October</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Default Currency</label>
+                        <select class="form-select">
+                            <option>USD - US Dollar</option>
+                            <option>EUR - Euro</option>
+                            <option>GBP - British Pound</option>
+                            <option>CAD - Canadian Dollar</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Headquarters Address</label>
+                        <textarea class="form-input" rows="3" placeholder="Enter company address">123 Business Avenue
+New York, NY 10001
+United States</textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary">Save Company Settings</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- Approvals Section -->
+                <div id="approvals-section" class="settings-section" style="display: none;">
+                    <h2 class="section-title">Approval Workflows</h2>
+                    <p class="section-description">Configure approval chains and thresholds</p>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Note:</strong> Changes to approval workflows will affect all pending requests.
+                    </div>
+                    
+                    <h3 class="section-title" style="font-size: 18px;">Approval Thresholds</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Level 1 Approval (Up to)</label>
+                        <input type="number" class="form-input" value="5000" placeholder="Enter amount">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Level 2 Approval (Up to)</label>
+                        <input type="number" class="form-input" value="25000" placeholder="Enter amount">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Executive Approval (Above)</label>
+                        <input type="number" class="form-input" value="25000" placeholder="Enter amount">
+                    </div>
+                    
+                    <h3 class="section-title" style="font-size: 18px; margin-top: 32px;">Auto-Approval Rules</h3>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Auto-approve recurring orders</span>
+                            <span class="toggle-description">Automatically approve orders from pre-approved suppliers</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Skip approval for low-value items</span>
+                            <span class="toggle-description">Items under $100 bypass approval</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary">Save Workflow Settings</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- Integrations Section -->
+                <div id="integrations-section" class="settings-section" style="display: none;">
+                    <h2 class="section-title">Integrations</h2>
+                    <p class="section-description">Connect with external services and APIs</p>
+                    
+                    <h3 class="section-title" style="font-size: 18px;">API Configuration</h3>
+                    
+                    <div class="api-key-container">
+                        <div class="form-label">API Key</div>
+                        <div class="api-key-display">fdx_live_sk_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6</div>
+                        <div class="button-group" style="margin-top: 12px;">
+                            <button class="btn btn-secondary">Regenerate Key</button>
+                            <button class="btn btn-secondary">Copy</button>
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title" style="font-size: 18px; margin-top: 32px;">Connected Services</h3>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">QuickBooks Integration</span>
+                            <span class="toggle-description">Sync invoices and payments</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Slack Notifications</span>
+                            <span class="toggle-description">Send updates to Slack channels</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Google Workspace</span>
+                            <span class="toggle-description">Sync with Google Sheets and Drive</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary">Save Integration Settings</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                
+                <!-- Appearance Section -->
+                <div id="appearance-section" class="settings-section" style="display: none;">
+                    <h2 class="section-title">Appearance</h2>
+                    <p class="section-description">Customize the look and feel of your workspace</p>
+                    
+                    <h3 class="section-title" style="font-size: 18px;">Theme</h3>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Dark Mode</span>
+                            <span class="toggle-description">Use dark theme for reduced eye strain</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <h3 class="section-title" style="font-size: 18px; margin-top: 32px;">Accent Color</h3>
+                    
+                    <div class="color-grid">
+                        <div class="color-option selected" style="background: #6366f1;" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #ec4899;" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #10b981;" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #f59e0b;" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #ef4444;" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #3b82f6;" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #8b5cf6;" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #06b6d4;" onclick="selectColor(this)"></div>
+                    </div>
+                    
+                    <h3 class="section-title" style="font-size: 18px; margin-top: 32px;">Display Options</h3>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Compact View</span>
+                            <span class="toggle-description">Show more content with reduced spacing</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-label">
+                            <span class="toggle-title">Show Animations</span>
+                            <span class="toggle-description">Enable interface animations and transitions</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary">Save Appearance Settings</button>
+                        <button class="btn btn-secondary">Reset to Default</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Section Navigation
+        function showSection(sectionId, element) {
+            // Hide all sections
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId + '-section').style.display = 'block';
+            
+            // Update nav active state
+            document.querySelectorAll('.settings-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+        
+        // Color Selection
+        function selectColor(element) {
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+        
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('change', function(e) {
+            if (e.target.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('dashboardTheme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('dashboardTheme', 'light');
+            }
+        });
+        
+        // Check current theme
+        if (localStorage.getItem('dashboardTheme') === 'dark') {
+            document.getElementById('darkModeToggle').checked = true;
+        }
+    </script>
+    
+    <!-- Initialize theme and navigation -->
+    <script src="/js/universal-dark-mode-styles.js"></script>
+    <script src="/js/smart-navigation.js"></script>
+</body>
+</html>

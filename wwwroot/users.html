@@ -3,2364 +3,887 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FDX Trading - Users Management</title>
+    <title>Users Management - FDX Trading</title>
+    <!-- Theme Initialization (must be first) -->
+    <script src="/js/theme-init.js"></script>
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css?v=3">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            /* Modern Color Palette */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --secondary-light: #f472b6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Grays */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Backgrounds */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            
+            /* Text colors */
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --text-on-primary: #ffffff;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+
+        /* Dashboard-style container */
+        .users-container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
         }
-        
-        .container {
-            max-width: 1400px;
-            margin: 20px auto 0;
-            background: white;
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 30px;
+            padding: 32px;
+            color: var(--text-on-primary);
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
         }
-        
-        /* Mobile styles */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                padding: 15px;
-                border-radius: 15px;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .user-info {
-                flex-direction: column;
-                width: 100%;
-            }
-            
-            h1 {
-                font-size: 24px !important;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            
-            .stat-card {
-                padding: 15px;
-            }
-            
-            .stat-value {
-                font-size: 24px !important;
-            }
-            
-            .controls {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .search-box {
-                max-width: 100%;
-                width: 100%;
-            }
-            
-            .filters {
-                flex-wrap: wrap;
-                justify-content: center;
-                width: 100%;
-            }
-            
-            .filter-btn {
-                padding: 8px 15px;
-                font-size: 12px;
-            }
-            
-            .import-btn {
-                width: 100%;
-                padding: 12px;
-            }
-            
-            /* Make table scrollable on mobile */
-            #usersContainer {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .users-table {
-                min-width: 800px;
-            }
-            
-            .modal-content {
-                width: 95% !important;
-                max-width: 95% !important;
-                padding: 20px !important;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
         }
-        
-        /* Tablet styles */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                padding: 25px;
-            }
-            
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .controls {
-                flex-wrap: wrap;
-            }
-            
-            #usersContainer {
-                overflow-x: auto;
-            }
-            
-            .users-table {
-                min-width: 900px;
-            }
-        }
-        
-        /* Small desktop */
-        @media (min-width: 1025px) and (max-width: 1280px) {
-            .container {
-                max-width: 95%;
-            }
-        }
-        
-        .header {
+
+        .header-content {
+            position: relative;
+            z-index: 1;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        h1 {
-            color: #333;
-            font-size: 32px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 20px;
         }
-        
-        .logout-btn {
-            padding: 10px 20px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
-        
-        .stats {
+
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
-        
+
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.3s;
+        }
+
+        body.dark-mode .stat-card {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
         }
-        
+
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
         .stat-value {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
         }
-        
+
         .stat-label {
             font-size: 14px;
-            opacity: 0.9;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+            font-weight: 500;
         }
-        
+
+        /* Controls Section */
+        .controls-section {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
+        }
+
+        body.dark-mode .controls-section {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
         .controls {
             display: flex;
-            justify-content: space-between;
+            gap: 16px;
             align-items: center;
-            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
         }
-        
+
         .search-box {
             flex: 1;
-            max-width: 400px;
+            min-width: 300px;
+            position: relative;
         }
-        
+
         .search-box input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--gray-300);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s;
         }
-        
+
+        body.dark-mode .search-box input {
+            background: var(--bg-secondary);
+            border-color: var(--gray-600);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--text-tertiary);
+        }
+
         .filters {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        
+
         .filter-btn {
-            padding: 10px 20px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            padding: 8px 16px;
+            border: 1px solid var(--gray-300);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
             border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
-        
+
+        body.dark-mode .filter-btn {
+            background: var(--bg-secondary);
+            border-color: var(--gray-600);
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
         .filter-btn.active {
-            background: #667eea;
+            background: var(--primary);
             color: white;
+            border-color: var(--primary);
         }
-        
+
         .import-btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
         }
-        
+
+        .import-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Users Table */
+        .users-table-container {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            overflow-x: auto;
+        }
+
+        body.dark-mode .users-table-container {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
         .users-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
-        
+
+        .users-table thead {
+            background: var(--bg-tertiary);
+        }
+
+        body.dark-mode .users-table thead {
+            background: var(--bg-secondary);
+        }
+
         .users-table th {
-            background: #f8f9fa;
-            padding: 15px;
+            padding: 12px 16px;
             text-align: left;
+            font-size: 12px;
             font-weight: 600;
-            color: #555;
-            border-bottom: 2px solid #dee2e6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--gray-200);
         }
-        
+
+        body.dark-mode .users-table th {
+            border-bottom-color: var(--gray-700);
+        }
+
         .users-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--text-primary);
         }
-        
-        .users-table tr:hover {
-            background: #f8f9fa;
+
+        body.dark-mode .users-table td {
+            border-bottom-color: var(--gray-800);
         }
-        
-        .user-type {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .user-type.admin {
-            background: #ffc107;
-            color: #856404;
-        }
-        
-        .user-type.expert {
-            background: #17a2b8;
-            color: white;
-        }
-        
-        .user-type.buyer {
-            background: #28a745;
-            color: white;
-        }
-        
-        .user-type.supplier {
-            background: #6f42c1;
-            color: white;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status-badge.active {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-badge.inactive {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
+
+        .users-table tbody tr {
+            transition: background 0.2s;
             cursor: pointer;
-            font-size: 12px;
         }
-        
-        .action-btn.toggle {
-            background: #ffc107;
-            color: #fff;
+
+        .users-table tbody tr:hover {
+            background: var(--bg-tertiary);
         }
-        
-        .action-btn.delete {
-            background: #dc3545;
-            color: white;
+
+        body.dark-mode .users-table tbody tr:hover {
+            background: rgba(99, 102, 241, 0.08);
         }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-        
-        .empty {
-            text-align: center;
-            padding: 60px;
-            color: #999;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
         }
-        
-        .modal.active {
+
+        .user-info {
             display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
         }
-        
-        .modal-content::before {
-            content: "Press ESC to cancel";
-            position: absolute;
-            top: 10px;
-            right: 30px;
-            font-size: 11px;
-            color: #999;
-            font-style: italic;
+
+        .user-email {
+            font-size: 13px;
+            color: var(--text-tertiary);
         }
-        
-        .modal h2 {
-            margin-bottom: 20px;
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
+
+        .badge-admin {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
         }
-        
-        .modal-btn {
-            padding: 10px 20px;
+
+        .badge-buyer {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        .badge-expert {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-supplier {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: var(--success);
+        }
+
+        .status-inactive {
+            background: var(--gray-400);
+        }
+
+        .action-btn {
+            padding: 6px;
+            background: transparent;
             border: none;
-            border-radius: 8px;
+            color: var(--text-tertiary);
             cursor: pointer;
-            font-size: 14px;
+            transition: all 0.2s;
+            border-radius: 6px;
         }
-        
-        .modal-btn.confirm {
-            background: #28a745;
-            color: white;
+
+        .action-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary);
         }
-        
-        .modal-btn.cancel {
-            background: #6c757d;
-            color: white;
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
         }
-        
-        .import-results {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
         }
-        
-        .import-results h3 {
-            margin-bottom: 15px;
-            color: #333;
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
         }
-        
-        .import-detail {
-            padding: 10px;
-            margin-bottom: 10px;
-            background: white;
-            border-radius: 4px;
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f1419 0%, #1a1d24 100%);
+        }
+
+        body.dark-mode .page-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .users-container {
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 24px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .filters {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; padding: 10px 20px;">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-            <a href="/dashboard.html" style="display: flex; align-items: center; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.5rem;">
-                <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
-                <span>FDX Trading</span>
-            </a>
-            
-            <div style="display: flex; gap: 5px;">
-                <a href="/dashboard.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Dashboard</a>
-                <a href="/requests.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Requests</a>
-                <a href="/products.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
-                <a href="/supplier-catalog.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
-                <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
-                <div style="position: relative; display: inline-block;">
-                    <button onclick="toggleContactsDropdown()" style="padding: 8px 16px; color: #555; background: none; border: none; text-decoration: none; border-radius: 5px; font-weight: 500; cursor: pointer;">
-                        Contacts ▼
+    <div class="users-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <div>
+                    <h1 class="page-title">Users Management</h1>
+                    <p class="page-subtitle">Manage system users, roles, and permissions</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="exportUsers()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Export
                     </button>
-                    <div id="contactsDropdown" style="display: none; position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 5px; min-width: 150px; z-index: 1000;">
-                        <a href="#" onclick="viewContactsByType('all')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">All Contacts</a>
-                        <a href="#" onclick="viewContactsByType('buyers')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">Buyer Contacts</a>
-                        <a href="#" onclick="viewContactsByType('contractors')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">Contractor Contacts</a>
-                        <a href="#" onclick="viewContactsByType('suppliers')" style="display: block; padding: 10px 15px; color: #555; text-decoration: none; hover: background: #f8f9fa;">Supplier Contacts</a>
-                    </div>
-                </div>
-                <a href="/users.html" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
-            </div>
-            
-            <div class="navbar-user" style="display: flex; align-items: center; gap: 10px;">
-                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
-                    <div class="user-info" style="cursor: pointer;">
-                        <div class="user-avatar-small" id="navUserAvatar" style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">U</div>
-                    </div>
-                </a>
-                <button class="logout-btn" onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; margin-left: 15px;">Logout</button>
-            </div>
-        </div>
-    </nav>
-    
-    <div class="container">
-        <div class="header">
-            <h1>Users Management</h1>
-            <div class="user-info">
-                <span>Logged in as: <strong id="currentUser">Admin</strong></span>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-        </div>
-        
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value" id="totalUsers">0</div>
-                <div class="stat-label">Total Users</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="totalBuyers">0</div>
-                <div class="stat-label">Buyers</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="totalExperts">0</div>
-                <div class="stat-label">Experts/Contractors</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="totalSuppliers">0</div>
-                <div class="stat-label">Suppliers</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="activeUsers">0</div>
-                <div class="stat-label">Active Users</div>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search by name, email, or company..." onkeyup="filterUsers()">
-            </div>
-            <div class="filters">
-                <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
-                <button class="filter-btn" onclick="setFilter('admin', this)">Admins</button>
-                <button class="filter-btn" onclick="setFilter('buyer', this)">Buyers</button>
-                <button class="filter-btn" onclick="setFilter('expert', this)">Experts</button>
-                <button class="filter-btn" onclick="setFilter('supplier', this)">Suppliers</button>
-                <button class="filter-btn" onclick="setFilter('active', this)">Active</button>
-            </div>
-            <button class="import-btn" onclick="importUsers()">Import CSV Files</button>
-        </div>
-        
-        <div id="usersContainer">
-            <div class="loading">Loading users...</div>
-        </div>
-    </div>
-    
-    <div class="modal" id="userProfileModal">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
-            <h2>User Profile</h2>
-            <form id="userProfileForm">
-                <input type="hidden" id="profileUserId">
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
-                    <!-- Basic Information -->
-                    <div style="grid-column: span 2;">
-                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">Basic Information</h3>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Username</label>
-                        <input type="text" id="profileUsername" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
-                        <input type="email" id="profileEmail" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Display Name</label>
-                        <input type="text" id="profileDisplayName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Company Name</label>
-                        <input type="text" id="profileCompanyName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">User Type</label>
-                        <select id="profileType" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="0">Admin</option>
-                            <option value="1">Expert/Contractor</option>
-                            <option value="2">Buyer</option>
-                            <option value="3">Supplier</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Status</label>
-                        <select id="profileIsActive" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="true">Active</option>
-                            <option value="false">Inactive</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Contact Information -->
-                    <div style="grid-column: span 2; margin-top: 20px;">
-                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">Contact Information</h3>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone Number</label>
-                        <input type="tel" id="profilePhoneNumber" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="+1 234 567 8900">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Country</label>
-                        <input type="text" id="profileCountry" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="updatePhoneAreaCode(this.value)" placeholder="e.g., USA, UK, Israel">
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Address</label>
-                        <textarea id="profileAddress" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" rows="2"></textarea>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Website</label>
-                        <input type="url" id="profileWebsite" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Alternate Emails</label>
-                        <input type="text" id="profileAlternateEmails" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="email1, email2">
-                    </div>
-                    
-                    <!-- Business Information -->
-                    <div style="grid-column: span 2; margin-top: 20px;">
-                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">Business Information</h3>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Category</label>
-                        <input type="text" id="profileCategory" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Business Type</label>
-                        <input type="text" id="profileBusinessType" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Sub Categories</label>
-                        <input type="text" id="profileSubCategories" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="category1, category2">
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Full Description</label>
-                        <textarea id="profileFullDescription" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" rows="3"></textarea>
-                    </div>
-                    
-                    <!-- System Information -->
-                    <div style="grid-column: span 2; margin-top: 20px;">
-                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px;">System Information</h3>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Requires Password Change</label>
-                        <select id="profileRequiresPasswordChange" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Data Complete</label>
-                        <select id="profileDataComplete" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Verification</label>
-                        <select id="profileVerification" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="0">Not Verified</option>
-                            <option value="1">Email Verified</option>
-                            <option value="2">Phone Verified</option>
-                            <option value="3">Fully Verified</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Last Login</label>
-                        <input type="text" id="profileLastLogin" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Created At</label>
-                        <input type="text" id="profileCreatedAt" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Imported At</label>
-                        <input type="text" id="profileImportedAt" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Import Notes</label>
-                        <textarea id="profileImportNotes" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" rows="2"></textarea>
-                    </div>
-                </div>
-                
-                <div class="modal-buttons" style="margin-top: 20px;">
-                    <button type="button" class="modal-btn" style="background: #6c757d; color: white;" onclick="resetPassword()">Reset Password</button>
-                    <button type="submit" class="modal-btn confirm">Save Changes</button>
-                    <button type="button" class="modal-btn cancel" onclick="closeProfileModal()">Cancel</button>
-                </div>
-            </form>
-            
-            <!-- Organization Contacts Section - Outside the form -->
-            <div style="margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #667eea; padding-bottom: 5px;">
-                    <h3 style="color: #667eea; margin: 0;">Organization Contacts</h3>
-                    <button type="button" onclick="addNewContact()" style="padding: 6px 16px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500;">
-                        + Add Contact
+                    <button class="btn btn-primary" onclick="openAddUserModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="8.5" cy="7" r="4"/>
+                            <line x1="20" y1="8" x2="20" y2="14"/>
+                            <line x1="23" y1="11" x2="17" y2="11"/>
+                        </svg>
+                        Add User
                     </button>
                 </div>
-                <div id="profileContactsList" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin-top: 15px;">
-                    <div class="loading" style="text-align: center; color: #999;">Loading contacts...</div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="activeUsers">0</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="adminUsers">0</div>
+                    <div class="stat-label">Administrators</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="buyerUsers">0</div>
+                    <div class="stat-label">Buyers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-section">
+            <div class="controls">
+                <div class="search-box">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search by name, email, or company..." onkeyup="filterUsers()">
+                </div>
+                <div class="filters">
+                    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+                    <button class="filter-btn" onclick="setFilter('admin', this)">Admins</button>
+                    <button class="filter-btn" onclick="setFilter('buyer', this)">Buyers</button>
+                    <button class="filter-btn" onclick="setFilter('expert', this)">Experts</button>
+                    <button class="filter-btn" onclick="setFilter('supplier', this)">Suppliers</button>
+                    <button class="filter-btn" onclick="setFilter('active', this)">Active</button>
+                </div>
+                <button class="import-btn" onclick="importUsers()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Import CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table-container">
+            <div id="usersContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading users...</div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="modal" id="supplierProductsModal">
-        <div class="modal-content" style="max-width: 900px;">
-            <h2>Supplier Products</h2>
-            <div id="supplierInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;"></div>
-            <div id="productsContainer" style="max-height: 400px; overflow-y: auto;"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" onclick="closeSupplierModal()">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="addContactModal">
-        <div class="modal-content" style="max-width: 600px;">
-            <h2>Add New Contact</h2>
-            <div id="addContactCompanyInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                <div style="font-size: 14px; color: #666;">Adding contact to:</div>
-                <div style="font-size: 18px; font-weight: bold;" id="addContactCompanyName"></div>
-            </div>
-            <form id="addContactForm">
-                <input type="hidden" id="addContactCompany">
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                    <div style="grid-column: span 2;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Contact Name <span style="color: red;">*</span></label>
-                        <input type="text" id="newContactName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required placeholder="John Doe">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
-                        <input type="email" id="newContactEmail" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="john@company.com">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone</label>
-                        <input type="tel" id="newContactPhone" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="+1 234 567 8900">
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Role/Position</label>
-                        <input type="text" id="newContactRole" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="e.g., Purchasing Manager">
-                    </div>
-                    
-                    <div style="grid-column: span 2; margin-top: 10px;">
-                        <h4 style="color: #667eea; margin-bottom: 10px;">Permissions</h4>
-                        
-                        <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 10px;">
-                            <input type="checkbox" id="newContactIsActive" checked style="margin-right: 10px;">
-                            <span>Active Contact</span>
-                        </label>
-                        
-                        <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 10px;">
-                            <input type="checkbox" id="newContactIsAdmin" style="margin-right: 10px;">
-                            <span>Organization Admin</span>
-                        </label>
-                        
-                        <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="newContactCanManage" style="margin-right: 10px;">
-                            <span>Can Manage Contacts</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="modal-buttons">
-                    <button type="submit" class="modal-btn confirm">Add Contact</button>
-                    <button type="button" class="modal-btn cancel" onclick="closeAddContactModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <div class="modal" id="contactPermissionsModal">
-        <div class="modal-content" style="max-width: 700px;">
-            <h2>Edit Contact Details</h2>
-            <div id="contactInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;" id="contactNameDisplay"></div>
-                <div style="color: #666;" id="contactCompanyDisplay"></div>
-            </div>
-            <form id="contactPermissionsForm">
-                <input type="hidden" id="contactId">
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                    <!-- Contact Details Section -->
-                    <div style="grid-column: span 2;">
-                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px; margin-bottom: 15px;">Contact Information</h3>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Contact Name</label>
-                        <input type="text" id="editContactName" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required>
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Role/Position</label>
-                        <input type="text" id="editContactRole" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="e.g., Purchasing Manager">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
-                        <input type="email" id="editContactEmail" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="contact@company.com">
-                    </div>
-                    
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone</label>
-                        <input type="tel" id="editContactPhone" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="+1 234 567 8900">
-                    </div>
-                    
-                    <!-- Status Section -->
-                    <div style="grid-column: span 2; margin-top: 10px;">
-                        <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 5px; margin-bottom: 15px;">Status & Permissions</h3>
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #d4edda; border: 2px solid #28a745; border-radius: 8px; margin-bottom: 10px;">
-                            <input type="checkbox" id="editContactIsActive" style="margin-right: 15px; width: 20px; height: 20px;">
-                            <div>
-                                <strong style="font-size: 16px;">Active Contact</strong>
-                                <div style="font-size: 14px; color: #666; margin-top: 3px;">Contact is currently active and can access the system</div>
-                            </div>
-                        </label>
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; margin-bottom: 10px;">
-                            <input type="checkbox" id="isOrganizationAdmin" style="margin-right: 15px; width: 20px; height: 20px;">
-                            <div>
-                                <strong style="font-size: 16px;">Organization Admin</strong>
-                                <div style="font-size: 14px; color: #666; margin-top: 3px;">Full administrative access to all company data and users</div>
-                            </div>
-                        </label>
-                    </div>
-                    
-                    <div style="grid-column: span 2;">
-                        <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #d1ecf1; border: 2px solid #17a2b8; border-radius: 8px;">
-                            <input type="checkbox" id="canManageContacts" style="margin-right: 15px; width: 20px; height: 20px;">
-                            <div>
-                                <strong style="font-size: 16px;">Contact Manager</strong>
-                                <div style="font-size: 14px; color: #666; margin-top: 3px;">Can add, edit, and remove contacts for this company</div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="modal-buttons">
-                    <button type="button" class="modal-btn" style="background: #dc3545; color: white;" onclick="deleteContact()">Delete Contact</button>
-                    <button type="submit" class="modal-btn confirm">Save Changes</button>
-                    <button type="button" class="modal-btn cancel" onclick="closeContactPermissionsModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <div class="modal" id="companyContactsModal">
-        <div class="modal-content" style="max-width: 900px; max-height: 80vh; overflow-y: auto;">
-            <h2>Company Contacts</h2>
-            <div id="companyContactsInfo" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;"></div>
-            <div id="companyContactsContainer"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" onclick="closeCompanyContactsModal()">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="contactsByTypeModal">
-        <div class="modal-content" style="max-width: 1200px; max-height: 85vh; overflow-y: auto;">
-            <h2 id="contactsTypeTitle">Contacts</h2>
-            <div style="margin-bottom: 20px;">
-                <input type="text" id="contactsSearchInput" placeholder="Search contacts by name, company, email..." 
-                       style="width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 8px; font-size: 14px;"
-                       onkeyup="filterContactsTable()">
-            </div>
-            <div id="contactsTypeContainer" style="overflow-x: auto;"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn" style="background: #17a2b8; color: white;" onclick="exportContactsToCSV()">Export to CSV</button>
-                <button class="modal-btn cancel" onclick="closeContactsByTypeModal()">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="importModal">
-        <div class="modal-content" style="max-width: 700px;">
-            <h2>Import Users from CSV</h2>
-            <p>This will import users from the following files:</p>
-            <ul>
-                <li><strong>Contractors 9_8_2025.csv</strong> → Experts/Contractors</li>
-                <li><strong>Buyers 9_8_2025.csv</strong> → Buyers</li>
-                <li><strong>Products 9_8_2025.csv</strong> → Suppliers (extracted from products file)</li>
-            </ul>
-            
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <h4 style="margin-bottom: 10px;">Import Settings:</h4>
-                <ul style="margin: 10px 0;">
-                    <li>Default password: <strong>FDX2025!</strong></li>
-                    <li>Username format: company_name (e.g., dhl_israel)</li>
-                    <li>Active if email AND phone provided</li>
-                    <li>Hebrew names will get English display names</li>
-                    <li>Duplicates will be skipped</li>
-                </ul>
-            </div>
-            
-            <div class="modal-buttons">
-                <button class="modal-btn" style="background: #17a2b8; color: white;" onclick="testImport()">Test Import (5 each)</button>
-                <button class="modal-btn confirm" onclick="confirmImport()">Full Import</button>
-                <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
-            </div>
-            
-            <div style="margin-top: 15px;">
-                <button class="modal-btn" style="background: #dc3545; color: white; font-size: 12px;" onclick="clearImported()">Clear All Imported Users</button>
-                <a id="downloadLink" style="display: none; margin-left: 10px;" href="#" onclick="downloadCredentials()">📥 Download Credentials CSV</a>
-            </div>
-            
-            <div id="importResults"></div>
-        </div>
-    </div>
+
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
+    <script src="/js/universal-dark-mode.js"></script>
 
     <script>
         let allUsers = [];
         let currentFilter = 'all';
-        
-        let companyContacts = {};
-        let allContactsData = [];
-        let currentContactsType = 'all';
-        
+
+        // Load users
         async function loadUsers() {
             try {
-                // Load users and company contacts in parallel
-                const [usersResponse, contactsResponse] = await Promise.all([
-                    fetch('/api/users'),
-                    fetch('/api/company-contacts')
-                ]);
-                
-                const users = await usersResponse.json();
-                const contacts = await contactsResponse.json();
-                
-                // Group contacts by company
-                companyContacts = {};
-                contacts.forEach(contact => {
-                    if (!companyContacts[contact.companyName]) {
-                        companyContacts[contact.companyName] = [];
-                    }
-                    companyContacts[contact.companyName].push(contact);
-                });
-                
-                allUsers = users;
-                displayUsers(users);
-                updateStats(users);
+                const response = await fetch('/api/users');
+                if (response.ok) {
+                    allUsers = await response.json();
+                    updateStatistics();
+                    displayUsers(allUsers);
+                }
             } catch (error) {
                 console.error('Error loading users:', error);
-                document.getElementById('usersContainer').innerHTML = '<div class="error">Error loading users</div>';
+                document.getElementById('usersContainer').innerHTML = '<div class="loading">Error loading users</div>';
             }
         }
-        
+
+        // Update statistics
+        function updateStatistics() {
+            document.getElementById('totalUsers').textContent = allUsers.length;
+            document.getElementById('activeUsers').textContent = allUsers.filter(u => u.isActive).length;
+            document.getElementById('adminUsers').textContent = allUsers.filter(u => u.userType === 0).length;
+            document.getElementById('buyerUsers').textContent = allUsers.filter(u => u.userType === 2).length;
+        }
+
+        // Display users
         function displayUsers(users) {
+            const container = document.getElementById('usersContainer');
+            
             if (users.length === 0) {
-                document.getElementById('usersContainer').innerHTML = '<div class="empty">No users found</div>';
+                container.innerHTML = '<div class="loading">No users found</div>';
                 return;
             }
-            
-            // Check if mobile view (screen width < 600px)
-            const isMobile = window.innerWidth < 600;
-            
-            if (isMobile) {
-                // Mobile card view
-                let html = '<div class="mobile-users">';
-                
-                users.forEach(user => {
-                    const typeClass = user.type === 0 ? 'admin' : user.type === 1 ? 'expert' : user.type === 2 ? 'buyer' : 'supplier';
-                    const statusClass = user.isActive ? 'active' : 'inactive';
-                    const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
-                    const borderColor = user.type === 0 ? '#ffc107' : user.type === 1 ? '#17a2b8' : user.type === 2 ? '#28a745' : '#6f42c1';
-                    
-                    // Get contact count for this company
-                    const contactCount = user.companyName && companyContacts[user.companyName] ? companyContacts[user.companyName].length : 0;
-                    const adminCount = user.companyName && companyContacts[user.companyName] ? 
-                        companyContacts[user.companyName].filter(c => c.isOrganizationAdmin).length : 0;
-                    
-                    html += `
-                        <div class="user-card" style="background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid ${borderColor}; cursor: pointer;" onclick="viewUserProfile(${user.id})">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                                <div>
-                                    <strong style="font-size: 16px;">${user.companyName || user.username}</strong>
-                                    <span class="user-type ${typeClass}" style="margin-left: 10px;">${user.typeName}</span>
-                                    ${contactCount > 0 ? 
-                                        `<div style="margin-top: 5px;">
-                                            <span style="display: inline-block; padding: 3px 10px; background: white; border: 1px solid #dee2e6; border-radius: 12px; font-size: 12px;">
-                                                <strong>${contactCount}</strong> contact${contactCount > 1 ? 's' : ''}
-                                                ${adminCount > 0 ? ` • <span style="color: #ffc107;">${adminCount} admin${adminCount > 1 ? 's' : ''}</span>` : ''}
-                                            </span>
-                                        </div>` : 
-                                        ''
-                                    }
-                                </div>
-                                <span class="status-badge ${statusClass}">${user.isActive ? 'Active' : 'Inactive'}</span>
-                            </div>
-                            <div style="color: #666; font-size: 14px; line-height: 1.6;">
-                                <div><strong>Username:</strong> ${user.username}</div>
-                                <div><strong>Email:</strong> ${user.email}</div>
-                                ${user.country ? `<div><strong>Country:</strong> ${user.country}</div>` : ''}
-                                <div><strong>Last Login:</strong> ${lastLogin}</div>
-                            </div>
-                            <div class="actions" style="margin-top: 10px; display: flex; gap: 10px;" onclick="event.stopPropagation()">
-                                <button class="action-btn toggle" style="flex: 1;" onclick="toggleUser(${user.id})">
-                                    ${user.isActive ? 'Deactivate' : 'Activate'}
-                                </button>
-                                ${contactCount > 0 ? `<button class="action-btn" style="flex: 1; background: #28a745; color: white;" onclick="viewCompanyContacts('${user.companyName.replace(/'/g, "\\'")}')">View Contacts</button>` : ''}
-                                ${user.type === 3 ? `<button class="action-btn" style="flex: 1; background: #6f42c1; color: white;" onclick="viewSupplierProducts(${user.id})">Products</button>` : ''}
-                                ${user.type !== 0 ? `<button class="action-btn delete" style="flex: 1;" onclick="deleteUser(${user.id})">Delete</button>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += '</div>';
-                document.getElementById('usersContainer').innerHTML = html;
-            } else {
-                // Desktop table view
-                let html = `
-                    <div style="overflow-x: auto;">
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Company</th>
-                                <th>Email</th>
-                                <th>Type</th>
-                                <th>Country</th>
-                                <th>Contacts</th>
-                                <th>Last Login</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                users.forEach(user => {
-                    const typeClass = user.type === 0 ? 'admin' : user.type === 1 ? 'expert' : user.type === 2 ? 'buyer' : 'supplier';
-                    const statusClass = user.isActive ? 'active' : 'inactive';
-                    const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
-                    
-                    // Get contact count and admin count for this company
-                    const contactCount = user.companyName && companyContacts[user.companyName] ? companyContacts[user.companyName].length : 0;
-                    const adminCount = user.companyName && companyContacts[user.companyName] ? 
-                        companyContacts[user.companyName].filter(c => c.isOrganizationAdmin).length : 0;
-                    
-                    html += `
-                        <tr style="cursor: pointer;" onclick="viewUserProfile(${user.id})">
-                            <td>${user.id}</td>
-                            <td><strong>${user.username}</strong></td>
-                            <td>${user.companyName || '-'}</td>
-                            <td>${user.email}</td>
-                            <td><span class="user-type ${typeClass}">${user.typeName}</span></td>
-                            <td>${user.country || '-'}</td>
-                            <td>
-                                ${contactCount > 0 ? 
-                                    `<button onclick="event.stopPropagation(); viewCompanyContacts('${user.companyName.replace(/'/g, "\\'")}')" 
-                                            style="padding: 4px 12px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 15px; cursor: pointer; font-size: 12px;">
-                                        <strong>${contactCount}</strong> contacts
-                                        ${adminCount > 0 ? `<span style="color: #ffc107; margin-left: 4px;">(${adminCount} admin${adminCount > 1 ? 's' : ''})</span>` : ''}
-                                    </button>` : 
-                                    '<span style="color: #999; font-size: 12px;">No contacts</span>'
-                                }
-                            </td>
-                            <td>${lastLogin}</td>
-                            <td><span class="status-badge ${statusClass}">${user.isActive ? 'Active' : 'Inactive'}</span></td>
-                            <td onclick="event.stopPropagation()">
-                                <div class="actions">
-                                    <button class="action-btn toggle" onclick="toggleUser(${user.id})">
-                                        ${user.isActive ? 'Deactivate' : 'Activate'}
-                                    </button>
-                                    ${user.type === 3 ? `<button class="action-btn" style="background: #6f42c1; color: white;" onclick="viewSupplierProducts(${user.id})">Products</button>` : ''}
-                                    ${user.type !== 0 ? `<button class="action-btn delete" onclick="deleteUser(${user.id})">Delete</button>` : ''}
-                                </div>
-                            </td>
+
+            let html = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                            <th>Last Active</th>
+                            <th>Actions</th>
                         </tr>
-                    `;
-                });
-                
-                html += '</tbody></table></div>';
-                document.getElementById('usersContainer').innerHTML = html;
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach(user => {
+                const userType = getUserType(user.userType);
+                const badgeClass = getBadgeClass(user.userType);
+                const initials = getInitials(user.displayName || user.userName);
+                const statusClass = user.isActive ? 'status-active' : 'status-inactive';
+                const statusText = user.isActive ? 'Active' : 'Inactive';
+
+                html += `
+                    <tr onclick="openUserProfile(${user.id})">
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">${initials}</div>
+                                <div>
+                                    <div class="user-name">${user.displayName || user.userName}</div>
+                                    <div class="user-email">${user.email || 'No email'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge ${badgeClass}">${userType}</span>
+                        </td>
+                        <td>${user.companyName || 'N/A'}</td>
+                        <td>
+                            <span class="status-indicator ${statusClass}"></span>
+                            ${statusText}
+                        </td>
+                        <td>${formatDate(user.lastLogin) || 'Never'}</td>
+                        <td>
+                            <button class="action-btn" onclick="event.stopPropagation(); editUser(${user.id})">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Helper functions
+        function getUserType(type) {
+            const types = ['Admin', 'Expert', 'Buyer', 'Supplier'];
+            return types[type] || 'Unknown';
+        }
+
+        function getBadgeClass(type) {
+            const classes = ['badge-admin', 'badge-expert', 'badge-buyer', 'badge-supplier'];
+            return classes[type] || 'badge';
+        }
+
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(' ');
+            if (parts.length > 1) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
             }
+            return name.substring(0, 2).toUpperCase();
         }
-        
-        function updateStats(users) {
-            document.getElementById('totalUsers').textContent = users.length;
-            document.getElementById('totalBuyers').textContent = users.filter(u => u.type === 2).length;
-            document.getElementById('totalExperts').textContent = users.filter(u => u.type === 1).length;
-            document.getElementById('totalSuppliers').textContent = users.filter(u => u.type === 3).length;
-            document.getElementById('activeUsers').textContent = users.filter(u => u.isActive).length;
+
+        function formatDate(dateString) {
+            if (!dateString) return null;
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
         }
-        
-        function setFilter(filter, btn) {
+
+        // Filter functions
+        function setFilter(filter, button) {
             currentFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            filterUsers();
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            // Apply filter
+            let filtered = allUsers;
+            if (filter === 'admin') {
+                filtered = allUsers.filter(u => u.userType === 0);
+            } else if (filter === 'buyer') {
+                filtered = allUsers.filter(u => u.userType === 2);
+            } else if (filter === 'expert') {
+                filtered = allUsers.filter(u => u.userType === 1);
+            } else if (filter === 'supplier') {
+                filtered = allUsers.filter(u => u.userType === 3);
+            } else if (filter === 'active') {
+                filtered = allUsers.filter(u => u.isActive);
+            }
+            
+            displayUsers(filtered);
         }
-        
+
         function filterUsers() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             let filtered = allUsers;
             
-            // Apply type filter
-            if (currentFilter === 'admin') {
-                filtered = filtered.filter(u => u.type === 0);
-            } else if (currentFilter === 'buyer') {
-                filtered = filtered.filter(u => u.type === 2);
-            } else if (currentFilter === 'expert') {
-                filtered = filtered.filter(u => u.type === 1);
-            } else if (currentFilter === 'supplier') {
-                filtered = filtered.filter(u => u.type === 3);
-            } else if (currentFilter === 'active') {
-                filtered = filtered.filter(u => u.isActive);
+            // Apply current filter
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'admin') {
+                    filtered = filtered.filter(u => u.userType === 0);
+                } else if (currentFilter === 'buyer') {
+                    filtered = filtered.filter(u => u.userType === 2);
+                } else if (currentFilter === 'expert') {
+                    filtered = filtered.filter(u => u.userType === 1);
+                } else if (currentFilter === 'supplier') {
+                    filtered = filtered.filter(u => u.userType === 3);
+                } else if (currentFilter === 'active') {
+                    filtered = filtered.filter(u => u.isActive);
+                }
             }
             
-            // Apply search filter
+            // Apply search
             if (searchTerm) {
                 filtered = filtered.filter(u => 
-                    u.username.toLowerCase().includes(searchTerm) ||
-                    u.email.toLowerCase().includes(searchTerm) ||
-                    (u.companyName && u.companyName.toLowerCase().includes(searchTerm)) ||
-                    (u.country && u.country.toLowerCase().includes(searchTerm))
+                    (u.userName && u.userName.toLowerCase().includes(searchTerm)) ||
+                    (u.displayName && u.displayName.toLowerCase().includes(searchTerm)) ||
+                    (u.email && u.email.toLowerCase().includes(searchTerm)) ||
+                    (u.companyName && u.companyName.toLowerCase().includes(searchTerm))
                 );
             }
             
             displayUsers(filtered);
         }
-        
-        async function toggleUser(userId) {
-            try {
-                const response = await fetch(`/api/users/${userId}/toggle-active`, { method: 'PUT' });
-                const data = await response.json();
-                if (data.success) {
-                    loadUsers();
-                }
-            } catch (error) {
-                alert('Error toggling user status');
-            }
+
+        // Placeholder functions
+        function openUserProfile(userId) {
+            console.log('Opening profile for user:', userId);
+            // Implement user profile modal
         }
-        
-        async function deleteUser(userId) {
-            if (!confirm('Are you sure you want to delete this user?')) return;
-            
-            try {
-                const response = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
-                const data = await response.json();
-                if (data.success) {
-                    loadUsers();
-                }
-            } catch (error) {
-                alert('Error deleting user');
-            }
+
+        function editUser(userId) {
+            console.log('Editing user:', userId);
+            // Implement edit functionality
         }
-        
+
+        function openAddUserModal() {
+            console.log('Opening add user modal');
+            // Implement add user modal
+        }
+
+        function exportUsers() {
+            console.log('Exporting users');
+            // Implement export functionality
+        }
+
         function importUsers() {
-            document.getElementById('importModal').classList.add('active');
-            document.getElementById('importResults').innerHTML = '';
+            console.log('Importing users');
+            // Implement import functionality
         }
-        
-        function closeModal() {
-            document.getElementById('importModal').classList.remove('active');
-        }
-        
-        async function testImport() {
-            const resultsDiv = document.getElementById('importResults');
-            resultsDiv.innerHTML = '<div class="loading">Running test import (5 records each)...</div>';
-            
-            try {
-                const response = await fetch('/api/users/import-default-files?testMode=true', { method: 'POST' });
-                const data = await response.json();
-                
-                if (data.success) {
-                    displayImportResults(data, resultsDiv);
-                    loadUsers();
-                }
-            } catch (error) {
-                resultsDiv.innerHTML = '<div class="error">Error during test import</div>';
-            }
-        }
-        
-        async function confirmImport() {
-            const resultsDiv = document.getElementById('importResults');
-            resultsDiv.innerHTML = '<div class="loading">Importing all users...</div>';
-            
-            try {
-                const response = await fetch('/api/users/import-default-files?testMode=false', { method: 'POST' });
-                const data = await response.json();
-                
-                if (data.success) {
-                    displayImportResults(data, resultsDiv);
-                    loadUsers();
-                    document.getElementById('downloadLink').style.display = 'inline-block';
-                }
-            } catch (error) {
-                resultsDiv.innerHTML = '<div class="error">Error importing users</div>';
-            }
-        }
-        
-        function displayImportResults(data, resultsDiv) {
-            let html = '<div class="import-results">';
-            html += `<h3>${data.testMode ? 'Test Import' : 'Full Import'} Complete!</h3>`;
-            html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">`;
-            
-            // Summary
-            html += `<div style="background: white; padding: 15px; border-radius: 8px;">
-                <h4>Summary</h4>
-                <p>Processed: ${data.summary.totalProcessed}</p>
-                <p style="color: green;">✅ Imported: ${data.summary.totalImported}</p>
-                <p style="color: orange;">⚠️ Skipped: ${data.summary.totalSkipped}</p>
-                <p style="color: red;">❌ Errors: ${data.summary.totalErrors}</p>
-            </div>`;
-            
-            // Details
-            html += `<div style="background: white; padding: 15px; border-radius: 8px;">
-                <h4>By Type</h4>
-                <p><strong>Contractors:</strong> ${data.contractors ? data.contractors.imported : 0} imported, ${data.contractors ? data.contractors.skipped : 0} skipped</p>
-                <p><strong>Buyers:</strong> ${data.buyers ? data.buyers.imported : 0} imported, ${data.buyers ? data.buyers.skipped : 0} skipped</p>
-                <p><strong>Suppliers:</strong> ${data.suppliers ? data.suppliers.imported : 0} imported, ${data.suppliers ? data.suppliers.skipped : 0} skipped</p>
-            </div>`;
-            
-            html += '</div>';
-            
-            // Show skipped reasons if any
-            if (data.contractors.skippedReasons.length > 0 || data.buyers.skippedReasons.length > 0) {
-                html += '<details style="margin-top: 15px;"><summary>Skipped Records</summary><pre style="font-size: 11px;">';
-                [...data.contractors.skippedReasons, ...data.buyers.skippedReasons].forEach(reason => {
-                    html += reason + '\n';
-                });
-                html += '</pre></details>';
-            }
-            
-            // Show errors if any
-            if (data.contractors.errors.length > 0 || data.buyers.errors.length > 0) {
-                html += '<details style="margin-top: 15px;"><summary>Errors</summary><pre style="font-size: 11px; color: red;">';
-                [...data.contractors.errors, ...data.buyers.errors].forEach(error => {
-                    html += error + '\n';
-                });
-                html += '</pre></details>';
-            }
-            
-            html += '</div>';
-            resultsDiv.innerHTML = html;
-        }
-        
-        async function clearImported() {
-            if (!confirm('Are you sure you want to remove ALL imported users? This cannot be undone.')) return;
-            
-            try {
-                const response = await fetch('/api/users/clear-imported-users', { method: 'POST' });
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert(`Removed ${data.removedCount} imported users`);
-                    loadUsers();
-                    closeModal();
-                }
-            } catch (error) {
-                alert('Error clearing imported users');
-            }
-        }
-        
-        function downloadCredentials() {
-            window.open('/api/users/export-credentials', '_blank');
-        }
-        
-        async function viewSupplierProducts(supplierId) {
-            try {
-                const response = await fetch(`/api/suppliers/${supplierId}`);
-                if (!response.ok) {
-                    alert('Error loading supplier details');
-                    return;
-                }
-                
-                const supplier = await response.json();
-                
-                // Display supplier info
-                const supplierInfoHtml = `
-                    <h3>${supplier.companyName}</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div><strong>Email:</strong> ${supplier.email}</div>
-                        <div><strong>Country:</strong> ${supplier.country || 'N/A'}</div>
-                        <div><strong>Website:</strong> ${supplier.website || 'N/A'}</div>
-                        <div><strong>Products Count:</strong> ${supplier.products ? supplier.products.length : 0}</div>
-                    </div>
-                    ${supplier.details ? `
-                        <div style="margin-top: 15px;">
-                            <strong>Categories:</strong> ${supplier.details.productCategories || 'N/A'}<br>
-                            <strong>Certifications:</strong> ${supplier.details.certifications || 'N/A'}<br>
-                            <strong>Payment Terms:</strong> ${supplier.details.paymentTerms || 'N/A'}
-                        </div>
-                    ` : ''}
-                `;
-                document.getElementById('supplierInfo').innerHTML = supplierInfoHtml;
-                
-                // Display products
-                let productsHtml = '';
-                if (supplier.products && supplier.products.length > 0) {
-                    productsHtml = `
-                        <table class="users-table" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>Product Code</th>
-                                    <th>Product Name</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
-                                    <th>MOQ</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-                    
-                    supplier.products.forEach(product => {
-                        const statusText = product.status === 0 ? 'Active' : product.status === 1 ? 'Pending' : 'Discontinued';
-                        const statusClass = product.status === 0 ? 'active' : 'inactive';
-                        productsHtml += `
-                            <tr>
-                                <td>${product.productCode}</td>
-                                <td>${product.productName}</td>
-                                <td>${product.category || 'N/A'}</td>
-                                <td>${product.unitWholesalePrice ? `${product.unitWholesalePrice} ${product.currency || 'USD'}` : 'N/A'}</td>
-                                <td>${product.minimumOrderQuantity || 'N/A'}</td>
-                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                            </tr>
-                        `;
-                    });
-                    
-                    productsHtml += '</tbody></table>';
-                } else {
-                    productsHtml = '<div class="empty">No products found for this supplier</div>';
-                }
-                
-                document.getElementById('productsContainer').innerHTML = productsHtml;
-                document.getElementById('supplierProductsModal').classList.add('active');
-                
-            } catch (error) {
-                console.error('Error loading supplier products:', error);
-                alert('Error loading supplier products');
-            }
-        }
-        
-        function closeSupplierModal() {
-            document.getElementById('supplierProductsModal').classList.remove('active');
-        }
-        
-        async function viewUserProfile(userId) {
-            try {
-                const response = await fetch(`/api/users/${userId}`);
-                if (!response.ok) {
-                    alert('Error loading user profile');
-                    return;
-                }
-                
-                const user = await response.json();
-                
-                // Populate form fields
-                document.getElementById('profileUserId').value = user.id;
-                document.getElementById('profileUsername').value = user.username || '';
-                document.getElementById('profileEmail').value = user.email || '';
-                document.getElementById('profileDisplayName').value = user.displayName || '';
-                document.getElementById('profileCompanyName').value = user.companyName || '';
-                document.getElementById('profileType').value = user.type;
-                document.getElementById('profileIsActive').value = user.isActive.toString();
-                
-                // Set phone with area code if empty
-                const phoneInput = document.getElementById('profilePhoneNumber');
-                if (user.phoneNumber) {
-                    phoneInput.value = user.phoneNumber;
-                } else if (user.country) {
-                    const areaCode = getAreaCodeForCountry(user.country);
-                    if (areaCode) {
-                        phoneInput.value = areaCode + ' ';
-                        phoneInput.placeholder = areaCode + ' 234 567 8900';
-                    }
-                }
-                
-                document.getElementById('profileCountry').value = user.country || '';
-                document.getElementById('profileAddress').value = user.address || '';
-                document.getElementById('profileWebsite').value = user.website || '';
-                document.getElementById('profileAlternateEmails').value = user.alternateEmails || '';
-                document.getElementById('profileCategory').value = user.category || '';
-                document.getElementById('profileBusinessType').value = user.businessType || '';
-                document.getElementById('profileSubCategories').value = user.subCategories || '';
-                document.getElementById('profileFullDescription').value = user.fullDescription || '';
-                document.getElementById('profileRequiresPasswordChange').value = (user.requiresPasswordChange || false).toString();
-                document.getElementById('profileDataComplete').value = (user.dataComplete || false).toString();
-                document.getElementById('profileVerification').value = user.verification || 0;
-                document.getElementById('profileLastLogin').value = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never';
-                document.getElementById('profileCreatedAt').value = user.createdAt ? new Date(user.createdAt).toLocaleString() : '';
-                document.getElementById('profileImportedAt').value = user.importedAt ? new Date(user.importedAt).toLocaleString() : '';
-                document.getElementById('profileImportNotes').value = user.importNotes || '';
-                
-                // Disable type change for admin users
-                document.getElementById('profileType').disabled = user.type === 0;
-                
-                // Load organization contacts if company exists
-                if (user.companyName) {
-                    loadOrganizationContacts(user.companyName);
-                } else {
-                    document.getElementById('profileContactsList').innerHTML = '<div style="text-align: center; color: #999;">No company associated with this user</div>';
-                }
-                
-                // Show modal
-                document.getElementById('userProfileModal').classList.add('active');
-                
-            } catch (error) {
-                console.error('Error loading user profile:', error);
-                alert('Error loading user profile');
-            }
-        }
-        
-        async function loadOrganizationContacts(companyName) {
-            const contactsListDiv = document.getElementById('profileContactsList');
-            contactsListDiv.innerHTML = '<div class="loading" style="text-align: center; color: #999;">Loading contacts...</div>';
-            
-            try {
-                const response = await fetch(`/api/company-contacts/by-company/${encodeURIComponent(companyName)}`);
-                if (!response.ok) {
-                    contactsListDiv.innerHTML = '<div style="text-align: center; color: #dc3545;">Error loading contacts</div>';
-                    return;
-                }
-                
-                const contacts = await response.json();
-                
-                if (contacts.length === 0) {
-                    contactsListDiv.innerHTML = '<div style="text-align: center; color: #999;">No contacts found for this organization</div>';
-                    return;
-                }
-                
-                let html = `
-                    <table style="width: 100%; font-size: 13px;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid #ddd;">
-                                <th style="text-align: left; padding: 8px;">Name</th>
-                                <th style="text-align: left; padding: 8px;">Role</th>
-                                <th style="text-align: left; padding: 8px;">Contact</th>
-                                <th style="text-align: left; padding: 8px;">Permissions</th>
-                                <th style="text-align: left; padding: 8px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                contacts.forEach(contact => {
-                    const statusIcon = contact.isActive ? 
-                        '<span style="color: #28a745;">✓</span>' : 
-                        '<span style="color: #dc3545;">✗</span>';
-                    
-                    html += `
-                        <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding: 8px;">
-                                ${statusIcon} ${contact.contactName}
-                            </td>
-                            <td style="padding: 8px;">${contact.contactRole || '-'}</td>
-                            <td style="padding: 8px;">
-                                ${contact.contactEmail ? `<div style="font-size: 11px;">${contact.contactEmail}</div>` : ''}
-                                ${contact.contactPhone ? `<div style="font-size: 11px;">${contact.contactPhone}</div>` : ''}
-                            </td>
-                            <td style="padding: 8px;">
-                                ${contact.isOrganizationAdmin ? '<span style="background: #ffc107; color: #856404; padding: 2px 6px; border-radius: 10px; font-size: 10px;">ADMIN</span>' : ''}
-                                ${contact.canManageContacts ? '<span style="background: #17a2b8; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 2px;">MGR</span>' : ''}
-                                ${!contact.isOrganizationAdmin && !contact.canManageContacts ? '<span style="color: #999; font-size: 11px;">None</span>' : ''}
-                            </td>
-                            <td style="padding: 8px;">
-                                <button type="button" onclick="event.preventDefault(); event.stopPropagation(); manageContactPermissionsFromProfile(${contact.id}, '${companyName.replace(/'/g, "\\'")}', '${contact.contactName.replace(/'/g, "\\'")}')" 
-                                        style="padding: 3px 8px; font-size: 11px; background: #6c757d; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                                    Manage
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                html += `
-                        </tbody>
-                    </table>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right;">
-                        <strong>Total Contacts:</strong> ${contacts.length} 
-                        | <strong>Active:</strong> ${contacts.filter(c => c.isActive).length}
-                        | <strong>Admins:</strong> ${contacts.filter(c => c.isOrganizationAdmin).length}
-                    </div>
-                `;
-                
-                contactsListDiv.innerHTML = html;
-                
-            } catch (error) {
-                console.error('Error loading organization contacts:', error);
-                contactsListDiv.innerHTML = '<div style="text-align: center; color: #dc3545;">Error loading contacts</div>';
-            }
-        }
-        
-        function manageContactPermissionsFromProfile(contactId, companyName, contactName) {
-            // Prevent any form submission
-            event.preventDefault();
-            event.stopPropagation();
-            
-            // Close the profile modal first
-            document.getElementById('userProfileModal').classList.remove('active');
-            // Then open the permissions modal
-            manageContactPermissions(contactId, companyName, contactName);
-        }
-        
-        function closeProfileModal() {
-            document.getElementById('userProfileModal').classList.remove('active');
-        }
-        
-        // Country to area code mapping
-        const countryAreaCodes = {
-            'USA': '+1',
-            'United States': '+1',
-            'US': '+1',
-            'Canada': '+1',
-            'CA': '+1',
-            'UK': '+44',
-            'United Kingdom': '+44',
-            'GB': '+44',
-            'England': '+44',
-            'Scotland': '+44',
-            'Wales': '+44',
-            'Ireland': '+353',
-            'IE': '+353',
-            'Australia': '+61',
-            'AU': '+61',
-            'New Zealand': '+64',
-            'NZ': '+64',
-            'Germany': '+49',
-            'DE': '+49',
-            'France': '+33',
-            'FR': '+33',
-            'Italy': '+39',
-            'IT': '+39',
-            'Spain': '+34',
-            'ES': '+34',
-            'Netherlands': '+31',
-            'NL': '+31',
-            'Belgium': '+32',
-            'BE': '+32',
-            'Switzerland': '+41',
-            'CH': '+41',
-            'Austria': '+43',
-            'AT': '+43',
-            'Sweden': '+46',
-            'SE': '+46',
-            'Norway': '+47',
-            'NO': '+47',
-            'Denmark': '+45',
-            'DK': '+45',
-            'Finland': '+358',
-            'FI': '+358',
-            'Poland': '+48',
-            'PL': '+48',
-            'Russia': '+7',
-            'RU': '+7',
-            'China': '+86',
-            'CN': '+86',
-            'Japan': '+81',
-            'JP': '+81',
-            'South Korea': '+82',
-            'KR': '+82',
-            'India': '+91',
-            'IN': '+91',
-            'Singapore': '+65',
-            'SG': '+65',
-            'Malaysia': '+60',
-            'MY': '+60',
-            'Thailand': '+66',
-            'TH': '+66',
-            'Indonesia': '+62',
-            'ID': '+62',
-            'Philippines': '+63',
-            'PH': '+63',
-            'Vietnam': '+84',
-            'VN': '+84',
-            'Israel': '+972',
-            'IL': '+972',
-            'UAE': '+971',
-            'United Arab Emirates': '+971',
-            'AE': '+971',
-            'Saudi Arabia': '+966',
-            'SA': '+966',
-            'Egypt': '+20',
-            'EG': '+20',
-            'South Africa': '+27',
-            'ZA': '+27',
-            'Brazil': '+55',
-            'BR': '+55',
-            'Mexico': '+52',
-            'MX': '+52',
-            'Argentina': '+54',
-            'AR': '+54',
-            'Chile': '+56',
-            'CL': '+56',
-            'Colombia': '+57',
-            'CO': '+57',
-            'Peru': '+51',
-            'PE': '+51'
-        };
-        
-        function getAreaCodeForCountry(country) {
-            if (!country) return '';
-            
-            // Try exact match first
-            for (const [key, code] of Object.entries(countryAreaCodes)) {
-                if (country.toLowerCase() === key.toLowerCase()) {
-                    return code;
-                }
-            }
-            
-            // Try partial match
-            for (const [key, code] of Object.entries(countryAreaCodes)) {
-                if (country.toLowerCase().includes(key.toLowerCase()) || 
-                    key.toLowerCase().includes(country.toLowerCase())) {
-                    return code;
-                }
-            }
-            
-            return ''; // Default to empty if no match found
-        }
-        
-        function addNewContact() {
-            const companyName = document.getElementById('profileCompanyName').value;
-            const country = document.getElementById('profileCountry').value;
-            
-            if (!companyName) {
-                alert('Cannot add contact: No company associated with this user');
-                return;
-            }
-            
-            // Set company info in the add contact modal
-            document.getElementById('addContactCompanyName').textContent = companyName;
-            document.getElementById('addContactCompany').value = companyName;
-            
-            // Clear the form
-            document.getElementById('addContactForm').reset();
-            document.getElementById('newContactIsActive').checked = true; // Default to active
-            
-            // Set default area code based on country
-            const areaCode = getAreaCodeForCountry(country);
-            if (areaCode) {
-                const phoneInput = document.getElementById('newContactPhone');
-                phoneInput.value = areaCode + ' ';
-                phoneInput.placeholder = areaCode + ' 234 567 8900';
-            }
-            
-            // Show the modal
-            document.getElementById('addContactModal').classList.add('active');
-        }
-        
-        function closeAddContactModal() {
-            document.getElementById('addContactModal').classList.remove('active');
-        }
-        
-        // Handle add contact form submission
-        document.getElementById('addContactForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const contactData = {
-                companyName: document.getElementById('addContactCompany').value,
-                contactName: document.getElementById('newContactName').value,
-                contactEmail: document.getElementById('newContactEmail').value || null,
-                contactPhone: document.getElementById('newContactPhone').value || null,
-                contactRole: document.getElementById('newContactRole').value || null
-            };
-            
-            try {
-                const response = await fetch('/api/company-contacts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(contactData)
-                });
-                
-                if (response.ok) {
-                    const newContact = await response.json();
-                    
-                    // If permissions were set, update them
-                    const isAdmin = document.getElementById('newContactIsAdmin').checked;
-                    const canManage = document.getElementById('newContactCanManage').checked;
-                    const isActive = document.getElementById('newContactIsActive').checked;
-                    
-                    if (isAdmin || canManage || !isActive) {
-                        await fetch(`/api/company-contacts/${newContact.id}/full-update`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                contactName: contactData.contactName,
-                                contactRole: contactData.contactRole,
-                                contactEmail: contactData.contactEmail,
-                                contactPhone: contactData.contactPhone,
-                                isActive: isActive,
-                                isOrganizationAdmin: isAdmin,
-                                canManageContacts: canManage
-                            })
-                        });
-                    }
-                    
-                    alert('Contact added successfully');
-                    closeAddContactModal();
-                    
-                    // Reload contacts in the profile
-                    const companyName = document.getElementById('profileCompanyName').value;
-                    if (companyName) {
-                        loadOrganizationContacts(companyName);
-                    }
-                    
-                    // Reload users to update contact counts
-                    loadUsers();
-                } else {
-                    const error = await response.text();
-                    if (error.includes('already exists')) {
-                        alert('A contact with this name already exists for this company');
-                    } else {
-                        alert('Error adding contact');
-                    }
-                }
-            } catch (error) {
-                console.error('Error adding contact:', error);
-                alert('Error adding contact');
-            }
-        });
-        
-        // Handle profile form submission
-        document.getElementById('userProfileForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const userId = document.getElementById('profileUserId').value;
-            const updateData = {
-                email: document.getElementById('profileEmail').value,
-                displayName: document.getElementById('profileDisplayName').value,
-                companyName: document.getElementById('profileCompanyName').value,
-                type: parseInt(document.getElementById('profileType').value),
-                isActive: document.getElementById('profileIsActive').value === 'true',
-                phoneNumber: document.getElementById('profilePhoneNumber').value,
-                country: document.getElementById('profileCountry').value,
-                address: document.getElementById('profileAddress').value,
-                website: document.getElementById('profileWebsite').value,
-                alternateEmails: document.getElementById('profileAlternateEmails').value,
-                category: document.getElementById('profileCategory').value,
-                businessType: document.getElementById('profileBusinessType').value,
-                subCategories: document.getElementById('profileSubCategories').value,
-                fullDescription: document.getElementById('profileFullDescription').value,
-                requiresPasswordChange: document.getElementById('profileRequiresPasswordChange').value === 'true',
-                dataComplete: document.getElementById('profileDataComplete').value === 'true',
-                verification: parseInt(document.getElementById('profileVerification').value),
-                importNotes: document.getElementById('profileImportNotes').value
-            };
-            
-            try {
-                const response = await fetch(`/api/users/${userId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updateData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('User profile updated successfully');
-                    closeProfileModal();
-                    loadUsers();
-                } else {
-                    alert('Error updating user profile: ' + (result.message || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error updating user profile:', error);
-                alert('Error updating user profile');
-            }
-        });
-        
-        async function manageContactPermissions(contactId, companyName, contactName) {
-            try {
-                const response = await fetch(`/api/company-contacts/${contactId}`);
-                if (!response.ok) {
-                    alert('Error loading contact details');
-                    return;
-                }
-                
-                const contact = await response.json();
-                
-                // Try to get country from current user profile if available
-                const country = document.getElementById('profileCountry')?.value || '';
-                
-                // Set display info
-                document.getElementById('contactNameDisplay').textContent = contactName;
-                document.getElementById('contactCompanyDisplay').textContent = companyName;
-                document.getElementById('contactId').value = contactId;
-                
-                // Set contact details
-                document.getElementById('editContactName').value = contact.contactName || '';
-                document.getElementById('editContactRole').value = contact.contactRole || '';
-                document.getElementById('editContactEmail').value = contact.contactEmail || '';
-                
-                // Set phone with area code if empty
-                const phoneInput = document.getElementById('editContactPhone');
-                if (contact.contactPhone) {
-                    phoneInput.value = contact.contactPhone;
-                } else {
-                    const areaCode = getAreaCodeForCountry(country);
-                    if (areaCode) {
-                        phoneInput.value = areaCode + ' ';
-                        phoneInput.placeholder = areaCode + ' 234 567 8900';
-                    } else {
-                        phoneInput.value = '';
-                        phoneInput.placeholder = '+1 234 567 8900';
-                    }
-                }
-                
-                // Set checkboxes
-                document.getElementById('editContactIsActive').checked = contact.isActive !== false;
-                document.getElementById('isOrganizationAdmin').checked = contact.isOrganizationAdmin || false;
-                document.getElementById('canManageContacts').checked = contact.canManageContacts || false;
-                
-                // Show modal
-                document.getElementById('contactPermissionsModal').classList.add('active');
-                
-            } catch (error) {
-                console.error('Error loading contact:', error);
-                alert('Error loading contact details');
-            }
-        }
-        
-        function closeContactPermissionsModal() {
-            document.getElementById('contactPermissionsModal').classList.remove('active');
-        }
-        
-        // Handle contact permissions form submission
-        document.getElementById('contactPermissionsForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const contactId = document.getElementById('contactId').value;
-            const updateData = {
-                contactName: document.getElementById('editContactName').value,
-                contactRole: document.getElementById('editContactRole').value,
-                contactEmail: document.getElementById('editContactEmail').value,
-                contactPhone: document.getElementById('editContactPhone').value,
-                isActive: document.getElementById('editContactIsActive').checked,
-                isOrganizationAdmin: document.getElementById('isOrganizationAdmin').checked,
-                canManageContacts: document.getElementById('canManageContacts').checked
-            };
-            
-            try {
-                const response = await fetch(`/api/company-contacts/${contactId}/full-update`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updateData)
-                });
-                
-                if (response.ok) {
-                    alert('Contact updated successfully');
-                    closeContactPermissionsModal();
-                    loadUsers(); // Reload to show updated data
-                    
-                    // If profile modal was open, reload its contacts
-                    if (document.getElementById('userProfileModal').classList.contains('active')) {
-                        const companyName = document.getElementById('profileCompanyName').value;
-                        if (companyName) {
-                            loadOrganizationContacts(companyName);
-                        }
-                    }
-                } else {
-                    alert('Error updating contact');
-                }
-            } catch (error) {
-                console.error('Error updating contact:', error);
-                alert('Error updating contact');
-            }
-        });
-        
-        async function deleteContact() {
-            const contactId = document.getElementById('contactId').value;
-            const contactName = document.getElementById('editContactName').value;
-            
-            if (!confirm(`Are you sure you want to delete contact "${contactName}"? This action cannot be undone.`)) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/company-contacts/${contactId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    alert('Contact deleted successfully');
-                    closeContactPermissionsModal();
-                    loadUsers(); // Reload to show updated data
-                    
-                    // If profile modal was open, reload its contacts
-                    if (document.getElementById('userProfileModal').classList.contains('active')) {
-                        const companyName = document.getElementById('profileCompanyName').value;
-                        if (companyName) {
-                            loadOrganizationContacts(companyName);
-                        }
-                    }
-                } else {
-                    alert('Error deleting contact');
-                }
-            } catch (error) {
-                console.error('Error deleting contact:', error);
-                alert('Error deleting contact');
-            }
-        }
-        
-        async function viewCompanyContacts(companyName) {
-            try {
-                const response = await fetch(`/api/company-contacts/by-company/${encodeURIComponent(companyName)}`);
-                if (!response.ok) {
-                    alert('Error loading company contacts');
-                    return;
-                }
-                
-                const contacts = await response.json();
-                
-                // Display company info
-                document.getElementById('companyContactsInfo').innerHTML = `
-                    <h3>${companyName}</h3>
-                    <div>Total Contacts: ${contacts.length}</div>
-                `;
-                
-                // Display contacts table
-                let html = '';
-                if (contacts.length > 0) {
-                    html = `
-                        <table class="users-table" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>Contact Name</th>
-                                    <th>Role</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Permissions</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-                    
-                    contacts.forEach(contact => {
-                        html += `
-                            <tr>
-                                <td>${contact.contactName}</td>
-                                <td>${contact.contactRole || '-'}</td>
-                                <td>${contact.contactEmail || '-'}</td>
-                                <td>${contact.contactPhone || '-'}</td>
-                                <td>
-                                    ${contact.isOrganizationAdmin ? '<span style="background: #ffc107; color: #856404; padding: 3px 8px; border-radius: 12px; font-size: 11px;">ORG ADMIN</span>' : ''}
-                                    ${contact.canManageContacts ? '<span style="background: #17a2b8; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; margin-left: 5px;">CONTACT MGR</span>' : ''}
-                                    ${!contact.isOrganizationAdmin && !contact.canManageContacts ? '<span style="color: #999;">None</span>' : ''}
-                                </td>
-                                <td>
-                                    <button onclick="manageContactPermissions(${contact.id}, '${companyName.replace(/'/g, "\\'")}', '${contact.contactName.replace(/'/g, "\\'")}')" style="padding: 4px 10px; font-size: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Manage Permissions</button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    
-                    html += '</tbody></table>';
-                } else {
-                    html = '<div class="empty">No contacts found for this company</div>';
-                }
-                
-                document.getElementById('companyContactsContainer').innerHTML = html;
-                document.getElementById('companyContactsModal').classList.add('active');
-                
-            } catch (error) {
-                console.error('Error loading company contacts:', error);
-                alert('Error loading company contacts');
-            }
-        }
-        
-        function closeCompanyContactsModal() {
-            document.getElementById('companyContactsModal').classList.remove('active');
-        }
-        
-        function toggleContactsDropdown() {
-            const dropdown = document.getElementById('contactsDropdown');
-            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        }
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('contactsDropdown');
-            const button = event.target.closest('button');
-            if (!button || !button.onclick || !button.onclick.toString().includes('toggleContactsDropdown')) {
-                dropdown.style.display = 'none';
-            }
-        });
-        
-        async function viewContactsByType(type) {
-            currentContactsType = type;
-            const dropdown = document.getElementById('contactsDropdown');
-            dropdown.style.display = 'none';
-            
-            try {
-                // Load all contacts and users
-                const [contactsResponse, usersResponse] = await Promise.all([
-                    fetch('/api/company-contacts'),
-                    fetch('/api/users')
-                ]);
-                
-                const contacts = await contactsResponse.json();
-                const users = await usersResponse.json();
-                
-                // Create a map of companies to user types
-                const companyToUserType = {};
-                users.forEach(user => {
-                    if (user.companyName) {
-                        companyToUserType[user.companyName] = user.type;
-                    }
-                });
-                
-                // Filter contacts based on type
-                let filteredContacts = contacts;
-                let title = 'All Contacts';
-                
-                if (type === 'buyers') {
-                    filteredContacts = contacts.filter(c => companyToUserType[c.companyName] === 2);
-                    title = 'Buyer Contacts';
-                } else if (type === 'contractors') {
-                    filteredContacts = contacts.filter(c => companyToUserType[c.companyName] === 1);
-                    title = 'Contractor Contacts';
-                } else if (type === 'suppliers') {
-                    filteredContacts = contacts.filter(c => companyToUserType[c.companyName] === 3);
-                    title = 'Supplier Contacts';
-                }
-                
-                allContactsData = filteredContacts;
-                
-                // Update modal title
-                document.getElementById('contactsTypeTitle').textContent = title;
-                
-                // Display contacts
-                displayContactsTable(filteredContacts);
-                
-                // Show modal
-                document.getElementById('contactsByTypeModal').classList.add('active');
-                
-            } catch (error) {
-                console.error('Error loading contacts:', error);
-                alert('Error loading contacts');
-            }
-        }
-        
-        function displayContactsTable(contacts) {
-            let html = '';
-            
-            if (contacts.length === 0) {
-                html = '<div class="empty">No contacts found</div>';
-            } else {
-                html = `
-                    <table class="users-table" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>Company</th>
-                                <th>Contact Name</th>
-                                <th>Role</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Permissions</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="contactsTableBody">
-                `;
-                
-                contacts.forEach(contact => {
-                    const statusClass = contact.isActive ? 'active' : 'inactive';
-                    html += `
-                        <tr>
-                            <td><strong>${contact.companyName}</strong></td>
-                            <td>${contact.contactName}</td>
-                            <td>${contact.contactRole || '-'}</td>
-                            <td>${contact.contactEmail || '-'}</td>
-                            <td>${contact.contactPhone || '-'}</td>
-                            <td>
-                                ${contact.isOrganizationAdmin ? '<span style="background: #ffc107; color: #856404; padding: 3px 8px; border-radius: 12px; font-size: 11px;">ORG ADMIN</span>' : ''}
-                                ${contact.canManageContacts ? '<span style="background: #17a2b8; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; margin-left: 5px;">CONTACT MGR</span>' : ''}
-                                ${!contact.isOrganizationAdmin && !contact.canManageContacts ? '<span style="color: #999;">None</span>' : ''}
-                            </td>
-                            <td><span class="status-badge ${statusClass}">${contact.isActive ? 'Active' : 'Inactive'}</span></td>
-                            <td>
-                                <button onclick="manageContactPermissions(${contact.id}, '${contact.companyName.replace(/'/g, "\\'")}', '${contact.contactName.replace(/'/g, "\\'")}')" 
-                                        style="padding: 4px 10px; font-size: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                    Manage
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            document.getElementById('contactsTypeContainer').innerHTML = html;
-        }
-        
-        function filterContactsTable() {
-            const searchTerm = document.getElementById('contactsSearchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#contactsTableBody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        }
-        
-        function closeContactsByTypeModal() {
-            document.getElementById('contactsByTypeModal').classList.remove('active');
-            document.getElementById('contactsSearchInput').value = '';
-        }
-        
-        function exportContactsToCSV() {
-            let csv = 'Company,Contact Name,Role,Email,Phone,Is Admin,Is Contact Manager,Status\n';
-            
-            allContactsData.forEach(contact => {
-                csv += `"${contact.companyName}","${contact.contactName}","${contact.contactRole || ''}","${contact.contactEmail || ''}","${contact.contactPhone || ''}","${contact.isOrganizationAdmin ? 'Yes' : 'No'}","${contact.canManageContacts ? 'Yes' : 'No'}","${contact.isActive ? 'Active' : 'Inactive'}"\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${currentContactsType}_contacts_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
-        
-        async function resetPassword() {
-            const userId = document.getElementById('profileUserId').value;
-            const newPassword = prompt('Enter new password for the user:');
-            
-            if (!newPassword) return;
-            
-            try {
-                const response = await fetch(`/api/users/${userId}/reset-password`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ newPassword })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('Password reset successfully');
-                    document.getElementById('profileRequiresPasswordChange').value = 'true';
-                } else {
-                    alert('Error resetting password: ' + (result.message || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error resetting password:', error);
-                alert('Error resetting password');
-            }
-        }
-        
-        // Load users on page load
-        loadUsers();
-        
-        // Navbar logout function
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = '/index.html';
-        }
-        
-        // Initialize user display in navbar
-        function initializeUserDisplay() {
-            const userData = localStorage.getItem('currentUser');
-            if (userData) {
-                try {
-                    const user = JSON.parse(userData);
-                    
-                    // Determine display name with fallbacks
-                    let displayName = 'User';
-                    if (user.firstName && user.lastName) {
-                        displayName = `${user.firstName} ${user.lastName}`;
-                    } else if (user.displayName) {
-                        displayName = user.displayName;
-                    } else if (user.username) {
-                        displayName = user.username;
-                    } else if (user.email) {
-                        displayName = user.email.split('@')[0];
-                    }
-                    
-                    // Determine role
-                    const role = user.role || user.typeName || 'User';
-                    
-                    // Create initials for avatar
-                    let initials = 'U';
-                    if (user.firstName && user.lastName) {
-                        initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-                    } else if (displayName && displayName !== 'User') {
-                        const nameParts = displayName.split(' ');
-                        if (nameParts.length >= 2) {
-                            initials = `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-                        } else {
-                            initials = displayName.substring(0, 2).toUpperCase();
-                        }
-                    }
-                    
-                    // Update navbar elements
-                    const firstNameElement = document.getElementById('navUserFirstName');
-                    const avatarElement = document.getElementById('navUserAvatar');
-                    const currentUserElement = document.getElementById('currentUser');
-                    
-                    if (firstNameElement) {
-                        const firstName = user.firstName || displayName.split(' ')[0] || 'User';
-                        firstNameElement.textContent = firstName;
-                    }
-                    if (avatarElement) avatarElement.textContent = initials;
-                    if (currentUserElement) currentUserElement.textContent = displayName;
-                } catch (error) {
-                    console.error('Error parsing user data:', error);
-                    setDefaultUser();
-                }
-            } else {
-                setDefaultUser();
-            }
-        }
-        
-        // Set default user display
-        function setDefaultUser() {
-            const firstNameElement = document.getElementById('navUserFirstName');
-            const avatarElement = document.getElementById('navUserAvatar');
-            const currentUserElement = document.getElementById('currentUser');
-            
-            if (firstNameElement) firstNameElement.textContent = 'Guest';
-            if (avatarElement) avatarElement.textContent = 'GU';
-            if (currentUserElement) currentUserElement.textContent = 'Guest';
-        }
-        
-        // Initialize user display
-        initializeUserDisplay();
-        
-        // Reload display on window resize for responsive changes
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                if (allUsers.length > 0) {
-                    filterUsers();
-                }
-            }, 250);
-        });
-        
-        // Update phone area code when country changes
-        function updatePhoneAreaCode(country) {
-            const phoneInput = document.getElementById('profilePhoneNumber');
-            
-            // Only update if phone is empty or just has an area code
-            if (!phoneInput.value || phoneInput.value.match(/^\+\d{1,4}\s*$/)) {
-                const areaCode = getAreaCodeForCountry(country);
-                if (areaCode) {
-                    phoneInput.value = areaCode + ' ';
-                    phoneInput.placeholder = areaCode + ' 234 567 8900';
-                } else {
-                    phoneInput.placeholder = '+1 234 567 8900';
-                }
-            }
-        }
-        
-        // Function to close modal and reset its data
-        function closeModalAndReset(modal) {
-            modal.classList.remove('active');
-            
-            // Reset form data in modals
-            const modalId = modal.id;
-            
-            switch(modalId) {
-                case 'userProfileModal':
-                    // Reset user profile form without saving
-                    document.getElementById('userProfileForm').reset();
-                    // Clear contacts list
-                    document.getElementById('profileContactsList').innerHTML = '<div class="loading" style="text-align: center; color: #999;">Loading contacts...</div>';
-                    break;
-                    
-                case 'contactPermissionsModal':
-                    // Reset contact permissions form without saving
-                    document.getElementById('contactPermissionsForm').reset();
-                    break;
-                    
-                case 'addContactModal':
-                    // Reset add contact form without saving
-                    document.getElementById('addContactForm').reset();
-                    break;
-                    
-                case 'companyContactsModal':
-                    // Just close, no form to reset
-                    break;
-                    
-                case 'contactsByTypeModal':
-                    // Clear search input
-                    document.getElementById('contactsSearchInput').value = '';
-                    break;
-                    
-                case 'supplierProductsModal':
-                    // Just close, no form to reset
-                    break;
-                    
-                case 'importModal':
-                    // Clear import results if any
-                    document.getElementById('importResults').innerHTML = '';
-                    break;
-            }
-        }
-        
-        // ESC key handler to close modals
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' || event.keyCode === 27) {
-                // Close any open modal
-                const modals = document.querySelectorAll('.modal.active');
-                modals.forEach(modal => {
-                    closeModalAndReset(modal);
-                });
-                
-                // Also close any dropdown menus
-                const contactsDropdown = document.getElementById('contactsDropdown');
-                if (contactsDropdown) {
-                    contactsDropdown.style.display = 'none';
-                }
-            }
-        });
-        
-        // Click outside modal to close
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModalAndReset(event.target);
-            }
-        });
-        
-        // Prevent form submission on ESC key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' || event.keyCode === 27) {
-                // Prevent any default actions
-                event.preventDefault();
-                event.stopPropagation();
-            }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
         });
     </script>
-    
-    <!-- Global Keyboard Shortcuts -->
-    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>

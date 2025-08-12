@@ -4,1088 +4,904 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile - FDX Trading</title>
+    <!-- Theme Initialization (must be first) -->
+    <script src="/js/theme-init.js"></script>
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css?v=3">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            /* Modern Color Palette */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --secondary-light: #f472b6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Grays */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Backgrounds */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            
+            /* Text colors */
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --text-on-primary: #ffffff;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
+
+        /* Dashboard-style container */
+        .profile-container {
+            padding: 24px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: 20px;
         }
-        
-        .profile-card {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        
-        .profile-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 30px;
-            margin-bottom: 40px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .profile-image-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .profile-image-container {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid #667eea;
-            background: #f5f5f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .profile-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: white;
-            padding: 5px;
-            box-sizing: border-box;
-        }
-        
-        .profile-placeholder {
-            font-size: 4rem;
-            color: #999;
-        }
-        
-        .upload-section {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            max-width: 300px;
-        }
-        
-        .editing .upload-section {
-            display: flex;
-        }
-        
-        .upload-tabs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        
-        .upload-tab {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 0.85rem;
-        }
-        
-        .upload-tab.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .upload-content {
-            display: none;
-        }
-        
-        .upload-content.active {
-            display: block;
-        }
-        
-        .file-input-wrapper {
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: var(--text-on-primary);
+            margin-bottom: 32px;
             position: relative;
             overflow: hidden;
-            display: inline-block;
-            width: 100%;
+            box-shadow: var(--shadow-xl);
         }
-        
-        .file-input-wrapper input[type=file] {
+
+        .page-header::before {
+            content: '';
             position: absolute;
-            left: -9999px;
+            top: -50%;
+            right: -10%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
         }
-        
-        .file-input-button {
-            display: block;
-            width: 100%;
-            padding: 8px 15px;
-            background: #667eea;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        /* Main Layout */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        body.dark-mode .card {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+
+        /* Profile Card */
+        .profile-card {
             text-align: center;
         }
-        
-        .file-input-button:hover {
-            background: #5a67d8;
+
+        .avatar-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
         }
-        
-        .avatar-option {
-            width: 50px;
-            height: 50px;
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            border: 2px solid #e0e0e0;
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
+            object-fit: cover;
+        }
+
+        .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
             background: white;
-        }
-        
-        .avatar-option:hover {
-            border-color: #667eea;
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .avatar-option.selected {
-            border-color: #667eea;
-            background: #f0f4ff;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-        
-        .profile-info {
-            flex: 1;
-        }
-        
-        .user-name {
-            font-size: 2rem;
-            color: #333;
-            margin-bottom: 10px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-        
-        .user-role {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            display: inline-block;
-        }
-        
-        .user-meta {
-            color: #666;
-            margin-top: 10px;
-        }
-        
-        .profile-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .detail-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .detail-label {
-            color: #666;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .detail-value {
-            color: #333;
-            font-size: 1.1rem;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            border: 1px solid transparent;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
             transition: all 0.3s;
         }
-        
-        .view-mode {
+
+        body.dark-mode .avatar-edit {
+            background: var(--gray-700);
+        }
+
+        .avatar-edit:hover {
+            transform: scale(1.1);
+        }
+
+        .avatar-edit svg {
+            width: 16px;
+            height: 16px;
+            color: var(--primary);
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        body.dark-mode .profile-stats {
+            border-top-color: var(--gray-700);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Form Groups */
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
             display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
         }
-        
-        .edit-mode {
-            display: none;
-        }
-        
-        .editing .view-mode {
-            display: none;
-        }
-        
-        .editing .edit-mode {
-            display: block;
-        }
-        
-        .edit-mode input,
-        .edit-mode select {
+
+        .form-input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-family: inherit;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
-        
-        .edit-mode input:focus,
-        .edit-mode select:focus {
+
+        body.dark-mode .form-input {
+            background: var(--bg-secondary);
+            border-color: var(--gray-600);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid #f0f0f0;
+
+        .form-input:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+            opacity: 0.6;
         }
-        
+
+        /* Buttons */
         .btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
         .btn-primary {
-            background: #667eea;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
         }
-        
+
         .btn-primary:hover {
-            background: #5a67d8;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
         }
-        
-        .btn-success {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #38a169;
-        }
-        
-        .btn-danger {
-            background: #f56565;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #e53e3e;
-        }
-        
+
         .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: var(--gray-100);
+            color: var(--text-primary);
         }
-        
-        .btn-secondary:hover {
-            background: #667eea;
+
+        body.dark-mode .btn-secondary {
+            background: var(--gray-700);
             color: white;
         }
-        
-        .back-btn {
-            background: #f0f0f0;
-            color: #333;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: var(--gray-600);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Activity List */
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        body.dark-mode .activity-item {
+            border-bottom-color: var(--gray-800);
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .activity-icon.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        .activity-icon.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .activity-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Settings List */
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        body.dark-mode .setting-item {
+            border-bottom-color: var(--gray-800);
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: var(--gray-300);
+            border-radius: 12px;
+            cursor: pointer;
             transition: background 0.3s;
         }
-        
-        .back-btn:hover {
-            background: #e0e0e0;
+
+        .toggle-switch.active {
+            background: var(--primary);
         }
-        
-        @media (max-width: 768px) {
-            .profile-header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+
+        /* Alert */
+        .alert {
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
             }
-            
-            .profile-details {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f1419 0%, #1a1d24 100%);
+        }
+
+        body.dark-mode .page-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .profile-layout {
                 grid-template-columns: 1fr;
             }
-            
-            .action-buttons {
-                flex-direction: column;
+
+            .form-grid {
+                grid-template-columns: 1fr;
             }
-            
-            .btn {
-                width: 100%;
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 24px;
+            }
+
+            .page-title {
+                font-size: 28px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav style="background: rgba(255, 255, 255, 0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 999; padding: 10px 20px;">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-            <a href="/dashboard.html" style="display: flex; align-items: center; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.5rem;">
-                <div style="width: 40px; height: 40px; margin-right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">FDX</div>
-                <span>FDX Trading</span>
-            </a>
-            
-            <div style="display: flex; gap: 5px;">
-                <a href="/dashboard.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Dashboard</a>
-                <a href="/requests.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Requests</a>
-                <a href="/products.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Products</a>
-                <a href="/supplier-catalog.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Suppliers</a>
-                <a href="/price-management.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Pricing</a>
-                <a href="/users.html" style="padding: 8px 16px; color: #555; text-decoration: none; border-radius: 5px; font-weight: 500;">Users</a>
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
-                    <div style="text-align: right; cursor: pointer;">
-                        <div style="font-weight: 600; color: #333;" id="navUserName">Loading...</div>
-                        <div style="font-size: 0.85rem; color: #666;" id="navUserRole">Role</div>
-                    </div>
-                </a>
-                <button onclick="logout()" style="padding: 8px 16px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Logout</button>
+    <div class="profile-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    User Profile
+                </h1>
+                <p class="page-subtitle">Manage your account settings and preferences</p>
             </div>
         </div>
-    </nav>
 
-    <div class="container">
-        <a href="/dashboard.html" class="back-btn">← Back to Dashboard</a>
-        
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-image-section">
-                    <div class="profile-image-container">
-                        <img id="profileImage" style="display: none;" alt="Profile Picture">
-                        <span class="profile-placeholder" id="profilePlaceholder">👤</span>
+        <!-- Alert Message -->
+        <div id="alertMessage" class="alert"></div>
+
+        <!-- Main Layout -->
+        <div class="profile-layout">
+            <!-- Left Sidebar -->
+            <aside>
+                <!-- Profile Card -->
+                <div class="card profile-card">
+                    <div class="avatar-container">
+                        <div class="avatar" id="userAvatar">
+                            <span id="avatarInitials">JD</span>
+                        </div>
+                        <div class="avatar-edit" onclick="changeAvatar()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
                     </div>
+                    <h2 class="profile-name" id="profileName">John Doe</h2>
+                    <p class="profile-role" id="profileRole">Administrator</p>
                     
-                    <div class="upload-section">
-                        <div class="upload-tabs">
-                            <button class="upload-tab active" onclick="switchUploadTab('avatar')">Avatar</button>
-                            <button class="upload-tab" onclick="switchUploadTab('url')">URL</button>
-                            <button class="upload-tab" onclick="switchUploadTab('file')">Upload</button>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-value" id="requestCount">24</div>
+                            <div class="stat-label">Requests</div>
                         </div>
-                        <div class="upload-content active" id="avatarUploadContent">
-                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
-                                <div class="avatar-option" onclick="selectAvatar('👤')" title="Default">👤</div>
-                                <div class="avatar-option" onclick="selectAvatar('👨')" title="Man">👨</div>
-                                <div class="avatar-option" onclick="selectAvatar('👩')" title="Woman">👩</div>
-                                <div class="avatar-option" onclick="selectAvatar('👨‍💼')" title="Business Man">👨‍💼</div>
-                                <div class="avatar-option" onclick="selectAvatar('👩‍💼')" title="Business Woman">👩‍💼</div>
-                                <div class="avatar-option" onclick="selectAvatar('👨‍💻')" title="Developer">👨‍💻</div>
-                                <div class="avatar-option" onclick="selectAvatar('👩‍💻')" title="Developer">👩‍💻</div>
-                                <div class="avatar-option" onclick="selectAvatar('🧑‍💼')" title="Professional">🧑‍💼</div>
-                                <div class="avatar-option" onclick="selectAvatar('😊')" title="Happy">😊</div>
-                                <div class="avatar-option" onclick="selectAvatar('😎')" title="Cool">😎</div>
-                                <div class="avatar-option" onclick="selectAvatar('🤓')" title="Nerdy">🤓</div>
-                                <div class="avatar-option" onclick="selectAvatar('🦸')" title="Hero">🦸</div>
+                        <div class="stat">
+                            <div class="stat-value" id="lastActive">2h</div>
+                            <div class="stat-label">Last Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Card -->
+                <div class="card" style="margin-top: 24px;">
+                    <h3 class="card-title">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Recent Activity
+                    </h3>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <div class="activity-icon success">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
                             </div>
-                            <button onclick="selectAvatar(null)" style="width: 100%; margin-top: 10px; padding: 8px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">Remove Avatar</button>
-                        </div>
-                        <div class="upload-content" id="urlUploadContent">
-                            <input type="url" id="imageUrlInput" placeholder="Enter image URL" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                        </div>
-                        <div class="upload-content" id="fileUploadContent">
-                            <div class="file-input-wrapper">
-                                <input type="file" id="imageFileInput" accept="image/*" onchange="handleImageFileSelect(event)">
-                                <label for="imageFileInput" class="file-input-button">Choose Image</label>
+                            <div class="activity-content">
+                                <div class="activity-title">Profile updated</div>
+                                <div class="activity-time">2 hours ago</div>
                             </div>
-                            <span id="selectedFileName" style="text-align: center; font-size: 0.85rem; color: #666;"></span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon info">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">New request created</div>
+                                <div class="activity-time">5 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon warning">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Password changed</div>
+                                <div class="activity-time">Yesterday</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="profile-info">
-                    <h1 class="user-name">
-                        <span id="displayName">Loading...</span>
-                        <span class="user-role" id="userRole">User</span>
-                    </h1>
-                    <div class="user-meta">
-                        <p>Member since: <span id="memberSince">-</span></p>
-                        <p>User ID: <span id="userId">-</span></p>
+            </aside>
+
+            <!-- Main Content -->
+            <main>
+                <!-- Personal Information -->
+                <div class="card">
+                    <h3 class="card-title">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Personal Information
+                    </h3>
+                    
+                    <form id="profileForm">
+                        <div class="form-section">
+                            <div class="section-title">Basic Information</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="firstName">First Name</label>
+                                    <input type="text" id="firstName" class="form-input" value="John">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" class="form-input" value="Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="email">Email Address</label>
+                                    <input type="email" id="email" class="form-input" value="john.doe@fdxtrading.com">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" class="form-input" value="+1 234 567 8900">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label class="form-label" for="bio">Bio</label>
+                                    <textarea id="bio" class="form-input" rows="3" placeholder="Tell us about yourself..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-title">Work Information</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="department">Department</label>
+                                    <select id="department" class="form-input">
+                                        <option>Operations</option>
+                                        <option>Finance</option>
+                                        <option>IT</option>
+                                        <option>HR</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="role">Role</label>
+                                    <input type="text" id="role" class="form-input" value="Administrator" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="employeeId">Employee ID</label>
+                                    <input type="text" id="employeeId" class="form-input" value="EMP-001234" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="joinDate">Join Date</label>
+                                    <input type="date" id="joinDate" class="form-input" value="2022-01-15" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                    <path d="M21 3v5h-5"/>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                    <path d="M8 16H3v5"/>
+                                </svg>
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="card" style="margin-top: 24px;">
+                    <h3 class="card-title">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Security Settings
+                    </h3>
+
+                    <div class="settings-list">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Two-Factor Authentication</div>
+                                <div class="setting-description">Add an extra layer of security to your account</div>
+                            </div>
+                            <div class="toggle-switch" id="toggle2FA" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Email Notifications</div>
+                                <div class="setting-description">Receive email alerts for important activities</div>
+                            </div>
+                            <div class="toggle-switch active" id="toggleEmail" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Login Alerts</div>
+                                <div class="setting-description">Get notified when someone logs into your account</div>
+                            </div>
+                            <div class="toggle-switch" id="toggleLogin" onclick="toggleSetting(this)"></div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group" style="margin-top: 24px;">
+                        <button class="btn btn-secondary" onclick="changePassword()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            Change Password
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteAccount()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                            Delete Account
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <div class="profile-details">
-                <div class="detail-group">
-                    <label class="detail-label">First Name</label>
-                    <div class="detail-value view-mode" id="firstNameView">-</div>
-                    <input class="edit-mode" id="firstNameInput" type="text" placeholder="Enter first name">
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">Last Name</label>
-                    <div class="detail-value view-mode" id="lastNameView">-</div>
-                    <input class="edit-mode" id="lastNameInput" type="text" placeholder="Enter last name">
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">Email (Login) <span style="color: #999; font-size: 0.8rem;" title="Email cannot be changed as it's your login ID">🔒</span></label>
-                    <div class="detail-value view-mode" id="emailView">-</div>
-                    <input class="edit-mode" id="emailInput" type="email" placeholder="Enter email" readonly style="background-color: #f0f0f0; cursor: not-allowed;" title="Email cannot be changed as it's your login ID">
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">Phone Number</label>
-                    <div class="detail-value view-mode" id="phoneView">-</div>
-                    <div class="edit-mode" style="display: flex; gap: 5px;">
-                        <select id="countryCodeSelect" style="width: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+33">🇫🇷 +33</option>
-                            <option value="+49">🇩🇪 +49</option>
-                            <option value="+39">🇮🇹 +39</option>
-                            <option value="+34">🇪🇸 +34</option>
-                            <option value="+31">🇳🇱 +31</option>
-                            <option value="+32">🇧🇪 +32</option>
-                            <option value="+41">🇨🇭 +41</option>
-                            <option value="+46">🇸🇪 +46</option>
-                            <option value="+47">🇳🇴 +47</option>
-                            <option value="+45">🇩🇰 +45</option>
-                            <option value="+358">🇫🇮 +358</option>
-                            <option value="+48">🇵🇱 +48</option>
-                            <option value="+420">🇨🇿 +420</option>
-                            <option value="+43">🇦🇹 +43</option>
-                            <option value="+30">🇬🇷 +30</option>
-                            <option value="+351">🇵🇹 +351</option>
-                            <option value="+353">🇮🇪 +353</option>
-                            <option value="+972">🇮🇱 +972</option>
-                            <option value="+966">🇸🇦 +966</option>
-                            <option value="+971">🇦🇪 +971</option>
-                            <option value="+20">🇪🇬 +20</option>
-                            <option value="+27">🇿🇦 +27</option>
-                            <option value="+234">🇳🇬 +234</option>
-                            <option value="+254">🇰🇪 +254</option>
-                            <option value="+212">🇲🇦 +212</option>
-                            <option value="+216">🇹🇳 +216</option>
-                            <option value="+90">🇹🇷 +90</option>
-                            <option value="+91">🇮🇳 +91</option>
-                            <option value="+86">🇨🇳 +86</option>
-                            <option value="+81">🇯🇵 +81</option>
-                            <option value="+82">🇰🇷 +82</option>
-                            <option value="+65">🇸🇬 +65</option>
-                            <option value="+60">🇲🇾 +60</option>
-                            <option value="+62">🇮🇩 +62</option>
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+66">🇹🇭 +66</option>
-                            <option value="+84">🇻🇳 +84</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+64">🇳🇿 +64</option>
-                            <option value="+7">🇷🇺 +7</option>
-                            <option value="+380">🇺🇦 +380</option>
-                            <option value="+52">🇲🇽 +52</option>
-                            <option value="+55">🇧🇷 +55</option>
-                            <option value="+54">🇦🇷 +54</option>
-                            <option value="+56">🇨🇱 +56</option>
-                            <option value="+57">🇨🇴 +57</option>
-                            <option value="+58">🇻🇪 +58</option>
-                            <option value="+51">🇵🇪 +51</option>
-                        </select>
-                        <input id="phoneInput" type="tel" placeholder="Enter phone number" style="flex: 1;">
-                    </div>
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">Company Name</label>
-                    <div class="detail-value view-mode" id="companyView">-</div>
-                    <input class="edit-mode" id="companyInput" type="text" placeholder="Enter company name">
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">Country</label>
-                    <div class="detail-value view-mode" id="countryView">-</div>
-                    <input class="edit-mode" id="countryInput" type="text" placeholder="Enter country">
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">Address</label>
-                    <div class="detail-value view-mode" id="addressView">-</div>
-                    <input class="edit-mode" id="addressInput" type="text" placeholder="Enter address">
-                </div>
-                
-                <div class="detail-group">
-                    <label class="detail-label">Website</label>
-                    <div class="detail-value view-mode" id="websiteView">-</div>
-                    <input class="edit-mode" id="websiteInput" type="url" placeholder="Enter website URL">
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="btn btn-primary view-mode" onclick="enableEditMode()">✏️ Edit Profile</button>
-                <button class="btn btn-success edit-mode" onclick="saveChanges()">✓ Save Changes</button>
-                <button class="btn btn-danger edit-mode" onclick="cancelEdit()">✗ Cancel</button>
-                <button class="btn btn-secondary" onclick="changePassword()">🔒 Change Password</button>
-            </div>
+            </main>
         </div>
     </div>
 
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
+    <script src="/js/universal-dark-mode.js"></script>
+
     <script>
-        let currentUser = null;
-        let originalValues = {};
-        let selectedImageData = null;
-        let selectedAvatar = null;
-        
-        // Country to country code mapping
-        const countryCodeMap = {
-            'USA': '+1', 'United States': '+1', 'US': '+1', 'America': '+1', 'Canada': '+1',
-            'UK': '+44', 'United Kingdom': '+44', 'England': '+44', 'Britain': '+44', 'GB': '+44',
-            'France': '+33', 'FR': '+33',
-            'Germany': '+49', 'DE': '+49', 'Deutschland': '+49',
-            'Italy': '+39', 'IT': '+39', 'Italia': '+39',
-            'Spain': '+34', 'ES': '+34', 'España': '+34',
-            'Netherlands': '+31', 'NL': '+31', 'Holland': '+31',
-            'Belgium': '+32', 'BE': '+32',
-            'Switzerland': '+41', 'CH': '+41',
-            'Sweden': '+46', 'SE': '+46',
-            'Norway': '+47', 'NO': '+47',
-            'Denmark': '+45', 'DK': '+45',
-            'Finland': '+358', 'FI': '+358',
-            'Poland': '+48', 'PL': '+48',
-            'Czech Republic': '+420', 'CZ': '+420', 'Czechia': '+420',
-            'Austria': '+43', 'AT': '+43',
-            'Greece': '+30', 'GR': '+30',
-            'Portugal': '+351', 'PT': '+351',
-            'Ireland': '+353', 'IE': '+353',
-            'Israel': '+972', 'IL': '+972',
-            'Saudi Arabia': '+966', 'SA': '+966',
-            'UAE': '+971', 'United Arab Emirates': '+971',
-            'Egypt': '+20', 'EG': '+20',
-            'South Africa': '+27', 'ZA': '+27',
-            'Nigeria': '+234', 'NG': '+234',
-            'Kenya': '+254', 'KE': '+254',
-            'Morocco': '+212', 'MA': '+212',
-            'Tunisia': '+216', 'TN': '+216',
-            'Turkey': '+90', 'TR': '+90', 'Türkiye': '+90',
-            'India': '+91', 'IN': '+91',
-            'China': '+86', 'CN': '+86',
-            'Japan': '+81', 'JP': '+81',
-            'South Korea': '+82', 'Korea': '+82', 'KR': '+82',
-            'Singapore': '+65', 'SG': '+65',
-            'Malaysia': '+60', 'MY': '+60',
-            'Indonesia': '+62', 'ID': '+62',
-            'Philippines': '+63', 'PH': '+63',
-            'Thailand': '+66', 'TH': '+66',
-            'Vietnam': '+84', 'VN': '+84',
-            'Australia': '+61', 'AU': '+61',
-            'New Zealand': '+64', 'NZ': '+64',
-            'Russia': '+7', 'RU': '+7',
-            'Ukraine': '+380', 'UA': '+380',
-            'Mexico': '+52', 'MX': '+52',
-            'Brazil': '+55', 'BR': '+55', 'Brasil': '+55',
-            'Argentina': '+54', 'AR': '+54',
-            'Chile': '+56', 'CL': '+56',
-            'Colombia': '+57', 'CO': '+57',
-            'Venezuela': '+58', 'VE': '+58',
-            'Peru': '+51', 'PE': '+51'
-        };
-        
-        // Function to get country code from country name
-        function getCountryCode(country) {
-            if (!country) return '+1'; // Default to US
-            
-            // Try exact match first
-            for (const [countryName, code] of Object.entries(countryCodeMap)) {
-                if (country.toLowerCase() === countryName.toLowerCase()) {
-                    return code;
+        // Initialize profile
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+        });
+
+        // Load user profile
+        function loadUserProfile() {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    
+                    // Update profile display
+                    document.getElementById('firstName').value = user.firstName || '';
+                    document.getElementById('lastName').value = user.lastName || '';
+                    document.getElementById('email').value = user.email || '';
+                    document.getElementById('profileName').textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User';
+                    document.getElementById('profileRole').textContent = user.role || 'User';
+                    
+                    // Update avatar
+                    const initials = `${(user.firstName || 'U')[0]}${(user.lastName || '')[0] || ''}`.toUpperCase();
+                    document.getElementById('avatarInitials').textContent = initials;
+                } catch (error) {
+                    console.error('Error loading user profile:', error);
                 }
             }
-            
-            // Try partial match
-            for (const [countryName, code] of Object.entries(countryCodeMap)) {
-                if (country.toLowerCase().includes(countryName.toLowerCase()) || 
-                    countryName.toLowerCase().includes(country.toLowerCase())) {
-                    return code;
-                }
-            }
-            
-            return '+1'; // Default to US if no match
         }
-        
-        // Function to parse phone number with country code
-        function parsePhoneNumber(phoneNumber) {
-            if (!phoneNumber || phoneNumber === '-') return { code: '', number: '' };
+
+        // Handle form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Remove all non-digit characters except +
-            const cleaned = phoneNumber.replace(/[^\d+]/g, '');
-            
-            // Check if it starts with a country code
-            if (cleaned.startsWith('+')) {
-                // Try to match known country codes (longest first)
-                const codes = ['+972', '+966', '+971', '+234', '+254', '+212', '+216', '+380', '+420', '+353', '+351', '+358'];
-                for (const code of codes) {
-                    if (cleaned.startsWith(code)) {
-                        return { code: code, number: cleaned.substring(code.length) };
-                    }
-                }
-                
-                // Try 2-digit codes
-                const codes2 = ['+20', '+27', '+30', '+31', '+32', '+33', '+34', '+39', '+41', '+43', '+44', '+45', '+46', '+47', '+48', '+49', '+51', '+52', '+54', '+55', '+56', '+57', '+58', '+60', '+61', '+62', '+63', '+64', '+65', '+66', '+81', '+82', '+84', '+86', '+90', '+91'];
-                for (const code of codes2) {
-                    if (cleaned.startsWith(code)) {
-                        return { code: code, number: cleaned.substring(code.length) };
-                    }
-                }
-                
-                // Try 1-digit codes
-                if (cleaned.startsWith('+1') || cleaned.startsWith('+7')) {
-                    return { code: cleaned.substring(0, 2), number: cleaned.substring(2) };
-                }
-            }
-            
-            // If no country code, return as is
-            return { code: '', number: cleaned };
-        }
-        
-        // Function to format phone for display
-        function formatPhoneDisplay(phoneNumber) {
-            if (!phoneNumber || phoneNumber === '-') return '-';
-            const { code, number } = parsePhoneNumber(phoneNumber);
-            if (code && number) {
-                return `${code} ${number}`;
-            }
-            return phoneNumber;
-        }
-        
-        // Load user profile on page load
-        async function loadUserProfile() {
-            const storedUser = localStorage.getItem('currentUser');
-            if (!storedUser) {
-                alert('Please login first');
-                window.location.href = '/index.html';
-                return;
-            }
-            
-            currentUser = JSON.parse(storedUser);
-            
-            // Ensure email is set (use username as email since username IS the email in this system)
-            if (!currentUser.email && currentUser.username) {
-                currentUser.email = currentUser.username;
-            }
-            
-            // Update navbar
-            const displayName = (currentUser.firstName && currentUser.lastName) 
-                ? `${currentUser.firstName} ${currentUser.lastName}` 
-                : currentUser.displayName || currentUser.username;
-            
-            document.getElementById('navUserName').textContent = displayName;
-            document.getElementById('navUserRole').textContent = currentUser.role || currentUser.typeName || 'User';
-            
-            // Load full user details from API
-            try {
-                const response = await fetch(`/api/users/${currentUser.id}`);
-                if (response.ok) {
-                    const userData = await response.json();
-                    // Ensure email is set (use username as email since username IS the email)
-                    if (!userData.email && userData.username) {
-                        userData.email = userData.username;
-                    }
-                    displayUserInfo(userData);
-                } else {
-                    // Use local storage data if API fails
-                    displayUserInfo(currentUser);
-                }
-            } catch (error) {
-                console.error('Error loading user profile:', error);
-                // Use local storage data if API fails
-                displayUserInfo(currentUser);
-            }
-        }
-        
-        function displayUserInfo(user) {
-            // Update display name
-            const displayName = (user.firstName && user.lastName) 
-                ? `${user.firstName} ${user.lastName}` 
-                : user.displayName || user.username || 'Unknown User';
-            
-            document.getElementById('displayName').textContent = displayName;
-            document.getElementById('userRole').textContent = user.role || user.typeName || 'User';
-            document.getElementById('userId').textContent = user.id || '-';
-            
-            // Format member since date
-            if (user.createdAt) {
-                const date = new Date(user.createdAt);
-                document.getElementById('memberSince').textContent = date.toLocaleDateString();
-            }
-            
-            // Display profile image or avatar
-            const profileImg = document.getElementById('profileImage');
-            const placeholder = document.getElementById('profilePlaceholder');
-            
-            if (user.profileImage) {
-                // Check if it's an avatar (emoji) or actual image
-                if (user.profileImage.length <= 4 && !user.profileImage.startsWith('http') && !user.profileImage.startsWith('data:')) {
-                    // It's an avatar emoji
-                    profileImg.style.display = 'none';
-                    placeholder.style.display = 'block';
-                    placeholder.textContent = user.profileImage;
-                    placeholder.style.fontSize = '4rem';
-                } else {
-                    // It's a real image
-                    profileImg.src = user.profileImage;
-                    profileImg.style.display = 'block';
-                    placeholder.style.display = 'none';
-                }
-            } else {
-                // No profile image - use default avatar
-                profileImg.style.display = 'none';
-                placeholder.style.display = 'block';
-                placeholder.textContent = '👤';
-                placeholder.style.fontSize = '4rem';
-            }
-            
-            // Update detail fields
-            document.getElementById('firstNameView').textContent = user.firstName || '-';
-            document.getElementById('lastNameView').textContent = user.lastName || '-';
-            // Always show email - it should never be empty since it's the login
-            document.getElementById('emailView').textContent = user.email || user.username || '-';
-            document.getElementById('emailInput').value = user.email || user.username || '';
-            document.getElementById('phoneView').textContent = formatPhoneDisplay(user.phoneNumber);
-            document.getElementById('companyView').textContent = user.companyName || '-';
-            document.getElementById('countryView').textContent = user.country || '-';
-            document.getElementById('addressView').textContent = user.address || '-';
-            document.getElementById('websiteView').textContent = user.website || '-';
-            
-            // Store current user data
-            currentUser = user;
-        }
-        
-        function switchUploadTab(tabType) {
-            // Remove active class from all tabs and contents
-            document.querySelectorAll('.upload-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.upload-content').forEach(content => content.classList.remove('active'));
-            
-            // Add active class to selected tab and content
-            if (tabType === 'avatar') {
-                document.querySelector('.upload-tab:nth-child(1)').classList.add('active');
-                document.getElementById('avatarUploadContent').classList.add('active');
-            } else if (tabType === 'url') {
-                document.querySelector('.upload-tab:nth-child(2)').classList.add('active');
-                document.getElementById('urlUploadContent').classList.add('active');
-            } else if (tabType === 'file') {
-                document.querySelector('.upload-tab:nth-child(3)').classList.add('active');
-                document.getElementById('fileUploadContent').classList.add('active');
-            }
-        }
-        
-        function selectAvatar(avatar) {
-            // Remove selected class from all avatars
-            document.querySelectorAll('.avatar-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            if (avatar === null) {
-                // Remove avatar - revert to default
-                selectedAvatar = null;
-                const profileImg = document.getElementById('profileImage');
-                const placeholder = document.getElementById('profilePlaceholder');
-                profileImg.style.display = 'none';
-                placeholder.style.display = 'block';
-                placeholder.textContent = '👤';
-            } else {
-                // Set selected avatar
-                selectedAvatar = avatar;
-                
-                // Mark as selected
-                document.querySelectorAll('.avatar-option').forEach(option => {
-                    if (option.textContent === avatar) {
-                        option.classList.add('selected');
-                    }
-                });
-                
-                // Update the profile display
-                const profileImg = document.getElementById('profileImage');
-                const placeholder = document.getElementById('profilePlaceholder');
-                profileImg.style.display = 'none';
-                placeholder.style.display = 'block';
-                placeholder.textContent = avatar;
-                placeholder.style.fontSize = '4rem';
-            }
-            
-            // Clear other upload methods
-            selectedImageData = null;
-            document.getElementById('imageUrlInput').value = '';
-            document.getElementById('imageFileInput').value = '';
-            document.getElementById('selectedFileName').textContent = '';
-        }
-        
-        function handleImageFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                document.getElementById('selectedFileName').textContent = file.name;
-                
-                // Clear avatar selection
-                selectedAvatar = null;
-                document.querySelectorAll('.avatar-option').forEach(option => {
-                    option.classList.remove('selected');
-                });
-                
-                // Convert to base64
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedImageData = e.target.result;
-                    // Preview the image
-                    const profileImg = document.getElementById('profileImage');
-                    const placeholder = document.getElementById('profilePlaceholder');
-                    profileImg.src = selectedImageData;
-                    profileImg.style.display = 'block';
-                    placeholder.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function enableEditMode() {
-            // Store original values
-            originalValues = {
-                firstName: document.getElementById('firstNameView').textContent,
-                lastName: document.getElementById('lastNameView').textContent,
-                email: document.getElementById('emailView').textContent,
-                phone: document.getElementById('phoneView').textContent,
-                company: document.getElementById('companyView').textContent,
-                country: document.getElementById('countryView').textContent,
-                address: document.getElementById('addressView').textContent,
-                website: document.getElementById('websiteView').textContent,
-                profileImage: document.getElementById('profileImage').src
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                bio: document.getElementById('bio').value,
+                department: document.getElementById('department').value
             };
             
-            // Set input values
-            document.getElementById('firstNameInput').value = originalValues.firstName !== '-' ? originalValues.firstName : '';
-            document.getElementById('lastNameInput').value = originalValues.lastName !== '-' ? originalValues.lastName : '';
-            // Email is always from the current user (login email) and read-only - use username as fallback
-            document.getElementById('emailInput').value = currentUser.email || currentUser.username || originalValues.email;
+            // Save to localStorage (in real app, send to API)
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const updatedUser = { ...currentUser, ...formData };
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
             
-            // Handle phone number with country code
-            const phoneData = parsePhoneNumber(currentUser.phoneNumber);
-            if (phoneData.code) {
-                document.getElementById('countryCodeSelect').value = phoneData.code;
-                document.getElementById('phoneInput').value = phoneData.number;
-            } else {
-                // Auto-select country code based on user's country
-                const countryCode = getCountryCode(currentUser.country);
-                document.getElementById('countryCodeSelect').value = countryCode;
-                document.getElementById('phoneInput').value = phoneData.number || '';
-            }
+            // Update display
+            loadUserProfile();
             
-            document.getElementById('companyInput').value = originalValues.company !== '-' ? originalValues.company : '';
-            document.getElementById('countryInput').value = originalValues.country !== '-' ? originalValues.country : '';
-            document.getElementById('addressInput').value = originalValues.address !== '-' ? originalValues.address : '';
-            document.getElementById('websiteInput').value = originalValues.website !== '-' ? originalValues.website : '';
-            
-            // Set image URL input if there's an existing image URL (not base64)
-            if (originalValues.profileImage && !originalValues.profileImage.startsWith('data:')) {
-                document.getElementById('imageUrlInput').value = originalValues.profileImage;
-            }
-            
-            // Add editing class
-            document.querySelector('.profile-card').classList.add('editing');
-            document.querySelector('.profile-image-section').classList.add('editing');
+            // Show success message
+            showAlert('Profile updated successfully!', 'success');
+        });
+
+        // Toggle settings
+        function toggleSetting(element) {
+            element.classList.toggle('active');
         }
-        
-        function cancelEdit() {
-            // Remove editing class
-            document.querySelector('.profile-card').classList.remove('editing');
-            document.querySelector('.profile-image-section').classList.remove('editing');
-            
-            // Restore original values
-            document.getElementById('firstNameView').textContent = originalValues.firstName;
-            document.getElementById('lastNameView').textContent = originalValues.lastName;
-            document.getElementById('emailView').textContent = originalValues.email;
-            document.getElementById('phoneView').textContent = originalValues.phone;
-            document.getElementById('companyView').textContent = originalValues.company;
-            document.getElementById('countryView').textContent = originalValues.country;
-            document.getElementById('addressView').textContent = originalValues.address;
-            document.getElementById('websiteView').textContent = originalValues.website;
-            
-            // Restore original image
-            const profileImg = document.getElementById('profileImage');
-            const placeholder = document.getElementById('profilePlaceholder');
-            if (originalValues.profileImage) {
-                profileImg.src = originalValues.profileImage;
-                profileImg.style.display = 'block';
-                placeholder.style.display = 'none';
-            } else {
-                profileImg.style.display = 'none';
-                placeholder.style.display = 'block';
-            }
-            
-            // Clear temporary data
-            selectedImageData = null;
-            selectedAvatar = null;
-            document.getElementById('imageUrlInput').value = '';
-            document.getElementById('imageFileInput').value = '';
-            document.getElementById('selectedFileName').textContent = '';
-            
-            // Clear avatar selection
-            document.querySelectorAll('.avatar-option').forEach(option => {
-                option.classList.remove('selected');
-            });
+
+        // Reset form
+        function resetForm() {
+            loadUserProfile();
+            showAlert('Form reset to original values', 'success');
         }
-        
-        async function saveChanges() {
-            // Determine which image/avatar to use
-            let profileImageToSave = null;
-            if (selectedAvatar) {
-                // User selected an avatar emoji
-                profileImageToSave = selectedAvatar;
-            } else if (selectedImageData) {
-                // User uploaded a file
-                profileImageToSave = selectedImageData;
-            } else {
-                // Check if URL was entered
-                const urlInput = document.getElementById('imageUrlInput').value.trim();
-                if (urlInput) {
-                    profileImageToSave = urlInput;
-                }
-            }
-            
-            // Get new values
-            const countryCode = document.getElementById('countryCodeSelect').value;
-            const phoneNumber = document.getElementById('phoneInput').value;
-            const fullPhoneNumber = phoneNumber ? `${countryCode}${phoneNumber}` : '';
-            
-            const updateData = {
-                firstName: document.getElementById('firstNameInput').value,
-                lastName: document.getElementById('lastNameInput').value,
-                email: currentUser.email || currentUser.username, // Always use the login email/username
-                phoneNumber: fullPhoneNumber,
-                companyName: document.getElementById('companyInput').value,
-                country: document.getElementById('countryInput').value,
-                address: document.getElementById('addressInput').value,
-                website: document.getElementById('websiteInput').value,
-                profileImage: profileImageToSave || currentUser.profileImage
-            };
-            
-            try {
-                const response = await fetch(`/api/users/${currentUser.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updateData)
-                });
-                
-                if (response.ok) {
-                    const updatedUser = await response.json();
-                    
-                    // Update display
-                    displayUserInfo(updatedUser);
-                    
-                    // Update local storage
-                    const storedUser = JSON.parse(localStorage.getItem('currentUser'));
-                    Object.assign(storedUser, updateData);
-                    localStorage.setItem('currentUser', JSON.stringify(storedUser));
-                    
-                    // Exit edit mode
-                    document.querySelector('.profile-card').classList.remove('editing');
-                    document.querySelector('.profile-image-section').classList.remove('editing');
-                    
-                    // Clear temporary data
-                    selectedImageData = null;
-                    selectedAvatar = null;
-                    document.getElementById('imageUrlInput').value = '';
-                    document.getElementById('imageFileInput').value = '';
-                    document.getElementById('selectedFileName').textContent = '';
-                    
-                    // Clear avatar selection
-                    document.querySelectorAll('.avatar-option').forEach(option => {
-                        option.classList.remove('selected');
-                    });
-                    
-                    alert('✓ Profile updated successfully!');
-                } else {
-                    const error = await response.json();
-                    alert('Error updating profile: ' + (error.message || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to update profile. Please try again.');
-            }
-        }
-        
+
+        // Change password
         function changePassword() {
-            // TODO: Implement password change functionality
-            alert('Password change functionality coming soon!');
+            // In real app, open password change modal
+            showAlert('Password change functionality coming soon', 'success');
         }
-        
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = '/index.html';
+
+        // Delete account
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                showAlert('Account deletion requires admin approval', 'success');
+            }
         }
-        
-        // Add event listener for URL input to preview image
-        document.getElementById('imageUrlInput').addEventListener('blur', function() {
-            const url = this.value.trim();
-            if (url) {
-                // Clear avatar selection
-                selectedAvatar = null;
-                document.querySelectorAll('.avatar-option').forEach(option => {
-                    option.classList.remove('selected');
-                });
-                
-                const profileImg = document.getElementById('profileImage');
-                const placeholder = document.getElementById('profilePlaceholder');
-                profileImg.src = url;
-                profileImg.onload = function() {
-                    profileImg.style.display = 'block';
-                    placeholder.style.display = 'none';
-                };
-                profileImg.onerror = function() {
-                    profileImg.style.display = 'none';
-                    placeholder.style.display = 'block';
-                    placeholder.textContent = '👤';
-                    alert('Failed to load image from URL. Please check the URL is valid.');
-                };
-            }
-        });
-        
-        // Add event listener for country input to update country code
-        document.getElementById('countryInput').addEventListener('input', function() {
-            const country = this.value;
-            if (country) {
-                const countryCode = getCountryCode(country);
-                document.getElementById('countryCodeSelect').value = countryCode;
-            }
-        });
-        
-        // Initialize on page load
-        loadUserProfile();
+
+        // Change avatar
+        function changeAvatar() {
+            // In real app, open file picker
+            showAlert('Avatar upload functionality coming soon', 'success');
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
     </script>
-    
-    <!-- Global Keyboard Shortcuts -->
-    <script src="/js/keyboard-shortcuts.js"></script>
 </body>
 </html>

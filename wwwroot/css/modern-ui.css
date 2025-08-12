@@ -291,6 +291,7 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 9999;
+    -webkit-backdrop-filter: blur(4px); /* Safari support */
     backdrop-filter: blur(4px);
 }
 
@@ -493,30 +494,8 @@ body {
     color: var(--info);
 }
 
-/* Dark Mode Toggle */
-.theme-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: var(--radius-full);
-    background: var(--primary);
-    color: white;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-lg);
-    transition: all var(--transition-base);
-    z-index: 1000;
-}
-
-.theme-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: var(--shadow-xl);
-}
+/* Dark Mode Toggle - Moved to navigation bar */
+/* The theme toggle is now integrated into the smart navigation system */
 
 /* Responsive Design */
 @media (max-width: 768px) {

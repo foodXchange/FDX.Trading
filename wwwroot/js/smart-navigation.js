@@ -2,13 +2,24 @@
 class SmartNavigation {
     constructor() {
         this.user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        this.userRole = this.user.type || 0;
+        // Set default user data if not present
+        if (!this.user.displayName) {
+            this.user = {
+                ...this.user,
+                displayName: 'U.S',
+                email: 'admin@fdxtrading.com',
+                type: 5 // Admin role
+            };
+            localStorage.setItem('currentUser', JSON.stringify(this.user));
+        }
+        this.userRole = this.user.type || 5; // Default to Admin (5)
         this.recentTasks = [];
         this.currentContext = null;
         this.init();
     }
 
     init() {
+        this.initializeTheme(); // Initialize theme before everything else
         this.injectNavigation();
         this.setupEventListeners();
         this.loadUserContext();
@@ -23,7 +34,8 @@ class SmartNavigation {
                 section: 'QUICK ACTIONS',
                 items: [
                     { icon: '🏠', text: 'Home', href: '/dashboard.html', badge: null },
-                    { icon: '📊', text: 'My Work', href: '/my-work.html', badge: '3' }
+                    { icon: '📊', text: 'My Work', href: '/my-work.html', badge: '3' },
+                    { icon: '👥', text: 'Users', href: '/users.html', badge: null }
                 ]
             }
         ];
@@ -70,7 +82,6 @@ class SmartNavigation {
                 {
                     section: 'MANAGEMENT',
                     items: [
-                        { icon: '👥', text: 'Users', href: '/users.html', badge: null },
                         { icon: '📊', text: 'Analytics', href: '/analytics.html', badge: null },
                         { icon: '⚙️', text: 'Settings', href: '/settings.html', badge: null },
                         { icon: '📝', text: 'Reports', href: '/reports.html', badge: null }
@@ -109,14 +120,19 @@ class SmartNavigation {
                     <div class="brand-name">Trading</div>
                 </a>
 
-                <!-- Quick Search -->
-                <div class="quick-action-bar">
+                <!-- Quick Search - Hidden (moved to navbar) -->
+                <!-- <div class="quick-action-bar">
                     <div class="quick-search" onclick="smartNav.openCommandPalette()">
-                        <span class="quick-search-icon">🔍</span>
+                        <span class="quick-search-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </span>
                         <span class="quick-search-text">Quick search...</span>
                         <span class="quick-search-shortcut">⌘K</span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Navigation Sections -->
                 <nav class="nav-sections">
@@ -132,12 +148,140 @@ class SmartNavigation {
 
                 <!-- User Section -->
                 <div class="user-section">
-                    <div class="user-menu" onclick="smartNav.toggleUserMenu()">
-                        <div class="user-avatar">${this.user.displayName?.charAt(0) || 'U'}</div>
+                    <div class="user-menu" onclick="smartNav.toggleUserMenu(event)">
+                        <div class="user-avatar">
+                            ${this.user.profileImage ? 
+                                `<img src="${this.user.profileImage}" alt="Profile" class="avatar-image" />` :
+                                `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.displayName || 'U.S')}&background=6366f1&color=fff&size=36&bold=true" alt="Profile" class="avatar-image" />`
+                            }
+                        </div>
                         <div class="user-info">
-                            <div class="user-name">${this.user.displayName || 'User'}</div>
+                            <div class="user-name">${this.user.displayName || 'U.S'}</div>
                             <div class="user-role">${this.getRoleName()}</div>
                         </div>
+                    </div>
+                    
+                    <!-- User Dropdown Menu -->
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <div class="dropdown-header">
+                            <div class="dropdown-avatar-large">
+                                ${this.user.profileImage ? 
+                                    `<img src="${this.user.profileImage}" alt="Profile" class="avatar-image-large" />` :
+                                    `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.displayName || 'U.S')}&background=6366f1&color=fff&size=56&bold=true" alt="Profile" class="avatar-image-large" />`
+                                }
+                            </div>
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-name">${this.user.displayName || 'U.S'}</div>
+                                <div class="dropdown-email">${this.user.email || 'admin@fdxtrading.com'}</div>
+                                <div class="dropdown-role">${this.getRoleName()}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">${this.user.requestCount || '12'}</span>
+                                <span class="stat-label">Requests</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">${this.user.consoleCount || '3'}</span>
+                                <span class="stat-label">Consoles</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">${this.user.savingsPercent || '24%'}</span>
+                                <span class="stat-label">Savings</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <a href="/user-profile.html" class="dropdown-item">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </span>
+                            <span>My Profile</span>
+                            <span class="dropdown-badge">New</span>
+                        </a>
+                        
+                        <a href="/my-work.html" class="dropdown-item">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="9" y1="9" x2="15" y2="9"></line>
+                                    <line x1="9" y1="13" x2="15" y2="13"></line>
+                                </svg>
+                            </span>
+                            <span>My Activity</span>
+                        </a>
+                        
+                        <a href="/user-profile.html#preferences" class="dropdown-item">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 12h6m6 0h6"></path>
+                                </svg>
+                            </span>
+                            <span>Preferences</span>
+                        </a>
+                        
+                        <a href="/user-profile.html#notifications" class="dropdown-item">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                            </span>
+                            <span>Notifications</span>
+                            <span class="dropdown-count">5</span>
+                        </a>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <a href="/help.html" class="dropdown-item">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                            </span>
+                            <span>Help Center</span>
+                        </a>
+                        
+                        <a href="/university-dashboard.html" class="dropdown-item">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                </svg>
+                            </span>
+                            <span>Learning Center</span>
+                        </a>
+                        
+                        <a href="#" onclick="smartNav.showKeyboardShortcuts(); return false;" class="dropdown-item">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                                    <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path>
+                                </svg>
+                            </span>
+                            <span>Keyboard Shortcuts</span>
+                        </a>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <a href="#" onclick="smartNav.logout(); return false;" class="dropdown-item dropdown-danger">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                            </span>
+                            <span>Sign Out</span>
+                        </a>
                     </div>
                 </div>
             </aside>
@@ -147,27 +291,6 @@ class SmartNavigation {
                 <!-- Content will be here -->
             </div>
 
-            <!-- Smart Panel (Context-Sensitive) -->
-            <aside class="smart-panel" id="smartPanel">
-                <div class="panel-content">
-                    <!-- Dynamic content based on context -->
-                </div>
-            </aside>
-
-            <!-- Floating Action Button -->
-            <button class="fab" id="fabButton" onclick="smartNav.showQuickActions()">
-                <span>+</span>
-            </button>
-
-            <!-- Command Palette (Hidden) -->
-            <div class="command-palette-overlay" id="commandPaletteOverlay">
-                <div class="command-palette">
-                    <input type="text" class="command-input" id="commandInput" 
-                           placeholder="What would you like to do?" 
-                           autocomplete="off">
-                    <div class="command-suggestions" id="commandSuggestions"></div>
-                </div>
-            </div>
         `;
 
         // Add styles
@@ -189,6 +312,165 @@ class SmartNavigation {
         document.body.innerHTML = '';
         document.body.appendChild(container);
         document.getElementById('mainContent').innerHTML = existingContent;
+
+        // Create and append FAB button directly to body
+        const fabButton = document.createElement('button');
+        fabButton.className = 'fab';
+        fabButton.id = 'fabButton';
+        fabButton.title = 'Open Command Palette (Ctrl+K)';
+        fabButton.onclick = () => this.toggleCommandPalette();
+        fabButton.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M9 9l6 6m0-6l-6 6"/>
+            </svg>
+        `;
+        document.body.appendChild(fabButton);
+
+        // Create and append command palette overlay directly to body
+        const commandPalette = document.createElement('div');
+        commandPalette.className = 'command-palette-overlay';
+        commandPalette.id = 'commandPaletteOverlay';
+        commandPalette.onclick = (e) => this.closeCommandPalette(e);
+        commandPalette.innerHTML = `
+            <div class="command-palette" onclick="event.stopPropagation()">
+                <div class="command-search">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="commandInput" placeholder="Type a command or search..." autocomplete="off" spellcheck="false">
+                    <div class="command-search-actions">
+                        <button class="command-options-btn" onclick="smartNav.toggleCommandOptions()" title="Settings">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6m3.96-10.73l4.24-4.24M7.8 16.2l-4.24 4.24M1 12h6m6 0h6m-10.73 3.96l-4.24 4.24M16.2 7.8l4.24-4.24"/>
+                            </svg>
+                        </button>
+                        <kbd class="shortcut-hint">ESC</kbd>
+                    </div>
+                </div>
+                <div class="command-options" id="commandOptions" style="display: none;">
+                    <div class="options-grid">
+                        <label class="option-item">
+                            <input type="checkbox" checked onchange="smartNav.toggleOption('showRecent')">
+                            <span>Show Recent Commands</span>
+                        </label>
+                        <label class="option-item">
+                            <input type="checkbox" checked onchange="smartNav.toggleOption('showIcons')">
+                            <span>Show Icons</span>
+                        </label>
+                        <label class="option-item">
+                            <input type="checkbox" checked onchange="smartNav.toggleOption('showShortcuts')">
+                            <span>Show Keyboard Shortcuts</span>
+                        </label>
+                        <label class="option-item">
+                            <input type="checkbox" onchange="smartNav.toggleOption('compactMode')">
+                            <span>Compact Mode</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="command-results" id="commandResults">
+                    <div class="command-section">
+                        <div class="command-section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            Quick Actions
+                        </div>
+                        <div class="command-item" onclick="smartNav.executeCommand('new-request')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M12 5v14m-7-7h14"/>
+                            </svg>
+                            <span>Create New Request</span>
+                            <kbd>Alt+N</kbd>
+                        </div>
+                        <div class="command-item" onclick="smartNav.executeCommand('search-products')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            <span>Search Products</span>
+                            <kbd>Alt+P</kbd>
+                        </div>
+                        <div class="command-item" onclick="smartNav.executeCommand('search-suppliers')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/>
+                            </svg>
+                            <span>Search Suppliers</span>
+                            <kbd>Alt+S</kbd>
+                        </div>
+                        <div class="command-item" onclick="smartNav.executeCommand('toggle-dark')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="5"/>
+                                <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                            </svg>
+                            <span>Toggle Dark Mode</span>
+                            <kbd>Alt+D</kbd>
+                        </div>
+                    </div>
+                    <div class="command-section">
+                        <div class="command-section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
+                            Navigation
+                        </div>
+                        <div class="command-item" onclick="smartNav.navigateTo('/dashboard.html')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            <span>Dashboard</span>
+                            <kbd>G D</kbd>
+                        </div>
+                        <div class="command-item" onclick="smartNav.navigateTo('/products.html')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                                <line x1="7" y1="7" x2="7.01" y2="7"/>
+                            </svg>
+                            <span>Products</span>
+                            <kbd>G P</kbd>
+                        </div>
+                        <div class="command-item" onclick="smartNav.navigateTo('/requests.html')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                            <span>Requests</span>
+                            <kbd>G R</kbd>
+                        </div>
+                        <div class="command-item" onclick="smartNav.navigateTo('/users.html')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/>
+                            </svg>
+                            <span>Users</span>
+                            <kbd>G U</kbd>
+                        </div>
+                        <div class="command-item" onclick="smartNav.navigateTo('/supplier-search.html')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                                <path d="M8 11h6"/>
+                            </svg>
+                            <span>Supplier Search</span>
+                            <kbd>G S</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(commandPalette);
 
         // Set active nav item
         this.setActiveNavItem();
@@ -230,23 +512,23 @@ class SmartNavigation {
         // Time-based suggestions
         if (hour < 10) {
             return [
-                { icon: '☕', text: 'Morning Tasks', onclick: 'smartNav.showMorningTasks()' },
-                { icon: '📈', text: 'Daily Overview', onclick: 'window.location.href="/dashboard.html"' }
+                { icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>', text: 'Morning Tasks', onclick: 'smartNav.showMorningTasks()' },
+                { icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>', text: 'Daily Overview', onclick: 'window.location.href="/dashboard.html"' }
             ];
         }
         
         // Context-based suggestions
         if (currentPath.includes('request')) {
             return [
-                { icon: '🎛️', text: 'Create Console', onclick: 'smartNav.createConsole()' },
-                { icon: '📋', text: 'View Templates', onclick: 'smartNav.showTemplates()' }
+                { icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/></svg>', text: 'Create Console', onclick: 'smartNav.createConsole()' },
+                { icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>', text: 'View Templates', onclick: 'smartNav.showTemplates()' }
             ];
         }
         
         // Default smart actions
         return [
-            { icon: '✨', text: 'AI Suggestions', onclick: 'smartNav.showAISuggestions()' },
-            { icon: '🚀', text: 'Quick Start', onclick: 'smartNav.showQuickStart()' }
+            { icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', text: 'AI Suggestions', onclick: 'smartNav.showAISuggestions()' },
+            { icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>', text: 'Quick Start', onclick: 'smartNav.showQuickStart()' }
         ];
     }
 
@@ -289,125 +571,6 @@ class SmartNavigation {
         });
     }
 
-    openCommandPalette() {
-        const overlay = document.getElementById('commandPaletteOverlay');
-        if (!overlay) {
-            this.createCommandPalette();
-            return;
-        }
-        
-        overlay.style.display = 'flex';
-        document.getElementById('commandInput').focus();
-        this.showCommandSuggestions('');
-    }
-
-    createCommandPalette() {
-        const paletteHTML = `
-            <div class="command-palette-overlay" id="commandPaletteOverlay" style="
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 1000;
-                align-items: center;
-                justify-content: center;
-            ">
-                <div class="command-palette" style="
-                    background: white;
-                    border-radius: 16px;
-                    width: 600px;
-                    max-width: 90%;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                ">
-                    <input type="text" id="commandInput" style="
-                        width: 100%;
-                        padding: 20px;
-                        border: none;
-                        border-bottom: 1px solid #e2e8f0;
-                        font-size: 16px;
-                        outline: none;
-                    " placeholder="What would you like to do?" autocomplete="off">
-                    <div id="commandSuggestions" style="
-                        max-height: 400px;
-                        overflow-y: auto;
-                        padding: 12px;
-                    "></div>
-                </div>
-            </div>
-        `;
-        
-        document.body.insertAdjacentHTML('beforeend', paletteHTML);
-        
-        const input = document.getElementById('commandInput');
-        input.addEventListener('input', (e) => {
-            this.showCommandSuggestions(e.target.value);
-        });
-        
-        document.getElementById('commandPaletteOverlay').addEventListener('click', (e) => {
-            if (e.target.id === 'commandPaletteOverlay') {
-                this.closeCommandPalette();
-            }
-        });
-        
-        this.openCommandPalette();
-    }
-
-    showCommandSuggestions(query) {
-        const suggestions = [
-            { icon: '📝', text: 'Create new request', action: () => window.location.href = '/request-create.html' },
-            { icon: '🎛️', text: 'Open console management', action: () => window.location.href = '/console-list.html' },
-            { icon: '📦', text: 'Browse products', action: () => window.location.href = '/products.html' },
-            { icon: '🏢', text: 'Find suppliers', action: () => window.location.href = '/supplier-search.html' },
-            { icon: '💰', text: 'Compare quotes', action: () => window.location.href = '/quote-comparison.html' },
-            { icon: '🎓', text: 'Start learning', action: () => window.location.href = '/university-dashboard.html' },
-            { icon: '📊', text: 'View analytics', action: () => window.location.href = '/analytics.html' },
-            { icon: '⚙️', text: 'Settings', action: () => window.location.href = '/settings.html' },
-            { icon: '🚪', text: 'Logout', action: () => this.logout() }
-        ];
-        
-        const filtered = query 
-            ? suggestions.filter(s => s.text.toLowerCase().includes(query.toLowerCase()))
-            : suggestions;
-        
-        const container = document.getElementById('commandSuggestions');
-        container.innerHTML = filtered.map((suggestion, index) => `
-            <div class="command-suggestion" style="
-                padding: 12px;
-                border-radius: 8px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                transition: background 0.2s;
-            " onmouseover="this.style.background='#f1f5f9'" 
-               onmouseout="this.style.background='transparent'"
-               onclick="smartNav.executeCommand(${index})">
-                <span style="font-size: 20px;">${suggestion.icon}</span>
-                <span style="flex: 1; color: #334155;">${suggestion.text}</span>
-                <span style="color: #94a3b8; font-size: 12px;">↵</span>
-            </div>
-        `).join('');
-        
-        this.currentSuggestions = filtered;
-    }
-
-    executeCommand(index) {
-        if (this.currentSuggestions && this.currentSuggestions[index]) {
-            this.currentSuggestions[index].action();
-            this.closeCommandPalette();
-        }
-    }
-
-    closeCommandPalette() {
-        const overlay = document.getElementById('commandPaletteOverlay');
-        if (overlay) {
-            overlay.style.display = 'none';
-            document.getElementById('commandInput').value = '';
-        }
-    }
 
     toggleSidebar() {
         const sidebar = document.getElementById('smartSidebar');
@@ -415,19 +578,160 @@ class SmartNavigation {
         localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
     }
 
-    showQuickActions() {
-        // Show context-sensitive quick actions
-        const actions = [
-            'Create Request',
-            'Find Supplier', 
-            'Compare Prices',
-            'View Reports'
-        ];
+    toggleCommandPalette() {
+        const overlay = document.getElementById('commandPaletteOverlay');
+        if (!overlay) return;
         
-        const selected = prompt(`Quick Actions:\n\n${actions.map((a, i) => `${i+1}. ${a}`).join('\n')}\n\nEnter number:`);
-        if (selected) {
-            this.handleQuickAction(parseInt(selected) - 1);
+        if (overlay.classList.contains('active')) {
+            this.closeCommandPalette();
+        } else {
+            this.openCommandPalette();
         }
+    }
+
+    openCommandPalette() {
+        const overlay = document.getElementById('commandPaletteOverlay');
+        const input = document.getElementById('commandInput');
+        if (!overlay || !input) return;
+        
+        overlay.classList.add('active');
+        setTimeout(() => {
+            input.focus();
+            input.select();
+        }, 100);
+        
+        // Initialize command search
+        this.initializeCommandSearch();
+    }
+
+    closeCommandPalette(event) {
+        if (event && event.target && event.target.id !== 'commandPaletteOverlay') return;
+        const overlay = document.getElementById('commandPaletteOverlay');
+        if (overlay) overlay.classList.remove('active');
+    }
+
+    initializeCommandSearch() {
+        const input = document.getElementById('commandInput');
+        if (!input) return;
+        
+        // Remove existing listeners to avoid duplicates
+        const newInput = input.cloneNode(true);
+        input.parentNode.replaceChild(newInput, input);
+        
+        newInput.addEventListener('input', (e) => this.filterCommands(e.target.value));
+        newInput.addEventListener('keydown', (e) => this.handleCommandKeydown(e));
+    }
+
+    filterCommands(query) {
+        const lowerQuery = query.toLowerCase();
+        const items = document.querySelectorAll('.command-item');
+        
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(lowerQuery)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    handleCommandKeydown(e) {
+        if (e.key === 'Escape') {
+            this.closeCommandPalette();
+        } else if (e.key === 'Enter') {
+            const activeItem = document.querySelector('.command-item.active');
+            if (activeItem) {
+                activeItem.click();
+            }
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.navigateCommands(e.key === 'ArrowDown' ? 1 : -1);
+        }
+    }
+
+    navigateCommands(direction) {
+        const items = Array.from(document.querySelectorAll('.command-item:not([style*="display: none"])'));
+        const currentActive = document.querySelector('.command-item.active');
+        let currentIndex = currentActive ? items.indexOf(currentActive) : -1;
+        
+        if (currentActive) currentActive.classList.remove('active');
+        
+        currentIndex += direction;
+        if (currentIndex < 0) currentIndex = items.length - 1;
+        if (currentIndex >= items.length) currentIndex = 0;
+        
+        if (items[currentIndex]) {
+            items[currentIndex].classList.add('active');
+            items[currentIndex].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    executeCommand(command) {
+        switch(command) {
+            case 'new-request':
+                window.location.href = '/request-create.html';
+                break;
+            case 'search-products':
+                window.location.href = '/products.html';
+                break;
+            case 'search-suppliers':
+                window.location.href = '/supplier-search.html';
+                break;
+            case 'toggle-dark':
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                break;
+            default:
+                console.log(`Executing command: ${command}`);
+        }
+        this.closeCommandPalette();
+    }
+    
+    toggleCommandOptions() {
+        const optionsPanel = document.getElementById('commandOptions');
+        if (optionsPanel) {
+            const isVisible = optionsPanel.style.display !== 'none';
+            optionsPanel.style.display = isVisible ? 'none' : 'block';
+            
+            // Rotate the settings icon
+            const btn = document.querySelector('.command-options-btn');
+            if (btn) {
+                btn.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(90deg)';
+            }
+        }
+    }
+    
+    toggleOption(option) {
+        console.log(`Toggling option: ${option}`);
+        // Store preferences in localStorage
+        const preferences = JSON.parse(localStorage.getItem('commandPalettePrefs') || '{}');
+        const checkbox = event.target;
+        preferences[option] = checkbox.checked;
+        localStorage.setItem('commandPalettePrefs', JSON.stringify(preferences));
+        
+        // Apply the option changes
+        switch(option) {
+            case 'showIcons':
+                document.querySelectorAll('.command-item svg').forEach(icon => {
+                    icon.style.display = checkbox.checked ? 'block' : 'none';
+                });
+                break;
+            case 'showShortcuts':
+                document.querySelectorAll('.command-item kbd').forEach(kbd => {
+                    kbd.style.display = checkbox.checked ? 'inline-block' : 'none';
+                });
+                break;
+            case 'compactMode':
+                document.querySelectorAll('.command-item').forEach(item => {
+                    item.style.padding = checkbox.checked ? '8px 12px' : '12px 14px';
+                });
+                break;
+        }
+    }
+
+    navigateTo(path) {
+        window.location.href = path;
     }
 
     handleQuickAction(index) {
@@ -506,7 +810,7 @@ class SmartNavigation {
             2: 'Both',
             3: 'Expert',
             4: 'Agent',
-            5: 'Administrator'
+            5: 'Admin'
         };
         return roles[this.userRole] || 'User';
     }
@@ -577,22 +881,137 @@ class SmartNavigation {
         setTimeout(() => toast.remove(), 5000);
     }
 
-    toggleUserMenu() {
-        if (confirm('User Menu:\n\n1. Profile\n2. Settings\n3. Help\n4. Logout\n\nSelect option:')) {
-            // Handle user menu
+    toggleUserMenu(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('userDropdown');
+        
+        if (dropdown) {
+            const isVisible = dropdown.style.display === 'block';
+            
+            // Hide all dropdowns first
+            document.querySelectorAll('.user-dropdown').forEach(d => {
+                d.style.display = 'none';
+            });
+            
+            // Toggle this dropdown
+            dropdown.style.display = isVisible ? 'none' : 'block';
+            
+            // Add click outside listener
+            if (!isVisible) {
+                setTimeout(() => {
+                    document.addEventListener('click', this.hideUserMenu);
+                }, 100);
+            }
         }
+    }
+    
+    hideUserMenu = () => {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
+        document.removeEventListener('click', this.hideUserMenu);
     }
 
     logout() {
-        if (confirm('Are you sure you want to logout?')) {
+        if (confirm('Are you sure you want to sign out?')) {
             localStorage.clear();
             window.location.href = '/';
         }
     }
+    
+    showKeyboardShortcuts() {
+        const shortcuts = [
+            { keys: 'Ctrl + K', action: 'Open quick search' },
+            { keys: 'Ctrl + /', action: 'Toggle sidebar' },
+            { keys: 'Ctrl + B', action: 'Toggle dark mode' },
+            { keys: 'Esc', action: 'Close modals' },
+            { keys: 'Alt + N', action: 'Create new request' },
+            { keys: 'Alt + H', action: 'Go to home' },
+        ];
+        
+        let message = 'Keyboard Shortcuts:\n\n';
+        shortcuts.forEach(s => {
+            message += `${s.keys.padEnd(15)} - ${s.action}\n`;
+        });
+        
+        alert(message);
+    }
+
+    initializeTheme() {
+        // Apply saved theme on page load from dashboard preference
+        const savedTheme = localStorage.getItem('dashboardTheme') || 'light';
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+        // Update the icon to match current theme
+        setTimeout(() => {
+            const icon = document.getElementById('navThemeIcon');
+            if (icon) {
+                icon.innerHTML = savedTheme === 'dark' ? 
+                    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>` : 
+                    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>`;
+            }
+        }, 100);
+    }
+
+    toggleTheme() {
+        // For dashboard page, use the dashboard dark mode controller
+        if (window.toggleDashboardDarkMode) {
+            window.toggleDashboardDarkMode();
+        } else {
+            // For other pages, toggle the dark-mode class directly
+            const isDark = document.body.classList.contains('dark-mode');
+            
+            if (isDark) {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('dashboardTheme', 'light');
+            } else {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('dashboardTheme', 'dark');
+            }
+            
+            // Update icon
+            const icon = document.getElementById('navThemeIcon');
+            if (icon) {
+                icon.innerHTML = isDark ? 
+                    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>` : 
+                    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>`;
+            }
+            
+            // Show toast if available
+            if (window.toast) {
+                window.toast.success(`Dark mode ${!isDark ? 'enabled' : 'disabled'}`, 'Theme Changed');
+            }
+        }
+    }
 
     closeAllModals() {
-        this.closeCommandPalette();
-        // Close other modals
+        // Close modals if any
     }
 }
 

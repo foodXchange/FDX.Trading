@@ -93,14 +93,11 @@ class ThemeManager {
         // Apply saved theme
         document.documentElement.setAttribute('data-theme', this.theme);
         
-        // Create theme toggle button
-        if (!document.querySelector('.theme-toggle')) {
-            const button = document.createElement('button');
-            button.className = 'theme-toggle';
-            button.setAttribute('aria-label', 'Toggle theme');
-            button.innerHTML = this.theme === 'dark' ? this.getSunIcon() : this.getMoonIcon();
-            button.onclick = () => this.toggle();
-            document.body.appendChild(button);
+        // Don't create floating button anymore - it's in the navigation now
+        // Just update the nav theme icon if it exists
+        const navIcon = document.getElementById('navThemeIcon');
+        if (navIcon) {
+            navIcon.textContent = this.theme === 'dark' ? '☀️' : '🌙';
         }
     }
 

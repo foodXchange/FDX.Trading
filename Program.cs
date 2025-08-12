@@ -43,7 +43,28 @@ var app = builder.Build();
 // Configure pipeline
 app.UseCors("AllowAll");
 app.UseDefaultFiles();
-app.UseStaticFiles();
+
+// Configure static files with proper content types
+var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+provider.Mappings[".js"] = "text/javascript; charset=utf-8";
+provider.Mappings[".css"] = "text/css; charset=utf-8";
+provider.Mappings[".json"] = "application/json; charset=utf-8";
+provider.Mappings[".html"] = "text/html; charset=utf-8";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider,
+    OnPrepareResponse = ctx =>
+    {
+        // Add security headers
+        ctx.Context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        
+        // Add cache headers for better performance
+        const int durationInSeconds = 60 * 60 * 24 * 7; // 7 days
+        ctx.Context.Response.Headers.Add("Cache-Control", $"public, max-age={durationInSeconds}");
+    }
+});
+
 app.MapControllers();
 
 app.Run();
