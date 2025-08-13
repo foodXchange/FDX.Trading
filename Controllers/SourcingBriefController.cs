@@ -18,17 +18,20 @@ public class SourcingBriefController : ControllerBase
     private readonly FdxTradingContext _context;
     private readonly ProductAggregationService _aggregationService;
     private readonly SupplierScoringService _scoringService;
+    private readonly ImprovedSupplierMatchingService _matchingService;
     private readonly ILogger<SourcingBriefController> _logger;
 
     public SourcingBriefController(
         FdxTradingContext context,
         ProductAggregationService aggregationService,
         SupplierScoringService scoringService,
+        ImprovedSupplierMatchingService matchingService,
         ILogger<SourcingBriefController> logger)
     {
         _context = context;
         _aggregationService = aggregationService;
         _scoringService = scoringService;
+        _matchingService = matchingService;
         _logger = logger;
     }
 
@@ -124,6 +127,47 @@ public class SourcingBriefController : ControllerBase
 
         try
         {
+            // Validate that all requests are complete and published
+            var requests = await _context.Requests
+                .Where(r => dto.RequestIds.Contains(r.Id))
+                .ToListAsync();
+
+            if (requests.Count != dto.RequestIds.Count)
+            {
+                return BadRequest("One or more requested IDs were not found");
+            }
+
+            // Check if all requests are complete and published (Active status)
+            var incompleteRequests = requests.Where(r => 
+                r.CompletionPercentage < 100 || 
+                !r.IsComplete || 
+                r.Status != ProcurementRequestStatus.Active
+            ).ToList();
+
+            if (incompleteRequests.Any())
+            {
+                var errorDetails = incompleteRequests.Select(r => new 
+                {
+                    r.RequestNumber,
+                    r.Title,
+                    r.CompletionPercentage,
+                    r.IsComplete,
+                    Status = r.Status.ToString(),
+                    Issues = new List<string>
+                    {
+                        r.CompletionPercentage < 100 ? $"Completion is only {r.CompletionPercentage}%" : null,
+                        !r.IsComplete ? "Request is not marked as complete" : null,
+                        r.Status != ProcurementRequestStatus.Active ? $"Request status is {r.Status}, must be Active/Published" : null
+                    }.Where(i => i != null)
+                });
+
+                return BadRequest(new 
+                {
+                    error = "Cannot create sourcing brief from incomplete or unpublished requests",
+                    details = errorDetails
+                });
+            }
+
             // Create Console for the sourcing brief
             var console = new ProjectConsole
             {
@@ -411,15 +455,95 @@ public class SourcingBriefController : ControllerBase
             .Select(br => br.RequestId)
             .ToListAsync();
 
+        // Only return requests that are 100% complete and published (Active status)
         var availableRequests = await _context.Requests
             .Include(r => r.RequestItems)
             .Include(r => r.Buyer)
             .Where(r => !linkedRequestIds.Contains(r.Id) && 
-                       (r.Status == ProcurementRequestStatus.Draft || r.Status == ProcurementRequestStatus.Active))
+                       r.CompletionPercentage == 100 &&
+                       r.IsComplete == true &&
+                       r.Status == ProcurementRequestStatus.Active)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
 
         return Ok(availableRequests);
+    }
+
+    // GET: api/SourcingBrief/check-request-eligibility/{requestId}
+    [HttpGet("check-request-eligibility/{requestId}")]
+    public async Task<ActionResult> CheckRequestEligibility(int requestId)
+    {
+        var request = await _context.Requests
+            .Include(r => r.RequestItems)
+            .FirstOrDefaultAsync(r => r.Id == requestId);
+
+        if (request == null)
+        {
+            return NotFound($"Request with ID {requestId} not found");
+        }
+
+        // Check if already linked to a sourcing brief
+        var isLinked = await _context.BriefRequests
+            .AnyAsync(br => br.RequestId == requestId);
+
+        if (isLinked)
+        {
+            var linkedBrief = await _context.BriefRequests
+                .Include(br => br.SourcingBrief)
+                .Where(br => br.RequestId == requestId)
+                .Select(br => new { br.SourcingBrief.BriefCode, br.SourcingBrief.Title })
+                .FirstOrDefaultAsync();
+
+            return Ok(new 
+            {
+                eligible = false,
+                reason = "Already linked to sourcing brief",
+                linkedBrief
+            });
+        }
+
+        var issues = new List<string>();
+        
+        if (request.CompletionPercentage < 100)
+            issues.Add($"Request is only {request.CompletionPercentage}% complete (must be 100%)");
+        
+        if (!request.IsComplete)
+            issues.Add("Request is not marked as complete");
+        
+        if (request.Status != ProcurementRequestStatus.Active)
+            issues.Add($"Request status is '{request.Status}' (must be 'Active/Published')");
+
+        if (issues.Any())
+        {
+            return Ok(new 
+            {
+                eligible = false,
+                request = new 
+                {
+                    request.RequestNumber,
+                    request.Title,
+                    request.CompletionPercentage,
+                    request.IsComplete,
+                    Status = request.Status.ToString()
+                },
+                issues
+            });
+        }
+
+        return Ok(new 
+        {
+            eligible = true,
+            message = "Request is eligible for sourcing brief creation",
+            request = new 
+            {
+                request.RequestNumber,
+                request.Title,
+                request.CompletionPercentage,
+                request.IsComplete,
+                Status = request.Status.ToString(),
+                ItemCount = request.RequestItems.Count
+            }
+        });
     }
 
     private SourcingBriefDto MapToDto(SourcingBrief brief)
@@ -601,4 +725,98 @@ public class SourcingBriefController : ControllerBase
     {
         return _context.SourcingBriefs.Any(e => e.Id == id);
     }
+    
+    // POST: api/SourcingBrief/{id}/match-suppliers
+    [HttpPost("{id}/match-suppliers")]
+    public async Task<ActionResult<IEnumerable<SupplierMatchDto>>> MatchSuppliers(int id)
+    {
+        try
+        {
+            _logger.LogInformation($"Starting supplier matching for brief {id}");
+            
+            // Use the new matching service with options
+            var options = new SupplierMatchingOptions
+            {
+                MinimumScore = 20m, // Lower threshold to include more matches
+                MaxResults = 30,
+                IncludeUnverified = true
+            };
+            
+            var matches = await _matchingService.MatchSuppliersForBrief(id, options);
+            
+            if (!matches.Any())
+            {
+                _logger.LogWarning($"No supplier matches found for brief {id}");
+                return Ok(new List<SupplierMatchDto>());
+            }
+            
+            _logger.LogInformation($"Found {matches.Count} supplier matches for brief {id}");
+            
+            // Log match details for debugging
+            foreach (var match in matches.Take(5))
+            {
+                _logger.LogInformation($"Supplier: {match.CompanyName}, Score: {match.NormalizedScore:F1}%, Reasons: {string.Join(", ", match.MatchReasons.Select(r => r.Type))}");
+            }
+            
+            // Map to DTOs that match frontend expectations
+            var dtos = matches.Select(m => new SupplierMatchDto
+            {
+                SupplierId = m.SupplierId,
+                SupplierName = m.CompanyName, // Frontend expects 'supplierName'
+                MatchScore = (double)(m.NormalizedScore / 100m), // Convert to 0-1 range for frontend
+                MatchedProductCount = m.AvailableProducts.Count, // Frontend expects 'matchedProductCount'
+                TotalBriefProducts = 0, // Will be set if needed
+                MatchedProducts = m.AvailableProducts.Take(5).Select((p, idx) => new MatchedProductDto
+                {
+                    ProductId = idx + 1,
+                    ProductName = p,
+                    UnitPrice = null,
+                    Currency = "USD",
+                    MOQ = 0
+                }).ToList()
+            }).ToList();
+            
+            return Ok(dtos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error matching suppliers for brief {BriefId}", id);
+            return StatusCode(500, "Error matching suppliers");
+        }
+    }
+    
+    private double CalculateSimilarity(string s1, string s2)
+    {
+        if (string.IsNullOrEmpty(s1) || string.IsNullOrEmpty(s2))
+            return 0;
+            
+        // Simple word-based similarity
+        var words1 = s1.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var words2 = s2.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        var commonWords = words1.Intersect(words2).Count();
+        var totalWords = Math.Max(words1.Length, words2.Length);
+        
+        return totalWords > 0 ? (double)commonWords / totalWords : 0;
+    }
+}
+
+// DTOs for supplier matching
+public class SupplierMatchDto
+{
+    public int SupplierId { get; set; }
+    public string SupplierName { get; set; } = string.Empty;
+    public double MatchScore { get; set; }
+    public int MatchedProductCount { get; set; }
+    public int TotalBriefProducts { get; set; }
+    public List<MatchedProductDto> MatchedProducts { get; set; } = new();
+}
+
+public class MatchedProductDto  
+{
+    public int ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public decimal? UnitPrice { get; set; }
+    public string? Currency { get; set; }
+    public int MOQ { get; set; }
 }
