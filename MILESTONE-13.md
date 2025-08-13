@@ -162,5 +162,32 @@ The frontend at `/sourcing-brief.html` now correctly displays:
 - Enhanced sourcing brief quality
 - More competitive supplier responses
 
+## User Instructions
+
+### How to Use the Supplier Matching Feature
+
+1. **Navigate to Sourcing Briefs**
+   - Go to http://localhost:5000/sourcing-brief.html
+   - Select a brief from the list or use direct URL (e.g., ?briefId=4)
+
+2. **Find Matching Suppliers**
+   - In the brief details view, locate the "Matched Suppliers" section
+   - Click the **"Find Matching Suppliers"** button (blue button with search icon)
+   - System will perform real-time matching and display results
+
+3. **Understanding Results**
+   - **Match Score**: 0-100% indicating match quality
+   - **Supplier Name**: Company name (properly displayed, not "undefined")
+   - **Matched Products**: Count of matching products in supplier's catalog
+   - **Product List**: Preview of matching products
+
+### Important Notes
+- Matching is **on-demand** - you must click the button to trigger it
+- Results are sorted by match score (highest first)
+- Maximum 30 suppliers shown per search
+- Minimum match threshold is 20%
+
 ## Conclusion
 This milestone delivers a robust, scalable supplier matching system that significantly improves the procurement process by intelligently matching suppliers based on multiple criteria beyond just product inventory. The system provides transparency through detailed match reasons while ensuring scores are properly normalized and displayed correctly in the UI.
+
+The key achievement is the fix of the scoring calculation (capped at 100%) and proper DTO mapping to ensure supplier names display correctly. The system requires user interaction via the "Find Matching Suppliers" button to perform the matching operation.
