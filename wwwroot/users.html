@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Users Management - FDX Trading</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <!-- Theme Initialization (must be first) -->
     <script src="/js/theme-init.js"></script>
     <!-- Modern UI System -->
@@ -359,6 +362,31 @@
             letter-spacing: 0.5px;
             color: var(--text-secondary);
             border-bottom: 2px solid var(--gray-200);
+            position: relative;
+            user-select: none;
+        }
+        
+        .users-table th:hover {
+            color: var(--text-primary);
+        }
+        
+        .sort-icon {
+            display: inline-block;
+            margin-left: 4px;
+            font-size: 14px;
+            color: var(--gray-400);
+            opacity: 0;
+            transition: all 0.2s;
+            vertical-align: middle;
+        }
+        
+        .users-table th:hover .sort-icon {
+            opacity: 0.5;
+        }
+        
+        .sort-icon.active {
+            opacity: 1 !important;
+            color: var(--primary);
         }
 
         body.dark-mode .users-table th {
@@ -668,13 +696,77 @@
         </div>
     </div>
 
+    <!-- Add User Modal -->
+    <div id="addUserModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); margin: auto; position: relative; top: 50%; transform: translateY(-50%);">
+            <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 700;">Add New User</h2>
+                <button onclick="closeAddUserModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #6b7280;">&times;</button>
+            </div>
+            <div style="padding: 24px;">
+                <form id="addUserForm" onsubmit="submitAddUser(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">First Name *</label>
+                            <input type="text" name="firstName" required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">Last Name *</label>
+                            <input type="text" name="lastName" required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">Email *</label>
+                            <input type="email" name="email" required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">Username *</label>
+                            <input type="text" name="username" required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">Password *</label>
+                            <input type="password" name="password" required minlength="6" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">Role *</label>
+                            <select name="type" required style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                                <option value="">Select Role</option>
+                                <option value="0">Admin</option>
+                                <option value="1">Buyer</option>
+                                <option value="2">Supplier</option>
+                                <option value="3">Expert</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">Company</label>
+                            <input type="text" name="companyName" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">Phone</label>
+                            <input type="tel" name="phoneNumber" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <button type="button" onclick="closeAddUserModal()" style="padding: 10px 20px; border: 1px solid #d1d5db; background: white; color: #4b5563; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">Cancel</button>
+                        <button type="submit" style="padding: 10px 20px; border: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">Add User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Load Smart Navigation -->
     <script src="/js/smart-navigation.js"></script>
-    <script src="/js/universal-dark-mode.js"></script>
 
     <script>
         let allUsers = [];
         let currentFilter = 'all';
+        let currentSort = { field: 'lastActive', direction: 'desc' };
 
         // Load users
         async function loadUsers() {
@@ -682,6 +774,12 @@
                 const response = await fetch('/api/users');
                 if (response.ok) {
                     allUsers = await response.json();
+                    // Sort by last active (most recent first) by default
+                    allUsers.sort((a, b) => {
+                        const dateA = new Date(a.lastLogin || '1900-01-01');
+                        const dateB = new Date(b.lastLogin || '1900-01-01');
+                        return dateB - dateA;
+                    });
                     updateStatistics();
                     displayUsers(allUsers);
                 }
@@ -712,11 +810,26 @@
                 <table class="users-table">
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Role</th>
-                            <th>Company</th>
-                            <th>Status</th>
-                            <th>Last Active</th>
+                            <th onclick="sortUsers('name')" style="cursor: pointer;">
+                                User
+                                <span class="sort-icon" id="sort-name"></span>
+                            </th>
+                            <th onclick="sortUsers('role')" style="cursor: pointer;">
+                                Role
+                                <span class="sort-icon" id="sort-role"></span>
+                            </th>
+                            <th onclick="sortUsers('company')" style="cursor: pointer;">
+                                Company
+                                <span class="sort-icon" id="sort-company"></span>
+                            </th>
+                            <th onclick="sortUsers('status')" style="cursor: pointer;">
+                                Status
+                                <span class="sort-icon" id="sort-status"></span>
+                            </th>
+                            <th onclick="sortUsers('lastActive')" style="cursor: pointer;">
+                                Last Active
+                                <span class="sort-icon active desc" id="sort-lastActive">↓</span>
+                            </th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -853,11 +966,71 @@
             
             displayUsers(filtered);
         }
+        
+        function sortUsers(field) {
+            // Toggle direction if same field, otherwise default to descending for lastActive
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.direction = field === 'lastActive' ? 'desc' : 'asc';
+            }
+            
+            // Clear all sort icons
+            document.querySelectorAll('.sort-icon').forEach(icon => {
+                icon.classList.remove('active');
+                icon.textContent = '';
+            });
+            
+            // Set active icon
+            const icon = document.getElementById(`sort-${field}`);
+            if (icon) {
+                icon.classList.add('active');
+                icon.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
+            }
+            
+            // Sort the data
+            allUsers.sort((a, b) => {
+                let valueA, valueB;
+                
+                switch(field) {
+                    case 'name':
+                        valueA = (a.displayName || a.userName || '').toLowerCase();
+                        valueB = (b.displayName || b.userName || '').toLowerCase();
+                        break;
+                    case 'role':
+                        valueA = a.userType || 0;
+                        valueB = b.userType || 0;
+                        break;
+                    case 'company':
+                        valueA = (a.companyName || '').toLowerCase();
+                        valueB = (b.companyName || '').toLowerCase();
+                        break;
+                    case 'status':
+                        valueA = a.isActive ? 1 : 0;
+                        valueB = b.isActive ? 1 : 0;
+                        break;
+                    case 'lastActive':
+                        valueA = new Date(a.lastLogin || '1900-01-01').getTime();
+                        valueB = new Date(b.lastLogin || '1900-01-01').getTime();
+                        break;
+                    default:
+                        return 0;
+                }
+                
+                if (valueA < valueB) return currentSort.direction === 'asc' ? -1 : 1;
+                if (valueA > valueB) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            // Re-apply filter and display
+            filterUsers();
+        }
 
         // Placeholder functions
         function openUserProfile(userId) {
-            console.log('Opening profile for user:', userId);
-            // Implement user profile modal
+            // Navigate to users page
+            window.location.href = `/users.html`;
         }
 
         function editUser(userId) {
@@ -866,8 +1039,62 @@
         }
 
         function openAddUserModal() {
-            console.log('Opening add user modal');
-            // Implement add user modal
+            const modal = document.getElementById('addUserModal');
+            modal.style.display = 'flex';
+            // Reset form
+            document.getElementById('addUserForm').reset();
+        }
+        
+        function closeAddUserModal() {
+            const modal = document.getElementById('addUserModal');
+            modal.style.display = 'none';
+        }
+        
+        async function submitAddUser(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const userData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                username: formData.get('username'),
+                password: formData.get('password'),
+                type: parseInt(formData.get('type')),
+                companyName: formData.get('companyName'),
+                phoneNumber: formData.get('phoneNumber'),
+                isActive: true
+            };
+            
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (response.ok) {
+                    const newUser = await response.json();
+                    // Add to local array
+                    allUsers.unshift(newUser);
+                    // Refresh display
+                    displayUsers(allUsers);
+                    updateStatistics();
+                    // Close modal
+                    closeAddUserModal();
+                    // Show success message
+                    alert('User added successfully!');
+                } else {
+                    const error = await response.text();
+                    alert('Error adding user: ' + error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to add user. Please try again.');
+            }
         }
 
         function exportUsers() {
@@ -885,5 +1112,9 @@
             loadUsers();
         });
     </script>
+    
+    <!-- Global Footer -->
+    <link rel="stylesheet" href="/css/global-footer-v2.css">
+    <script src="/js/global-footer-v2.js"></script>
 </body>
 </html>

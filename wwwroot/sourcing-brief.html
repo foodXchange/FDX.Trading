@@ -952,6 +952,84 @@
         </div>
     </div>
 
+    <!-- Image Upload Modal -->
+    <div class="modal fade" id="imageUploadModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Product Images</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6 id="productNameForImage" class="text-primary mb-3"></h6>
+                    </div>
+                    
+                    <!-- Tab navigation -->
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#uploadTab" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                    <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                Upload Image
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#urlTab" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                    <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                Image URL
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Tab content -->
+                    <div class="tab-content">
+                        <!-- Upload Tab -->
+                        <div class="tab-pane fade show active" id="uploadTab">
+                            <div class="border-2 border-dashed rounded-3 p-4 text-center" style="border-color: var(--gray-300); background: var(--bg-secondary);">
+                                <input type="file" id="imageFileInput" accept="image/*" multiple style="display: none;" onchange="handleImageFiles(this.files)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" stroke="currentColor" fill="none" style="opacity: 0.3;">
+                                    <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <p class="mt-2 mb-0">Drop images here or <button type="button" class="btn btn-link p-0" onclick="document.getElementById('imageFileInput').click()">browse</button></p>
+                                <small class="text-muted">Supports: JPG, PNG, GIF (Max 5MB each)</small>
+                            </div>
+                            <div id="uploadPreview" class="mt-3"></div>
+                        </div>
+                        
+                        <!-- URL Tab -->
+                        <div class="tab-pane fade" id="urlTab">
+                            <div class="mb-3">
+                                <label class="form-label">Image URL</label>
+                                <input type="url" class="form-control" id="imageUrlInput" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addImageUrl()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                    <path d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add URL
+                            </button>
+                            <div id="urlPreview" class="mt-3"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Images -->
+                    <div id="currentImagesSection" class="mt-4" style="display: none;">
+                        <h6>Current Images</h6>
+                        <div id="currentImagesList" class="d-flex gap-2 flex-wrap"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProductImages()">Save Images</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Global Components -->
     <script src="/js/smart-navigation.js"></script>
     <script src="/js/global-settings.js"></script>
@@ -1196,8 +1274,18 @@
                                     ${currentBrief.products.map(p => `
                                         <div class="product-item">
                                             <div class="product-header">
-                                                <h6 class="product-name">${p.productName}</h6>
-                                                ${p.category ? `<span class="product-category">${p.category}</span>` : ''}
+                                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                                    <div>
+                                                        <h6 class="product-name">${p.productName}</h6>
+                                                        ${p.category ? `<span class="product-category">${p.category}</span>` : ''}
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="openImageUploadModal(${p.id}, '${p.productName.replace(/'/g, "\\'")}')">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                        </svg>
+                                                        ${p.imageCount > 0 ? `Edit (${p.imageCount})` : 'Add Images'}
+                                                    </button>
+                                                </div>
                                             </div>
                                             ${p.images && p.images.length > 0 ? `
                                             <div class="product-images-section" style="margin: 12px 0;">
@@ -1279,20 +1367,68 @@
                     <!-- Supplier Matching Section -->
                     <div class="detail-card mb-4">
                         <div class="detail-card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none">
                                     <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
                                 Matched Suppliers
+                                <span id="matchedSuppliersCount" class="badge bg-primary" style="display: none;">0</span>
                             </div>
-                            <button class="btn btn-sm btn-primary" onclick="findMatchingSuppliers(${currentBrief.id})">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
-                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                                Find Suppliers
-                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-sm btn-outline-primary" id="bulkActionsBtn" style="display: none;" onclick="showBulkActions()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3"/>
+                                    </svg>
+                                    Bulk Actions
+                                </button>
+                                <button class="btn btn-sm btn-primary" onclick="findMatchingSuppliers(${currentBrief.id})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                    Find Suppliers
+                                </button>
+                            </div>
                         </div>
                         <div class="detail-card-body">
+                            <!-- Filter and Sort Controls -->
+                            <div id="supplierMatchControls" style="display: none; padding: 16px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 16px;">
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                                    <div style="flex: 1; min-width: 200px;">
+                                        <label style="font-size: 12px; color: var(--text-tertiary); display: block; margin-bottom: 4px;">Filter by Score</label>
+                                        <input type="range" id="scoreFilter" min="0" max="100" value="0" onchange="filterSuppliersByScore()" style="width: 100%;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-tertiary);">
+                                            <span>0%</span>
+                                            <span id="scoreFilterValue">All</span>
+                                            <span>100%</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; color: var(--text-tertiary); display: block; margin-bottom: 4px;">Sort By</label>
+                                        <select id="supplierSort" onchange="sortSuppliers()" class="form-select form-select-sm">
+                                            <option value="score">Match Score</option>
+                                            <option value="products">Product Count</option>
+                                            <option value="name">Supplier Name</option>
+                                            <option value="reason">Match Reason</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; color: var(--text-tertiary); display: block; margin-bottom: 4px;">View</label>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-secondary active" onclick="setSupplierView('cards')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                                    <path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                                                </svg>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" onclick="setSupplierView('table')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                                    <path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div id="supplierMatchingResults">
                                 <div class="text-center" style="padding: 40px 20px; color: var(--text-tertiary);">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" stroke="currentColor" fill="none" style="opacity: 0.3; margin-bottom: 16px;">
@@ -1374,6 +1510,10 @@
             }
         }
 
+        // Store matched suppliers globally for filtering/sorting
+        let matchedSuppliers = [];
+        let currentViewMode = 'cards';
+        
         async function findMatchingSuppliers(briefId) {
             const resultsDiv = document.getElementById('supplierMatchingResults');
             
@@ -1396,66 +1536,20 @@
                 
                 const matches = await response.json();
                 console.log('Received matches:', matches);
-                console.log('Matches length:', matches ? matches.length : 'null');
                 
-                if (matches && matches.length > 0) {
-                    resultsDiv.innerHTML = `
-                        <div class="suppliers-list">
-                            ${matches.map((match, index) => `
-                                <div class="supplier-match-card" style="padding: 16px; border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 12px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                                        <div style="flex: 1;">
-                                            <h6 style="margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">
-                                                ${match.supplierName}
-                                            </h6>
-                                            <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 8px;">
-                                                <span style="color: var(--text-secondary); font-size: 14px;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-                                                        <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                                                    </svg>
-                                                    ${match.matchedProductCount} matching products
-                                                </span>
-                                                <span style="color: var(--text-secondary); font-size: 14px;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-                                                        <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                                                    </svg>
-                                                    Score: ${(match.matchScore * 100).toFixed(0)}%
-                                                </span>
-                                            </div>
-                                            ${match.matchedProducts && match.matchedProducts.length > 0 ? `
-                                                <div style="margin-top: 8px;">
-                                                    <small style="color: var(--text-tertiary);">Matched Products:</small>
-                                                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
-                                                        ${match.matchedProducts.slice(0, 3).map(p => `
-                                                            <span style="background: var(--gray-100); padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-                                                                ${p.productName}
-                                                            </span>
-                                                        `).join('')}
-                                                        ${match.matchedProducts.length > 3 ? `
-                                                            <span style="color: var(--text-tertiary); font-size: 12px; padding: 4px;">
-                                                                +${match.matchedProducts.length - 3} more
-                                                            </span>
-                                                        ` : ''}
-                                                    </div>
-                                                </div>
-                                            ` : ''}
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                                            <button class="btn btn-sm btn-primary" onclick="viewSupplierDetail(${match.supplierId})">
-                                                View Details
-                                            </button>
-                                            <button class="btn btn-sm btn-success" onclick="inviteSupplier(${briefId}, ${match.supplierId})">
-                                                Send Invite
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200); text-align: center;">
-                            <small style="color: var(--text-tertiary);">Found ${matches.length} matching supplier${matches.length !== 1 ? 's' : ''}</small>
-                        </div>
-                    `;
+                // Store matches globally
+                matchedSuppliers = matches || [];
+                
+                if (matchedSuppliers.length > 0) {
+                    // Show controls and count
+                    document.getElementById('supplierMatchControls').style.display = 'block';
+                    document.getElementById('bulkActionsBtn').style.display = 'inline-flex';
+                    const countBadge = document.getElementById('matchedSuppliersCount');
+                    countBadge.textContent = matchedSuppliers.length;
+                    countBadge.style.display = 'inline-block';
+                    
+                    // Display suppliers
+                    displaySuppliers(matchedSuppliers);
                 } else {
                     resultsDiv.innerHTML = `
                         <div class="text-center" style="padding: 40px 20px; color: var(--text-tertiary);">
@@ -1475,12 +1569,316 @@
                 `;
             }
         }
-
-        function viewSupplierDetail(supplierId) {
-            window.location.href = `/supplier-detail.html?id=${supplierId}`;
+        
+        function displaySuppliers(suppliers) {
+            const resultsDiv = document.getElementById('supplierMatchingResults');
+            
+            if (currentViewMode === 'cards') {
+                displaySuppliersAsCards(suppliers, resultsDiv);
+            } else {
+                displaySuppliersAsTable(suppliers, resultsDiv);
+            }
+        }
+        
+        function displaySuppliersAsCards(suppliers, container) {
+            container.innerHTML = `
+                <div class="suppliers-list">
+                    ${suppliers.map((match, index) => `
+                        <div class="supplier-match-card" style="padding: 16px; border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 12px; transition: all 0.3s ease;" data-supplier-id="${match.supplierId}" data-score="${match.normalizedScore || match.matchScore * 100}">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div style="display: flex; gap: 12px; align-items: start; flex: 1;">
+                                    <input type="checkbox" class="supplier-checkbox" value="${match.supplierId}" style="margin-top: 4px;">
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <h6 style="margin: 0; color: var(--text-primary); font-weight: 600;">
+                                                ${match.supplierName}
+                                            </h6>
+                                            ${getMatchLevelBadge(match)}
+                                        </div>
+                                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 8px;">
+                                            <span style="color: var(--text-secondary); font-size: 14px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                                                    <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                                </svg>
+                                                ${match.availableProducts ? match.availableProducts.length : match.matchedProductCount || 0} products
+                                            </span>
+                                            <span style="color: var(--text-secondary); font-size: 14px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                                                    <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                                </svg>
+                                                Score: ${(match.normalizedScore || match.matchScore * 100).toFixed(0)}%
+                                            </span>
+                                        </div>
+                                        ${match.matchReasons && match.matchReasons.length > 0 ? `
+                                            <div style="margin-bottom: 8px;">
+                                                <small style="color: var(--text-tertiary);">Match Reasons:</small>
+                                                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                                                    ${match.matchReasons.slice(0, 2).map(r => `
+                                                        <span style="background: var(--gray-100); padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                                                            ${r.type}: ${r.detail}
+                                                        </span>
+                                                    `).join('')}
+                                                    ${match.matchReasons.length > 2 ? `
+                                                        <span style="color: var(--text-tertiary); font-size: 12px; padding: 4px;">
+                                                            +${match.matchReasons.length - 2} more
+                                                        </span>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                        ${match.availableProducts && match.availableProducts.length > 0 ? `
+                                            <div style="margin-top: 8px;">
+                                                <small style="color: var(--text-tertiary);">Available Products:</small>
+                                                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                                                    ${match.availableProducts.slice(0, 3).map(p => `
+                                                        <span style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--primary);">
+                                                            ${p}
+                                                        </span>
+                                                    `).join('')}
+                                                    ${match.availableProducts.length > 3 ? `
+                                                        <span style="color: var(--text-tertiary); font-size: 12px; padding: 4px;">
+                                                            +${match.availableProducts.length - 3} more
+                                                        </span>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewSupplierDetail(${match.supplierId})">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        Details
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="inviteSupplier(${currentBrief.id}, ${match.supplierId})">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                        Invite
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200); text-align: center;">
+                    <small style="color: var(--text-tertiary);">Showing ${suppliers.length} matching supplier${suppliers.length !== 1 ? 's' : ''}</small>
+                </div>
+            `;
+        }
+        
+        function getMatchLevelBadge(match) {
+            // Determine match level from reasons or score
+            let level = 'Basic';
+            let color = 'secondary';
+            
+            if (match.matchReasons && match.matchReasons.length > 0) {
+                const highestLevel = Math.max(...match.matchReasons.map(r => r.score || 0));
+                if (highestLevel >= 90) {
+                    level = 'Exact Match';
+                    color = 'success';
+                } else if (highestLevel >= 70) {
+                    level = 'High Match';
+                    color = 'primary';
+                } else if (highestLevel >= 50) {
+                    level = 'Good Match';
+                    color = 'info';
+                } else {
+                    level = 'Partial Match';
+                    color = 'warning';
+                }
+            } else if (match.normalizedScore || match.matchScore) {
+                const score = match.normalizedScore || match.matchScore * 100;
+                if (score >= 90) {
+                    level = 'Excellent';
+                    color = 'success';
+                } else if (score >= 70) {
+                    level = 'Very Good';
+                    color = 'primary';
+                } else if (score >= 50) {
+                    level = 'Good';
+                    color = 'info';
+                } else {
+                    level = 'Fair';
+                    color = 'warning';
+                }
+            }
+            
+            return `<span class="badge bg-${color}" style="font-size: 11px;">${level}</span>`;
+        }
+        
+        function displaySuppliersAsTable(suppliers, container) {
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="30">
+                                    <input type="checkbox" id="selectAllSuppliers" onchange="toggleAllSuppliers()">
+                                </th>
+                                <th>Supplier Name</th>
+                                <th>Match Level</th>
+                                <th>Score</th>
+                                <th>Products</th>
+                                <th>Match Reason</th>
+                                <th width="150">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${suppliers.map(match => `
+                                <tr data-supplier-id="${match.supplierId}" data-score="${match.normalizedScore || match.matchScore * 100}">
+                                    <td>
+                                        <input type="checkbox" class="supplier-checkbox" value="${match.supplierId}">
+                                    </td>
+                                    <td>
+                                        <strong>${match.supplierName}</strong>
+                                        ${match.companyName ? `<br><small class="text-muted">${match.companyName}</small>` : ''}
+                                    </td>
+                                    <td>${getMatchLevelBadge(match)}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 60px; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden;">
+                                                <div style="width: ${match.normalizedScore || match.matchScore * 100}%; height: 100%; background: var(--primary);"></div>
+                                            </div>
+                                            <span style="font-size: 13px;">${(match.normalizedScore || match.matchScore * 100).toFixed(0)}%</span>
+                                        </div>
+                                    </td>
+                                    <td>${match.availableProducts ? match.availableProducts.length : match.matchedProductCount || 0}</td>
+                                    <td>
+                                        ${match.matchReasons && match.matchReasons.length > 0 ? 
+                                            `<small>${match.matchReasons[0].type}: ${match.matchReasons[0].detail}</small>` : 
+                                            '<small class="text-muted">General match</small>'}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="viewSupplierDetail(${match.supplierId})" title="View Details">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </button>
+                                            <button class="btn btn-outline-success" onclick="inviteSupplier(${currentBrief.id}, ${match.supplierId})" title="Send Invite">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                                                    <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200); text-align: center;">
+                    <small style="color: var(--text-tertiary);">Showing ${suppliers.length} matching supplier${suppliers.length !== 1 ? 's' : ''}</small>
+                </div>
+            `;
+        }
+        
+        function setSupplierView(mode) {
+            currentViewMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.btn').classList.add('active');
+            
+            // Redisplay suppliers
+            if (matchedSuppliers.length > 0) {
+                displaySuppliers(matchedSuppliers);
+            }
+        }
+        
+        function filterSuppliersByScore() {
+            const slider = document.getElementById('scoreFilter');
+            const value = parseInt(slider.value);
+            const label = document.getElementById('scoreFilterValue');
+            
+            if (value === 0) {
+                label.textContent = 'All';
+                displaySuppliers(matchedSuppliers);
+            } else {
+                label.textContent = `≥${value}%`;
+                const filtered = matchedSuppliers.filter(s => 
+                    (s.normalizedScore || s.matchScore * 100) >= value
+                );
+                displaySuppliers(filtered);
+            }
+        }
+        
+        function sortSuppliers() {
+            const sortBy = document.getElementById('supplierSort').value;
+            let sorted = [...matchedSuppliers];
+            
+            switch(sortBy) {
+                case 'score':
+                    sorted.sort((a, b) => (b.normalizedScore || b.matchScore * 100) - (a.normalizedScore || a.matchScore * 100));
+                    break;
+                case 'products':
+                    sorted.sort((a, b) => {
+                        const aCount = a.availableProducts ? a.availableProducts.length : a.matchedProductCount || 0;
+                        const bCount = b.availableProducts ? b.availableProducts.length : b.matchedProductCount || 0;
+                        return bCount - aCount;
+                    });
+                    break;
+                case 'name':
+                    sorted.sort((a, b) => a.supplierName.localeCompare(b.supplierName));
+                    break;
+                case 'reason':
+                    sorted.sort((a, b) => {
+                        const aReason = a.matchReasons && a.matchReasons[0] ? a.matchReasons[0].type : '';
+                        const bReason = b.matchReasons && b.matchReasons[0] ? b.matchReasons[0].type : '';
+                        return aReason.localeCompare(bReason);
+                    });
+                    break;
+            }
+            
+            displaySuppliers(sorted);
+        }
+        
+        function toggleAllSuppliers() {
+            const selectAll = document.getElementById('selectAllSuppliers');
+            const checkboxes = document.querySelectorAll('.supplier-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+        
+        function showBulkActions() {
+            const selected = document.querySelectorAll('.supplier-checkbox:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one supplier');
+                return;
+            }
+            
+            const supplierIds = Array.from(selected).map(cb => cb.value);
+            
+            // Show bulk action modal or menu
+            const actions = confirm(`${selected.length} supplier(s) selected. Send invites to all?`);
+            if (actions) {
+                bulkInviteSuppliers(currentBrief.id, supplierIds);
+            }
+        }
+        
+        async function bulkInviteSuppliers(briefId, supplierIds) {
+            try {
+                for (const supplierId of supplierIds) {
+                    await inviteSupplier(briefId, supplierId, true); // true = silent mode
+                }
+                alert(`Successfully sent invites to ${supplierIds.length} suppliers`);
+            } catch (error) {
+                console.error('Error sending bulk invites:', error);
+                alert('Failed to send some invites. Please try again.');
+            }
         }
 
-        function inviteSupplier(briefId, supplierId) {
+        function viewSupplierDetail(supplierId) {
+            window.location.href = `/supplier-view.html?id=${supplierId}`;
+        }
+
+        async function inviteSupplier(briefId, supplierId, silent = false) {
             alert(`Invite functionality coming soon for supplier ${supplierId} to brief ${briefId}`);
         }
 
@@ -1489,6 +1887,177 @@
             document.getElementById('imageViewerImg').src = imagePath;
             const imageModal = new bootstrap.Modal(document.getElementById('imageViewerModal'));
             imageModal.show();
+        }
+
+        // Image Upload Functions
+        let currentProductId = null;
+        let pendingImages = [];
+
+        function openImageUploadModal(productId, productName) {
+            currentProductId = productId;
+            pendingImages = [];
+            
+            document.getElementById('productNameForImage').textContent = `Product: ${productName}`;
+            document.getElementById('uploadPreview').innerHTML = '';
+            document.getElementById('urlPreview').innerHTML = '';
+            document.getElementById('imageUrlInput').value = '';
+            
+            // Load existing images if any
+            loadExistingImages(productId);
+            
+            const modal = new bootstrap.Modal(document.getElementById('imageUploadModal'));
+            modal.show();
+        }
+
+        async function loadExistingImages(productId) {
+            try {
+                const response = await fetch(`/api/RequestItemImages/${productId}`);
+                if (response.ok) {
+                    const images = await response.json();
+                    if (images.length > 0) {
+                        document.getElementById('currentImagesSection').style.display = 'block';
+                        document.getElementById('currentImagesList').innerHTML = images.map(img => `
+                            <div class="position-relative">
+                                <img src="${img.filePath}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" 
+                                        style="padding: 2px 6px; font-size: 10px;"
+                                        onclick="removeExistingImage(${img.id})">×</button>
+                            </div>
+                        `).join('');
+                    } else {
+                        document.getElementById('currentImagesSection').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading existing images:', error);
+            }
+        }
+
+        function handleImageFiles(files) {
+            const preview = document.getElementById('uploadPreview');
+            
+            for (let file of files) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                    continue;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageId = Date.now() + Math.random();
+                    pendingImages.push({
+                        id: imageId,
+                        type: 'file',
+                        file: file,
+                        data: e.target.result
+                    });
+                    
+                    preview.innerHTML += `
+                        <div class="d-inline-block position-relative m-2" id="preview-${imageId}">
+                            <img src="${e.target.result}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" 
+                                    style="padding: 2px 6px; font-size: 10px;"
+                                    onclick="removePendingImage('${imageId}')">×</button>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addImageUrl() {
+            const urlInput = document.getElementById('imageUrlInput');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a valid image URL');
+                return;
+            }
+            
+            const preview = document.getElementById('urlPreview');
+            const imageId = Date.now() + Math.random();
+            
+            pendingImages.push({
+                id: imageId,
+                type: 'url',
+                url: url
+            });
+            
+            preview.innerHTML += `
+                <div class="d-inline-block position-relative m-2" id="preview-${imageId}">
+                    <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;"
+                         onerror="this.parentElement.innerHTML='<div style=\\'width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); border-radius: 8px;\\'>Invalid Image</div>'">
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" 
+                            style="padding: 2px 6px; font-size: 10px;"
+                            onclick="removePendingImage('${imageId}')">×</button>
+                </div>
+            `;
+            
+            urlInput.value = '';
+        }
+
+        function removePendingImage(imageId) {
+            pendingImages = pendingImages.filter(img => img.id != imageId);
+            document.getElementById(`preview-${imageId}`).remove();
+        }
+
+        async function saveProductImages() {
+            if (!currentProductId || pendingImages.length === 0) {
+                alert('No images to save');
+                return;
+            }
+            
+            try {
+                for (let image of pendingImages) {
+                    if (image.type === 'file') {
+                        // Upload file
+                        const formData = new FormData();
+                        formData.append('file', image.file);
+                        formData.append('productId', currentProductId);
+                        
+                        await fetch('/api/RequestItemImages/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } else if (image.type === 'url') {
+                        // Save URL
+                        await fetch('/api/RequestItemImages/add-url', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                productId: currentProductId,
+                                imageUrl: image.url
+                            })
+                        });
+                    }
+                }
+                
+                // Close modal and refresh
+                bootstrap.Modal.getInstance(document.getElementById('imageUploadModal')).hide();
+                alert('Images saved successfully!');
+                
+                // Reload the brief to show new images
+                viewBriefDetail(currentBrief.id);
+            } catch (error) {
+                console.error('Error saving images:', error);
+                alert('Failed to save some images. Please try again.');
+            }
+        }
+
+        async function removeExistingImage(imageId) {
+            if (confirm('Are you sure you want to remove this image?')) {
+                try {
+                    await fetch(`/api/RequestItemImages/${imageId}`, {
+                        method: 'DELETE'
+                    });
+                    loadExistingImages(currentProductId);
+                } catch (error) {
+                    console.error('Error removing image:', error);
+                    alert('Failed to remove image');
+                }
+            }
         }
 
         // Initialize

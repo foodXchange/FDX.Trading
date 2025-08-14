@@ -8,69 +8,18 @@
         document.body.classList.add('dark-mode');
     }
     
-    // Create dark mode toggle in user section (next to user name)
-    function createDarkModeToggle() {
-        // Wait for navigation to be loaded
-        const checkForUserSection = setInterval(() => {
-            const userSection = document.querySelector('.user-section');
-            if (userSection) {
-                clearInterval(checkForUserSection);
-                
-                // Check if button already exists in navigation
-                const existingToggle = document.querySelector('.nav-theme-toggle');
-                if (!existingToggle) {
-                    // Create the toggle button
-                    const button = document.createElement('button');
-                    button.className = 'nav-theme-toggle';
-                    button.id = 'dashboardDarkModeToggle';
-                    button.innerHTML = `<span class="theme-icon">${currentTheme === 'dark' ? 
-                        `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                        </svg>` : 
-                        `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                        </svg>`}</span>`;
-                    button.title = 'Toggle dark mode for all pages';
-                    button.onclick = toggleDarkMode;
-                    
-                    // Insert before the user menu in the user section
-                    const userMenu = userSection.querySelector('.user-menu');
-                    if (userMenu) {
-                        userSection.insertBefore(button, userMenu);
-                    } else {
-                        userSection.appendChild(button);
-                    }
-                } else {
-                    // Update existing toggle
-                    existingToggle.onclick = toggleDarkMode;
-                    const icon = existingToggle.querySelector('.theme-icon');
-                    if (icon) {
-                        icon.innerHTML = currentTheme === 'dark' ? 
-                            `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="5"></circle>
-                                <line x1="12" y1="1" x2="12" y2="3"></line>
-                                <line x1="12" y1="21" x2="12" y2="23"></line>
-                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                                <line x1="1" y1="12" x2="3" y2="12"></line>
-                                <line x1="21" y1="12" x2="23" y2="12"></line>
-                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                            </svg>` : 
-                            `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                            </svg>`;
-                    }
-                }
+    // Remove navigation dark mode toggle since it's now in the footer
+    function removeNavigationDarkModeToggle() {
+        // Check for and remove any existing navigation dark mode toggle
+        const checkForToggle = setInterval(() => {
+            const existingToggle = document.querySelector('.nav-theme-toggle, #dashboardDarkModeToggle');
+            if (existingToggle) {
+                existingToggle.remove();
+                clearInterval(checkForToggle);
             }
+            
+            // Stop checking after 3 seconds
+            setTimeout(() => clearInterval(checkForToggle), 3000);
         }, 100);
         
         // Add optimized styles
@@ -540,8 +489,8 @@
     
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', createDarkModeToggle);
+        document.addEventListener('DOMContentLoaded', removeNavigationDarkModeToggle);
     } else {
-        createDarkModeToggle();
+        removeNavigationDarkModeToggle();
     }
 })();

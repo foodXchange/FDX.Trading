@@ -95,6 +95,7 @@ public class RequestsController : ControllerBase
                 Id = i.Id,
                 RequestId = i.RequestId,
                 ProductName = i.ProductName,
+                BenchmarkBrand = i.BenchmarkBrand,
                 Quantity = i.Quantity,
                 Unit = i.Unit,
                 Description = i.Description,
@@ -193,6 +194,7 @@ public class RequestsController : ControllerBase
             request.RequestItems.Add(new RequestItem
             {
                 ProductName = itemDto.ProductName,
+                BenchmarkBrand = itemDto.BenchmarkBrand,
                 Quantity = itemDto.Quantity,
                 Unit = itemDto.Unit,
                 Description = itemDto.Description,
@@ -274,6 +276,7 @@ public class RequestsController : ControllerBase
             request.RequestItems.Add(new RequestItem
             {
                 ProductName = itemDto.ProductName,
+                BenchmarkBrand = itemDto.BenchmarkBrand,
                 Quantity = itemDto.Quantity,
                 Unit = itemDto.Unit,
                 Description = itemDto.Description,
@@ -295,12 +298,26 @@ public class RequestsController : ControllerBase
     [HttpPatch("{id}")]
     public async Task<IActionResult> PatchRequest(int id, [FromBody] JsonElement patchData)
     {
-        var request = await _context.Requests.FindAsync(id);
+        var request = await _context.Requests
+            .Include(r => r.RequestItems)
+            .FirstOrDefaultAsync(r => r.Id == id);
 
         if (request == null)
             return NotFound(new { message = "Request not found" });
 
         // Update only the fields that are provided
+        if (patchData.TryGetProperty("title", out JsonElement titleElement))
+        {
+            request.Title = titleElement.GetString() ?? "";
+            request.UpdatedAt = DateTime.Now;
+        }
+
+        if (patchData.TryGetProperty("description", out JsonElement descriptionElement))
+        {
+            request.Description = descriptionElement.ValueKind == JsonValueKind.Null ? null : descriptionElement.GetString();
+            request.UpdatedAt = DateTime.Now;
+        }
+
         if (patchData.TryGetProperty("buyerName", out JsonElement buyerNameElement))
         {
             request.BuyerName = buyerNameElement.GetString();
@@ -410,6 +427,117 @@ public class RequestsController : ControllerBase
         });
     }
 
+    // POST: api/requests/{id}/calculate-completion
+    [HttpPost("{id}/calculate-completion")]
+    public async Task<IActionResult> CalculateCompletion(int id)
+    {
+        var request = await _context.Requests
+            .Include(r => r.RequestItems)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (request == null)
+            return NotFound(new { message = "Request not found" });
+
+        var completionDetails = CalculateRequestCompletion(request);
+        
+        // Update the completion percentage in the database
+        request.CompletionPercentage = completionDetails.Percentage;
+        request.UpdatedAt = DateTime.Now;
+        await _context.SaveChangesAsync();
+
+        return Ok(completionDetails);
+    }
+
+    // POST: api/requests/{id}/mark-complete
+    [HttpPost("{id}/mark-complete")]
+    public async Task<IActionResult> MarkRequestComplete(int id)
+    {
+        var request = await _context.Requests
+            .Include(r => r.RequestItems)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (request == null)
+            return NotFound(new { message = "Request not found" });
+
+        // Calculate current completion
+        var completionDetails = CalculateRequestCompletion(request);
+        
+        if (completionDetails.Percentage < 100)
+        {
+            return BadRequest(new 
+            {
+                success = false,
+                message = $"Request cannot be marked as complete. Completion is only {completionDetails.Percentage}%",
+                completionDetails
+            });
+        }
+
+        request.IsComplete = true;
+        request.CompletionPercentage = 100;
+        request.UpdatedAt = DateTime.Now;
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = "Request marked as complete",
+            completionPercentage = 100,
+            isComplete = true
+        });
+    }
+
+    // POST: api/requests/{id}/publish
+    [HttpPost("{id}/publish")]
+    public async Task<IActionResult> PublishRequest(int id)
+    {
+        var request = await _context.Requests
+            .Include(r => r.RequestItems)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (request == null)
+            return NotFound(new { message = "Request not found" });
+
+        // Check if request is complete
+        if (!request.IsComplete || request.CompletionPercentage < 100)
+        {
+            var completionDetails = CalculateRequestCompletion(request);
+            return BadRequest(new 
+            {
+                success = false,
+                message = "Request must be 100% complete before publishing",
+                currentCompletion = request.CompletionPercentage,
+                isComplete = request.IsComplete,
+                completionDetails
+            });
+        }
+
+        // Check if already published
+        if (request.Status == ProcurementRequestStatus.Active)
+        {
+            return BadRequest(new 
+            {
+                success = false,
+                message = "Request is already published"
+            });
+        }
+
+        request.Status = ProcurementRequestStatus.Active;
+        request.UpdatedAt = DateTime.Now;
+        await _context.SaveChangesAsync();
+
+        // TODO: Create a console entry for the published request
+        // await _consoleService.CreateConsoleForRequest(request.Id, "Request published and ready for sourcing");
+
+        return Ok(new
+        {
+            success = true,
+            message = "Request published successfully",
+            status = "Active",
+            requestNumber = request.RequestNumber,
+            title = request.Title
+        });
+    }
+
     // DELETE: api/requests/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRequest(int id)
@@ -449,6 +577,7 @@ public class RequestsController : ControllerBase
         {
             RequestId = id,
             ProductName = dto.ProductName,
+            BenchmarkBrand = dto.BenchmarkBrand,
             Quantity = dto.Quantity,
             Unit = dto.Unit,
             Description = dto.Description,
@@ -466,6 +595,54 @@ public class RequestsController : ControllerBase
             success = true,
             message = "Item added successfully",
             itemId = item.Id
+        });
+    }
+
+    // PUT: api/requests/{id}/items/{itemId}
+    [HttpPut("{id}/items/{itemId}")]
+    public async Task<IActionResult> UpdateRequestItem(int id, int itemId, [FromBody] CreateRequestItemDto dto)
+    {
+        var item = await _context.RequestItems
+            .Include(i => i.Request)
+            .FirstOrDefaultAsync(i => i.Id == itemId && i.RequestId == id);
+
+        if (item == null)
+            return NotFound(new { message = "Item not found" });
+
+        if (item.Request.Status != ProcurementRequestStatus.Draft)
+            return BadRequest(new { message = "Can only edit items in draft requests" });
+
+        // Update item fields
+        item.ProductName = dto.ProductName;
+        item.BenchmarkBrand = dto.BenchmarkBrand;
+        item.Quantity = dto.Quantity;
+        item.Unit = dto.Unit;
+        item.Description = dto.Description;
+        item.TargetPrice = dto.TargetPrice;
+        
+        // Update request timestamp and recalculate completion
+        item.Request.UpdatedAt = DateTime.Now;
+        item.Request.CompletionPercentage = CalculateCompletionPercentage(item.Request);
+        item.Request.IsComplete = item.Request.CompletionPercentage == 100;
+        
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            success = true,
+            message = "Item updated successfully",
+            item = new RequestItemDto
+            {
+                Id = item.Id,
+                RequestId = item.RequestId,
+                ProductName = item.ProductName,
+                BenchmarkBrand = item.BenchmarkBrand,
+                Quantity = item.Quantity,
+                Unit = item.Unit,
+                Description = item.Description,
+                TargetPrice = item.TargetPrice,
+                CreatedAt = item.CreatedAt
+            }
         });
     }
 
@@ -768,7 +945,7 @@ public class RequestsController : ControllerBase
         int filledFields = 0;
         
         // Required fields (must have for completion)
-        if (!string.IsNullOrWhiteSpace(request.Title)) filledFields++; else if (string.IsNullOrWhiteSpace(request.Title)) totalFields--;
+        if (!string.IsNullOrWhiteSpace(request.Title)) filledFields++;
         totalFields++; // Title
         
         if (!string.IsNullOrWhiteSpace(request.BuyerName)) filledFields++;
@@ -804,4 +981,200 @@ public class RequestsController : ControllerBase
         if (totalFields == 0) return 0;
         return (int)Math.Round((double)filledFields / totalFields * 100);
     }
+
+    private RequestCompletionDetails CalculateRequestCompletion(Request request)
+    {
+        var details = new RequestCompletionDetails
+        {
+            Sections = new List<CompletionSection>()
+        };
+
+        int totalPoints = 0;
+        int earnedPoints = 0;
+
+        // Basic Information Section
+        var basicSection = new CompletionSection
+        {
+            Name = "Basic Information",
+            Fields = new List<CompletionField>()
+        };
+
+        basicSection.Fields.Add(new CompletionField 
+        { 
+            Name = "Title", 
+            IsComplete = !string.IsNullOrWhiteSpace(request.Title),
+            Weight = 10
+        });
+        
+        basicSection.Fields.Add(new CompletionField 
+        { 
+            Name = "Description", 
+            IsComplete = !string.IsNullOrWhiteSpace(request.Description),
+            Weight = 5
+        });
+
+        // Request Items Section
+        var itemsSection = new CompletionSection
+        {
+            Name = "Request Items",
+            Fields = new List<CompletionField>()
+        };
+
+        itemsSection.Fields.Add(new CompletionField 
+        { 
+            Name = "Has Items", 
+            IsComplete = request.RequestItems != null && request.RequestItems.Count > 0,
+            Weight = 20,
+            Details = $"{request.RequestItems?.Count ?? 0} items"
+        });
+
+        if (request.RequestItems != null && request.RequestItems.Any())
+        {
+            bool allItemsComplete = request.RequestItems.All(item => 
+                !string.IsNullOrWhiteSpace(item.ProductName) && 
+                item.Quantity > 0 && 
+                !string.IsNullOrWhiteSpace(item.Unit));
+            
+            itemsSection.Fields.Add(new CompletionField 
+            { 
+                Name = "All Items Complete", 
+                IsComplete = allItemsComplete,
+                Weight = 15
+            });
+        }
+
+        // Product Attributes Section
+        var productSection = new CompletionSection
+        {
+            Name = "Product Attributes",
+            Fields = new List<CompletionField>()
+        };
+
+        if (request.IsKosher)
+        {
+            productSection.Fields.Add(new CompletionField 
+            { 
+                Name = "Kosher Preference", 
+                IsComplete = !string.IsNullOrWhiteSpace(request.KosherPreference),
+                Weight = 5
+            });
+        }
+
+        if (request.IsFreeFrom)
+        {
+            productSection.Fields.Add(new CompletionField 
+            { 
+                Name = "Free-From Options", 
+                IsComplete = !string.IsNullOrWhiteSpace(request.FreeFromOptions),
+                Weight = 5
+            });
+        }
+
+        // Logistics Section
+        var logisticsSection = new CompletionSection
+        {
+            Name = "Logistics",
+            Fields = new List<CompletionField>()
+        };
+
+        logisticsSection.Fields.Add(new CompletionField 
+        { 
+            Name = "Incoterms", 
+            IsComplete = !string.IsNullOrWhiteSpace(request.Incoterms),
+            Weight = 10
+        });
+
+        logisticsSection.Fields.Add(new CompletionField 
+        { 
+            Name = "Container Loading", 
+            IsComplete = !string.IsNullOrWhiteSpace(request.ContainerLoading),
+            Weight = 10
+        });
+
+        if (request.ContainerLoading == "Palletized")
+        {
+            logisticsSection.Fields.Add(new CompletionField 
+            { 
+                Name = "Pallet Size", 
+                IsComplete = !string.IsNullOrWhiteSpace(request.PalletSize),
+                Weight = 5
+            });
+        }
+
+        // Country Preferences (Optional but adds to completion)
+        var countrySection = new CompletionSection
+        {
+            Name = "Country Preferences",
+            Fields = new List<CompletionField>()
+        };
+
+        countrySection.Fields.Add(new CompletionField 
+        { 
+            Name = "Country Preferences Set", 
+            IsComplete = !string.IsNullOrWhiteSpace(request.PreferredCountries) || 
+                        !string.IsNullOrWhiteSpace(request.NotPreferredCountries),
+            Weight = 5,
+            IsOptional = true
+        });
+
+        // Add all sections
+        details.Sections.Add(basicSection);
+        details.Sections.Add(itemsSection);
+        if (productSection.Fields.Any())
+            details.Sections.Add(productSection);
+        details.Sections.Add(logisticsSection);
+        details.Sections.Add(countrySection);
+
+        // Calculate totals
+        foreach (var section in details.Sections)
+        {
+            section.TotalFields = section.Fields.Count;
+            section.CompletedFields = section.Fields.Count(f => f.IsComplete);
+            
+            foreach (var field in section.Fields)
+            {
+                if (!field.IsOptional)
+                    totalPoints += field.Weight;
+                if (field.IsComplete)
+                    earnedPoints += field.Weight;
+            }
+            
+            if (section.TotalFields > 0)
+                section.Percentage = (int)Math.Round((double)section.CompletedFields / section.TotalFields * 100);
+        }
+
+        details.Percentage = totalPoints > 0 ? (int)Math.Round((double)earnedPoints / totalPoints * 100) : 0;
+        details.IsComplete = details.Percentage == 100;
+        details.MissingFields = details.Sections
+            .SelectMany(s => s.Fields.Where(f => !f.IsComplete && !f.IsOptional).Select(f => $"{s.Name}: {f.Name}"))
+            .ToList();
+
+        return details;
+    }
+}
+
+public class RequestCompletionDetails
+{
+    public int Percentage { get; set; }
+    public bool IsComplete { get; set; }
+    public List<CompletionSection> Sections { get; set; } = new();
+    public List<string> MissingFields { get; set; } = new();
+}
+
+public class CompletionSection
+{
+    public string Name { get; set; } = "";
+    public int TotalFields { get; set; }
+    public int CompletedFields { get; set; }
+    public int Percentage { get; set; }
+    public List<CompletionField> Fields { get; set; } = new();
+}
+
+public class CompletionField
+{
+    public string Name { get; set; } = "";
+    public bool IsComplete { get; set; }
+    public int Weight { get; set; } = 1;
+    public bool IsOptional { get; set; }
+    public string? Details { get; set; }
 }

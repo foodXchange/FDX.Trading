@@ -76,6 +76,9 @@ public class RequestItem
     [MaxLength(500)]
     public string ProductName { get; set; } = "";
     
+    [MaxLength(200)]
+    public string? BenchmarkBrand { get; set; }
+    
     [Required]
     public decimal Quantity { get; set; }
     
@@ -89,8 +92,9 @@ public class RequestItem
     
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     
-    // Navigation property
+    // Navigation properties
     public virtual Request Request { get; set; } = null!;
+    public virtual ICollection<RequestItemImage> Images { get; set; } = new List<RequestItemImage>();
 }
 
 public enum ProcurementRequestStatus
@@ -141,6 +145,7 @@ public class RequestItemDto
     public int Id { get; set; }
     public int RequestId { get; set; }
     public string ProductName { get; set; } = "";
+    public string? BenchmarkBrand { get; set; }
     public decimal Quantity { get; set; }
     public string Unit { get; set; } = "";
     public string? Description { get; set; }
@@ -176,6 +181,7 @@ public class CreateRequestItemDto
 {
     [Required]
     public string ProductName { get; set; } = "";
+    public string? BenchmarkBrand { get; set; }
     [Required]
     public decimal Quantity { get; set; }
     [Required]

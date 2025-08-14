@@ -12,7 +12,7 @@ This document defines the design standards, layout patterns, and component speci
 
 ## Page Structure
 
-### 1. Base HTML Template
+### 1. Base HTML Template (UPDATED with Global Components)
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -21,10 +21,14 @@ This document defines the design standards, layout patterns, and component speci
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Title - FDX Trading</title>
     
-    <!-- Theme Initialization (must be first) -->
+    <!-- Favicon (REQUIRED) -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Theme Initialization (MUST BE FIRST) -->
     <script src="/js/theme-init.js"></script>
     
-    <!-- Modern UI System -->
+    <!-- Core Styles -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/smart-navigation.css?v=3">
     <link rel="stylesheet" href="/css/modern-ui.css">
@@ -34,9 +38,19 @@ This document defines the design standards, layout patterns, and component speci
         <!-- Page content here -->
     </div>
     
-    <!-- Load Smart Navigation -->
+    <!-- Global Components (REQUIRED - Order Matters!) -->
+    <!-- 1. Smart Navigation -->
     <script src="/js/smart-navigation.js"></script>
-    <script src="/js/universal-dark-mode.js"></script>
+    
+    <!-- 2. Global Settings Manager -->
+    <script src="/js/global-settings.js"></script>
+    
+    <!-- 3. Global Footer -->
+    <link rel="stylesheet" href="/css/global-footer.css">
+    <script src="/js/global-footer.js"></script>
+    
+    <!-- 4. Modern UI System -->
+    <script src="/js/modern-ui.js"></script>
 </body>
 </html>
 ```
@@ -385,6 +399,7 @@ transition: all 0.2s ease;
 When creating a new page, ensure:
 
 - [ ] Uses the standard HTML template structure
+- [ ] Includes favicon references (SVG and ICO)
 - [ ] Includes theme initialization script first
 - [ ] Has `.page-container` wrapper with correct padding/max-width
 - [ ] Includes all CSS variables in `:root`
@@ -395,7 +410,7 @@ When creating a new page, ensure:
 - [ ] Buttons follow the design system
 - [ ] Responsive breakpoints are implemented
 - [ ] Smart navigation is loaded
-- [ ] Universal dark mode script is included
+- [ ] NO universal-dark-mode.js script (deprecated)
 - [ ] Follows the Inter font family
 - [ ] Has proper hover states and transitions
 - [ ] Tables have alternating row colors on hover
@@ -412,6 +427,8 @@ When creating a new page, ensure:
 6. **DON'T use pixels for responsive design** - Use rem/em units
 7. **DON'T skip hover states** - All interactive elements need feedback
 8. **DON'T use harsh blacks** - Use the gray scale for better contrast
+9. **DON'T include universal-dark-mode.js** - It's deprecated, use theme-init.js instead
+10. **DON'T forget favicon links** - Always include both SVG and ICO formats
 
 ## Implementation Priority
 

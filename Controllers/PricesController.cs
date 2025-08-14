@@ -27,7 +27,7 @@ public class PricesController : ControllerBase
     [HttpGet("history/{productId}")]
     public async Task<ActionResult<List<PriceHistoryDto>>> GetPriceHistory(int productId)
     {
-        var history = await _context.ProductPriceHistory
+        var history = await _context.ProductPriceHistories
             .Where(p => p.ProductId == productId)
             .OrderByDescending(p => p.EffectiveDate)
             .ThenByDescending(p => p.CreatedAt)
@@ -57,7 +57,7 @@ public class PricesController : ControllerBase
         try
         {
             // Deactivate current price(s)
-            var currentPrices = await _context.ProductPriceHistory
+            var currentPrices = await _context.ProductPriceHistories
                 .Where(p => p.ProductId == dto.ProductId && p.IsActive)
                 .ToListAsync();
             
@@ -79,7 +79,7 @@ public class PricesController : ControllerBase
                 IsActive = true
             };
             
-            _context.ProductPriceHistory.Add(newPrice);
+            _context.ProductPriceHistories.Add(newPrice);
             
             // Also update the main product table
             var product = await _context.Products.FindAsync(dto.ProductId);
@@ -163,7 +163,7 @@ public class PricesController : ControllerBase
                         if (product != null)
                         {
                             // Deactivate old prices
-                            var oldPrices = await _context.ProductPriceHistory
+                            var oldPrices = await _context.ProductPriceHistories
                                 .Where(p => p.ProductId == product.Id && p.IsActive)
                                 .ToListAsync();
                             
@@ -173,7 +173,7 @@ public class PricesController : ControllerBase
                             }
                             
                             // Add new price
-                            _context.ProductPriceHistory.Add(new ProductPriceHistory
+                            _context.ProductPriceHistories.Add(new ProductPriceHistory
                             {
                                 ProductId = product.Id,
                                 UnitPrice = price,

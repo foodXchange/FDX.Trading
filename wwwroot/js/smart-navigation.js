@@ -12,6 +12,7 @@ class SmartNavigation {
             };
             localStorage.setItem('currentUser', JSON.stringify(this.user));
         }
+        this.waitingForSecondKey = false;
         this.userRole = this.user.type || 5; // Default to Admin (5)
         this.recentTasks = [];
         this.currentContext = null;
@@ -35,6 +36,7 @@ class SmartNavigation {
                 items: [
                     { icon: '🏠', text: 'Home', href: '/dashboard.html', badge: null },
                     { icon: '📊', text: 'My Work', href: '/my-work.html', badge: '3' },
+                    { icon: '🏢', text: 'Companies', href: '/companies.html', badge: null },
                     { icon: '👥', text: 'Users', href: '/users.html', badge: null }
                 ]
             }
@@ -90,22 +92,22 @@ class SmartNavigation {
             ]
         };
 
-        // Learning section for all
-        const learningSection = {
-            section: 'LEARN & HELP',
-            items: [
-                { icon: '📖', text: 'How It Works', href: '/system-workflow.html', badge: 'NEW' },
-                { icon: '🎓', text: 'University', href: '/university-dashboard.html', badge: 'START' },
-                { icon: '❓', text: 'Help Center', href: '/help.html', badge: null }
-            ]
-        };
+        // Learning section removed - now in footer
+        // const learningSection = {
+        //     section: 'LEARN & HELP',
+        //     items: [
+        //         { icon: '📖', text: 'How It Works', href: '/system-workflow.html', badge: 'NEW' },
+        //         { icon: '🎓', text: 'University', href: '/university-dashboard.html', badge: 'START' },
+        //         { icon: '❓', text: 'Help Center', href: '/help.html', badge: null }
+        //     ]
+        // };
 
         // Combine sections based on role
         const sections = [...baseItems];
         if (roleItems[this.userRole]) {
             sections.push(...roleItems[this.userRole]);
         }
-        sections.push(learningSection);
+        // sections.push(learningSection); // Removed - now in footer
 
         return sections;
     }
@@ -216,16 +218,6 @@ class SmartNavigation {
                             <span>My Activity</span>
                         </a>
                         
-                        <a href="/user-profile.html#preferences" class="dropdown-item">
-                            <span class="dropdown-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                    <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 12h6m6 0h6"></path>
-                                </svg>
-                            </span>
-                            <span>Preferences</span>
-                        </a>
-                        
                         <a href="/user-profile.html#notifications" class="dropdown-item">
                             <span class="dropdown-icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -235,39 +227,6 @@ class SmartNavigation {
                             </span>
                             <span>Notifications</span>
                             <span class="dropdown-count">5</span>
-                        </a>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <a href="/help.html" class="dropdown-item">
-                            <span class="dropdown-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                                </svg>
-                            </span>
-                            <span>Help Center</span>
-                        </a>
-                        
-                        <a href="/university-dashboard.html" class="dropdown-item">
-                            <span class="dropdown-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                                </svg>
-                            </span>
-                            <span>Learning Center</span>
-                        </a>
-                        
-                        <a href="#" onclick="smartNav.showKeyboardShortcuts(); return false;" class="dropdown-item">
-                            <span class="dropdown-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                                    <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path>
-                                </svg>
-                            </span>
-                            <span>Keyboard Shortcuts</span>
                         </a>
                         
                         <div class="dropdown-divider"></div>
@@ -313,20 +272,8 @@ class SmartNavigation {
         document.body.appendChild(container);
         document.getElementById('mainContent').innerHTML = existingContent;
 
-        // Create and append FAB button directly to body
-        const fabButton = document.createElement('button');
-        fabButton.className = 'fab';
-        fabButton.id = 'fabButton';
-        fabButton.title = 'Open Command Palette (Ctrl+K)';
-        fabButton.onclick = () => this.toggleCommandPalette();
-        fabButton.innerHTML = `
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <path d="M9 9l6 6m0-6l-6 6"/>
-            </svg>
-        `;
-        document.body.appendChild(fabButton);
-
+        // FAB button removed - now in global footer
+        
         // Create and append command palette overlay directly to body
         const commandPalette = document.createElement('div');
         commandPalette.className = 'command-palette-overlay';
@@ -547,9 +494,109 @@ class SmartNavigation {
                 this.toggleSidebar();
             }
             
+            // Alt+N - Create New Request
+            if (e.altKey && e.key === 'n') {
+                e.preventDefault();
+                this.executeCommand('new-request');
+            }
+            
+            // Alt+P - Search Products
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                this.executeCommand('search-products');
+            }
+            
+            // Alt+S - Search Suppliers
+            if (e.altKey && e.key === 's') {
+                e.preventDefault();
+                this.executeCommand('search-suppliers');
+            }
+            
+            // Alt+D - Toggle Dark Mode
+            if (e.altKey && e.key === 'd') {
+                e.preventDefault();
+                this.executeCommand('toggle-dark');
+            }
+            
+            // Alt+H - Go to Dashboard
+            if (e.altKey && e.key === 'h') {
+                e.preventDefault();
+                window.location.href = '/dashboard.html';
+            }
+            
+            // Alt+R - Go to Requests
+            if (e.altKey && e.key === 'r') {
+                e.preventDefault();
+                window.location.href = '/requests.html';
+            }
+            
+            // Alt+U - Go to Users
+            if (e.altKey && e.key === 'u') {
+                e.preventDefault();
+                window.location.href = '/users.html';
+            }
+            
+            // Alt+M - Go to Price Management
+            if (e.altKey && e.key === 'm') {
+                e.preventDefault();
+                window.location.href = '/price-management.html';
+            }
+            
+            // Vim-style "G" shortcuts
+            if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key === 'g') {
+                // Don't trigger if user is typing in an input/textarea
+                const activeElement = document.activeElement;
+                const isTyping = activeElement && (
+                    activeElement.tagName === 'INPUT' || 
+                    activeElement.tagName === 'TEXTAREA' || 
+                    activeElement.contentEditable === 'true'
+                );
+                
+                if (!isTyping) {
+                    if (this.waitingForSecondKey) {
+                        // If already waiting, reset
+                        this.waitingForSecondKey = false;
+                    } else {
+                        // Start waiting for second key
+                        e.preventDefault();
+                        this.waitingForSecondKey = true;
+                        
+                        // Reset after 2 seconds if no second key pressed
+                        setTimeout(() => {
+                            this.waitingForSecondKey = false;
+                        }, 2000);
+                    }
+                }
+            }
+            
+            // Handle second key of vim-style shortcuts
+            if (this.waitingForSecondKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                this.waitingForSecondKey = false;
+                e.preventDefault();
+                
+                switch(e.key.toLowerCase()) {
+                    case 'd':
+                        window.location.href = '/dashboard.html';
+                        break;
+                    case 'p':
+                        window.location.href = '/products.html';
+                        break;
+                    case 'r':
+                        window.location.href = '/requests.html';
+                        break;
+                    case 'u':
+                        window.location.href = '/users.html';
+                        break;
+                    case 's':
+                        window.location.href = '/supplier-search.html';
+                        break;
+                }
+            }
+            
             // Escape - Close modals
             if (e.key === 'Escape') {
                 this.closeAllModals();
+                this.waitingForSecondKey = false; // Also reset vim-style shortcut state
             }
         });
 
@@ -679,13 +726,57 @@ class SmartNavigation {
                 window.location.href = '/supplier-search.html';
                 break;
             case 'toggle-dark':
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                this.toggleGlobalTheme();
                 break;
             default:
                 console.log(`Executing command: ${command}`);
         }
         this.closeCommandPalette();
+    }
+    
+    toggleGlobalTheme() {
+        // Toggle the dark mode class
+        const isDark = document.body.classList.toggle('dark-mode');
+        const theme = isDark ? 'dark' : 'light';
+        
+        // Save to multiple localStorage keys for compatibility
+        localStorage.setItem('darkMode', isDark);
+        localStorage.setItem('dashboardTheme', theme);
+        localStorage.setItem('theme', theme);
+        
+        // Update any theme toggle buttons on the page
+        const toggleButtons = document.querySelectorAll('.nav-theme-toggle .theme-icon, #dashboardDarkModeToggle .theme-icon');
+        toggleButtons.forEach(icon => {
+            if (icon) {
+                icon.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    if (isDark) {
+                        icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>`;
+                    } else {
+                        icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>`;
+                    }
+                    icon.style.transform = '';
+                }, 300);
+            }
+        });
+        
+        // If dashboard's toggle function exists, use it for compatibility
+        if (window.toggleDashboardDarkMode) {
+            // Dashboard page has its own handler, let it know theme changed
+            return;
+        }
     }
     
     toggleCommandOptions() {

@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FDX Trading - Login</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Theme initialization MUST come first -->
+    <script src="js/theme-init.js"></script>
+    
+    
     <style>
         * {
             margin: 0;
@@ -19,6 +27,59 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            transition: background 0.3s ease;
+        }
+        
+        /* Dark mode styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        
+        body.dark-mode .login-container {
+            background: #1e293b;
+            color: #e2e8f0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        body.dark-mode h2 {
+            color: #f1f5f9;
+        }
+        
+        body.dark-mode .input-group label {
+            color: #cbd5e1;
+        }
+        
+        body.dark-mode .input-group input {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+        
+        body.dark-mode .input-group input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+        }
+        
+        body.dark-mode .remember-me label {
+            color: #94a3b8;
+        }
+        
+        body.dark-mode .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        
+        body.dark-mode .btn-primary:hover {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+        }
+        
+        body.dark-mode .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        body.dark-mode .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
         }
         
         .login-container {
@@ -28,6 +89,8 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 400px;
+            position: relative;
+            z-index: 1;
         }
         
         /* Mobile responsive */
@@ -352,6 +415,8 @@
             document.getElementById('message').style.display = 'none';
         }
     </script>
-    <script src="/js/universal-dark-mode-styles.js"></script>
+    
+    <!-- Global Settings Manager -->
+    <script src="/js/global-settings.js"></script>
 </body>
 </html>

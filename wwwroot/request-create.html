@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Request - FDX Trading</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <!-- Modern UI System -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/modern-ui.css">
@@ -363,9 +366,21 @@
                 ➕ Create New Request
             </h1>
             <div class="header-actions">
-                <button class="btn btn-secondary" onclick="goBack()">
-                    ← Back to Requests
-                </button>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 4px;">Form Completion</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 150px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden;">
+                                <div id="completionBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); transition: width 0.3s ease; border-radius: 4px;"></div>
+                            </div>
+                            <span id="completionPercent" style="font-weight: 600; color: white; min-width: 40px;">0%</span>
+                        </div>
+                        <div id="completionStatus" style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px;">Draft</div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="goBack()">
+                        ← Back to Requests
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -625,6 +640,115 @@
         let itemCounter = 0;
         let editingRequestId = null;
         let originalRequest = null;
+        
+        // Form completion tracking
+        function calculateFormCompletion() {
+            const requiredFields = [
+                { id: 'title', weight: 15, name: 'Request Title' },
+                { id: 'buyerCompany', weight: 10, name: 'Buyer Company' },
+                { id: 'buyerName', weight: 10, name: 'Buyer Name', special: true },
+                { id: 'description', weight: 5, name: 'Description', optional: true },
+                { id: 'items', weight: 20, name: 'Request Items', special: true },
+                { id: 'isKosher', weight: 3, name: 'Kosher Requirements', optional: true },
+                { id: 'freeFrom', weight: 3, name: 'Allergen Restrictions', optional: true },
+                { id: 'incoterms', weight: 8, name: 'Delivery Terms' },
+                { id: 'containerLoading', weight: 6, name: 'Packaging Method' },
+                { id: 'countryPreference', weight: 10, name: 'Source Countries' },
+                { id: 'notPreferredCountries', weight: 5, name: 'Restricted Countries', optional: true },
+                { id: 'targetPrice', weight: 5, name: 'Target Price', optional: true }
+            ];
+            
+            let totalWeight = 0;
+            let completedWeight = 0;
+            let missingFields = [];
+            
+            requiredFields.forEach(field => {
+                totalWeight += field.weight;
+                let isCompleted = false;
+                
+                if (field.id === 'buyerName') {
+                    const buyerSelect = document.getElementById('buyerName');
+                    const buyerInput = document.getElementById('buyerNameInput');
+                    isCompleted = buyerSelect.value || (buyerInput.style.display !== 'none' && buyerInput.value.trim());
+                } else if (field.id === 'items') {
+                    isCompleted = items.length > 0 && items.every(item => item.productName && item.quantity > 0);
+                } else if (field.id === 'freeFrom') {
+                    isCompleted = document.querySelectorAll('input[name="freeFrom"]:checked').length > 0;
+                } else if (field.id === 'isKosher') {
+                    isCompleted = document.getElementById('isKosher').checked;
+                } else if (field.id === 'countryPreference') {
+                    isCompleted = document.querySelector('input[name="countryPreference"]:checked') !== null;
+                } else if (field.id === 'targetPrice') {
+                    isCompleted = items.some(item => item.targetPrice > 0);
+                } else if (field.id === 'notPreferredCountries') {
+                    isCompleted = document.getElementById('notPreferredCountries').selectedOptions.length > 0;
+                } else {
+                    const element = document.getElementById(field.id);
+                    if (element) {
+                        isCompleted = element.value && element.value.trim() !== '';
+                    }
+                }
+                
+                if (isCompleted) {
+                    completedWeight += field.weight;
+                } else if (!field.optional) {
+                    missingFields.push(field.name);
+                }
+            });
+            
+            const percentage = Math.round((completedWeight / totalWeight) * 100);
+            
+            // Update UI
+            const completionBar = document.getElementById('completionBar');
+            const completionPercent = document.getElementById('completionPercent');
+            const completionStatus = document.getElementById('completionStatus');
+            
+            if (completionBar) completionBar.style.width = percentage + '%';
+            if (completionPercent) completionPercent.textContent = percentage + '%';
+            
+            if (completionStatus) {
+                if (percentage === 100) {
+                    completionStatus.textContent = 'Complete - Ready to Publish';
+                    completionStatus.style.color = '#4ade80';
+                } else if (percentage >= 80) {
+                    completionStatus.textContent = 'Almost Complete';
+                    completionStatus.style.color = '#fbbf24';
+                } else if (percentage >= 50) {
+                    completionStatus.textContent = 'In Progress';
+                    completionStatus.style.color = '#60a5fa';
+                } else {
+                    completionStatus.textContent = 'Draft';
+                    completionStatus.style.color = 'rgba(255,255,255,0.7)';
+                }
+            }
+            
+            return { percentage, missingFields };
+        }
+        
+        // Track form changes
+        function setupFormTracking() {
+            // Track all input changes
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                element.addEventListener('change', calculateFormCompletion);
+                element.addEventListener('input', debounce(calculateFormCompletion, 500));
+            });
+            
+            // Initial calculation
+            calculateFormCompletion();
+        }
+        
+        // Debounce helper
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
         // Check if we're editing an existing request
         const urlParams = new URLSearchParams(window.location.search);
@@ -913,6 +1037,7 @@
 
         function renderItems() {
             const itemsList = document.getElementById('itemsList');
+            calculateFormCompletion(); // Recalculate when items change
             
             if (items.length === 0) {
                 itemsList.innerHTML = `
@@ -1005,9 +1130,21 @@
                     item[field] = value;
                 }
             }
+            calculateFormCompletion(); // Recalculate when items change
         }
 
         function validateForm() {
+            const completion = calculateFormCompletion();
+            
+            if (completion.percentage < 100) {
+                const missing = completion.missingFields.join(', ');
+                if (confirm(`Your form is ${completion.percentage}% complete. Missing fields: ${missing}\n\nDo you want to save as draft instead?`)) {
+                    saveAsDraft();
+                    return false;
+                }
+                return false;
+            }
+            
             const title = document.getElementById('title').value.trim();
             const buyerCompany = document.getElementById('buyerCompany').value.trim();
             
@@ -1194,6 +1331,11 @@
         }
 
         function saveAndPublish() {
+            const completion = calculateFormCompletion();
+            if (completion.percentage < 100) {
+                alert(`Your form is only ${completion.percentage}% complete. Please fill in all required fields before publishing.\n\nMissing: ${completion.missingFields.join(', ')}`);
+                return;
+            }
             if (confirm('Are you sure you want to publish this request? Once published, it will be visible to suppliers.')) {
                 saveRequest(true);
             }
@@ -1209,6 +1351,11 @@
         if (!requestId) {
             addItem();
         }
+        
+        // Setup form completion tracking on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setupFormTracking();
+        });
 
         // Contact management functions
         async function loadContactsForCompany() {
@@ -1499,5 +1646,9 @@
         });
     </script>
     <script src="/js/universal-dark-mode-styles.js"></script>
+    
+    <!-- Global Footer -->
+    <link rel="stylesheet" href="/css/global-footer-v2.css">
+    <script src="/js/global-footer-v2.js"></script>
 </body>
 </html>

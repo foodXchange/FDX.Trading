@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Procurement Requests - FDX Trading</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <!-- Theme Initialization (must be first) -->
     <script src="/js/theme-init.js"></script>
     <!-- Modern UI System -->
@@ -1092,8 +1095,15 @@
             
             container.innerHTML = sortedRequests.map(request => {
                 const statusClass = ['draft', 'active', 'completed', 'cancelled'][request.status] || 'draft';
-                const statusText = ['Draft', 'Active', 'Completed', 'Cancelled'][request.status] || 'Draft';
+                const statusText = ['Draft', 'Published', 'Closed', 'Cancelled'][request.status] || 'Draft';
                 const priority = request.priority || 'medium';
+                const completionPercentage = request.completionPercentage || 0;
+                const isComplete = request.isComplete || false;
+                
+                // Determine completion color
+                let progressColor = '#ef4444'; // Red for < 30%
+                if (completionPercentage >= 80) progressColor = '#10b981'; // Green for >= 80%
+                else if (completionPercentage >= 50) progressColor = '#f59e0b'; // Orange for >= 50%
                 
                 return `
                     <div class="request-card" onclick="viewRequest(${request.id})" style="position: relative;">
@@ -1103,7 +1113,21 @@
                                 <div class="request-number">${request.requestNumber}</div>
                                 <h3 class="request-title">${request.title}</h3>
                             </div>
-                            <span class="status-badge status-${statusClass}">${statusText}</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                ${isComplete ? '<span class="status-badge" style="background: #10b981; color: white; font-size: 11px;">✓ Complete</span>' : ''}
+                                <span class="status-badge status-${statusClass}">${statusText}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Completion Progress Bar -->
+                        <div style="margin: 12px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="font-size: 12px; color: var(--text-secondary);">Completion</span>
+                                <span style="font-size: 12px; font-weight: 600; color: ${progressColor};">${completionPercentage}%</span>
+                            </div>
+                            <div style="background: var(--gray-200); height: 6px; border-radius: 3px; overflow: hidden;">
+                                <div style="background: ${progressColor}; height: 100%; width: ${completionPercentage}%; transition: width 0.3s ease;"></div>
+                            </div>
                         </div>
                         
                         <div class="request-meta">
@@ -1226,5 +1250,9 @@
         loadRequests();
     </script>
     <script src="/js/universal-dark-mode-styles.js"></script>
+    
+    <!-- Global Footer -->
+    <link rel="stylesheet" href="/css/global-footer-v2.css">
+    <script src="/js/global-footer-v2.js"></script>
 </body>
 </html>

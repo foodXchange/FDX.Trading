@@ -52,7 +52,11 @@
           "dependencies": {
             "CsvHelper": {
               "target": "Package",
-              "version": "[33.1.0, )"
+              "version": "[30.0.1, )"
+            },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[7.0.0, )"
             },
             "FluentValidation.AspNetCore": {
               "target": "Package",

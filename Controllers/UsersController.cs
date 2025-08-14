@@ -150,6 +150,7 @@ public class UsersController : ControllerBase
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
+            Title = user.Title,
             FirstName = user.FirstName,
             LastName = user.LastName,
             CompanyName = user.CompanyName,
@@ -164,6 +165,11 @@ public class UsersController : ControllerBase
             },
             Country = user.Country,
             PhoneNumber = user.PhoneNumber,
+            PhoneType = user.PhoneType,
+            PhoneUsage = user.PhoneUsage,
+            PhoneCategory = user.PhoneCategory,
+            MainPhone = user.MainPhone,
+            Extension = user.Extension,
             Website = user.Website,
             Address = user.Address,
             Category = !string.IsNullOrEmpty(user.BusinessType) ? user.BusinessType : user.Category,
@@ -171,10 +177,21 @@ public class UsersController : ControllerBase
             BusinessType = user.BusinessType,
             CategoryDisplayName = user.CategoryId.HasValue ? CategoryData.GetDisplayName(user.CategoryId.Value) : "",
             CategoryColor = user.CategoryId.HasValue ? CategoryData.GetColorCode(user.CategoryId.Value) : "#B2BEC3",
+            Bio = user.Bio,
+            Department = user.Department,
+            Role = user.Role,
+            AvatarType = user.AvatarType,
+            AvatarValue = user.AvatarValue,
             CreatedAt = user.CreatedAt,
             LastLogin = user.LastLogin,
             IsActive = user.IsActive,
-            ProfileImage = user.ProfileImage
+            ProfileImage = user.ProfileImage,
+            RequiresPasswordChange = user.RequiresPasswordChange,
+            DataComplete = user.DataComplete,
+            Verification = user.Verification,
+            AlternateEmails = user.AlternateEmails,
+            DisplayName = user.DisplayName,
+            ImportedAt = user.ImportedAt
         };
 
         return Ok(userDto);
@@ -374,34 +391,58 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto updateDto)
     {
+        // Log incoming data for debugging
+        Console.WriteLine($"=== UPDATING USER {id} ===");
+        Console.WriteLine($"Title: {updateDto.Title}");
+        Console.WriteLine($"FirstName: {updateDto.FirstName}");
+        Console.WriteLine($"LastName: {updateDto.LastName}");
+        Console.WriteLine($"Bio: {updateDto.Bio}");
+        Console.WriteLine($"Department: {updateDto.Department}");
+        Console.WriteLine($"Role: {updateDto.Role}");
+        
         var user = await _context.FdxUsers.FindAsync(id);
         if (user == null)
             return NotFound(new { message = "User not found" });
 
-        // Update user properties
-        user.Email = updateDto.Email ?? user.Email;
-        user.FirstName = updateDto.FirstName ?? user.FirstName;
-        user.LastName = updateDto.LastName ?? user.LastName;
-        user.DisplayName = updateDto.DisplayName ?? user.DisplayName;
-        user.CompanyName = updateDto.CompanyName ?? user.CompanyName;
+        // Update user properties - update even if empty string is provided
+        if (updateDto.Title != null) user.Title = updateDto.Title;
+        if (updateDto.Email != null) user.Email = updateDto.Email;
+        if (updateDto.FirstName != null) user.FirstName = updateDto.FirstName;
+        if (updateDto.LastName != null) user.LastName = updateDto.LastName;
+        if (updateDto.DisplayName != null) user.DisplayName = updateDto.DisplayName;
+        if (updateDto.CompanyName != null) user.CompanyName = updateDto.CompanyName;
         user.Type = (UserType)updateDto.Type;
         user.IsActive = updateDto.IsActive;
-        user.PhoneNumber = updateDto.PhoneNumber ?? user.PhoneNumber;
-        user.Country = updateDto.Country ?? user.Country;
-        user.Address = updateDto.Address ?? user.Address;
-        user.Website = updateDto.Website ?? user.Website;
-        user.ProfileImage = updateDto.ProfileImage ?? user.ProfileImage;
-        user.AlternateEmails = updateDto.AlternateEmails ?? user.AlternateEmails;
-        user.Category = updateDto.Category ?? user.Category;
-        user.BusinessType = updateDto.BusinessType ?? user.BusinessType;
-        user.SubCategories = updateDto.SubCategories ?? user.SubCategories;
-        user.FullDescription = updateDto.FullDescription ?? user.FullDescription;
+        if (updateDto.PhoneNumber != null) user.PhoneNumber = updateDto.PhoneNumber;
+        if (updateDto.PhoneType != null) user.PhoneType = updateDto.PhoneType;
+        if (updateDto.PhoneUsage != null) user.PhoneUsage = updateDto.PhoneUsage;
+        if (updateDto.PhoneCategory != null) user.PhoneCategory = updateDto.PhoneCategory;
+        if (updateDto.MainPhone != null) user.MainPhone = updateDto.MainPhone;
+        if (updateDto.Extension != null) user.Extension = updateDto.Extension;
+        if (updateDto.Country != null) user.Country = updateDto.Country;
+        if (updateDto.Address != null) user.Address = updateDto.Address;
+        if (updateDto.Website != null) user.Website = updateDto.Website;
+        if (updateDto.ProfileImage != null) user.ProfileImage = updateDto.ProfileImage;
+        if (updateDto.AvatarType != null) user.AvatarType = updateDto.AvatarType;
+        if (updateDto.AvatarValue != null) user.AvatarValue = updateDto.AvatarValue;
+        if (updateDto.AlternateEmails != null) user.AlternateEmails = updateDto.AlternateEmails;
+        if (updateDto.Category != null) user.Category = updateDto.Category;
+        if (updateDto.BusinessType != null) user.BusinessType = updateDto.BusinessType;
+        if (updateDto.SubCategories != null) user.SubCategories = updateDto.SubCategories;
+        if (updateDto.FullDescription != null) user.FullDescription = updateDto.FullDescription;
+        if (updateDto.Bio != null) user.Bio = updateDto.Bio;
+        if (updateDto.Department != null) user.Department = updateDto.Department;
+        if (updateDto.Role != null) user.Role = updateDto.Role;
         user.RequiresPasswordChange = updateDto.RequiresPasswordChange;
         user.DataComplete = updateDto.DataComplete;
         user.Verification = (VerificationStatus)updateDto.Verification;
-        user.ImportNotes = updateDto.ImportNotes ?? user.ImportNotes;
+        if (updateDto.ImportNotes != null) user.ImportNotes = updateDto.ImportNotes;
 
         await _context.SaveChangesAsync();
+        
+        Console.WriteLine($"=== USER {id} SAVED TO DATABASE ===");
+        Console.WriteLine($"Saved Title: {user.Title}");
+        Console.WriteLine($"Saved Bio: {user.Bio}");
         
         // Return the updated user data
         return Ok(new
@@ -742,6 +783,7 @@ public class SupplierUpdateDto
 
 public class UserUpdateDto
 {
+    public string? Title { get; set; }
     public string? Email { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -750,15 +792,25 @@ public class UserUpdateDto
     public int Type { get; set; }
     public bool IsActive { get; set; }
     public string? PhoneNumber { get; set; }
+    public string? PhoneType { get; set; }
+    public string? PhoneUsage { get; set; }
+    public string? PhoneCategory { get; set; }
+    public string? MainPhone { get; set; }
+    public string? Extension { get; set; }
     public string? Country { get; set; }
     public string? Address { get; set; }
     public string? Website { get; set; }
     public string? ProfileImage { get; set; }
+    public string? AvatarType { get; set; }
+    public string? AvatarValue { get; set; }
     public string? AlternateEmails { get; set; }
     public string? Category { get; set; }
     public string? BusinessType { get; set; }
     public string? SubCategories { get; set; }
     public string? FullDescription { get; set; }
+    public string? Bio { get; set; }
+    public string? Department { get; set; }
+    public string? Role { get; set; }
     public bool RequiresPasswordChange { get; set; }
     public bool DataComplete { get; set; }
     public int Verification { get; set; }

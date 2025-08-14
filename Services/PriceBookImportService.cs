@@ -117,7 +117,7 @@ public class PriceBookImportService
                     }
                     
                     // Check if we already have this price in history
-                    var existingPrice = await _context.ProductPriceHistory
+                    var existingPrice = await _context.ProductPriceHistories
                         .FirstOrDefaultAsync(ph => 
                             ph.ProductId == product.Id && 
                             ph.UnitPrice == importedPrice.Price &&
@@ -130,7 +130,7 @@ public class PriceBookImportService
                     }
                     
                     // Deactivate current prices for this product
-                    var currentPrices = await _context.ProductPriceHistory
+                    var currentPrices = await _context.ProductPriceHistories
                         .Where(ph => ph.ProductId == product.Id && ph.IsActive)
                         .ToListAsync();
                     
@@ -153,7 +153,7 @@ public class PriceBookImportService
                         IsActive = true
                     };
                     
-                    _context.ProductPriceHistory.Add(priceHistory);
+                    _context.ProductPriceHistories.Add(priceHistory);
                     
                     // Update the product's current price
                     product.UnitWholesalePrice = importedPrice.Price;

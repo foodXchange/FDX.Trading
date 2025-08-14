@@ -732,17 +732,14 @@ public class SourcingBriefController : ControllerBase
     {
         try
         {
-            _logger.LogInformation($"Starting supplier matching for brief {id}");
+            _logger.LogInformation($"Starting STRICT supplier matching for brief {id}");
             
-            // Use the new matching service with options
-            var options = new SupplierMatchingOptions
-            {
-                MinimumScore = 20m, // Lower threshold to include more matches
-                MaxResults = 30,
-                IncludeUnverified = true
-            };
+            // Use the strict matching service that only matches actual products
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var strictLogger = loggerFactory.CreateLogger<StrictSupplierMatchingService>();
+            var strictService = new StrictSupplierMatchingService(_context, strictLogger);
             
-            var matches = await _matchingService.MatchSuppliersForBrief(id, options);
+            var matches = await strictService.MatchSuppliersForBrief(id);
             
             if (!matches.Any())
             {
@@ -750,7 +747,7 @@ public class SourcingBriefController : ControllerBase
                 return Ok(new List<SupplierMatchDto>());
             }
             
-            _logger.LogInformation($"Found {matches.Count} supplier matches for brief {id}");
+            _logger.LogInformation($"Found {matches.Count} supplier matches for brief {id} using STRICT matching");
             
             // Log match details for debugging
             foreach (var match in matches.Take(5))

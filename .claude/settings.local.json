@@ -89,7 +89,10 @@
       "Bash(fi)",
       "Bash(done)",
       "Bash(find:*)",
-      "Bash(move:*)"
+      "Bash(move:*)",
+      "Bash(python:*)",
+      "Bash(head:*)",
+      "Bash(git clean:*)"
     ],
     "deny": []
   }

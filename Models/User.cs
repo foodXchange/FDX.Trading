@@ -8,12 +8,18 @@ public class User
     public string Username { get; set; } = "";
     public string Password { get; set; } = "";
     public string Email { get; set; } = "";
+    public string? Title { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string CompanyName { get; set; } = "";
     public UserType Type { get; set; }
     public string Country { get; set; } = "";
     public string PhoneNumber { get; set; } = "";
+    public string? PhoneType { get; set; }
+    public string? PhoneUsage { get; set; }
+    public string? PhoneCategory { get; set; }
+    public string? MainPhone { get; set; }
+    public string? Extension { get; set; }
     public string Website { get; set; } = "";
     public string Address { get; set; } = "";
     public string Category { get; set; } = "";  // Keep for backward compatibility
@@ -23,6 +29,13 @@ public class User
     public string BusinessType { get; set; } = "";  // Short business description
     public string FullDescription { get; set; } = "";  // Long description from CSV
     public string SubCategories { get; set; } = "";  // Additional categories
+    
+    // Profile fields
+    public string? Bio { get; set; }
+    public string? Department { get; set; }
+    public string? Role { get; set; }
+    public string? AvatarType { get; set; }
+    public string? AvatarValue { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? LastLogin { get; set; }
@@ -54,13 +67,6 @@ public enum UserType
     Supplier = 3    // Suppliers - companies that provide products
 }
 
-public enum VerificationStatus
-{
-    Verified,
-    Pending,
-    Incomplete
-}
-
 public class LoginRequest
 {
     public string Username { get; set; } = "";
@@ -72,6 +78,7 @@ public class UserDto
     public int Id { get; set; }
     public string Username { get; set; } = "";
     public string Email { get; set; } = "";
+    public string? Title { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string CompanyName { get; set; } = "";
@@ -79,6 +86,11 @@ public class UserDto
     public UserType Type { get; set; }
     public string Country { get; set; } = "";
     public string PhoneNumber { get; set; } = "";
+    public string? PhoneType { get; set; }
+    public string? PhoneUsage { get; set; }
+    public string? PhoneCategory { get; set; }
+    public string? MainPhone { get; set; }
+    public string? Extension { get; set; }
     public string Website { get; set; } = "";
     public string Address { get; set; } = "";
     public string Category { get; set; } = "";
@@ -86,6 +98,11 @@ public class UserDto
     public string BusinessType { get; set; } = "";
     public string CategoryDisplayName { get; set; } = "";
     public string CategoryColor { get; set; } = "";
+    public string? Bio { get; set; }
+    public string? Department { get; set; }
+    public string? Role { get; set; }
+    public string? AvatarType { get; set; }
+    public string? AvatarValue { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastLogin { get; set; }
     public bool IsActive { get; set; }

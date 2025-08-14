@@ -22,6 +22,720 @@ namespace FDX.Trading.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FDX.Trading.Models.Agent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ActiveClients")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AgentType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Airlines")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("AnnualSalesVolume")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("AverageOrderValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ClientReferences")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("CommissionRate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("CommissionStructure")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContractDuration")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CustomsLicenseNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CustomsPorts")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DealsClosedLastYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExclusiveTerritories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeeCurrency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("FixedFee")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("FreightModes")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("HandlesExport")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HandlesImport")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasWarehouseFacilities")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IndustryConnections")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Languages")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MarketSegments")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NetworkSize")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("NoticePeriod")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PortfolioUrl")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("ProvidesCustomsClearance")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ProvidesLeadGeneration")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ProvidesLogisticsSupport")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ProvidesMarketResearch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ProvidesNegotiation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ProvidesQualityInspection")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ProvidesTranslation")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RepresentedBrands")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RepresentedSuppliers")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RequiresExclusivity")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ShippingLines")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Specialization")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SuccessStories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TermsAndConditions")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TerritoryCountries")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TerritoryRegions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WarehouseLocations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId")
+                        .IsUnique();
+
+                    b.ToTable("CompanyAgents");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AdditionalData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SourcingBriefId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourcingBriefId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BriefActivities");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefAnalytics", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("AchievedPriceReduction")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("AnalysisDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("AverageResponseTime")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("RequirementClarity")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("ResponseCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ResultedInContract")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SourcingBriefId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SpecificationCompleteness")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal?>("SupplierSatisfactionScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("TotalViews")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UniqueSupplierViews")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("VolumeAttractiveness")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourcingBriefId");
+
+                    b.ToTable("BriefAnalytics");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SourcingBriefId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UploadedById")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UploadedByUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourcingBriefId");
+
+                    b.HasIndex("UploadedById");
+
+                    b.ToTable("BriefDocuments");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AlternativeBrands")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BenchmarkBrand")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("BuyerCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ConsolidationNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("HistoricalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsConsolidated")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("MaxPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PackagingRequirements")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductCode")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("QualityRequirements")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SourcingBriefId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Specifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TargetPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category");
+
+                    b.HasIndex("SourcingBriefId");
+
+                    b.ToTable("BriefProducts", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BriefProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BriefProductId");
+
+                    b.ToTable("BriefProductImages");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SourcingBriefId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("SourcingBriefId");
+
+                    b.ToTable("BriefRequests");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("CommercialScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("OverallScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("ProposedTerms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Ranking")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResponseCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SourcingBriefId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TechnicalScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("ValidUntil")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("ResponseCode")
+                        .IsUnique();
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SupplierId");
+
+                    b.HasIndex("SourcingBriefId", "SupplierId")
+                        .IsUnique();
+
+                    b.ToTable("BriefResponses", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefResponseDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BriefResponseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BriefResponseId");
+
+                    b.ToTable("BriefResponseDocuments");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefResponseItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AlternativeProposal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("AvailableQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("BriefProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BriefResponseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeviationNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LeadTimeDays")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("MeetsSpecifications")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PricingNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("VolumeDiscount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BriefProductId");
+
+                    b.HasIndex("BriefResponseId");
+
+                    b.ToTable("BriefResponseItems", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefSupplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("InvitedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("MatchScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SelectionReason")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SourcingBriefId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ViewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SupplierId");
+
+                    b.HasIndex("SourcingBriefId", "SupplierId")
+                        .IsUnique();
+
+                    b.ToTable("BriefSuppliers", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Buyer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AcceptsPrivateLabel")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("AnnualPurchasingVolume")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BuyerType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("CreditLimit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CreditRating")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DeliveryPreferences")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DistributionChannels")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("MaxOrderValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("MinOrderValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PreferredCategories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreferredIncoterms")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PurchasingCurrency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PurchasingFrequency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RequiredCertifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RequiresHalal")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequiresKosher")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequiresOrganic")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("StoreCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WarehouseLocations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId")
+                        .IsUnique();
+
+                    b.ToTable("CompanyBuyers");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.CommunicationTemplate", b =>
                 {
                     b.Property<int>("Id")
@@ -94,6 +808,128 @@ namespace FDX.Trading.Migrations
                     b.HasIndex("CreatedById");
 
                     b.ToTable("CommunicationTemplates");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Company", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("AnnualRevenue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Certifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("EmployeeCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LinkedInUrl")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Logo")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RegistrationNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UpdatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VatNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("VerificationStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("WhatsAppBusiness")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("YearEstablished")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyName");
+
+                    b.HasIndex("Country");
+
+                    b.HasIndex("RegistrationNumber")
+                        .IsUnique()
+                        .HasFilter("[RegistrationNumber] IS NOT NULL");
+
+                    b.HasIndex("VatNumber");
+
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.CompanyContact", b =>
@@ -431,6 +1267,699 @@ namespace FDX.Trading.Migrations
                     b.ToTable("ConsoleParticipants", (string)null);
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.Contract", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("ActualSpend")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("ApprovalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("AutoRenew")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("BuyerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ComplianceRequirements")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ContractNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("DeliveryTerms")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<decimal?>("DiscountPercentage")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("ExpiryAlertSent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ImportSource")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ImportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Incoterms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("LastAlertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OpenComments")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ParentContractNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal?>("PerformanceRating")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int?>("ProposalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QualityStandards")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("RenewalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("RenewalNoticeDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RenewalType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReviewDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReviewedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("SignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("TotalValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
+
+                    b.HasIndex("ContractNumber")
+                        .IsUnique();
+
+                    b.HasIndex("EndDate");
+
+                    b.HasIndex("ProposalId");
+
+                    b.HasIndex("StartDate");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SupplierId");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("Status", "EndDate")
+                        .HasDatabaseName("IX_Contract_Status_EndDate");
+
+                    b.ToTable("Contracts", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedTo")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsInternal")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPinned")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RequiresAction")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ResolutionNote")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResolvedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ContractComments", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccessRestrictions")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long?>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FileType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsConfidential")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCurrentVersion")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSigned")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastViewed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastViewedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SignatureHash")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SignedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("SignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UploadedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category");
+
+                    b.HasIndex("ContractId");
+
+                    b.ToTable("ContractDocuments", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractMilestone", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttachedDocuments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("DaysDelayed")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DelayReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Deliverables")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("DependsOnMilestoneId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsOnTime")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("PaymentAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PaymentCurrency")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("PaymentTriggered")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("Quantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("QuantityUnit")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ReminderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReminderDaysBefore")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ReminderSent")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("VerificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VerificationNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("VerifiedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("DependsOnMilestoneId");
+
+                    b.HasIndex("DueDate");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("ContractMilestones", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("CommittedQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ContractPrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal?>("DeliveredQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("DeliveryTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DiscountConditions")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("DiscountPercentage")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("EffectiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EffectiveTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("FulfillmentRate")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LeadTimeDays")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("MaximumQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("MinimumQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal?>("OrderedQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("OriginalPrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("PriceUnit")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("QualityScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("QualitySpecification")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal?>("VolumeRebate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ContractId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("ContractProducts", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Expert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Accreditations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AvailableCountries")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CaseStudies")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Certifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientReferences")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("DailyRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("HasProfessionalInsurance")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("HourlyRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("IndustryExpertise")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("InsuranceCoverage")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("InsuranceProvider")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IslamicAuthority")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("KeyPersonnel")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PortfolioUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PricingCurrency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("ProjectMinimum")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("ProvidesEmergencyService")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ProvidesRemoteService")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RabbinicalAuthority")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("RequiresOnSite")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ResponseTime")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ServiceAreas")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServiceCategories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServiceDescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ServiceLanguages")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SpecialtyAreas")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TeamSize")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("YearsOfExperience")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId")
+                        .IsUnique();
+
+                    b.ToTable("CompanyExperts");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.NotificationQueue", b =>
                 {
                     b.Property<int>("Id")
@@ -504,11 +2033,172 @@ namespace FDX.Trading.Migrations
 
                     b.HasIndex("ConsoleId");
 
+                    b.HasIndex("IsProcessed");
+
                     b.HasIndex("MessageId");
 
                     b.HasIndex("RecipientUserId");
 
+                    b.HasIndex("ScheduledFor");
+
+                    b.HasIndex("IsProcessed", "ScheduledFor")
+                        .HasDatabaseName("IX_NotificationQueue_Processing");
+
                     b.ToTable("NotificationQueues");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.PriceBook", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImportSource")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("NewProducts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalEntries")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UpdatedPrices")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PriceBooks");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.PriceBookEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("CartonPrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("ImportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImportedFrom")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Incoterms")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("LeadTimeDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MOQ")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("PreviousUnitPrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("PriceBookId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("PriceChangePercent")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Tier1Price")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int?>("Tier1Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Tier2Price")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int?>("Tier2Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Tier3Price")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int?>("Tier3Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceBookId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("PriceBookEntries");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.PriceHistory", b =>
@@ -801,6 +2491,9 @@ namespace FDX.Trading.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int?>("ProductCategoryHierarchyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductCode")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -869,6 +2562,8 @@ namespace FDX.Trading.Migrations
 
                     b.HasIndex("IsOrganic");
 
+                    b.HasIndex("ProductCategoryHierarchyId");
+
                     b.HasIndex("ProductCode")
                         .IsUnique();
 
@@ -877,6 +2572,135 @@ namespace FDX.Trading.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ProductCategoryHierarchy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CategoryId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Family")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FullPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ImportSource")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ImportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Keywords")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubCategory")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SubFamily")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Level");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Category", "SubCategory", "Family", "SubFamily");
+
+                    b.ToTable("ProductCategoryHierarchies", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ProductCategoryMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductId", "CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("ProductCategoryMappings", (string)null);
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.ProductPriceHistory", b =>
@@ -924,7 +2748,7 @@ namespace FDX.Trading.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("ProductPriceHistory");
+                    b.ToTable("ProductPriceHistories");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.ProductRequest", b =>
@@ -1078,6 +2902,248 @@ namespace FDX.Trading.Migrations
                     b.ToTable("Consoles", (string)null);
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.Proposal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BrandingLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("BuyerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ForecastFiles")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ImportSource")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ImportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Incoterms")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PortOfLoading")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ProductImages")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ProposalDocument")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ProposalId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierLogo")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SupplierProfileImages")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal?>("TotalValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VatNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
+
+                    b.HasIndex("ProposalId")
+                        .IsUnique();
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("Proposals", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ProposalLineItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("CreateComplianceRecord")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CreateGraphics")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CreateOrderLineItem")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal?>("DiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("DiscountPercent")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("ImportSource")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ImportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Incoterms")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsOrdered")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LeadTimeDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LineItemId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("MOQ")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProposalId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("RequiresAdaptation")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ShippingPort")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UnitOfMeasure")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("WholesalePrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProposalId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("ProposalLineItems", (string)null);
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.Request", b =>
                 {
                     b.Property<int>("Id")
@@ -1168,6 +3234,11 @@ namespace FDX.Trading.Migrations
 
                     b.HasIndex("Status");
 
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("Status", "CreatedAt")
+                        .HasDatabaseName("IX_Request_Status_CreatedAt");
+
                     b.ToTable("Requests", (string)null);
                 });
 
@@ -1178,6 +3249,10 @@ namespace FDX.Trading.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BenchmarkBrand")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1207,9 +3282,422 @@ namespace FDX.Trading.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductName");
+
                     b.HasIndex("RequestId");
 
+                    b.HasIndex("RequestId", "ProductName")
+                        .HasDatabaseName("IX_RequestItem_RequestId_ProductName");
+
                     b.ToTable("RequestItems", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.RequestItemImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RequestItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestItemId");
+
+                    b.ToTable("RequestItemImages");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SamplingRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BuyerFeedback")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("BuyerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BuyerPaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CourierCompany")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Decision")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeliveredDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("DeliveryCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DeliveryPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ImportSource")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ImportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OtherSamplesFromCompany")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProposalId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequestNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SampleDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SampleImages")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("SampleQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SellerComment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SellerEmail")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SellerPaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ShippedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("UseCompanyAddress")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProposalId");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("RequestNumber");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("SamplingRequests", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SourcingBrief", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssignedToId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssignedToUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BriefCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ConsoleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ExecutiveSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreferredIncoterms")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PreferredPaymentTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("QualityScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("RequiredDeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ResponseDeadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("ResponseRate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SuccessRate")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedToId");
+
+                    b.HasIndex("BriefCode")
+                        .IsUnique();
+
+                    b.HasIndex("ConsoleId")
+                        .IsUnique();
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Status", "CreatedAt")
+                        .HasDatabaseName("IX_SourcingBrief_Status_CreatedAt");
+
+                    b.ToTable("SourcingBriefs", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("AnnualProductionValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BrandNames")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("CanShipDirect")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyProfile")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ExportCountries")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FactoryEmployeeCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HalalCertifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasHalalCertification")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasKosherCertification")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasOrganicCertification")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Incoterms")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("KosherCertifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LeadTime")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MainMarkets")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ManufacturingCapacity")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("MinOrderQuantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("MinOrderUnit")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("OffersCustomPackaging")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("OffersPrivateLabel")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("OffersProductDevelopment")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OrganicCertifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PortOfLoading")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PricingCurrency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProductCatalogUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductCategories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductionFacilities")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QualityCertifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("SampleCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SamplePolicy")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId")
+                        .IsUnique();
+
+                    b.ToTable("CompanySuppliers");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.SupplierDetails", b =>
@@ -1329,12 +3817,6 @@ namespace FDX.Trading.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("AvailableFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("AvailableUntil")
-                        .HasColumnType("datetime2");
-
                     b.Property<decimal?>("CartonWholesalePrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -1344,22 +3826,11 @@ namespace FDX.Trading.Migrations
                     b.Property<int?>("CartonsPerContainer40ft")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CertificationExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ComplianceNotes")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal?>("DiscountPercentage")
                         .HasColumnType("decimal(5,2)");
@@ -1371,14 +3842,7 @@ namespace FDX.Trading.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Incoterms")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsPromotional")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastPurchaseDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("LastPurchasePrice")
                         .HasColumnType("decimal(18,2)");
@@ -1389,14 +3853,11 @@ namespace FDX.Trading.Migrations
                     b.Property<int?>("MinimumOrderCartons")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MinimumOrderQuantity")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("MinimumOrderQuantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("MinimumOrderValue")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PalletsPerContainer20ft")
                         .HasColumnType("int");
@@ -1405,8 +3866,7 @@ namespace FDX.Trading.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentTerms")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -1414,53 +3874,23 @@ namespace FDX.Trading.Migrations
                     b.Property<decimal?>("PromotionalPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime?>("PromotionalPriceEndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("QualityGrade")
+                    b.Property<string>("ShippingPort")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ShippingPort")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("StockLastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("StockQuantity")
                         .HasColumnType("int");
 
                     b.Property<int>("SupplierDetailsId")
                         .HasColumnType("int");
 
                     b.Property<string>("SupplierProductCode")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SupplierProductName")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("TotalUnitsSold")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("UnitWholesalePrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("UnitsPerContainer20ft")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UnitsPerContainer40ft")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1474,6 +3904,152 @@ namespace FDX.Trading.Migrations
                         .IsUnique();
 
                     b.ToTable("SupplierProducts", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SupplierProductCatalog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Certifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CountryOfOrigin")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int?>("CustomerRating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Incoterms")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGlutenFree")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsHalal")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsKosher")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOrganic")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVegan")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LeadTimeDays")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("MinOrderQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("PricePerUnit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProductCode")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal?>("QualityScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("SearchTags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Specifications")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("StockQuantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("SubCategory")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Unit")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("SupplierProductCatalogs", (string)null);
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SupplierProductCatalogMatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BriefProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MatchReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("MatchScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("SupplierProductCatalogId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BriefProductId");
+
+                    b.HasIndex("SupplierProductCatalogId", "BriefProductId")
+                        .IsUnique();
+
+                    b.ToTable("SupplierProductCatalogMatches", (string)null);
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.User", b =>
@@ -1492,6 +4068,15 @@ namespace FDX.Trading.Migrations
                     b.Property<string>("AlternateEmails")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("AvatarType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AvatarValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BusinessType")
                         .IsRequired()
@@ -1525,6 +4110,9 @@ namespace FDX.Trading.Migrations
                     b.Property<bool>("DataComplete")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DisplayName")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -1533,6 +4121,9 @@ namespace FDX.Trading.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Extension")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
@@ -1557,6 +4148,9 @@ namespace FDX.Trading.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MainPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OriginalId")
                         .HasColumnType("nvarchar(max)");
 
@@ -1565,10 +4159,19 @@ namespace FDX.Trading.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("PhoneCategory")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PhoneType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneUsage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfileImage")
                         .HasColumnType("nvarchar(max)");
@@ -1576,10 +4179,16 @@ namespace FDX.Trading.Migrations
                     b.Property<bool>("RequiresPasswordChange")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SubCategories")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -1634,6 +4243,115 @@ namespace FDX.Trading.Migrations
                             Verification = 0,
                             Website = ""
                         });
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.UserCompanyRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorityCurrency")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("BestContactTime")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("CanApprovePurchases")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanMakeDecisions")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanSignContracts")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Department")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMainContact")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobTitle")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PreferredContactMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PreferredLanguage")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProductCategories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PurchaseAuthority")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Responsibilities")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Territories")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnavailableReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UnavailableUntil")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserCompanyRoles");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.WorkflowStage", b =>
@@ -1724,6 +4442,186 @@ namespace FDX.Trading.Migrations
                     b.ToTable("WorkflowStages", (string)null);
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.Agent", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Company", "Company")
+                        .WithOne("Agent")
+                        .HasForeignKey("FDX.Trading.Models.Agent", "CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefActivity", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.SourcingBrief", "SourcingBrief")
+                        .WithMany("Activities")
+                        .HasForeignKey("SourcingBriefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SourcingBrief");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefAnalytics", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.SourcingBrief", "SourcingBrief")
+                        .WithMany("Analytics")
+                        .HasForeignKey("SourcingBriefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SourcingBrief");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefDocument", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.SourcingBrief", "SourcingBrief")
+                        .WithMany("Documents")
+                        .HasForeignKey("SourcingBriefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.User", "UploadedBy")
+                        .WithMany()
+                        .HasForeignKey("UploadedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SourcingBrief");
+
+                    b.Navigation("UploadedBy");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefProduct", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.SourcingBrief", "SourcingBrief")
+                        .WithMany("Products")
+                        .HasForeignKey("SourcingBriefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SourcingBrief");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefProductImage", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.BriefProduct", "BriefProduct")
+                        .WithMany("Images")
+                        .HasForeignKey("BriefProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BriefProduct");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefRequest", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Request", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.SourcingBrief", "SourcingBrief")
+                        .WithMany("LinkedRequests")
+                        .HasForeignKey("SourcingBriefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+
+                    b.Navigation("SourcingBrief");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefResponse", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.SourcingBrief", "SourcingBrief")
+                        .WithMany("Responses")
+                        .HasForeignKey("SourcingBriefId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SourcingBrief");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefResponseDocument", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.BriefResponse", "BriefResponse")
+                        .WithMany("Documents")
+                        .HasForeignKey("BriefResponseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BriefResponse");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefResponseItem", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.BriefProduct", "BriefProduct")
+                        .WithMany()
+                        .HasForeignKey("BriefProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.BriefResponse", "BriefResponse")
+                        .WithMany("Items")
+                        .HasForeignKey("BriefResponseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BriefProduct");
+
+                    b.Navigation("BriefResponse");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefSupplier", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.SourcingBrief", "SourcingBrief")
+                        .WithMany("TargetSuppliers")
+                        .HasForeignKey("SourcingBriefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SourcingBrief");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Buyer", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Company", "Company")
+                        .WithOne("Buyer")
+                        .HasForeignKey("FDX.Trading.Models.Buyer", "CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.CommunicationTemplate", b =>
                 {
                     b.HasOne("FDX.Trading.Models.User", "CreatedBy")
@@ -1737,7 +4635,8 @@ namespace FDX.Trading.Migrations
                 {
                     b.HasOne("FDX.Trading.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("User");
                 });
@@ -1850,15 +4749,126 @@ namespace FDX.Trading.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.Contract", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.User", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("FDX.Trading.Models.Proposal", "Proposal")
+                        .WithMany()
+                        .HasForeignKey("ProposalId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("FDX.Trading.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("Proposal");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractComment", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Contract", "Contract")
+                        .WithMany("Comments")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.ContractComment", "ParentComment")
+                        .WithMany()
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("FDX.Trading.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractDocument", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Contract", "Contract")
+                        .WithMany("Documents")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractMilestone", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Contract", "Contract")
+                        .WithMany("Milestones")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.ContractMilestone", "DependsOnMilestone")
+                        .WithMany()
+                        .HasForeignKey("DependsOnMilestoneId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("DependsOnMilestone");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ContractProduct", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Contract", "Contract")
+                        .WithMany("Products")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Expert", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Company", "Company")
+                        .WithOne("Expert")
+                        .HasForeignKey("FDX.Trading.Models.Expert", "CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.NotificationQueue", b =>
                 {
                     b.HasOne("FDX.Trading.Models.ProjectConsole", "Console")
                         .WithMany()
-                        .HasForeignKey("ConsoleId");
+                        .HasForeignKey("ConsoleId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("FDX.Trading.Models.ConsoleMessage", "Message")
                         .WithMany()
-                        .HasForeignKey("MessageId");
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("FDX.Trading.Models.User", "RecipientUser")
                         .WithMany()
@@ -1871,6 +4881,31 @@ namespace FDX.Trading.Migrations
                     b.Navigation("Message");
 
                     b.Navigation("RecipientUser");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.PriceBookEntry", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.PriceBook", "PriceBook")
+                        .WithMany("Entries")
+                        .HasForeignKey("PriceBookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId");
+
+                    b.Navigation("PriceBook");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.PriceHistory", b =>
@@ -1917,6 +4952,10 @@ namespace FDX.Trading.Migrations
                         .WithMany()
                         .HasForeignKey("InitialBuyerId");
 
+                    b.HasOne("FDX.Trading.Models.ProductCategoryHierarchy", null)
+                        .WithMany("Products")
+                        .HasForeignKey("ProductCategoryHierarchyId");
+
                     b.HasOne("FDX.Trading.Models.User", "Supplier")
                         .WithMany("Products")
                         .HasForeignKey("SupplierId")
@@ -1925,6 +4964,35 @@ namespace FDX.Trading.Migrations
                     b.Navigation("InitialBuyer");
 
                     b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ProductCategoryHierarchy", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.ProductCategoryHierarchy", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ProductCategoryMapping", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.ProductCategoryHierarchy", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.ProductPriceHistory", b =>
@@ -1992,6 +5060,50 @@ namespace FDX.Trading.Migrations
                     b.Navigation("SourceRequest");
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.Proposal", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.User", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("FDX.Trading.Models.Request", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("FDX.Trading.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("Request");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ProposalLineItem", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.Proposal", "Proposal")
+                        .WithMany("LineItems")
+                        .HasForeignKey("ProposalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Proposal");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.Request", b =>
                 {
                     b.HasOne("FDX.Trading.Models.User", "Buyer")
@@ -2012,6 +5124,94 @@ namespace FDX.Trading.Migrations
                         .IsRequired();
 
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.RequestItemImage", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.RequestItem", "RequestItem")
+                        .WithMany("Images")
+                        .HasForeignKey("RequestItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RequestItem");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SamplingRequest", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.User", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.Proposal", "Proposal")
+                        .WithMany("SamplingRequests")
+                        .HasForeignKey("ProposalId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("FDX.Trading.Models.Request", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("FDX.Trading.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Proposal");
+
+                    b.Navigation("Request");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SourcingBrief", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.User", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToId");
+
+                    b.HasOne("FDX.Trading.Models.ProjectConsole", "Console")
+                        .WithOne()
+                        .HasForeignKey("FDX.Trading.Models.SourcingBrief", "ConsoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssignedTo");
+
+                    b.Navigation("Console");
+
+                    b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Supplier", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Company", "Company")
+                        .WithOne("Supplier")
+                        .HasForeignKey("FDX.Trading.Models.Supplier", "CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.SupplierDetails", b =>
@@ -2044,6 +5244,55 @@ namespace FDX.Trading.Migrations
                     b.Navigation("SupplierDetails");
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.SupplierProductCatalog", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SupplierProductCatalogMatch", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.BriefProduct", "BriefProduct")
+                        .WithMany()
+                        .HasForeignKey("BriefProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.SupplierProductCatalog", "SupplierProductCatalog")
+                        .WithMany("ProductMatches")
+                        .HasForeignKey("SupplierProductCatalogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BriefProduct");
+
+                    b.Navigation("SupplierProductCatalog");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.UserCompanyRole", b =>
+                {
+                    b.HasOne("FDX.Trading.Models.Company", "Company")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FDX.Trading.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.WorkflowStage", b =>
                 {
                     b.HasOne("FDX.Trading.Models.User", "AssignedUser")
@@ -2062,9 +5311,50 @@ namespace FDX.Trading.Migrations
                     b.Navigation("Console");
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.BriefProduct", b =>
+                {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.BriefResponse", b =>
+                {
+                    b.Navigation("Documents");
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Company", b =>
+                {
+                    b.Navigation("Agent");
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("Expert");
+
+                    b.Navigation("Supplier");
+
+                    b.Navigation("UserRoles");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.ConsoleMessage", b =>
                 {
                     b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.Contract", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Documents");
+
+                    b.Navigation("Milestones");
+
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.PriceBook", b =>
+                {
+                    b.Navigation("Entries");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.PriceProposal", b =>
@@ -2077,6 +5367,13 @@ namespace FDX.Trading.Migrations
                     b.Navigation("PriceProposals");
 
                     b.Navigation("RequestItems");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.ProductCategoryHierarchy", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.ProductRequest", b =>
@@ -2097,14 +5394,48 @@ namespace FDX.Trading.Migrations
                     b.Navigation("WorkflowStages");
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.Proposal", b =>
+                {
+                    b.Navigation("LineItems");
+
+                    b.Navigation("SamplingRequests");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.Request", b =>
                 {
                     b.Navigation("RequestItems");
                 });
 
+            modelBuilder.Entity("FDX.Trading.Models.RequestItem", b =>
+                {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SourcingBrief", b =>
+                {
+                    b.Navigation("Activities");
+
+                    b.Navigation("Analytics");
+
+                    b.Navigation("Documents");
+
+                    b.Navigation("LinkedRequests");
+
+                    b.Navigation("Products");
+
+                    b.Navigation("Responses");
+
+                    b.Navigation("TargetSuppliers");
+                });
+
             modelBuilder.Entity("FDX.Trading.Models.SupplierDetails", b =>
                 {
                     b.Navigation("SupplierProducts");
+                });
+
+            modelBuilder.Entity("FDX.Trading.Models.SupplierProductCatalog", b =>
+                {
+                    b.Navigation("ProductMatches");
                 });
 
             modelBuilder.Entity("FDX.Trading.Models.User", b =>
