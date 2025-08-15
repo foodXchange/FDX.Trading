@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "C:\\c"
+    ],
+    "allow": [
+      "Bash(git init:*)"
+    ]
+  }
+}
