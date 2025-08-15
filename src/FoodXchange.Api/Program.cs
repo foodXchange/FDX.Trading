@@ -7,8 +7,20 @@ using System.ClientModel;
 using System.Data;
 using System.Diagnostics;
 using Microsoft.Data.SqlClient;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Azure Key Vault configuration (if deployed to Azure)
+if (!builder.Environment.IsDevelopment())
+{
+    var keyVaultName = builder.Configuration["KeyVaultName"];
+    if (!string.IsNullOrEmpty(keyVaultName))
+    {
+        var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
+        builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+    }
+}
 
 // Add services
 builder.Services.AddOpenApi();
