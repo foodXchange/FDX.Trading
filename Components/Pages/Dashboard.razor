@@ -1,0 +1,72 @@
+@page "/"
+@page "/dashboard"
+
+<PageTitle>Dashboard - FoodXchange</PageTitle>
+
+<div class="dashboard-container">
+    <h1 class="dashboard-title">FoodXchange Dashboard</h1>
+    
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Active Contracts</h3>
+                <span class="card-icon">📄</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Contracts in progress</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Product Catalog</h3>
+                <span class="card-icon">📦</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">Products available</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Active Suppliers</h3>
+                <span class="card-icon">🏢</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-number">89</div>
+                <div class="stat-label">Verified suppliers</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Pending Requests</h3>
+                <span class="card-icon">⏳</span>
+            </div>
+            <div class="card-body">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Awaiting response</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="/products" class="action-btn primary">
+                <span class="btn-icon">📦</span>
+                Browse Products
+            </a>
+            <a href="/contracts" class="action-btn secondary">
+                <span class="btn-icon">📄</span>
+                Manage Contracts
+            </a>
+            <a href="/reports" class="action-btn tertiary">
+                <span class="btn-icon">📊</span>
+                View Reports
+            </a>
+        </div>
+    </div>
+</div>

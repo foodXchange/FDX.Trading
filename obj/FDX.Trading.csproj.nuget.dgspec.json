@@ -54,9 +54,21 @@
               "target": "Package",
               "version": "[1.0.0-beta.17, )"
             },
+            "Azure.Communication.Email": {
+              "target": "Package",
+              "version": "[1.0.1, )"
+            },
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.10.4, )"
+            },
             "Azure.Search.Documents": {
               "target": "Package",
               "version": "[11.5.1, )"
+            },
+            "Azure.Security.KeyVault.Secrets": {
+              "target": "Package",
+              "version": "[4.5.0, )"
             },
             "CsvHelper": {
               "target": "Package",
@@ -74,13 +86,29 @@
               "target": "Package",
               "version": "[1.12.2, )"
             },
+            "Microsoft.ApplicationInsights.AspNetCore": {
+              "target": "Package",
+              "version": "[2.22.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[8.*, )"
             },
+            "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.11, )"
+            },
+            "Microsoft.AspNetCore.RateLimiting": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.AspNetCore.SignalR.Client": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -101,6 +129,14 @@
             "Microsoft.Extensions.Hosting.WindowsServices": {
               "target": "Package",
               "version": "[9.0.8, )"
+            },
+            "Microsoft.Identity.Web": {
+              "target": "Package",
+              "version": "[2.15.3, )"
+            },
+            "Microsoft.Identity.Web.UI": {
+              "target": "Package",
+              "version": "[2.15.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

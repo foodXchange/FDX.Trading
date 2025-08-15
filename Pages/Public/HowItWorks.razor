@@ -1,0 +1,251 @@
+@page "/how-it-works"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@layout PublicLayout
+
+<PageTitle>How It Works - FDX.trading</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="Learn how FDX.trading streamlines food sourcing from RFQ to delivery with built-in compliance, smart logistics, and automated finance." />
+</HeadContent>
+
+<section class="py-5" style="background: linear-gradient(135deg, #f8f7f4 0%, #e8f5f3 100%);">
+    <div class="container">
+        <div class="text-center py-5">
+            <h1 class="display-4 fw-bold mb-4">How FDX.trading Works</h1>
+            <p class="lead text-muted">From sourcing request to delivered goods — one seamless workflow</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row g-5">
+            @foreach (var (step, index) in steps.Select((s, i) => (s, i)))
+            {
+                <div class="col-12">
+                    <div class="row align-items-center @(index % 2 == 1 ? "flex-row-reverse" : "")">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <div class="p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="badge rounded-pill fs-5 me-3" style="background-color: #ff6f00; min-width: 50px;">
+                                        @step.Number
+                                    </span>
+                                    <h2 class="h3 mb-0">@step.Title</h2>
+                                </div>
+                                <p class="lead text-muted mb-4">@step.Summary</p>
+                                <ul class="list-unstyled">
+                                    @foreach (var feature in step.Features)
+                                    {
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            @feature
+                                        </li>
+                                    }
+                                </ul>
+                                @if (!string.IsNullOrEmpty(step.Note))
+                                {
+                                    <div class="alert alert-light border-start border-5" style="border-color: #006d77 !important;">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        @step.Note
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-lg">
+                                <div class="card-body p-4" style="background: linear-gradient(135deg, #f8f7f4 0%, white 100%);">
+                                    <div class="text-center">
+                                        <i class="bi @step.Icon" style="font-size: 4rem; color: #006d77;"></i>
+                                    </div>
+                                    @if (step.Actors.Any())
+                                    {
+                                        <div class="mt-4">
+                                            <h6 class="text-muted small">WHO'S INVOLVED</h6>
+                                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                                @foreach (var actor in step.Actors)
+                                                {
+                                                    <span class="badge bg-light text-dark">@actor</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (step.Duration != null)
+                                    {
+                                        <div class="mt-3">
+                                            <h6 class="text-muted small">TYPICAL DURATION</h6>
+                                            <p class="mb-0">@step.Duration</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (index < steps.Count - 1)
+                    {
+                        <div class="text-center my-5">
+                            <i class="bi bi-arrow-down-circle" style="font-size: 2rem; color: #83c5be;"></i>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background-color: #f8f7f4;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Key Benefits</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-speedometer2 fs-1 mb-3" style="color: #006d77;"></i>
+                        <h5>50% Faster Sourcing</h5>
+                        <p class="text-muted">AI-powered supplier matching reduces time from RFQ to contract</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-shield-check fs-1 mb-3" style="color: #006d77;"></i>
+                        <h5>100% Compliance</h5>
+                        <p class="text-muted">Gated workflows ensure all certifications before orders</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-graph-up fs-1 mb-3" style="color: #006d77;"></i>
+                        <h5>Real-time Visibility</h5>
+                        <p class="text-muted">Track everything from proposals to payment in one place</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h2 class="display-5 fw-bold mb-4">Who uses FDX?</h2>
+                <div class="mb-4">
+                    <h5><i class="bi bi-building me-2" style="color: #ff6f00;"></i>Food Importers & Distributors</h5>
+                    <p class="text-muted">Source products globally with confidence, manage compliance, track shipments</p>
+                </div>
+                <div class="mb-4">
+                    <h5><i class="bi bi-shop me-2" style="color: #ff6f00;"></i>Retail Chains</h5>
+                    <p class="text-muted">Streamline private label sourcing, ensure quality standards, manage multiple suppliers</p>
+                </div>
+                <div class="mb-4">
+                    <h5><i class="bi bi-factory me-2" style="color: #ff6f00;"></i>Food Manufacturers</h5>
+                    <p class="text-muted">Source ingredients, manage supplier relationships, ensure supply chain compliance</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5 text-center" style="background-color: #006d77; color: white;">
+                        <h3 class="mb-4">Ready to transform your sourcing?</h3>
+                        <p class="mb-4">Join leading food companies already using FDX</p>
+                        <a href="/#demo" class="btn btn-light btn-lg">
+                            Request a demo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<WorkflowStep> steps = new()
+    {
+        new WorkflowStep(
+            "1",
+            "Create RFQ",
+            "Buyers describe what they need with detailed specifications",
+            "bi-file-earmark-text",
+            new[] { "Product specifications", "Target price range", "Quantity requirements", "Delivery timeline", "Quality standards" },
+            new[] { "Buyer", "Category Manager" },
+            "1-2 hours",
+            "Smart templates speed up RFQ creation"
+        ),
+        new WorkflowStep(
+            "2",
+            "Supplier Matching",
+            "AI suggests the best suppliers based on capability and compliance",
+            "bi-search",
+            new[] { "95% capability match", "Brand compatibility check", "Compliance pre-screening", "Historical performance", "Price competitiveness" },
+            new[] { "System AI", "Sourcing Team" },
+            "Instant",
+            "Our AI analyzes 50+ factors to find perfect matches"
+        ),
+        new WorkflowStep(
+            "3",
+            "Proposals & Samples",
+            "Compare offers and evaluate product samples",
+            "bi-clipboard-check",
+            new[] { "Side-by-side comparison", "Sample tracking", "Quality scoring", "Price analysis", "Negotiation tools" },
+            new[] { "Suppliers", "Buyer", "QA Team" },
+            "3-7 days",
+            null
+        ),
+        new WorkflowStep(
+            "4",
+            "Compliance Verification",
+            "Complete all certification and quality requirements",
+            "bi-shield-check",
+            new[] { "Kosher certification", "QA test results", "Label approval", "Regulatory documents", "Audit trails" },
+            new[] { "Compliance Manager", "External Experts", "Suppliers" },
+            "5-10 days",
+            "Orders are blocked until compliance is 100% approved"
+        ),
+        new WorkflowStep(
+            "5",
+            "Contract & Order",
+            "Lock commercial terms and place purchase orders",
+            "bi-file-earmark-check",
+            new[] { "Price confirmation", "Payment terms", "Delivery schedule", "Quality clauses", "Order generation" },
+            new[] { "Buyer", "Legal", "Finance" },
+            "1-2 days",
+            null
+        ),
+        new WorkflowStep(
+            "6",
+            "Shipment & Logistics",
+            "Track goods from origin to destination",
+            "bi-globe",
+            new[] { "Container tracking", "Document management", "Milestone updates", "Customs clearance", "ETA monitoring" },
+            new[] { "Import Manager", "Forwarder", "Customs Agent" },
+            "15-45 days",
+            "Real-time tracking with automated notifications"
+        ),
+        new WorkflowStep(
+            "7",
+            "Finance & Settlement",
+            "Manage commissions, invoices, and payments",
+            "bi-currency-dollar",
+            new[] { "Auto commission accrual", "Invoice generation", "Payment tracking", "P&L reporting", "Aging analysis" },
+            new[] { "Finance Team", "Accounts" },
+            "Ongoing",
+            "Commissions auto-calculate on shipment arrival"
+        )
+    };
+
+    public record WorkflowStep(
+        string Number,
+        string Title,
+        string Summary,
+        string Icon,
+        string[] Features,
+        string[] Actors,
+        string? Duration,
+        string? Note
+    );
+}

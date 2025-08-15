@@ -1,0 +1,439 @@
+/* Dashboard Styles */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.dashboard-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    opacity: 0.6;
+}
+
+.card-body {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #3b82f6;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.dashboard-actions {
+    margin-top: 2rem;
+}
+
+.dashboard-actions h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 160px;
+}
+
+.action-btn.primary {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.action-btn.primary:hover {
+    background-color: #2563eb;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.action-btn.secondary {
+    background-color: #10b981;
+    color: #ffffff;
+}
+
+.action-btn.secondary:hover {
+    background-color: #059669;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.action-btn.tertiary {
+    background-color: #8b5cf6;
+    color: #ffffff;
+}
+
+.action-btn.tertiary:hover {
+    background-color: #7c3aed;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.btn-icon {
+    margin-right: 0.5rem;
+    font-size: 1.125rem;
+}
+
+/* Products Page */
+.products-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.search-filters {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.search-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.search-bar .form-control {
+    flex: 1;
+}
+
+.btn-search {
+    padding: 0.5rem 1rem;
+    background-color: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.chip {
+    padding: 0.25rem 0.75rem;
+    background-color: #f1f5f9;
+    color: #475569;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chip.active {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.chip:hover {
+    background-color: #e2e8f0;
+}
+
+.chip.active:hover {
+    background-color: #2563eb;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.product-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    height: 200px;
+    background-color: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 1rem;
+}
+
+.product-info h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+}
+
+.product-category {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.product-supplier {
+    color: #475569;
+    font-size: 0.875rem;
+    margin: 0 0 1rem 0;
+}
+
+.product-price {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #10b981;
+    margin-bottom: 1rem;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 0;
+}
+
+.page-info {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Reports Page */
+.reports-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.report-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.report-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.report-period {
+    font-size: 0.75rem;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.report-chart {
+    height: 200px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    border-radius: 6px;
+}
+
+.chart-placeholder {
+    color: #9ca3af;
+    font-size: 1.125rem;
+}
+
+.report-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.recent-reports {
+    margin-top: 2rem;
+}
+
+.recent-reports h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.report-list {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.report-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.report-item:last-child {
+    border-bottom: none;
+}
+
+.report-info h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+}
+
+.report-info p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.report-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-link:hover {
+    color: #2563eb;
+}

@@ -1,0 +1,205 @@
+@page "/compliance"
+@using FDX.Trading.Models.Compliance
+@using FDX.Trading.Services
+@inject IComplianceService ComplianceService
+@inject NavigationManager Navigation
+@inject ILogger<ComplianceDashboard> Logger
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Compliance Management</h1>
+            <p class="text-muted">Manage kosher certification, quality assurance, and labeling compliance</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" @onclick="ShowCreateProcessModal">
+                <i class="bi bi-plus-circle"></i> New Compliance Process
+            </button>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (complianceProcesses != null && complianceProcesses.Any())
+    {
+        <div class="row">
+            @foreach (var process in complianceProcesses)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">Contract: @process.ContractId.ToString().Substring(0, 8)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <span class="badge bg-@GetStatusColor(process.Status)">@process.Status</span>
+                                <small class="text-muted ms-2">Started: @process.StartedAt.ToString("MMM dd, yyyy")</small>
+                            </div>
+                            
+                            @if (process.Stages != null && process.Stages.Any())
+                            {
+                                <div class="progress-stages">
+                                    @foreach (var stage in process.Stages.OrderBy(s => s.CreatedAt))
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-sm">@stage.Code</span>
+                                            <div class="progress flex-grow-1 mx-2" style="height: 10px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: @stage.Progress%"
+                                                     aria-valuenow="@stage.Progress" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <span class="text-sm">@stage.Progress%</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    @onclick="() => ViewProcessDetails(process.ComplianceId)">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No compliance processes found. Create a new process to get started.
+        </div>
+    }
+</div>
+
+<!-- Create Process Modal -->
+@if (showCreateModal)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Compliance Process</h5>
+                    <button type="button" class="btn-close" @onclick="() => showCreateModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Contract ID</label>
+                        <input type="text" class="form-control" @bind="newContractId" 
+                               placeholder="Enter contract ID">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Project ID</label>
+                        <input type="text" class="form-control" @bind="newProjectId" 
+                               placeholder="Enter project ID">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showCreateModal = false">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="CreateComplianceProcess" 
+                            disabled="@isCreating">
+                        @if (isCreating)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Create Process
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private List<ComplianceProcess>? complianceProcesses;
+    private bool isLoading = true;
+    private bool showCreateModal = false;
+    private bool isCreating = false;
+    private string newContractId = "";
+    private string newProjectId = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadComplianceProcesses();
+    }
+
+    private async Task LoadComplianceProcesses()
+    {
+        try
+        {
+            isLoading = true;
+            // For now, load all processes - in production, filter by current user's projects
+            complianceProcesses = await ComplianceService.GetComplianceProcessesByProjectAsync(Guid.Empty);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading compliance processes");
+            complianceProcesses = new List<ComplianceProcess>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ShowCreateProcessModal()
+    {
+        showCreateModal = true;
+        newContractId = Guid.NewGuid().ToString();
+        newProjectId = Guid.NewGuid().ToString();
+    }
+
+    private async Task CreateComplianceProcess()
+    {
+        try
+        {
+            if (!Guid.TryParse(newContractId, out var contractId) || 
+                !Guid.TryParse(newProjectId, out var projectId))
+            {
+                return;
+            }
+
+            isCreating = true;
+            var process = await ComplianceService.CreateComplianceProcessAsync(contractId, projectId);
+            showCreateModal = false;
+            await LoadComplianceProcesses();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating compliance process");
+        }
+        finally
+        {
+            isCreating = false;
+        }
+    }
+
+    private void ViewProcessDetails(Guid complianceId)
+    {
+        Navigation.NavigateTo($"/compliance/{complianceId}");
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "approved" => "success",
+            "rejected" => "danger",
+            "blocked" => "warning",
+            _ => "primary"
+        };
+    }
+}

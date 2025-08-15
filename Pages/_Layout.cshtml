@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodXchange - Modern Trading Platform</title>
+    <base href="~/" />
+    <link href="css/modern-ui.css" rel="stylesheet" />
+    <link href="css/modern-navigation.css" rel="stylesheet" />
+    <link href="css/blazor-site.css" rel="stylesheet" />
+    <link href="css/dashboard.css" rel="stylesheet" />
+    <link href="FDX.Trading.styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    @RenderBody()
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="js/modern-ui.js"></script>
+    <script src="js/global-enhancements.js"></script>
+    <script src="js/keyboard-shortcuts.js"></script>
+    <script src="js/theme-init.js"></script>
+</body>
+</html>

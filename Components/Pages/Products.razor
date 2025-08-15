@@ -1,0 +1,66 @@
+@page "/products"
+
+<PageTitle>Products - FoodXchange</PageTitle>
+
+<div class="products-container">
+    <div class="page-header">
+        <h1>Product Catalog</h1>
+        <div class="header-actions">
+            <button class="btn btn-primary">Add Product</button>
+            <button class="btn btn-outline">Import Products</button>
+        </div>
+    </div>
+    
+    <div class="search-filters">
+        <div class="search-bar">
+            <input type="text" placeholder="Search products..." class="form-control" />
+            <button class="btn btn-search">🔍</button>
+        </div>
+        <div class="filter-chips">
+            <span class="chip active">All Products</span>
+            <span class="chip">Organic</span>
+            <span class="chip">Kosher</span>
+            <span class="chip">Halal</span>
+        </div>
+    </div>
+    
+    <div class="products-grid">
+        <div class="product-card">
+            <div class="product-image">
+                <img src="/images/placeholder-product.jpg" alt="Product" />
+            </div>
+            <div class="product-info">
+                <h3>Premium Olive Oil</h3>
+                <p class="product-category">Oils & Vinegars</p>
+                <p class="product-supplier">Supplied by: Mediterranean Foods Ltd</p>
+                <div class="product-price">$24.99 / bottle</div>
+                <div class="product-actions">
+                    <button class="btn btn-sm btn-primary">View Details</button>
+                    <button class="btn btn-sm btn-outline">Request Quote</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product-card">
+            <div class="product-image">
+                <img src="/images/placeholder-product.jpg" alt="Product" />
+            </div>
+            <div class="product-info">
+                <h3>Organic Pasta</h3>
+                <p class="product-category">Pasta & Grains</p>
+                <p class="product-supplier">Supplied by: Italian Organics</p>
+                <div class="product-price">$3.45 / package</div>
+                <div class="product-actions">
+                    <button class="btn btn-sm btn-primary">View Details</button>
+                    <button class="btn btn-sm btn-outline">Request Quote</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="pagination">
+        <button class="btn btn-outline">← Previous</button>
+        <span class="page-info">Page 1 of 25</span>
+        <button class="btn btn-outline">Next →</button>
+    </div>
+</div>

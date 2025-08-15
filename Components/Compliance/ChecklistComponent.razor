@@ -1,0 +1,404 @@
+@using FDX.Trading.Models.Compliance
+@using FDX.Trading.Services
+@using System.Net.Http.Json
+@inject IComplianceService ComplianceService
+@inject HttpClient Http
+@inject ILogger<ChecklistComponent> Logger
+
+<div class="card shadow-sm">
+    @if (Model == null)
+    {
+        <div class="card-body text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading checklist...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-check2-square"></i> @Model.Title
+                </h5>
+                <span class="badge bg-@GetStatusColor(Model.Status)">@Model.Status</span>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <!-- Progress Overview -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between text-muted small mb-1">
+                    <span>@Model.Progress.Done / @Model.Progress.Required required items complete</span>
+                    <span>@Model.Progress.Percent%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" 
+                         role="progressbar" 
+                         style="width: @Model.Progress.Percent%"
+                         aria-valuenow="@Model.Progress.Percent" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checklist Items -->
+            <div class="list-group list-group-flush">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="list-group-item px-0">
+                        <div class="row align-items-start">
+                            <div class="col-md-7">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3">
+                                        @if (item.Status == "done")
+                                        {
+                                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                        }
+                                        else if (item.Status == "na")
+                                        {
+                                            <i class="bi bi-dash-circle text-secondary fs-5"></i>
+                                        }
+                                        else if (item.Status == "blocked")
+                                        {
+                                            <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-circle text-muted fs-5"></i>
+                                        }
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold">
+                                            @item.Title
+                                            @if (item.Required)
+                                            {
+                                                <span class="text-danger">*</span>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(item.ItemCode))
+                                        {
+                                            <small class="text-muted">Code: @item.ItemCode</small>
+                                        }
+                                        <div class="mt-1 small text-muted">
+                                            @if (item.DueDate.HasValue)
+                                            {
+                                                <span class="me-3">
+                                                    <i class="bi bi-calendar"></i> Due: @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                                    @if (item.DueDate.Value < DateTime.Today && item.Status != "done" && item.Status != "na")
+                                                    {
+                                                        <span class="badge bg-danger ms-1">Overdue</span>
+                                                    }
+                                                </span>
+                                            }
+                                            @if (item.EvidenceCount > 0)
+                                            {
+                                                <span class="me-3">
+                                                    <i class="bi bi-paperclip"></i> @item.EvidenceCount file(s)
+                                                </span>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(item.Notes))
+                                        {
+                                            <div class="mt-2 small text-muted fst-italic">
+                                                <i class="bi bi-info-circle"></i> @item.Notes
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-5">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <!-- Status Selector -->
+                                    <select class="form-select form-select-sm" 
+                                            style="width: auto;"
+                                            value="@item.Status" 
+                                            @onchange="e => SetStatus(item.ItemId, e.Value?.ToString())">
+                                        <option value="open">Open</option>
+                                        <option value="done">Done</option>
+                                        <option value="na">N/A</option>
+                                        <option value="blocked">Blocked</option>
+                                    </select>
+                                    
+                                    <!-- Upload Evidence Button -->
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            @onclick="() => ShowUploadModal(item)"
+                                            title="Upload Evidence">
+                                        <i class="bi bi-upload"></i>
+                                    </button>
+                                    
+                                    <!-- Assign Button -->
+                                    <button class="btn btn-sm btn-outline-secondary" 
+                                            @onclick="() => ShowAssignModal(item)"
+                                            title="Assign">
+                                        <i class="bi bi-person-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Upload Evidence Modal -->
+@if (showUploadModal && selectedItem != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Evidence</h5>
+                    <button type="button" class="btn-close" @onclick="() => showUploadModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Item:</strong> @selectedItem.Title</p>
+                    <div class="mb-3">
+                        <label class="form-label">File Name</label>
+                        <input type="text" class="form-control" @bind="uploadFileName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">File URL/Path</label>
+                        <input type="text" class="form-control" @bind="uploadFileUrl">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showUploadModal = false">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="UploadEvidence" disabled="@isUploading">
+                        @if (isUploading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+<!-- Assign Modal -->
+@if (showAssignModal && selectedItem != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Item</h5>
+                    <button type="button" class="btn-close" @onclick="() => showAssignModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Item:</strong> @selectedItem.Title</p>
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-control" @bind="assignDueDate">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" rows="3" placeholder="Add notes about this assignment..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showAssignModal = false">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="AssignItem">
+                        Assign
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter] public Guid StepId { get; set; }
+    [Parameter] public EventCallback OnProgressChanged { get; set; }
+    
+    private ChecklistDto? Model { get; set; }
+    private ChecklistItemDto? selectedItem;
+    private bool showUploadModal = false;
+    private bool showAssignModal = false;
+    private bool isUploading = false;
+    private string uploadFileName = "";
+    private string uploadFileUrl = "";
+    private DateTime? assignDueDate;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadChecklist();
+    }
+
+    private async Task LoadChecklist()
+    {
+        try
+        {
+            var response = await Http.GetAsync($"/api/compliance/steps/{StepId}/checklist");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ChecklistResponse>();
+                if (result != null)
+                {
+                    Model = new ChecklistDto
+                    {
+                        ChecklistId = result.ChecklistId,
+                        Title = result.Title,
+                        Status = result.Status,
+                        Progress = result.Progress,
+                        Items = result.Items
+                    };
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading checklist for step {StepId}", StepId);
+        }
+    }
+
+    private async Task SetStatus(Guid itemId, string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status)) return;
+        
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"/api/compliance/checklist/items/{itemId}/set", 
+                new { Status = status });
+            
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadChecklist();
+                await OnProgressChanged.InvokeAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error setting item {ItemId} status", itemId);
+        }
+    }
+
+    private void ShowUploadModal(ChecklistItemDto item)
+    {
+        selectedItem = item;
+        uploadFileName = "";
+        uploadFileUrl = "";
+        showUploadModal = true;
+    }
+
+    private async Task UploadEvidence()
+    {
+        if (selectedItem == null || string.IsNullOrEmpty(uploadFileName) || string.IsNullOrEmpty(uploadFileUrl))
+            return;
+
+        try
+        {
+            isUploading = true;
+            var response = await Http.PostAsJsonAsync($"/api/compliance/checklist/items/{selectedItem.ItemId}/evidence",
+                new { FileName = uploadFileName, BlobUri = uploadFileUrl, ContentType = "application/octet-stream" });
+            
+            if (response.IsSuccessStatusCode)
+            {
+                showUploadModal = false;
+                await LoadChecklist();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error uploading evidence");
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private void ShowAssignModal(ChecklistItemDto item)
+    {
+        selectedItem = item;
+        assignDueDate = item.DueDate;
+        showAssignModal = true;
+    }
+
+    private async Task AssignItem()
+    {
+        if (selectedItem == null) return;
+
+        try
+        {
+            if (assignDueDate.HasValue)
+            {
+                var response = await Http.PutAsJsonAsync($"/api/compliance/checklist/items/{selectedItem.ItemId}/due-date",
+                    new { DueDate = assignDueDate });
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    showAssignModal = false;
+                    await LoadChecklist();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error assigning item");
+        }
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "done" => "success",
+            "in-review" => "warning",
+            "blocked" => "danger",
+            _ => "secondary"
+        };
+    }
+
+    // DTOs
+    public class ChecklistResponse
+    {
+        public Guid ChecklistId { get; set; }
+        public string Title { get; set; } = "";
+        public string Status { get; set; } = "";
+        public ProgressDto Progress { get; set; } = new();
+        public List<ChecklistItemDto> Items { get; set; } = new();
+    }
+
+    public class ChecklistDto
+    {
+        public Guid ChecklistId { get; set; }
+        public string Title { get; set; } = "";
+        public string Status { get; set; } = "";
+        public ProgressDto Progress { get; set; } = new();
+        public List<ChecklistItemDto> Items { get; set; } = new();
+    }
+
+    public class ProgressDto
+    {
+        public int Required { get; set; }
+        public int Done { get; set; }
+        public int Percent { get; set; }
+    }
+
+    public class ChecklistItemDto
+    {
+        public Guid ItemId { get; set; }
+        public string? ItemCode { get; set; }
+        public string Title { get; set; } = "";
+        public bool Required { get; set; }
+        public string Status { get; set; } = "open";
+        public Guid? AssignedToUserId { get; set; }
+        public Guid? AssignedToExternalId { get; set; }
+        public DateTime? DueDate { get; set; }
+        public string? Notes { get; set; }
+        public int EvidenceCount { get; set; }
+    }
+}

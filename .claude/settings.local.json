@@ -114,12 +114,13 @@
       "WebFetch(domain:www.crich.it)",
       "WebFetch(domain:coppenrath-feingebaeck.de)",
       "WebFetch(domain:www.coppenrath-feingebaeck.de)",
-      "Bash(pip install:*)"
-    ],
-    "additionalDirectories": [
-      "C:\\c"
+      "Bash(pip install:*)",
+      "Bash(tasklist:*)"
     ],
     "deny": [],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "C:\\c"
+    ]
   }
 }

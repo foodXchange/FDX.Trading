@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using FDX.Trading.Models;
-using FDX.Trading.Services;
+using FDX.Trading.Models.Compliance;
+using FDX.Trading.Models.Orders;
 
 namespace FDX.Trading.Data;
 
@@ -13,22 +14,22 @@ public class FdxTradingContext : DbContext
 
     public DbSet<User> FdxUsers { get; set; }
     public DbSet<SupplierDetails> SupplierDetails { get; set; }
-    public DbSet<SupplierRating> SupplierRatings { get; set; }
+    //public DbSet<SupplierRating> SupplierRatings { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<SupplierProduct> SupplierProducts { get; set; }
-    public DbSet<SupplierProductCatalog> SupplierProductCatalogs { get; set; }
-    public DbSet<SupplierProductCatalogMatch> SupplierProductCatalogMatches { get; set; }
-    public DbSet<ProductCategory> ProductCategories { get; set; }
+    //public DbSet<SupplierProductCatalog> SupplierProductCatalogs { get; set; }
+    //public DbSet<SupplierProductCatalogMatch> SupplierProductCatalogMatches { get; set; }
+    //public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<ProductRequest> ProductRequests { get; set; }
     public DbSet<ProductRequestItem> ProductRequestItems { get; set; }
     public DbSet<PriceProposal> PriceProposals { get; set; }
     public DbSet<PriceHistory> PriceHistories { get; set; }
-    public DbSet<ProductPriceHistory> ProductPriceHistories { get; set; } = null!;
+    //public DbSet<ProductPriceHistory> ProductPriceHistories { get; set; } = null!;
     //public DbSet<PriceBook> PriceBooks { get; set; } = null!;
     //public DbSet<PriceBookEntry> PriceBookEntries { get; set; } = null!;
     public DbSet<Request> Requests { get; set; }
     public DbSet<RequestItem> RequestItems { get; set; }
-    public DbSet<RequestItemImage> RequestItemImages { get; set; }
+    //public DbSet<RequestItemImage> RequestItemImages { get; set; }
     public DbSet<CompanyContact> CompanyContacts { get; set; }
     
     // New normalized entity structure
@@ -47,12 +48,52 @@ public class FdxTradingContext : DbContext
     public DbSet<ConsoleDocument> ConsoleDocuments { get; set; }
     
     // Communication foundation
-    public DbSet<ConsoleMessage> ConsoleMessages { get; set; }
-    public DbSet<NotificationQueue> NotificationQueues { get; set; }
-    public DbSet<CommunicationTemplate> CommunicationTemplates { get; set; }
+    //public DbSet<ConsoleMessage> ConsoleMessages { get; set; }
+    //public DbSet<NotificationQueue> NotificationQueues { get; set; }
+    //public DbSet<CommunicationTemplate> CommunicationTemplates { get; set; }
     
     // Sourcing Brief System
     public DbSet<SourcingBrief> SourcingBriefs { get; set; }
+    
+    // Compliance Module Entities
+    public DbSet<ComplianceProcess> ComplianceProcesses { get; set; }
+    public DbSet<ComplianceStageTemplate> ComplianceStageTemplates { get; set; }
+    public DbSet<ComplianceStepTemplate> ComplianceStepTemplates { get; set; }
+    public DbSet<ComplianceStage> ComplianceStages { get; set; }
+    public DbSet<ComplianceStep> ComplianceSteps { get; set; }
+    public DbSet<ComplianceEvidence> ComplianceEvidence { get; set; }
+    public DbSet<ComplianceApproval> ComplianceApprovals { get; set; }
+    public DbSet<KosherCertification> KosherCertifications { get; set; }
+    public DbSet<KosherCertFile> KosherCertFiles { get; set; }
+    public DbSet<LabelProject> LabelProjects { get; set; }
+    
+    // Checklist System Entities
+    public DbSet<ChecklistTemplate> ChecklistTemplates { get; set; }
+    public DbSet<ChecklistTemplateItem> ChecklistTemplateItems { get; set; }
+    public DbSet<ComplianceChecklist> ComplianceChecklists { get; set; }
+    public DbSet<ComplianceChecklistItem> ComplianceChecklistItems { get; set; }
+    
+    // Order Module Entities
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderLine> OrderLines { get; set; }
+    public DbSet<OrderParticipant> OrderParticipants { get; set; }
+    public DbSet<OrderPaymentTerm> OrderPaymentTerms { get; set; }
+    public DbSet<Shipment> Shipments { get; set; }
+    public DbSet<Container> Containers { get; set; }
+    public DbSet<ShipmentLineAllocation> ShipmentLineAllocations { get; set; }
+    public DbSet<ShipmentDocument> ShipmentDocuments { get; set; }
+    public DbSet<ShipmentMilestone> ShipmentMilestones { get; set; }
+    public DbSet<CommissionRate> CommissionRates { get; set; }
+    public DbSet<CommissionAccrual> CommissionAccruals { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceLine> InvoiceLines { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    
+    // Marketing & Public Site
+    public DbSet<MarketingLead> MarketingLeads { get; set; }
+    
+    // Invitations
+    public DbSet<Invitation> Invitations { get; set; }
     
     // Proposal System
     //public DbSet<Proposal> Proposals { get; set; } = null!;
@@ -69,16 +110,16 @@ public class FdxTradingContext : DbContext
     //public DbSet<ContractComment> ContractComments { get; set; } = null!;
     //public DbSet<ContractProduct> ContractProducts { get; set; } = null!;
     //public DbSet<ContractMilestone> ContractMilestones { get; set; } = null!;
-    public DbSet<BriefRequest> BriefRequests { get; set; }
+    //public DbSet<BriefRequest> BriefRequests { get; set; }
     public DbSet<BriefProduct> BriefProducts { get; set; }
-    public DbSet<BriefProductImage> BriefProductImages { get; set; }
-    public DbSet<BriefSupplier> BriefSuppliers { get; set; }
-    public DbSet<BriefResponse> BriefResponses { get; set; }
-    public DbSet<BriefResponseItem> BriefResponseItems { get; set; }
-    public DbSet<BriefActivity> BriefActivities { get; set; }
-    public DbSet<BriefAnalytics> BriefAnalytics { get; set; }
-    public DbSet<BriefDocument> BriefDocuments { get; set; }
-    public DbSet<BriefResponseDocument> BriefResponseDocuments { get; set; }
+    //public DbSet<BriefProductImage> BriefProductImages { get; set; }
+    //public DbSet<BriefSupplier> BriefSuppliers { get; set; }
+    //public DbSet<BriefResponse> BriefResponses { get; set; }
+    //public DbSet<BriefResponseItem> BriefResponseItems { get; set; }
+    //public DbSet<BriefActivity> BriefActivities { get; set; }
+    //public DbSet<BriefAnalytics> BriefAnalytics { get; set; }
+    //public DbSet<BriefDocument> BriefDocuments { get; set; }
+    //public DbSet<BriefResponseDocument> BriefResponseDocuments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -644,6 +685,7 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => e.Category);
         });
         
+        /*
         // Configure BriefSupplier entity
         modelBuilder.Entity<BriefSupplier>(entity =>
         {
@@ -721,7 +763,9 @@ public class FdxTradingContext : DbContext
                 .HasForeignKey(bri => bri.BriefProductId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
+        */
 
+        /*
         // Configure SupplierProductCatalog entity
         modelBuilder.Entity<SupplierProductCatalog>(entity =>
         {
@@ -772,6 +816,7 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => new { e.SupplierProductCatalogId, e.BriefProductId })
                 .IsUnique();
         });
+        */
         
         /* Commented out entities that don't have corresponding models
         // Configure Proposal entity
@@ -998,6 +1043,7 @@ public class FdxTradingContext : DbContext
         
         // Configure decimal precision for entities to fix warnings
         
+        /*
         // Configure Company entity decimal properties
         modelBuilder.Entity<Company>(entity =>
         {
@@ -1063,6 +1109,7 @@ public class FdxTradingContext : DbContext
         {
             entity.Property(e => e.PurchaseAuthority).HasPrecision(18, 2);
         });
+        */
         
         // Add performance indexes for frequently queried fields
         
@@ -1086,6 +1133,7 @@ public class FdxTradingContext : DbContext
                 .HasDatabaseName("IX_RequestItem_RequestId_ProductName");
         });
         
+        /*
         // Add indexes for Company entity
         modelBuilder.Entity<Company>(entity =>
         {
@@ -1094,6 +1142,7 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => e.Country);
             entity.HasIndex(e => e.VatNumber);
         });
+        */
         
         // Add indexes for SourcingBrief entity
         modelBuilder.Entity<SourcingBrief>(entity =>
@@ -1104,6 +1153,7 @@ public class FdxTradingContext : DbContext
                 .HasDatabaseName("IX_SourcingBrief_Status_CreatedAt");
         });
         
+        /*
         // Add indexes for BriefResponse entity
         modelBuilder.Entity<BriefResponse>(entity =>
         {
@@ -1117,7 +1167,8 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => e.StartDate);
             entity.HasIndex(e => new { e.Status, e.EndDate })
                 .HasDatabaseName("IX_Contract_Status_EndDate");
-        });*/
+        });
+        */
         
         // Configure CompanyContact relationships
         modelBuilder.Entity<CompanyContact>(entity =>
@@ -1132,6 +1183,360 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => e.IsActive);
         });
         
+        // Configure Compliance Module Entities
+        
+        // Configure ComplianceProcess entity
+        modelBuilder.Entity<ComplianceProcess>(entity =>
+        {
+            entity.ToTable("ComplianceProcesses", "fdx");
+            entity.HasKey(e => e.ComplianceId);
+            
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.Property(e => e.OpenComments)
+                .HasMaxLength(2000);
+            
+            entity.HasIndex(e => e.ContractId);
+            entity.HasIndex(e => e.Status);
+        });
+        
+        // Configure ComplianceStageTemplate entity
+        modelBuilder.Entity<ComplianceStageTemplate>(entity =>
+        {
+            entity.ToTable("ComplianceStageTemplates", "fdx");
+            entity.HasKey(e => e.StageTemplateId);
+            
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(40);
+            
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            entity.HasIndex(e => e.Code).IsUnique();
+        });
+        
+        // Configure ComplianceStepTemplate entity
+        modelBuilder.Entity<ComplianceStepTemplate>(entity =>
+        {
+            entity.ToTable("ComplianceStepTemplates", "fdx");
+            entity.HasKey(e => e.StepTemplateId);
+            
+            entity.HasOne(st => st.StageTemplate)
+                .WithMany(s => s.StepTemplates)
+                .HasForeignKey(st => st.StageTemplateId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.StepCode)
+                .IsRequired()
+                .HasMaxLength(60);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+            
+            entity.Property(e => e.Scope)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.Property(e => e.EvidenceType)
+                .HasMaxLength(30);
+            
+            entity.HasIndex(e => e.StageTemplateId);
+        });
+        
+        // Configure ComplianceStage entity
+        modelBuilder.Entity<ComplianceStage>(entity =>
+        {
+            entity.ToTable("ComplianceStages", "fdx");
+            entity.HasKey(e => e.StageId);
+            
+            entity.HasOne(cs => cs.ComplianceProcess)
+                .WithMany(cp => cp.Stages)
+                .HasForeignKey(cs => cs.ComplianceId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(cs => cs.Template)
+                .WithMany()
+                .HasForeignKey(cs => cs.StageTemplateId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(40);
+            
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.HasIndex(e => e.ComplianceId);
+            entity.HasIndex(e => new { e.Code, e.Status });
+        });
+        
+        // Configure ComplianceStep entity
+        modelBuilder.Entity<ComplianceStep>(entity =>
+        {
+            entity.ToTable("ComplianceSteps", "fdx");
+            entity.HasKey(e => e.StepId);
+            
+            entity.HasOne(cs => cs.Stage)
+                .WithMany(s => s.Steps)
+                .HasForeignKey(cs => cs.StageId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(cs => cs.Template)
+                .WithMany()
+                .HasForeignKey(cs => cs.StepTemplateId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.Scope)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.Property(e => e.Notes)
+                .HasMaxLength(2000);
+            
+            entity.HasIndex(e => new { e.StageId, e.Status });
+            entity.HasIndex(e => e.ContractLineId);
+        });
+        
+        // Configure ComplianceEvidence entity
+        modelBuilder.Entity<ComplianceEvidence>(entity =>
+        {
+            entity.ToTable("ComplianceEvidence", "fdx");
+            entity.HasKey(e => e.EvidenceId);
+            
+            entity.HasOne(ce => ce.Step)
+                .WithMany(s => s.Evidence)
+                .HasForeignKey(ce => ce.StepId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.BlobUri)
+                .IsRequired()
+                .HasMaxLength(800);
+            
+            entity.Property(e => e.FileName)
+                .IsRequired()
+                .HasMaxLength(300);
+            
+            entity.Property(e => e.ContentType)
+                .HasMaxLength(100);
+            
+            entity.HasIndex(e => e.StepId);
+        });
+        
+        // Configure ComplianceApproval entity
+        modelBuilder.Entity<ComplianceApproval>(entity =>
+        {
+            entity.ToTable("ComplianceApprovals", "fdx");
+            entity.HasKey(e => e.ApprovalId);
+            
+            entity.HasOne(ca => ca.Step)
+                .WithMany(s => s.Approvals)
+                .HasForeignKey(ca => ca.StepId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.Decision)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.Property(e => e.Comment)
+                .HasMaxLength(800);
+            
+            entity.HasIndex(e => e.StepId);
+        });
+        
+        // Configure KosherCertification entity
+        modelBuilder.Entity<KosherCertification>(entity =>
+        {
+            entity.ToTable("KosherCertifications", "fdx");
+            entity.HasKey(e => e.KosherCertId);
+            
+            entity.Property(e => e.Authority)
+                .IsRequired()
+                .HasMaxLength(120);
+            
+            entity.Property(e => e.CertificateNumber)
+                .HasMaxLength(120);
+            
+            entity.Property(e => e.SupervisionType)
+                .HasMaxLength(40);
+            
+            entity.Property(e => e.PassoverStatus)
+                .HasMaxLength(40);
+            
+            entity.Property(e => e.Remarks)
+                .HasMaxLength(800);
+            
+            entity.HasIndex(e => new { e.SupplierId, e.ProductId });
+        });
+        
+        // Configure KosherCertFile entity
+        modelBuilder.Entity<KosherCertFile>(entity =>
+        {
+            entity.ToTable("KosherCertFiles", "fdx");
+            entity.HasKey(e => e.KosherCertFileId);
+            
+            entity.HasOne(kcf => kcf.KosherCertification)
+                .WithMany(kc => kc.Files)
+                .HasForeignKey(kcf => kcf.KosherCertId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.BlobUri)
+                .IsRequired()
+                .HasMaxLength(800);
+            
+            entity.Property(e => e.FileName)
+                .IsRequired()
+                .HasMaxLength(300);
+            
+            entity.HasIndex(e => e.KosherCertId);
+        });
+        
+        // Configure LabelProject entity
+        modelBuilder.Entity<LabelProject>(entity =>
+        {
+            entity.ToTable("LabelProjects", "fdx");
+            entity.HasKey(e => e.LabelProjectId);
+            
+            entity.HasOne(lp => lp.ComplianceProcess)
+                .WithMany()
+                .HasForeignKey(lp => lp.ComplianceId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.Region)
+                .IsRequired()
+                .HasMaxLength(40);
+            
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.HasIndex(e => e.ComplianceId);
+        });
+        
+        // Configure Checklist Template entities
+        modelBuilder.Entity<ChecklistTemplate>(entity =>
+        {
+            entity.ToTable("ChecklistTemplates", "fdx");
+            entity.HasKey(e => e.ChecklistTemplateId);
+            
+            entity.HasOne(ct => ct.StepTemplate)
+                .WithMany()
+                .HasForeignKey(ct => ct.StepTemplateId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.HasIndex(e => e.StepTemplateId);
+        });
+        
+        // Configure Checklist Template Item entities
+        modelBuilder.Entity<ChecklistTemplateItem>(entity =>
+        {
+            entity.ToTable("ChecklistTemplateItems", "fdx");
+            entity.HasKey(e => e.ChecklistTemplateItemId);
+            
+            entity.HasOne(cti => cti.ChecklistTemplate)
+                .WithMany(ct => ct.TemplateItems)
+                .HasForeignKey(cti => cti.ChecklistTemplateId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.ItemCode)
+                .IsRequired()
+                .HasMaxLength(80);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(300);
+            
+            entity.Property(e => e.DefaultAssigneeRole)
+                .HasMaxLength(40);
+            
+            entity.HasIndex(e => new { e.ChecklistTemplateId, e.ItemCode }).IsUnique();
+        });
+        
+        // Configure Compliance Checklist entities
+        modelBuilder.Entity<ComplianceChecklist>(entity =>
+        {
+            entity.ToTable("ComplianceChecklists", "fdx");
+            entity.HasKey(e => e.ChecklistId);
+            
+            entity.HasOne(cc => cc.Step)
+                .WithOne()
+                .HasForeignKey<ComplianceChecklist>(cc => cc.StepId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+            
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            
+            entity.HasIndex(e => e.StepId).IsUnique();
+            entity.HasIndex(e => e.Status);
+        });
+        
+        // Configure Compliance Checklist Item entities
+        modelBuilder.Entity<ComplianceChecklistItem>(entity =>
+        {
+            entity.ToTable("ComplianceChecklistItems", "fdx");
+            entity.HasKey(e => e.ItemId);
+            
+            entity.HasOne(cci => cci.Checklist)
+                .WithMany(cc => cc.Items)
+                .HasForeignKey(cci => cci.ChecklistId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Property(e => e.ItemCode)
+                .HasMaxLength(80);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(300);
+            
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(15);
+            
+            entity.Property(e => e.Notes)
+                .HasMaxLength(800);
+            
+            entity.HasIndex(e => new { e.ChecklistId, e.Status });
+            entity.HasIndex(e => e.AssignedToUserId);
+            entity.HasIndex(e => e.DueDate);
+        });
+        
+        // Update ComplianceEvidence configuration for checklist item link
+        modelBuilder.Entity<ComplianceEvidence>(entity =>
+        {
+            entity.HasOne(ce => ce.ChecklistItem)
+                .WithMany(ci => ci.Evidence)
+                .HasForeignKey(ce => ce.ChecklistItemId)
+                .OnDelete(DeleteBehavior.SetNull);
+            
+            entity.HasIndex(e => e.ChecklistItemId);
+        });
+        
+        /*
         // Configure NotificationQueue relationships
         modelBuilder.Entity<NotificationQueue>(entity =>
         {
@@ -1156,5 +1561,6 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => new { e.IsProcessed, e.ScheduledFor })
                 .HasDatabaseName("IX_NotificationQueue_Processing");
         });
+        */
     }
 }

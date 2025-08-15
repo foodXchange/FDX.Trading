@@ -1,6 +1,0 @@
-@FoodXchange.Api_HostAddress = http://localhost:5173
-
-GET {{FoodXchange.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

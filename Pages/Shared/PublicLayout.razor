@@ -1,0 +1,115 @@
+@inherits LayoutComponentBase
+
+<div class="min-vh-100 d-flex flex-column" style="background-color: #f8f7f4; color: #1f2937;">
+    <header class="bg-white border-bottom sticky-top">
+        <div class="container py-3">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <a href="/" class="text-decoration-none">
+                        <img src="/img/fdx-logo.png" alt="FDX.trading" style="height: 32px;" />
+                    </a>
+                </div>
+                <div class="col d-none d-md-flex justify-content-center">
+                    <nav class="d-flex gap-4">
+                        <a href="/how-it-works" class="text-decoration-none text-dark hover-teal">How it works</a>
+                        <a href="/#features" class="text-decoration-none text-dark hover-teal">Features</a>
+                        <a href="/#faq" class="text-decoration-none text-dark hover-teal">FAQ</a>
+                        <a href="/pricing" class="text-decoration-none text-dark hover-teal">Pricing</a>
+                    </nav>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex gap-2">
+                        <a href="/auth/login" class="btn btn-outline-secondary btn-sm">Sign in</a>
+                        <a href="/#demo" class="btn btn-sm text-white" style="background-color: #ff6f00;">Request demo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-fill">
+        @Body
+    </main>
+
+    <footer class="mt-5 border-top bg-white">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <img src="/img/fdx-logo.png" alt="FDX.trading" style="height: 28px; opacity: 0.7;" class="mb-3" />
+                    <p class="small text-muted">Source, certify, ship, and settle — in one unified workflow.</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="https://linkedin.com/company/fdx-trading" class="text-muted">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a href="mailto:info@foodz-x.com" class="text-muted">
+                            <i class="bi bi-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-semibold mb-3">Company</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/about" class="text-muted text-decoration-none hover-teal">About</a></li>
+                        <li class="mb-2"><a href="/how-it-works" class="text-muted text-decoration-none hover-teal">How it works</a></li>
+                        <li class="mb-2"><a href="/pricing" class="text-muted text-decoration-none hover-teal">Pricing</a></li>
+                        <li class="mb-2"><a href="/contact" class="text-muted text-decoration-none hover-teal">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-semibold mb-3">Product</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/#features" class="text-muted text-decoration-none hover-teal">Features</a></li>
+                        <li class="mb-2"><a href="/#security" class="text-muted text-decoration-none hover-teal">Security</a></li>
+                        <li class="mb-2"><a href="/integrations" class="text-muted text-decoration-none hover-teal">Integrations</a></li>
+                        <li class="mb-2"><a href="/api" class="text-muted text-decoration-none hover-teal">API</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-semibold mb-3">Legal</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/privacy" class="text-muted text-decoration-none hover-teal">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="/terms" class="text-muted text-decoration-none hover-teal">Terms of Service</a></li>
+                        <li class="mb-2"><a href="/cookies" class="text-muted text-decoration-none hover-teal">Cookie Policy</a></li>
+                        <li class="mb-2"><a href="/gdpr" class="text-muted text-decoration-none hover-teal">GDPR</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4" />
+            <div class="row">
+                <div class="col text-center">
+                    <p class="small text-muted mb-0">© 2025 FDX Trading Ltd. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<style>
+    .hover-teal:hover {
+        color: #006d77 !important;
+    }
+
+    :root {
+        --fdx-teal: #006d77;
+        --fdx-orange: #ff6f00;
+        --fdx-mint: #83c5be;
+        --fdx-ink: #1f2937;
+        --fdx-sand: #f8f7f4;
+    }
+
+    .bg-fdx-teal {
+        background-color: var(--fdx-teal) !important;
+    }
+
+    .bg-fdx-orange {
+        background-color: var(--fdx-orange) !important;
+    }
+
+    .text-fdx-teal {
+        color: var(--fdx-teal) !important;
+    }
+
+    .text-fdx-orange {
+        color: var(--fdx-orange) !important;
+    }
+</style>

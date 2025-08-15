@@ -1,0 +1,469 @@
+@page "/compliance/{ComplianceId:guid}"
+@using FDX.Trading.Models.Compliance
+@using FDX.Trading.Services
+@using FDX.Trading.Components.Compliance
+@inject IComplianceService ComplianceService
+@inject NavigationManager Navigation
+@inject ILogger<ComplianceDetails> Logger
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/compliance">Compliance</a></li>
+                    <li class="breadcrumb-item active">Process Details</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (complianceProcess != null)
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Compliance Process Overview</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Process ID:</strong> @complianceProcess.ComplianceId</p>
+                                <p><strong>Contract ID:</strong> @complianceProcess.ContractId</p>
+                                <p><strong>Project ID:</strong> @complianceProcess.ProjectId</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Status:</strong> 
+                                    <span class="badge bg-@GetStatusColor(complianceProcess.Status)">
+                                        @complianceProcess.Status
+                                    </span>
+                                </p>
+                                <p><strong>Started:</strong> @complianceProcess.StartedAt.ToString("MMM dd, yyyy")</p>
+                                @if (complianceProcess.ApprovedAt.HasValue)
+                                {
+                                    <p><strong>Approved:</strong> @complianceProcess.ApprovedAt.Value.ToString("MMM dd, yyyy")</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stages Accordion -->
+                @if (complianceProcess.Stages != null && complianceProcess.Stages.Any())
+                {
+                    <div class="accordion" id="stagesAccordion">
+                        @foreach (var stage in complianceProcess.Stages.OrderBy(s => s.CreatedAt))
+                        {
+                            var stageId = $"stage-{stage.StageId}";
+                            var isExpanded = selectedStageId == stage.StageId;
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button @(isExpanded ? "" : "collapsed")" 
+                                            type="button" 
+                                            @onclick="() => ToggleStage(stage.StageId)">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <span>
+                                                <strong>@stage.Code</strong>
+                                                <span class="badge bg-@GetStatusColor(stage.Status) ms-2">@stage.Status</span>
+                                            </span>
+                                            <div class="progress ms-3" style="width: 200px; height: 10px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: @stage.Progress%">
+                                                </div>
+                                            </div>
+                                            <span class="ms-2">@stage.Progress%</span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div class="accordion-collapse collapse @(isExpanded ? "show" : "")">
+                                    <div class="accordion-body">
+                                        @if (stage.Steps != null && stage.Steps.Any())
+                                        {
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Step</th>
+                                                        <th>Scope</th>
+                                                        <th>Status</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var step in stage.Steps)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @step.Title
+                                                                @if (step.Required)
+                                                                {
+                                                                    <span class="text-danger">*</span>
+                                                                }
+                                                            </td>
+                                                            <td>@step.Scope</td>
+                                                            <td>
+                                                                <span class="badge bg-@GetStepStatusColor(step.Status)">
+                                                                    @step.Status
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group btn-group-sm">
+                                                                    @if (IsChecklistStep(stage.Code, step))
+                                                                    {
+                                                                        <button class="btn btn-outline-primary" 
+                                                                                @onclick="() => ShowChecklistDrawer(step)">
+                                                                            <i class="bi bi-list-check"></i> Checklist
+                                                                        </button>
+                                                                    }
+                                                                    else if (step.Status == "open" || step.Status == "in-review")
+                                                                    {
+                                                                        <button class="btn btn-outline-primary" 
+                                                                                @onclick="() => ShowUploadEvidenceModal(step)">
+                                                                            <i class="bi bi-upload"></i> Upload
+                                                                        </button>
+                                                                    }
+                                                                    @if (step.Status == "in-review")
+                                                                    {
+                                                                        <button class="btn btn-outline-success" 
+                                                                                @onclick="() => ApproveStep(step.StepId)">
+                                                                            <i class="bi bi-check"></i> Approve
+                                                                        </button>
+                                                                        <button class="btn btn-outline-danger" 
+                                                                                @onclick="() => RejectStep(step.StepId)">
+                                                                            <i class="bi bi-x"></i> Reject
+                                                                        </button>
+                                                                    }
+                                                                </div>
+                                                                @if (step.Evidence != null && step.Evidence.Any())
+                                                                {
+                                                                    <div class="mt-1">
+                                                                        <small class="text-muted">
+                                                                            @step.Evidence.Count file(s) uploaded
+                                                                        </small>
+                                                                    </div>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="col-md-4">
+                <!-- Quick Stats -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Progress Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (complianceProcess.Stages != null)
+                        {
+                            var totalSteps = complianceProcess.Stages.SelectMany(s => s.Steps ?? new List<ComplianceStep>()).Count();
+                            var completedSteps = complianceProcess.Stages.SelectMany(s => s.Steps ?? new List<ComplianceStep>())
+                                .Count(st => st.Status == "approved");
+                            var overallProgress = totalSteps > 0 ? (completedSteps * 100) / totalSteps : 0;
+                            
+                            <div class="text-center mb-3">
+                                <h2>@overallProgress%</h2>
+                                <p class="text-muted">Overall Completion</p>
+                            </div>
+                            <div class="progress mb-3" style="height: 20px;">
+                                <div class="progress-bar" role="progressbar" style="width: @overallProgress%">
+                                    @overallProgress%
+                                </div>
+                            </div>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-success"></i> Completed: @completedSteps</li>
+                                <li><i class="bi bi-clock text-warning"></i> In Progress: @(totalSteps - completedSteps)</li>
+                                <li><i class="bi bi-list-task"></i> Total Steps: @totalSteps</li>
+                            </ul>
+                        }
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Activity timeline will be displayed here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> Compliance process not found.
+        </div>
+    }
+</div>
+
+<!-- Upload Evidence Modal -->
+@if (showUploadModal && selectedStep != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Evidence</h5>
+                    <button type="button" class="btn-close" @onclick="() => showUploadModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Step:</strong> @selectedStep.Title</p>
+                    <div class="mb-3">
+                        <label class="form-label">File Name</label>
+                        <input type="text" class="form-control" @bind="uploadFileName" 
+                               placeholder="Enter file name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">File URL</label>
+                        <input type="text" class="form-control" @bind="uploadFileUrl" 
+                               placeholder="Enter file URL or blob URI">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" @bind="uploadNotes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showUploadModal = false">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="UploadEvidence" 
+                            disabled="@isUploading">
+                        @if (isUploading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+<!-- Checklist Drawer -->
+@if (showChecklistDrawer && selectedChecklistStep != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@selectedChecklistStep.Title - Checklist</h5>
+                    <button type="button" class="btn-close" @onclick="CloseChecklistDrawer"></button>
+                </div>
+                <div class="modal-body">
+                    <ChecklistComponent StepId="@selectedChecklistStep.StepId" OnProgressChanged="HandleChecklistProgressChanged" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseChecklistDrawer">
+                        Close
+                    </button>
+                    @if (selectedChecklistStep.Status == "in-review")
+                    {
+                        <button type="button" class="btn btn-success" @onclick="() => ApproveStep(selectedChecklistStep.StepId)">
+                            <i class="bi bi-check-circle"></i> Approve Step
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter] public Guid ComplianceId { get; set; }
+
+    private ComplianceProcess? complianceProcess;
+    private bool isLoading = true;
+    private Guid? selectedStageId;
+    private ComplianceStep? selectedStep;
+    private bool showUploadModal = false;
+    private bool isUploading = false;
+    private string uploadFileName = "";
+    private string uploadFileUrl = "";
+    private string uploadNotes = "";
+    
+    // Checklist drawer
+    private bool showChecklistDrawer = false;
+    private ComplianceStep? selectedChecklistStep;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadComplianceProcess();
+    }
+
+    private async Task LoadComplianceProcess()
+    {
+        try
+        {
+            isLoading = true;
+            complianceProcess = await ComplianceService.GetComplianceProcessAsync(ComplianceId);
+            
+            // Auto-expand first non-completed stage
+            if (complianceProcess?.Stages != null)
+            {
+                var firstIncompleteStage = complianceProcess.Stages
+                    .OrderBy(s => s.CreatedAt)
+                    .FirstOrDefault(s => s.Status != "approved");
+                if (firstIncompleteStage != null)
+                {
+                    selectedStageId = firstIncompleteStage.StageId;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading compliance process {ComplianceId}", ComplianceId);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ToggleStage(Guid stageId)
+    {
+        selectedStageId = selectedStageId == stageId ? null : stageId;
+    }
+
+    private void ShowUploadEvidenceModal(ComplianceStep step)
+    {
+        selectedStep = step;
+        showUploadModal = true;
+        uploadFileName = "";
+        uploadFileUrl = "";
+        uploadNotes = "";
+    }
+
+    private async Task UploadEvidence()
+    {
+        if (selectedStep == null || string.IsNullOrEmpty(uploadFileName) || string.IsNullOrEmpty(uploadFileUrl))
+            return;
+
+        try
+        {
+            isUploading = true;
+            await ComplianceService.AddEvidenceAsync(selectedStep.StepId, uploadFileName, uploadFileUrl);
+            
+            if (!string.IsNullOrEmpty(uploadNotes))
+            {
+                await ComplianceService.UpdateStepStatusAsync(selectedStep.StepId, "in-review", uploadNotes);
+            }
+
+            showUploadModal = false;
+            await LoadComplianceProcess();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error uploading evidence");
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task ApproveStep(Guid stepId)
+    {
+        try
+        {
+            // In production, get current user ID from authentication
+            var userId = Guid.NewGuid();
+            await ComplianceService.ApproveStepAsync(stepId, userId, "approved", "Step approved");
+            await LoadComplianceProcess();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error approving step");
+        }
+    }
+
+    private async Task RejectStep(Guid stepId)
+    {
+        try
+        {
+            // In production, get current user ID from authentication
+            var userId = Guid.NewGuid();
+            await ComplianceService.ApproveStepAsync(stepId, userId, "rejected", "Step rejected");
+            await LoadComplianceProcess();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error rejecting step");
+        }
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "approved" => "success",
+            "rejected" => "danger",
+            "blocked" => "warning",
+            _ => "primary"
+        };
+    }
+
+    private string GetStepStatusColor(string status)
+    {
+        return status switch
+        {
+            "approved" => "success",
+            "rejected" => "danger",
+            "in-review" => "warning",
+            "open" => "secondary",
+            _ => "primary"
+        };
+    }
+    
+    // Checklist-related methods
+    private bool IsChecklistStep(string stageCode, ComplianceStep step)
+    {
+        // Determine if this step should use a checklist based on stage code and step title
+        // You can enhance this logic based on step template evidence type
+        return (stageCode == "LABEL" && step.Title.Contains("Claims", StringComparison.OrdinalIgnoreCase)) ||
+               (stageCode == "LABEL" && step.Title.Contains("regulatory", StringComparison.OrdinalIgnoreCase)) ||
+               (stageCode == "KOSHER" && step.Title.Contains("label marking", StringComparison.OrdinalIgnoreCase));
+    }
+    
+    private void ShowChecklistDrawer(ComplianceStep step)
+    {
+        selectedChecklistStep = step;
+        showChecklistDrawer = true;
+    }
+    
+    private void CloseChecklistDrawer()
+    {
+        showChecklistDrawer = false;
+        selectedChecklistStep = null;
+    }
+    
+    private async Task HandleChecklistProgressChanged()
+    {
+        // Reload the compliance process to update progress
+        await LoadComplianceProcess();
+    }
+}

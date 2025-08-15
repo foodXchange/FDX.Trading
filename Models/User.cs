@@ -1,131 +1,87 @@
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FDX.Trading.Models;
 
-public enum VerificationStatus
-{
-    Unverified,
-    Pending,
-    Verified,
-    Rejected
-}
-
 public class User
 {
+    [Key]
     public int Id { get; set; }
-    public string Username { get; set; } = "";
-    public string Password { get; set; } = "";
-    public string Email { get; set; } = "";
-    public string? Title { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public string CompanyName { get; set; } = "";
-    public UserType Type { get; set; }
-    public string Country { get; set; } = "";
-    public string PhoneNumber { get; set; } = "";
-    public string? PhoneType { get; set; }
-    public string? PhoneUsage { get; set; }
-    public string? PhoneCategory { get; set; }
-    public string? MainPhone { get; set; }
-    public string? Extension { get; set; }
-    public string Website { get; set; } = "";
-    public string Address { get; set; } = "";
-    public string Category { get; set; } = "";  // Keep for backward compatibility
     
-    // New category fields
-    public CategoryType? CategoryId { get; set; }
-    public string BusinessType { get; set; } = "";  // Short business description
-    public string FullDescription { get; set; } = "";  // Long description from CSV
-    public string SubCategories { get; set; } = "";  // Additional categories
+    [Required]
+    [StringLength(100)]
+    public string Username { get; set; } = string.Empty;
+    
+    [Required]
+    [StringLength(200)]
+    public string Password { get; set; } = string.Empty;
+    
+    [Required]
+    [StringLength(200)]
+    public string Email { get; set; } = string.Empty;
+    
+    [StringLength(200)]
+    public string? CompanyName { get; set; }
+    
+    [StringLength(100)]
+    public string? Country { get; set; }
+    
+    [StringLength(50)]
+    public string? PhoneNumber { get; set; }
+    
+    [StringLength(500)]
+    public string? Website { get; set; }
+    
+    [StringLength(500)]
+    public string? Address { get; set; }
+    
+    [StringLength(200)]
+    public string? Category { get; set; }
+    
+    [StringLength(500)]
+    public string? BusinessType { get; set; }
+    
+    [StringLength(2000)]
+    public string? FullDescription { get; set; }
+    
+    [StringLength(500)]
+    public string? SubCategories { get; set; }
+    
+    [StringLength(500)]
+    public string? AlternateEmails { get; set; }
+    
+    [StringLength(200)]
+    public string? DisplayName { get; set; }
+    
+    public UserType Type { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? LastLogin { get; set; }
+    public bool DataComplete { get; set; }
+    public bool RequiresPasswordChange { get; set; }
+    public VerificationStatus Verification { get; set; }
     
     // Profile fields
-    public string? Bio { get; set; }
-    public string? Department { get; set; }
-    public string? Role { get; set; }
-    public string? AvatarType { get; set; }
-    public string? AvatarValue { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? ProfileImagePath { get; set; }
     
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public DateTime? LastLogin { get; set; }
-    public bool IsActive { get; set; } = true;
-    
-    // New fields for better data management
-    public bool RequiresPasswordChange { get; set; } = false;
-    public bool DataComplete { get; set; } = true;
-    public VerificationStatus Verification { get; set; } = VerificationStatus.Pending;
-    public string? AlternateEmails { get; set; }
-    public string? DisplayName { get; set; }  // For Hebrew or alternative names
-    public string? ProfileImage { get; set; }  // Company logo/profile image (URL or base64)
-    public string? ImportNotes { get; set; }  // Track import issues
-    public DateTime? ImportedAt { get; set; }
-    public string? OriginalId { get; set; }  // Store original CSV ID
-    
-    // Link to company contact if this user is associated with a contact
-    public int? ContactId { get; set; }
-    
-    // Navigation Properties
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();  // For suppliers (Type=3)
-    
-    // Temporary property for import process
-    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
-    public List<SupplierProductCatalog>? ExtractedProducts { get; set; }
-    
-    // Navigation property for supplier details
-    public virtual SupplierDetails? SupplierDetails { get; set; }
+    // Navigation properties
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }
 
 public enum UserType
 {
-    Admin = 0,
-    Expert = 1,     // Contractors/Experts - subcontractors for projects
-    Buyer = 2,      // Buyers
-    Supplier = 3    // Suppliers - companies that provide products
+    Admin,
+    Buyer,
+    Supplier,
+    Expert,
+    Agent
 }
 
-public class LoginRequest
+public enum VerificationStatus
 {
-    public string Username { get; set; } = "";
-    public string Password { get; set; } = "";
-}
-
-public class UserDto
-{
-    public int Id { get; set; }
-    public string Username { get; set; } = "";
-    public string Email { get; set; } = "";
-    public string? Title { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public string CompanyName { get; set; } = "";
-    public string TypeName { get; set; } = "";
-    public UserType Type { get; set; }
-    public string Country { get; set; } = "";
-    public string PhoneNumber { get; set; } = "";
-    public string? PhoneType { get; set; }
-    public string? PhoneUsage { get; set; }
-    public string? PhoneCategory { get; set; }
-    public string? MainPhone { get; set; }
-    public string? Extension { get; set; }
-    public string Website { get; set; } = "";
-    public string Address { get; set; } = "";
-    public string Category { get; set; } = "";
-    public CategoryType? CategoryId { get; set; }
-    public string BusinessType { get; set; } = "";
-    public string CategoryDisplayName { get; set; } = "";
-    public string CategoryColor { get; set; } = "";
-    public string? Bio { get; set; }
-    public string? Department { get; set; }
-    public string? Role { get; set; }
-    public string? AvatarType { get; set; }
-    public string? AvatarValue { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? LastLogin { get; set; }
-    public bool IsActive { get; set; }
-    public bool RequiresPasswordChange { get; set; }
-    public bool DataComplete { get; set; }
-    public VerificationStatus Verification { get; set; }
-    public string? AlternateEmails { get; set; }
-    public string? DisplayName { get; set; }
-    public DateTime? ImportedAt { get; set; }
-    public string? ProfileImage { get; set; }
+    Pending,
+    Verified,
+    Rejected
 }

@@ -1,0 +1,472 @@
+@using FDX.Trading.Models.Orders
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ILogger<OrderFinanceTab> Logger
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-currency-dollar"></i> Finance
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success" @onclick="IssueCommissionInvoice" disabled="@isProcessing">
+                        <i class="bi bi-receipt"></i> Issue Commission Invoice
+                    </button>
+                    <button class="btn btn-primary" @onclick="ShowAddAPInvoice">
+                        <i class="bi bi-plus-circle"></i> Add AP Invoice
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- P&L Summary -->
+                @if (pnl != null)
+                {
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">P&L Summary</h6>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="text-success fw-bold">@pnl.AR_Total.ToString("N2")</div>
+                                    <small class="text-muted">AR Total</small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-danger fw-bold">@pnl.AP_Total.ToString("N2")</div>
+                                    <small class="text-muted">AP Total</small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="@(pnl.Net >= 0 ? "text-success" : "text-danger") fw-bold">
+                                        @pnl.Net.ToString("N2")
+                                    </div>
+                                    <small class="text-muted">Net</small>
+                                </div>
+                            </div>
+                            @if (pnl.CommissionAccrued > 0)
+                            {
+                                <div class="mt-2 text-center">
+                                    <small class="text-warning">
+                                        Commission Accrued: @pnl.Currency @pnl.CommissionAccrued.ToString("N2")
+                                    </small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Invoices List -->
+        <h6 class="mb-3">Invoices</h6>
+        @if (invoices.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Invoice Code</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var invoice in invoices)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-@(invoice.Type == "AR" ? "success" : "danger")">
+                                        @invoice.Type
+                                    </span>
+                                </td>
+                                <td>@invoice.InvoiceCode</td>
+                                <td>@invoice.Currency @invoice.Total.ToString("N2")</td>
+                                <td>
+                                    <span class="badge bg-@GetInvoiceStatusColor(invoice.Status)">
+                                        @invoice.Status
+                                    </span>
+                                </td>
+                                <td>@invoice.IssueDate.ToString("MMM dd, yyyy")</td>
+                                <td>@(invoice.DueDate?.ToString("MMM dd, yyyy") ?? "-")</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" @onclick="() => ViewInvoiceDetail(invoice.InvoiceId)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        @if (invoice.Status != "paid" && invoice.Status != "cancelled")
+                                        {
+                                            <button class="btn btn-outline-success" @onclick="() => ShowRecordPayment(invoice)">
+                                                <i class="bi bi-cash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No invoices found for this order.
+            </div>
+        }
+
+        <!-- Commission Accruals -->
+        @if (commissionAccruals.Any())
+        {
+            <h6 class="mt-4 mb-3">Commission Accruals</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Shipment</th>
+                            <th>Base Amount</th>
+                            <th>Rate</th>
+                            <th>Commission</th>
+                            <th>Status</th>
+                            <th>Accrued At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var accrual in commissionAccruals)
+                        {
+                            <tr>
+                                <td>@accrual.ShipmentId</td>
+                                <td>@accrual.Currency @accrual.BaseAmount.ToString("N2")</td>
+                                <td>@accrual.Basis</td>
+                                <td>@accrual.Currency @accrual.CalculatedAmount.ToString("N2")</td>
+                                <td>
+                                    <span class="badge bg-@(accrual.Status == "invoiced" ? "success" : "warning")">
+                                        @accrual.Status
+                                    </span>
+                                </td>
+                                <td>@accrual.AccruedAt.ToString("MMM dd, yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Invoice Detail Modal -->
+@if (showInvoiceDetail && selectedInvoice != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Invoice Details - @selectedInvoice.InvoiceCode</h5>
+                    <button type="button" class="btn-close" @onclick="() => showInvoiceDetail = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> @selectedInvoice.Type</p>
+                            <p><strong>Status:</strong> @selectedInvoice.Status</p>
+                            <p><strong>Issue Date:</strong> @selectedInvoice.IssueDate.ToString("MMM dd, yyyy")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Currency:</strong> @selectedInvoice.Currency</p>
+                            <p><strong>Due Date:</strong> @(selectedInvoice.DueDate?.ToString("MMM dd, yyyy") ?? "N/A")</p>
+                        </div>
+                    </div>
+
+                    @if (selectedInvoice.Lines != null && selectedInvoice.Lines.Any())
+                    {
+                        <h6>Line Items</h6>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var line in selectedInvoice.Lines)
+                                {
+                                    <tr>
+                                        <td>@line.Description</td>
+                                        <td>@line.Quantity</td>
+                                        <td>@line.UnitPrice.ToString("N2")</td>
+                                        <td>@line.Amount.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Subtotal:</th>
+                                    <th>@selectedInvoice.Subtotal.ToString("N2")</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="text-end">Tax:</th>
+                                    <th>@selectedInvoice.Tax.ToString("N2")</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="text-end">Total:</th>
+                                    <th>@selectedInvoice.Total.ToString("N2")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    }
+
+                    @if (selectedInvoice.Payments != null && selectedInvoice.Payments.Any())
+                    {
+                        <h6 class="mt-3">Payments</h6>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Reference</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var payment in selectedInvoice.Payments)
+                                {
+                                    <tr>
+                                        <td>@payment.PaidAt.ToString("MMM dd, yyyy")</td>
+                                        <td>@payment.Currency @payment.Amount.ToString("N2")</td>
+                                        <td>@(payment.Method ?? "-")</td>
+                                        <td>@(payment.Reference ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showInvoiceDetail = false">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+<!-- Record Payment Modal -->
+@if (showPaymentModal && selectedInvoiceForPayment != null)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Record Payment - @selectedInvoiceForPayment.InvoiceCode</h5>
+                    <button type="button" class="btn-close" @onclick="() => showPaymentModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-control" @bind="paymentAmount" step="0.01" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Currency</label>
+                        <input type="text" class="form-control" @bind="paymentCurrency" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select" @bind="paymentMethod">
+                            <option value="">Select...</option>
+                            <option value="wire">Wire Transfer</option>
+                            <option value="check">Check</option>
+                            <option value="credit_card">Credit Card</option>
+                            <option value="credit_note">Credit Note</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reference</label>
+                        <input type="text" class="form-control" @bind="paymentReference" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showPaymentModal = false">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="RecordPayment" disabled="@isProcessing">
+                        @if (isProcessing)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Record Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter] public Guid OrderId { get; set; }
+
+    private List<dynamic> invoices = new();
+    private List<dynamic> commissionAccruals = new();
+    private dynamic? pnl;
+    private bool isProcessing = false;
+
+    // Invoice detail modal
+    private bool showInvoiceDetail = false;
+    private dynamic? selectedInvoice;
+
+    // Payment modal
+    private bool showPaymentModal = false;
+    private dynamic? selectedInvoiceForPayment;
+    private decimal paymentAmount;
+    private string paymentCurrency = "USD";
+    private string paymentMethod = "";
+    private string paymentReference = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFinanceData();
+    }
+
+    private async Task LoadFinanceData()
+    {
+        try
+        {
+            // Load invoices
+            var response = await Http.GetAsync($"/api/finance/invoices?orderId={OrderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                invoices = await response.Content.ReadFromJsonAsync<List<dynamic>>() ?? new();
+            }
+
+            // Load commission accruals
+            response = await Http.GetAsync($"/api/orders/{OrderId}/commissions");
+            if (response.IsSuccessStatusCode)
+            {
+                commissionAccruals = await response.Content.ReadFromJsonAsync<List<dynamic>>() ?? new();
+            }
+
+            // Load P&L
+            response = await Http.GetAsync($"/api/finance/pnl/order/{OrderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                pnl = await response.Content.ReadFromJsonAsync<dynamic>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading finance data");
+        }
+    }
+
+    private async Task IssueCommissionInvoice()
+    {
+        try
+        {
+            isProcessing = true;
+            var response = await Http.PostAsync($"/api/finance/commission/invoice/order/{OrderId}", null);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadFinanceData();
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Logger.LogWarning("Failed to issue commission invoice: {Error}", error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error issuing commission invoice");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private async Task ViewInvoiceDetail(Guid invoiceId)
+    {
+        try
+        {
+            var response = await Http.GetAsync($"/api/finance/invoices/{invoiceId}");
+            if (response.IsSuccessStatusCode)
+            {
+                selectedInvoice = await response.Content.ReadFromJsonAsync<dynamic>();
+                showInvoiceDetail = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading invoice detail");
+        }
+    }
+
+    private void ShowRecordPayment(dynamic invoice)
+    {
+        selectedInvoiceForPayment = invoice;
+        paymentAmount = invoice.Total;
+        paymentCurrency = invoice.Currency;
+        showPaymentModal = true;
+    }
+
+    private async Task RecordPayment()
+    {
+        if (selectedInvoiceForPayment == null) return;
+
+        try
+        {
+            isProcessing = true;
+            var payment = new
+            {
+                Amount = paymentAmount,
+                Currency = paymentCurrency,
+                Method = paymentMethod,
+                Reference = paymentReference
+            };
+
+            var response = await Http.PostAsJsonAsync($"/api/finance/invoices/{selectedInvoiceForPayment.InvoiceId}/payments", payment);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                showPaymentModal = false;
+                await LoadFinanceData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error recording payment");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private void ShowAddAPInvoice()
+    {
+        // This would open a modal to add AP invoice
+        // Implementation would be similar to payment modal
+    }
+
+    private string GetInvoiceStatusColor(string status)
+    {
+        return status switch
+        {
+            "paid" => "success",
+            "issued" => "warning",
+            "overdue" => "danger",
+            "cancelled" => "secondary",
+            _ => "primary"
+        };
+    }
+}

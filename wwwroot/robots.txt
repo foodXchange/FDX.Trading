@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /compliance/
+Disallow: /orders/
+Disallow: /console/
+
+# Sitemaps
+Sitemap: https://fdx.trading/sitemap.xml
+
+# Crawl delay (in seconds)
+Crawl-delay: 1
+
+# Specific bot rules
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Block bad bots
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /

@@ -1,0 +1,221 @@
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+@if (showBanner)
+{
+    <div class="cookie-banner position-fixed bottom-0 start-0 end-0 bg-white border-top shadow-lg p-3" style="z-index: 9999;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-info-circle-fill me-3 mt-1" style="color: #006d77;"></i>
+                        <div>
+                            <h6 class="mb-1">We use cookies</h6>
+                            <p class="small text-muted mb-0">
+                                We use cookies to enhance your experience, analyze site usage, and assist in our marketing efforts. 
+                                By continuing, you agree to our use of cookies.
+                                <a href="/privacy" class="text-decoration-none" style="color: #006d77;">Learn more</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <button class="btn btn-sm btn-outline-secondary me-2" @onclick="ShowSettings">
+                        <i class="bi bi-gear me-1"></i>Settings
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary me-2" @onclick="RejectAll">
+                        Reject All
+                    </button>
+                    <button class="btn btn-sm text-white" style="background-color: #006d77;" @onclick="AcceptAll">
+                        Accept All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showSettings)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cookie Settings</h5>
+                    <button type="button" class="btn-close" @onclick="() => showSettings = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" checked disabled>
+                            <label class="form-check-label">
+                                <strong>Essential Cookies</strong>
+                                <small class="d-block text-muted">Required for the website to function. Cannot be disabled.</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" @bind="analyticsEnabled">
+                            <label class="form-check-label">
+                                <strong>Analytics Cookies</strong>
+                                <small class="d-block text-muted">Help us understand how visitors use our website.</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" @bind="marketingEnabled">
+                            <label class="form-check-label">
+                                <strong>Marketing Cookies</strong>
+                                <small class="d-block text-muted">Used to show relevant ads and measure campaign effectiveness.</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => showSettings = false">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn text-white" style="background-color: #006d77;" @onclick="SaveSettings">
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private bool showBanner = false;
+    private bool showSettings = false;
+    private bool analyticsEnabled = false;
+    private bool marketingEnabled = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Check if consent already given
+            var consent = await JS.InvokeAsync<string?>("localStorage.getItem", "cookieConsent");
+            if (string.IsNullOrEmpty(consent))
+            {
+                showBanner = true;
+                StateHasChanged();
+            }
+            else
+            {
+                // Load saved preferences
+                var preferences = System.Text.Json.JsonSerializer.Deserialize<CookiePreferences>(consent);
+                if (preferences != null)
+                {
+                    analyticsEnabled = preferences.Analytics;
+                    marketingEnabled = preferences.Marketing;
+                    await ApplyPreferences();
+                }
+            }
+        }
+    }
+
+    private async Task AcceptAll()
+    {
+        analyticsEnabled = true;
+        marketingEnabled = true;
+        await SaveConsent();
+    }
+
+    private async Task RejectAll()
+    {
+        analyticsEnabled = false;
+        marketingEnabled = false;
+        await SaveConsent();
+    }
+
+    private void ShowSettings()
+    {
+        showSettings = true;
+    }
+
+    private async Task SaveSettings()
+    {
+        showSettings = false;
+        await SaveConsent();
+    }
+
+    private async Task SaveConsent()
+    {
+        var preferences = new CookiePreferences
+        {
+            Essential = true,
+            Analytics = analyticsEnabled,
+            Marketing = marketingEnabled,
+            ConsentDate = DateTimeOffset.UtcNow
+        };
+
+        await JS.InvokeVoidAsync("localStorage.setItem", "cookieConsent", 
+            System.Text.Json.JsonSerializer.Serialize(preferences));
+        
+        showBanner = false;
+        await ApplyPreferences();
+    }
+
+    private async Task ApplyPreferences()
+    {
+        // Initialize or disable tracking based on preferences
+        if (analyticsEnabled)
+        {
+            // Initialize Application Insights
+            await JS.InvokeVoidAsync("eval", @"
+                if (typeof appInsights !== 'undefined') {
+                    appInsights.trackEvent({name: 'CookieConsentGranted', properties: {type: 'analytics'}});
+                }
+            ");
+        }
+
+        if (marketingEnabled)
+        {
+            // Initialize marketing/advertising scripts
+            await JS.InvokeVoidAsync("eval", @"
+                // Initialize Google Analytics, Facebook Pixel, etc.
+                if (typeof gtag !== 'undefined') {
+                    gtag('consent', 'update', {'ad_storage': 'granted', 'analytics_storage': 'granted'});
+                }
+            ");
+        }
+        else
+        {
+            // Disable marketing cookies
+            await JS.InvokeVoidAsync("eval", @"
+                if (typeof gtag !== 'undefined') {
+                    gtag('consent', 'update', {'ad_storage': 'denied', 'analytics_storage': 'denied'});
+                }
+            ");
+        }
+    }
+
+    private class CookiePreferences
+    {
+        public bool Essential { get; set; } = true;
+        public bool Analytics { get; set; }
+        public bool Marketing { get; set; }
+        public DateTimeOffset ConsentDate { get; set; }
+    }
+}
+
+<style>
+    .cookie-banner {
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @@keyframes slideUp {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
