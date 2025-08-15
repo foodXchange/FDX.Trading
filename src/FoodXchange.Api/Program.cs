@@ -4,6 +4,9 @@ using FoodXchange.Infrastructure.Data;
 using FoodXchange.Domain.Abstractions;
 using OpenAI;
 using System.ClientModel;
+using System.Data;
+using System.Diagnostics;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +14,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 
+// Data
+var connectionString = builder.Configuration.GetConnectionString("Sql") 
+    ?? "Server=(localdb)\\mssqllocaldb;Database=FoodXchange;Trusted_Connection=true;MultipleActiveResultSets=true";
+
 // Observability
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>("database");
+    .AddDbContextCheck<AppDbContext>("database")
+    .AddSqlServer(
+        connectionString: connectionString,
+        name: "AzureSQL",
+        timeout: TimeSpan.FromSeconds(5));
 
 // CORS
 builder.Services.AddCors(options =>
@@ -28,12 +39,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Data
-var connectionString = builder.Configuration.GetConnectionString("Sql") 
-    ?? "Server=(localdb)\\mssqllocaldb;Database=FoodXchange;Trusted_Connection=true;MultipleActiveResultSets=true";
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
 
 // Repositories & Unit of Work
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -79,7 +86,54 @@ app.MapHealthChecks("/health");
 app.MapGet("/ping", () => Results.Ok(new { ok = true, at = DateTimeOffset.UtcNow }))
    .WithName("Ping");
 
-// AI endpoint (if configured)
+// DB Verification endpoint (admin-only in production)
+app.MapGet("/db/verify", async (IConfiguration cfg) =>
+{
+    var cs = cfg.GetConnectionString("Sql");
+    var sw = Stopwatch.StartNew();
+    
+    try
+    {
+        await using var conn = new SqlConnection(cs);
+        await conn.OpenAsync();
+        
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT 
+                @@VERSION AS ServerVersion, 
+                DB_NAME() AS DatabaseName, 
+                SUSER_SNAME() AS AuthenticatedAs";
+        
+        await using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
+        await reader.ReadAsync();
+        
+        sw.Stop();
+        return Results.Ok(new
+        {
+            ok = true,
+            latencyMs = sw.ElapsedMilliseconds,
+            serverVersion = reader["ServerVersion"]?.ToString() ?? "unknown",
+            database = reader["DatabaseName"]?.ToString() ?? "unknown",
+            authenticatedAs = reader["AuthenticatedAs"]?.ToString(),
+            utc = DateTimeOffset.UtcNow
+        });
+    }
+    catch (Exception ex)
+    {
+        sw.Stop();
+        return Results.Ok(new
+        {
+            ok = false,
+            latencyMs = sw.ElapsedMilliseconds,
+            error = ex.Message,
+            utc = DateTimeOffset.UtcNow
+        });
+    }
+})
+.WithName("DbVerify")
+.WithMetadata(new EndpointNameMetadata("DbVerify"));
+
+// AI endpoints (if configured)
 if (!string.IsNullOrEmpty(openAiEndpoint))
 {
     app.MapPost("/ai/complete", async (IChatClient chat, string prompt, CancellationToken ct) =>
@@ -89,6 +143,37 @@ if (!string.IsNullOrEmpty(openAiEndpoint))
         return Results.Ok(new { reply = response.Text });
     })
     .WithName("AIComplete");
+    
+    app.MapGet("/ai/status", async (IChatClient chat, CancellationToken ct) =>
+    {
+        var sw = Stopwatch.StartNew();
+        try
+        {
+            var messages = new List<ChatMessage> { new ChatMessage(ChatRole.User, "ping") };
+            var response = await chat.GetResponseAsync(messages, null, ct);
+            sw.Stop();
+            
+            return Results.Ok(new
+            {
+                ok = response != null,
+                latencyMs = sw.ElapsedMilliseconds,
+                model = response?.ModelId ?? "unknown",
+                utc = DateTimeOffset.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            sw.Stop();
+            return Results.Ok(new
+            {
+                ok = false,
+                latencyMs = sw.ElapsedMilliseconds,
+                error = ex.Message,
+                utc = DateTimeOffset.UtcNow
+            });
+        }
+    })
+    .WithName("AIStatus");
 }
 
 app.Run();
