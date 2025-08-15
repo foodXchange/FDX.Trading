@@ -16,28 +16,28 @@ namespace FDX.Trading.Controllers;
 public class DataFixController : ControllerBase
 {
     private readonly FdxTradingContext _context;
-    private readonly ComprehensiveDataImportService _importService;
+    //private readonly ComprehensiveDataImportService _importService;
     
-    public DataFixController(FdxTradingContext context, ComprehensiveDataImportService importService)
+    public DataFixController(FdxTradingContext context/*, ComprehensiveDataImportService importService*/)
     {
         _context = context;
-        _importService = importService;
+        //_importService = importService;
     }
     
     // POST: api/datafix/comprehensive-import
-    [HttpPost("comprehensive-import")]
-    public async Task<ActionResult<object>> ComprehensiveImport()
-    {
-        try
-        {
-            var result = await _importService.ImportAllDataAsync();
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { error = ex.Message });
-        }
-    }
+    //[HttpPost("comprehensive-import")]
+    //public async Task<ActionResult<object>> ComprehensiveImport()
+    //{
+    //    try
+    //    {
+    //        var result = await _importService.ImportAllDataAsync();
+    //        return Ok(result);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { error = ex.Message });
+    //    }
+    //}
     
     // POST: api/datafix/distribute-products-to-suppliers
     [HttpPost("distribute-products-to-suppliers")]

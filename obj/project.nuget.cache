@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "c0xfTyPp2sc=",
+  "dgSpecHash": "Z0nALr1NVaA=",
   "success": true,
   "projectFilePath": "C:\\FDX.Trading\\FDX.Trading.csproj",
   "expectedPackageFiles": [
@@ -13,6 +13,7 @@
     "C:\\Users\\fdxadmin\\.nuget\\packages\\fluentvalidation\\11.5.1\\fluentvalidation.11.5.1.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.0\\fluentvalidation.aspnetcore.11.3.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.5.1\\fluentvalidation.dependencyinjectionextensions.11.5.1.nupkg.sha512",
+    "C:\\Users\\fdxadmin\\.nuget\\packages\\htmlagilitypack\\1.12.2\\htmlagilitypack.1.12.2.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.19\\microsoft.aspnetcore.authentication.jwtbearer.8.0.19.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.11\\microsoft.aspnetcore.cryptography.internal.8.0.11.nupkg.sha512",

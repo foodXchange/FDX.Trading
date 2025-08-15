@@ -70,11 +70,15 @@ public class SupplierProductCatalog
     [MaxLength(500)]
     public string? ImageUrl { get; set; }
     
+    // Category hierarchy reference
+    public int? ProductCategoryId { get; set; }
+    
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
     
     // Navigation properties
     public virtual User Supplier { get; set; } = null!;
+    public virtual ProductCategory? ProductCategory { get; set; }
     public virtual ICollection<SupplierProductCatalogMatch> ProductMatches { get; set; } = new List<SupplierProductCatalogMatch>();
 }
 

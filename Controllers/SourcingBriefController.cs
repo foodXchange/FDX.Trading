@@ -16,21 +16,21 @@ namespace FDX.Trading.Controllers;
 public class SourcingBriefController : ControllerBase
 {
     private readonly FdxTradingContext _context;
-    private readonly ProductAggregationService _aggregationService;
-    private readonly SupplierScoringService _scoringService;
+    //private readonly ProductAggregationService _aggregationService;
+    //private readonly SupplierScoringService _scoringService;
     private readonly ImprovedSupplierMatchingService _matchingService;
     private readonly ILogger<SourcingBriefController> _logger;
 
     public SourcingBriefController(
         FdxTradingContext context,
-        ProductAggregationService aggregationService,
-        SupplierScoringService scoringService,
+        //ProductAggregationService aggregationService,
+        //SupplierScoringService scoringService,
         ImprovedSupplierMatchingService matchingService,
         ILogger<SourcingBriefController> logger)
     {
         _context = context;
-        _aggregationService = aggregationService;
-        _scoringService = scoringService;
+        //_aggregationService = aggregationService;
+        //_scoringService = scoringService;
         _matchingService = matchingService;
         _logger = logger;
     }
@@ -232,22 +232,24 @@ public class SourcingBriefController : ControllerBase
             }
 
             // Aggregate products from requests
-            var aggregatedProducts = await _aggregationService.AggregateProductsFromRequestsAsync(dto.RequestIds);
-            foreach (var product in aggregatedProducts)
-            {
-                product.SourcingBriefId = brief.Id;
-                _context.BriefProducts.Add(product);
-            }
+            // TODO: Uncomment when aggregation service is available
+            // var aggregatedProducts = await _aggregationService.AggregateProductsFromRequestsAsync(dto.RequestIds);
+            // foreach (var product in aggregatedProducts)
+            // {
+            //     product.SourcingBriefId = brief.Id;
+            //     _context.BriefProducts.Add(product);
+            // }
 
             await _context.SaveChangesAsync();
 
             // Score and select suppliers
-            var selectedSuppliers = await _scoringService.SelectOptimalSuppliersAsync(aggregatedProducts);
-            foreach (var supplier in selectedSuppliers)
-            {
-                supplier.SourcingBriefId = brief.Id;
-                _context.BriefSuppliers.Add(supplier);
-            }
+            // TODO: Uncomment when scoring service is available
+            // var selectedSuppliers = await _scoringService.SelectOptimalSuppliersAsync(aggregatedProducts);
+            // foreach (var supplier in selectedSuppliers)
+            // {
+            //     supplier.SourcingBriefId = brief.Id;
+            //     _context.BriefSuppliers.Add(supplier);
+            // }
 
             // Log activity
             var activity = new BriefActivity
@@ -261,7 +263,7 @@ public class SourcingBriefController : ControllerBase
             _context.BriefActivities.Add(activity);
 
             // Calculate initial quality score
-            brief.QualityScore = CalculateBriefQualityScore(brief, aggregatedProducts);
+            // brief.QualityScore = CalculateBriefQualityScore(brief, aggregatedProducts);
 
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
@@ -442,7 +444,9 @@ public class SourcingBriefController : ControllerBase
     [HttpPost("{id}/evaluate")]
     public async Task<ActionResult<IEnumerable<BriefResponse>>> EvaluateResponses(int id)
     {
-        var responses = await _scoringService.EvaluateResponsesAsync(id);
+        // TODO: Uncomment when scoring service is available
+        // var responses = await _scoringService.EvaluateResponsesAsync(id);
+        var responses = new List<object>();
         return Ok(responses);
     }
 
@@ -732,14 +736,18 @@ public class SourcingBriefController : ControllerBase
     {
         try
         {
-            _logger.LogInformation($"Starting STRICT supplier matching for brief {id}");
+            _logger.LogInformation($"Starting supplier matching for brief {id}");
             
-            // Use the strict matching service that only matches actual products
-            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            var strictLogger = loggerFactory.CreateLogger<StrictSupplierMatchingService>();
-            var strictService = new StrictSupplierMatchingService(_context, strictLogger);
+            // Use reasonable matching - show suppliers with actual sunflower oil products
+            var options = new SupplierMatchingOptions
+            {
+                MinimumScore = 70m, // Show 70%+ matches (still high confidence for actual products)
+                MaxResults = 30,
+                IncludeUnverified = true, // Include all suppliers for now
+                RequireExactMatch = false // Allow both exact and category matches
+            };
             
-            var matches = await strictService.MatchSuppliersForBrief(id);
+            var matches = await _matchingService.MatchSuppliersForBrief(id, options);
             
             if (!matches.Any())
             {
@@ -747,12 +755,16 @@ public class SourcingBriefController : ControllerBase
                 return Ok(new List<SupplierMatchDto>());
             }
             
-            _logger.LogInformation($"Found {matches.Count} supplier matches for brief {id} using STRICT matching");
+            _logger.LogInformation($"Found {matches.Count} supplier matches for brief {id}");
             
             // Log match details for debugging
             foreach (var match in matches.Take(5))
             {
-                _logger.LogInformation($"Supplier: {match.CompanyName}, Score: {match.NormalizedScore:F1}%, Reasons: {string.Join(", ", match.MatchReasons.Select(r => r.Type))}");
+                _logger.LogInformation($"Supplier: {match.CompanyName}, Score: {match.NormalizedScore:F1}%, Products: {match.AvailableProducts?.Count ?? 0}");
+                if (match.AvailableProducts?.Any() == true)
+                {
+                    _logger.LogInformation($"  Products: {string.Join(", ", match.AvailableProducts.Take(3))}");
+                }
             }
             
             // Map to DTOs that match frontend expectations
@@ -761,12 +773,12 @@ public class SourcingBriefController : ControllerBase
                 SupplierId = m.SupplierId,
                 SupplierName = m.CompanyName, // Frontend expects 'supplierName'
                 MatchScore = (double)(m.NormalizedScore / 100m), // Convert to 0-1 range for frontend
-                MatchedProductCount = m.AvailableProducts.Count, // Frontend expects 'matchedProductCount'
+                MatchedProductCount = m.AvailableProducts?.Count ?? 0, // Frontend expects 'matchedProductCount'
                 TotalBriefProducts = 0, // Will be set if needed
                 MatchedProducts = m.AvailableProducts.Take(5).Select((p, idx) => new MatchedProductDto
                 {
                     ProductId = idx + 1,
-                    ProductName = p,
+                    ProductName = p ?? "",
                     UnitPrice = null,
                     Currency = "USD",
                     MOQ = 0

@@ -109,10 +109,10 @@ namespace FDX.Trading.Models
     
     public class SupplierMatchingOptions
     {
-        public decimal MinimumScore { get; set; } = 30m; // Minimum 30% match
+        public decimal MinimumScore { get; set; } = 70m; // Minimum 70% match - high confidence
         public int MaxResults { get; set; } = 50;
-        public bool IncludeUnverified { get; set; } = true;
-        public bool RequireExactMatch { get; set; } = false;
+        public bool IncludeUnverified { get; set; } = true; // Include all suppliers initially
+        public bool RequireExactMatch { get; set; } = false; // Allow category matches too
         public List<string>? PreferredCountries { get; set; }
         public List<string>? RequiredCertifications { get; set; }
     }

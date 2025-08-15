@@ -17,16 +17,16 @@ public class SupplierProductCatalogController : ControllerBase
 {
     private readonly FdxTradingContext _context;
     private readonly ILogger<SupplierProductCatalogController> _logger;
-    private readonly SupplierDataEnrichmentService? _enrichmentService;
+    //private readonly SupplierDataEnrichmentService? _enrichmentService;
 
     public SupplierProductCatalogController(
         FdxTradingContext context, 
-        ILogger<SupplierProductCatalogController> logger,
-        SupplierDataEnrichmentService? enrichmentService = null)
+        ILogger<SupplierProductCatalogController> logger/*,
+        SupplierDataEnrichmentService? enrichmentService = null*/)
     {
         _context = context;
         _logger = logger;
-        _enrichmentService = enrichmentService;
+        //_enrichmentService = enrichmentService;
     }
 
     // GET: api/SupplierProductCatalog

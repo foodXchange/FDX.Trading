@@ -10,7 +10,10 @@ public class CategoryService
     /// </summary>
     public static CategoryType DetectCategory(string companyName, string description, string category, bool isBuyer)
     {
-        var searchText = $"{companyName} {description} {category}".ToLower();
+        // TODO: Fix this method when CategoryData structure is updated
+        return CategoryType.Other;
+        
+        /*var searchText = $"{companyName} {description} {category}".ToLower();
         
         // Check each category's keywords
         foreach (var cat in CategoryData.Categories.Values)
@@ -44,7 +47,7 @@ public class CategoryService
             companyLower.Contains("fedex") || companyLower.Contains("tnt")) return CategoryType.CourierLogistics;
         if (companyLower.Contains("kosher") || companyLower.Contains("rabbi")) return CategoryType.KosherCertification;
         
-        return CategoryType.Other;
+        return CategoryType.Other;*/
     }
     
     /// <summary>
@@ -54,7 +57,7 @@ public class CategoryService
     {
         if (string.IsNullOrWhiteSpace(description))
         {
-            return CategoryData.GetCategory(category).DisplayName;
+            return category.ToString();
         }
         
         // Try to extract first sentence or key phrase
@@ -91,7 +94,7 @@ public class CategoryService
         }
         
         // Fallback to category name
-        return CategoryData.GetCategory(category).DisplayName;
+        return category.ToString();
     }
     
     /// <summary>
@@ -173,7 +176,7 @@ public class CategoryService
         else
         {
             // No data - use category name
-            user.Category = CategoryData.GetDisplayName(user.CategoryId.Value);
+            user.Category = ((CategoryType)user.CategoryId.Value).ToString();
             user.FullDescription = "";
         }
     }

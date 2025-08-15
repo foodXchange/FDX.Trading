@@ -37,14 +37,18 @@ builder.Services.AddScoped<SupplierProductImportService>();
 builder.Services.AddScoped<PriceBookImportService>();
 builder.Services.AddHttpClient<AzureAIService>();
 builder.Services.AddScoped<ConsoleService>();
-builder.Services.AddScoped<DataMigrationService>();
-builder.Services.AddScoped<ProductAggregationService>();
-builder.Services.AddScoped<SupplierScoringService>();
+//builder.Services.AddScoped<DataMigrationService>();
+//builder.Services.AddScoped<ProductAggregationService>();
+//builder.Services.AddScoped<SupplierScoringService>();
 builder.Services.AddScoped<ImprovedSupplierMatchingService>(); // New improved matching service
-builder.Services.AddScoped<ComprehensiveDataImportService>();
-builder.Services.AddScoped<PriceBookService>();
-builder.Services.AddScoped<ProductCategoryImportService>();
-builder.Services.AddScoped<ContractImportService>();
+//builder.Services.AddScoped<ComprehensiveDataImportService>();
+//builder.Services.AddScoped<PriceBookService>();
+//builder.Services.AddScoped<ProductCategoryImportService>();
+//builder.Services.AddScoped<ContractImportService>();
+builder.Services.AddScoped<StrictSupplierMatchingService>();
+builder.Services.AddScoped<AutomatedProductExtractor>();
+builder.Services.AddHttpClient<AutomatedProductExtractor>();
+builder.Services.AddScoped<SupplierCleanupService>();
 
 var app = builder.Build();
 

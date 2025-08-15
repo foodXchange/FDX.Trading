@@ -2,6 +2,14 @@ using System.Collections.Generic;
 
 namespace FDX.Trading.Models;
 
+public enum VerificationStatus
+{
+    Unverified,
+    Pending,
+    Verified,
+    Rejected
+}
+
 public class User
 {
     public int Id { get; set; }
@@ -57,6 +65,10 @@ public class User
     
     // Navigation Properties
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();  // For suppliers (Type=3)
+    
+    // Temporary property for import process
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public List<SupplierProductCatalog>? ExtractedProducts { get; set; }
 }
 
 public enum UserType

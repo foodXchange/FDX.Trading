@@ -57,13 +57,17 @@ namespace FDX.Trading.Services
                     if (allMatches.ContainsKey(match.SupplierId))
                     {
                         // Combine scores for suppliers matching multiple products
+                        var before = allMatches[match.SupplierId].AvailableProducts.Count;
                         allMatches[match.SupplierId].MatchScore += match.MatchScore;
                         allMatches[match.SupplierId].MatchReasons.AddRange(match.MatchReasons);
                         allMatches[match.SupplierId].AvailableProducts.AddRange(match.AvailableProducts);
+                        var after = allMatches[match.SupplierId].AvailableProducts.Count;
+                        _logger.LogInformation($"Merged {match.CompanyName}: products {before} -> {after}");
                     }
                     else
                     {
                         allMatches[match.SupplierId] = match;
+                        _logger.LogInformation($"Added {match.CompanyName} with {match.AvailableProducts.Count} products");
                     }
                 }
             }
@@ -92,22 +96,31 @@ namespace FDX.Trading.Services
         {
             var matches = new List<SupplierMatch>();
             
-            // Level 1: Exact Product Match
-            matches.AddRange(await MatchExactProducts(requirement));
-            
-            // Level 2: Category Match
-            matches.AddRange(await MatchByCategory(requirement));
-            
-            // Level 3: Business Type Match
-            matches.AddRange(await MatchByBusinessType(requirement));
-            
-            // Level 4: Product Family Match
-            matches.AddRange(await MatchByProductFamily(requirement));
-            
-            // Level 5: Keyword Match (if not enough results)
-            if (matches.Count < 10)
+            // If RequireExactMatch is true, ONLY use exact product matching
+            if (options.RequireExactMatch)
             {
-                matches.AddRange(await MatchByKeywords(requirement));
+                // Only Level 1: Exact Product Match - must have the actual product
+                matches.AddRange(await MatchExactProducts(requirement, strictMode: true));
+            }
+            else
+            {
+                // Level 1: Exact Product Match
+                matches.AddRange(await MatchExactProducts(requirement, strictMode: false));
+                
+                // Level 2: Category Match
+                matches.AddRange(await MatchByCategory(requirement));
+                
+                // Level 3: Business Type Match
+                matches.AddRange(await MatchByBusinessType(requirement));
+                
+                // Level 4: Product Family Match
+                matches.AddRange(await MatchByProductFamily(requirement));
+                
+                // Level 5: Keyword Match (if not enough results)
+                if (matches.Count < 10)
+                {
+                    matches.AddRange(await MatchByKeywords(requirement));
+                }
             }
             
             // Deduplicate and merge matches for same supplier
@@ -119,15 +132,30 @@ namespace FDX.Trading.Services
             return mergedMatches;
         }
 
-        private async Task<List<SupplierMatch>> MatchExactProducts(ProductRequirement requirement)
+        private async Task<List<SupplierMatch>> MatchExactProducts(ProductRequirement requirement, bool strictMode = false)
         {
             var matches = new List<SupplierMatch>();
             
+            // For strict mode, require BOTH words "sunflower" AND "oil" to be present
             // Check Products table
-            var exactProducts = await _context.Products
-                .Where(p => p.SupplierId != null && 
-                           p.ProductName != null &&
-                           p.ProductName.ToLower().Contains(requirement.ProductName.ToLower()))
+            var productQuery = _context.Products
+                .Where(p => p.SupplierId != null && p.ProductName != null);
+            
+            if (strictMode)
+            {
+                // For sunflower oil, must contain both "sunflower" AND "oil"
+                var keywords = requirement.ProductName.ToLower().Split(' ');
+                foreach (var keyword in keywords.Where(k => k.Length > 2))
+                {
+                    productQuery = productQuery.Where(p => p.ProductName!.ToLower().Contains(keyword));
+                }
+            }
+            else
+            {
+                productQuery = productQuery.Where(p => p.ProductName!.ToLower().Contains(requirement.ProductName.ToLower()));
+            }
+            
+            var exactProducts = await productQuery
                 .Include(p => p.Supplier)
                 .ToListAsync();
                 
@@ -143,35 +171,70 @@ namespace FDX.Trading.Services
                     Level = MatchLevel.ExactProduct,
                     Type = "Exact Product",
                     Detail = $"Has '{product.ProductName}' in catalog",
-                    Score = (decimal)MatchLevel.ExactProduct
+                    Score = 100m // 100% confidence for exact match
                 });
                 
                 match.AvailableProducts.Add(product.ProductName!);
-                match.MatchScore = (decimal)MatchLevel.ExactProduct;
+                match.MatchScore = 100m; // 100% match score
                 
                 matches.Add(match);
             }
             
             // Check SupplierProductCatalog table
-            var catalogProducts = await _context.SupplierProductCatalogs
-                .Where(spc => spc.ProductName.ToLower().Contains(requirement.ProductName.ToLower()))
-                .ToListAsync();
+            var catalogQuery = _context.SupplierProductCatalogs.AsQueryable();
+            
+            // Extract key product words, ignoring packaging details
+            var productKeywords = ExtractProductKeywords(requirement.ProductName);
+            _logger.LogInformation($"Searching for products with keywords: {string.Join(", ", productKeywords)}");
+            
+            if (strictMode && productKeywords.Count >= 2)
+            {
+                // For sunflower oil, must contain both "sunflower" AND "oil"
+                foreach (var keyword in productKeywords)
+                {
+                    catalogQuery = catalogQuery.Where(spc => spc.ProductName.ToLower().Contains(keyword));
+                }
+            }
+            else if (productKeywords.Any())
+            {
+                // Match any product containing at least one keyword
+                var firstKeyword = productKeywords.First();
+                catalogQuery = catalogQuery.Where(spc => spc.ProductName.ToLower().Contains(firstKeyword));
+                
+                // For oil products specifically, also require "oil" to be present
+                if (firstKeyword != "oil" && requirement.ProductName.ToLower().Contains("oil"))
+                {
+                    catalogQuery = catalogQuery.Where(spc => spc.ProductName.ToLower().Contains("oil"));
+                }
+            }
+            
+            var catalogProducts = await catalogQuery.ToListAsync();
+            
+            _logger.LogInformation($"Found {catalogProducts.Count} catalog products matching '{requirement.ProductName}'");
                 
             foreach (var catalogProduct in catalogProducts)
             {
+                _logger.LogInformation($"Processing catalog product: {catalogProduct.ProductName} from supplier {catalogProduct.SupplierId}");
+                
                 var match = await CreateSupplierMatch(catalogProduct.SupplierId);
-                if (match == null) continue;
+                if (match == null)
+                {
+                    _logger.LogWarning($"Could not create supplier match for supplier {catalogProduct.SupplierId}");
+                    continue;
+                }
                 
                 match.MatchReasons.Add(new MatchReason
                 {
                     Level = MatchLevel.ExactProduct,
                     Type = "Catalog Product",
                     Detail = $"Has '{catalogProduct.ProductName}' in product catalog",
-                    Score = (decimal)MatchLevel.ExactProduct * 0.9m // Slightly lower for catalog vs active products
+                    Score = 95m // 95% confidence for catalog product
                 });
                 
                 match.AvailableProducts.Add(catalogProduct.ProductName);
-                match.MatchScore = (decimal)MatchLevel.ExactProduct * 0.9m;
+                match.MatchScore = 95m; // 95% match score for catalog items
+                
+                _logger.LogInformation($"Added product '{catalogProduct.ProductName}' to supplier {match.CompanyName}");
                 
                 matches.Add(match);
             }
@@ -200,6 +263,22 @@ namespace FDX.Trading.Services
                 
                 if (matchedKeywords.Any())
                 {
+                    // For sunflower oil specifically, verify they have actual products
+                    if (requirement.ProductName.ToLower().Contains("sunflower") && 
+                        requirement.ProductName.ToLower().Contains("oil"))
+                    {
+                        var hasActualProducts = await _context.SupplierProductCatalogs
+                            .AnyAsync(p => p.SupplierId == detail.UserId && 
+                                          p.ProductName.ToLower().Contains("sunflower") &&
+                                          p.ProductName.ToLower().Contains("oil"));
+                        
+                        if (!hasActualProducts)
+                        {
+                            _logger.LogInformation($"Skipping {detail.UserId} - claims oil category but no actual sunflower oil products");
+                            continue;
+                        }
+                    }
+                    
                     var match = await CreateSupplierMatch(detail.UserId);
                     if (match == null) continue;
                     
@@ -219,7 +298,7 @@ namespace FDX.Trading.Services
             }
             
             // Check Suppliers table (CompanySuppliers) categories
-            var suppliers = await _context.Suppliers
+            var suppliers = await _context.SupplierDetails
                 .Where(s => s.ProductCategories != null)
                 .ToListAsync();
                 
@@ -232,11 +311,9 @@ namespace FDX.Trading.Services
                 
                 if (matchedKeywords.Any())
                 {
-                    // Find user by company name (since User doesn't have CompanyId)
-                    var company = await _context.Companies
-                        .FirstOrDefaultAsync(c => c.Id == supplier.CompanyId);
-                    var user = company != null ? await _context.FdxUsers
-                        .FirstOrDefaultAsync(u => u.CompanyName == company.CompanyName) : null;
+                    // Get the user associated with this supplier
+                    var user = await _context.FdxUsers
+                        .FirstOrDefaultAsync(u => u.Id == supplier.UserId);
                         
                     if (user != null)
                     {
@@ -390,10 +467,10 @@ namespace FDX.Trading.Services
                 .FirstOrDefaultAsync(sd => sd.UserId == userId);
                 
             // Find supplier by matching company name
-            var company = await _context.Companies
+            var company = await _context.FdxUsers
                 .FirstOrDefaultAsync(c => c.CompanyName == user.CompanyName);
-            var supplier = company != null ? await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.CompanyId == company.Id) : null;
+            var supplier = company != null ? await _context.SupplierDetails
+                .FirstOrDefaultAsync(s => s.UserId == company.Id) : null;
             
             var match = new SupplierMatch
             {
@@ -407,12 +484,12 @@ namespace FDX.Trading.Services
                 Rating = supplierDetails?.Rating,
                 ProductCategories = supplierDetails?.ProductCategories ?? supplier?.ProductCategories,
                 BusinessType = user.BusinessType,
-                Certifications = supplierDetails?.Certifications ?? supplier?.QualityCertifications,
+                Certifications = supplierDetails?.Certifications, // ?? supplier?.QualityCertifications,
                 PaymentTerms = supplierDetails?.PaymentTerms ?? supplier?.PaymentTerms,
                 Incoterms = supplierDetails?.Incoterms ?? supplier?.Incoterms,
                 CanManufacture = user.BusinessType?.ToLower().Contains("manufactur") ?? false,
                 CanTrade = user.BusinessType?.ToLower().Contains("trad") ?? false,
-                CanExport = supplier?.CanShipDirect ?? false
+                CanExport = false // supplier?.CanShipDirect ?? false
             };
             
             return match;
@@ -507,6 +584,56 @@ namespace FDX.Trading.Services
             }
             
             return keywords.Distinct().ToList();
+        }
+        
+        private List<string> ExtractProductKeywords(string productName)
+        {
+            var keywords = new List<string>();
+            var lowerName = productName.ToLower();
+            
+            // Remove common packaging/quantity terms
+            var cleanedName = lowerName
+                .Replace("-liter", "")
+                .Replace("liter", "")
+                .Replace("litre", "")
+                .Replace("pet bottles", "")
+                .Replace("pet bottle", "")
+                .Replace("bottles", "")
+                .Replace("bottle", "")
+                .Replace("5l", "")
+                .Replace("1l", "")
+                .Replace("2l", "")
+                .Replace("3l", "");
+            
+            // Split and filter words
+            var words = cleanedName
+                .Split(new[] { ' ', '-', ',', '/', '\\', '(', ')', '[', ']' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > 2 && !IsNumber(w))
+                .ToList();
+            
+            // For oil products, ensure we get the oil type
+            if (lowerName.Contains("sunflower") && lowerName.Contains("oil"))
+            {
+                keywords.Add("sunflower");
+                keywords.Add("oil");
+            }
+            else if (lowerName.Contains("oil"))
+            {
+                keywords.AddRange(words);
+                if (!keywords.Contains("oil"))
+                    keywords.Add("oil");
+            }
+            else
+            {
+                keywords.AddRange(words);
+            }
+            
+            return keywords.Distinct().ToList();
+        }
+        
+        private bool IsNumber(string word)
+        {
+            return double.TryParse(word, out _);
         }
     }
 }

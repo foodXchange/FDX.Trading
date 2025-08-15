@@ -16,25 +16,26 @@ public class FdxTradingContext : DbContext
     public DbSet<SupplierProduct> SupplierProducts { get; set; }
     public DbSet<SupplierProductCatalog> SupplierProductCatalogs { get; set; }
     public DbSet<SupplierProductCatalogMatch> SupplierProductCatalogMatches { get; set; }
+    public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<ProductRequest> ProductRequests { get; set; }
     public DbSet<ProductRequestItem> ProductRequestItems { get; set; }
     public DbSet<PriceProposal> PriceProposals { get; set; }
     public DbSet<PriceHistory> PriceHistories { get; set; }
     public DbSet<ProductPriceHistory> ProductPriceHistories { get; set; } = null!;
-    public DbSet<PriceBook> PriceBooks { get; set; } = null!;
-    public DbSet<PriceBookEntry> PriceBookEntries { get; set; } = null!;
+    //public DbSet<PriceBook> PriceBooks { get; set; } = null!;
+    //public DbSet<PriceBookEntry> PriceBookEntries { get; set; } = null!;
     public DbSet<Request> Requests { get; set; }
     public DbSet<RequestItem> RequestItems { get; set; }
     public DbSet<RequestItemImage> RequestItemImages { get; set; }
     public DbSet<CompanyContact> CompanyContacts { get; set; }
     
     // New normalized entity structure
-    public DbSet<Company> Companies { get; set; }
-    public DbSet<Buyer> Buyers { get; set; }
-    public DbSet<Supplier> Suppliers { get; set; }
-    public DbSet<Expert> Experts { get; set; }
-    public DbSet<Agent> Agents { get; set; }
-    public DbSet<UserCompanyRole> UserCompanyRoles { get; set; }
+    //public DbSet<Company> Companies { get; set; }
+    //public DbSet<Buyer> Buyers { get; set; }
+    //public DbSet<Supplier> Suppliers { get; set; }
+    //public DbSet<Expert> Experts { get; set; }
+    //public DbSet<Agent> Agents { get; set; }
+    //public DbSet<UserCompanyRole> UserCompanyRoles { get; set; }
     
     // Console module entities
     public DbSet<ProjectConsole> Consoles { get; set; }
@@ -52,20 +53,20 @@ public class FdxTradingContext : DbContext
     public DbSet<SourcingBrief> SourcingBriefs { get; set; }
     
     // Proposal System
-    public DbSet<Proposal> Proposals { get; set; } = null!;
-    public DbSet<ProposalLineItem> ProposalLineItems { get; set; } = null!;
-    public DbSet<SamplingRequest> SamplingRequests { get; set; } = null!;
+    //public DbSet<Proposal> Proposals { get; set; } = null!;
+    //public DbSet<ProposalLineItem> ProposalLineItems { get; set; } = null!;
+    //public DbSet<SamplingRequest> SamplingRequests { get; set; } = null!;
     
     // Category System
-    public DbSet<ProductCategoryHierarchy> ProductCategoryHierarchies { get; set; } = null!;
-    public DbSet<ProductCategoryMapping> ProductCategoryMappings { get; set; } = null!;
+    //public DbSet<ProductCategoryHierarchy> ProductCategoryHierarchies { get; set; } = null!;
+    //public DbSet<ProductCategoryMapping> ProductCategoryMappings { get; set; } = null!;
     
     // Contract System
-    public DbSet<Contract> Contracts { get; set; } = null!;
-    public DbSet<ContractDocument> ContractDocuments { get; set; } = null!;
-    public DbSet<ContractComment> ContractComments { get; set; } = null!;
-    public DbSet<ContractProduct> ContractProducts { get; set; } = null!;
-    public DbSet<ContractMilestone> ContractMilestones { get; set; } = null!;
+    //public DbSet<Contract> Contracts { get; set; } = null!;
+    //public DbSet<ContractDocument> ContractDocuments { get; set; } = null!;
+    //public DbSet<ContractComment> ContractComments { get; set; } = null!;
+    //public DbSet<ContractProduct> ContractProducts { get; set; } = null!;
+    //public DbSet<ContractMilestone> ContractMilestones { get; set; } = null!;
     public DbSet<BriefRequest> BriefRequests { get; set; }
     public DbSet<BriefProduct> BriefProducts { get; set; }
     public DbSet<BriefProductImage> BriefProductImages { get; set; }
@@ -770,6 +771,7 @@ public class FdxTradingContext : DbContext
                 .IsUnique();
         });
         
+        /* Commented out entities that don't have corresponding models
         // Configure Proposal entity
         modelBuilder.Entity<Proposal>(entity =>
         {
@@ -1113,7 +1115,7 @@ public class FdxTradingContext : DbContext
             entity.HasIndex(e => e.StartDate);
             entity.HasIndex(e => new { e.Status, e.EndDate })
                 .HasDatabaseName("IX_Contract_Status_EndDate");
-        });
+        });*/
         
         // Configure CompanyContact relationships
         modelBuilder.Entity<CompanyContact>(entity =>

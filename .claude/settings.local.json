@@ -92,8 +92,26 @@
       "Bash(move:*)",
       "Bash(python:*)",
       "Bash(head:*)",
-      "Bash(git clean:*)"
+      "Bash(git clean:*)",
+      "Bash(pkill:*)",
+      "Bash(set ASPNETCORE_ENVIRONMENT=Development)",
+      "WebFetch(domain:www.prutul.ro)",
+      "WebSearch",
+      "Bash(/dev/null)",
+      "WebFetch(domain:www.ardo.com)",
+      "WebFetch(domain:kadoogluyag.com.tr)",
+      "WebFetch(domain:www.mueloliva.es)",
+      "WebFetch(domain:bergia.com)",
+      "WebFetch(domain:www.matildevicenzi.com)",
+      "WebFetch(domain:nutkao.com)",
+      "WebFetch(domain:www.balconidolciaria.com)",
+      "WebFetch(domain:www.daelmansbanket.nl)",
+      "WebFetch(domain:www.crich.it)",
+      "WebFetch(domain:coppenrath-feingebaeck.de)",
+      "WebFetch(domain:www.coppenrath-feingebaeck.de)",
+      "Bash(pip install:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }
