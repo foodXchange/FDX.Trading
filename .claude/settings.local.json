@@ -1,10 +1,14 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(gh repo view:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git pull:*)"
+    ],
     "additionalDirectories": [
       "C:\\c"
-    ],
-    "allow": [
-      "Bash(git init:*)"
     ]
   }
 }
