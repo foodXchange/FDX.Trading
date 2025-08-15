@@ -33,6 +33,42 @@ namespace FDX.Trading.Controllers
             _serviceProvider = serviceProvider;
         }
 
+        [HttpDelete("delete-all-suppliers")]
+        public async Task<IActionResult> DeleteAllSuppliers()
+        {
+            try
+            {
+                // Get all suppliers
+                var suppliers = await _context.FdxUsers
+                    .Where(u => u.Type == UserType.Supplier)
+                    .ToListAsync();
+                
+                if (suppliers.Any())
+                {
+                    // Delete all products first
+                    var allProducts = await _context.SupplierProductCatalogs.ToListAsync();
+                    _context.SupplierProductCatalogs.RemoveRange(allProducts);
+                    
+                    // Delete all suppliers
+                    _context.FdxUsers.RemoveRange(suppliers);
+                    
+                    await _context.SaveChangesAsync();
+                    
+                    return Ok(new { 
+                        success = true, 
+                        message = $"Deleted {suppliers.Count} suppliers and {allProducts.Count} products" 
+                    });
+                }
+                
+                return Ok(new { success = true, message = "No suppliers to delete" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to delete all suppliers");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
         [HttpPost("import-excel")]
         public async Task<IActionResult> ImportSuppliersFromExcel([FromQuery] string filePath = @"C:\Users\fdxadmin\Downloads\Suppliers_Optimized.xlsx")
         {
@@ -101,16 +137,16 @@ namespace FDX.Trading.Controllers
                         var country = worksheet.Cells[row, 47].Text?.Trim(); // Supplier's Country
                         var phone = worksheet.Cells[row, 42].Text?.Trim(); // Phone
                         
-                        // Skip suppliers without valid websites
+                        // For suppliers without websites, use placeholder
                         if (string.IsNullOrWhiteSpace(website))
                         {
-                            report.SkippedRows++;
-                            _logger.LogInformation($"Skipped supplier without website: {supplierName}");
-                            continue;
+                            website = ""; // Will set as empty string, not null
+                            _logger.LogInformation($"Supplier without website: {supplierName}");
                         }
                         
-                        // Skip non-food companies during import
-                        if (!IsLikelyFoodCompany(supplierName, category, description, website))
+                        // Be less strict - only skip obvious non-food companies
+                        // Most suppliers in a food supplier Excel are likely food-related
+                        if (IsDefinitelyNonFood(supplierName, category, description))
                         {
                             report.SkippedRows++;
                             _logger.LogInformation($"Skipped non-food company: {supplierName}");
@@ -127,7 +163,7 @@ namespace FDX.Trading.Controllers
                             Type = UserType.Supplier,
                             Country = TruncateString(country ?? "", 100),
                             Address = TruncateString(address ?? "", 500),
-                            Website = NormalizeWebsite(website),
+                            Website = NormalizeWebsite(website) ?? "",
                             PhoneNumber = TruncateString(phone ?? "", 50),
                             Category = TruncateString(category ?? "", 100),
                             FullDescription = TruncateString(description ?? "", 2000),
@@ -415,6 +451,33 @@ namespace FDX.Trading.Controllers
             
             return foodIndicators.Any(indicator => checkString.Contains(indicator));
         }
+        
+        private bool IsDefinitelyNonFood(string companyName, string category, string description)
+        {
+            var checkString = $"{companyName} {category} {description}".ToLower();
+            
+            // Only skip if DEFINITELY not food-related
+            var definiteNonFood = new[]
+            {
+                "software developer", "it consulting", "web design", "app development",
+                "investment bank", "insurance company", "financial services", "hedge fund",
+                "law firm", "legal services", "accounting firm", "audit services",
+                "real estate", "property management", "construction company",
+                "automotive parts", "car dealer", "vehicle manufacturer",
+                "pharmaceutical", "medical device", "hospital equipment",
+                "telecom provider", "mobile operator", "internet service",
+                "fashion clothing", "apparel manufacturer", "textile factory"
+            };
+            
+            // Only skip if it matches definite non-food AND has no food keywords
+            if (definiteNonFood.Any(keyword => checkString.Contains(keyword)))
+            {
+                var foodKeywords = new[] { "food", "beverage", "eat", "drink", "snack", "meal" };
+                return !foodKeywords.Any(food => checkString.Contains(food));
+            }
+            
+            return false; // When in doubt, assume it's food-related
+        }
 
         private string TruncateString(string value, int maxLength)
         {
@@ -443,16 +506,20 @@ namespace FDX.Trading.Controllers
                 .Replace("]", "");
             
             // Limit length
-            if (username.Length > 30)
+            if (username.Length > 25)
             {
-                username = username.Substring(0, 30);
+                username = username.Substring(0, 25);
             }
             
             // Ensure it starts with a letter
-            if (!char.IsLetter(username[0]))
+            if (username.Length == 0 || !char.IsLetter(username[0]))
             {
                 username = "supplier_" + username;
             }
+            
+            // Add random suffix to avoid duplicates
+            var random = new Random();
+            username = username + "_" + random.Next(1000, 9999);
             
             return username;
         }

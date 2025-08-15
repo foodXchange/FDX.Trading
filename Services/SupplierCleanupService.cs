@@ -277,7 +277,7 @@ namespace FDX.Trading.Services
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                         SearchTags = productName.ToLower(),
-                        Source = "Description extraction"
+                        // Source = "Description extraction" // Commented out as field doesn't exist yet
                     };
                     
                     products.Add(product);
