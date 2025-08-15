@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - FDX Trading</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Theme Initialization (must be first) -->
+    <script src="/js/theme-init.js"></script>
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css?v=3">
+    <link rel="stylesheet" href="/css/modern-ui.css">
+    <style>
+        :root {
+            /* Modern Color Palette */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --secondary-light: #f472b6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Grays */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Backgrounds */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            
+            /* Text colors */
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --text-on-primary: #ffffff;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Dashboard-style container */
+        .help-container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: var(--text-on-primary);
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+            margin-bottom: 24px;
+        }
+
+        /* Search Box */
+        .search-section {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        body.dark-mode .search-input {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .search-button svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        /* Quick Links Grid */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .quick-link-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-primary);
+            border: 2px solid transparent;
+        }
+
+        body.dark-mode .quick-link-card {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .quick-link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .quick-link-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            margin-bottom: 16px;
+        }
+
+        .quick-link-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .quick-link-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .quick-link-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Content Sections */
+        .help-sections {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Sidebar Navigation */
+        .help-nav {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: var(--shadow-md);
+            height: fit-content;
+            position: sticky;
+            top: 24px;
+        }
+
+        body.dark-mode .help-nav {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary);
+        }
+
+        body.dark-mode .nav-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Content Area */
+        .help-content {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+        }
+
+        body.dark-mode .help-content {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        body.dark-mode .section-title {
+            border-bottom-color: var(--gray-700);
+        }
+
+        /* FAQ Accordion */
+        .faq-item {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        body.dark-mode .faq-item {
+            background: var(--bg-secondary);
+        }
+
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .faq-arrow {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.expanded .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+        }
+
+        .faq-item.expanded .faq-answer {
+            padding: 0 20px 20px;
+            max-height: 500px;
+        }
+
+        /* Keyboard Shortcuts Table */
+        .shortcuts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .shortcuts-table thead {
+            background: var(--bg-tertiary);
+        }
+
+        body.dark-mode .shortcuts-table thead {
+            background: var(--bg-secondary);
+        }
+
+        .shortcuts-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        body.dark-mode .shortcuts-table th {
+            border-bottom-color: var(--gray-700);
+        }
+
+        .shortcuts-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .shortcuts-table td {
+            border-bottom-color: var(--gray-800);
+        }
+
+        .shortcut-key {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        body.dark-mode .shortcut-key {
+            background: var(--bg-secondary);
+            border-color: var(--gray-600);
+        }
+
+        /* Contact Support Form */
+        .support-form {
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        body.dark-mode .form-control {
+            background: var(--bg-secondary);
+            border-color: var(--gray-600);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Status Cards */
+        .status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .status-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .status-operational {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-degraded {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-down {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .status-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Release Notes */
+        .release-item {
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        body.dark-mode .release-item {
+            background: var(--bg-secondary);
+        }
+
+        .release-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .release-version {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .release-date {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .release-changes {
+            list-style: none;
+            padding: 0;
+        }
+
+        .release-changes li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .release-changes li::before {
+            content: '•';
+            position: absolute;
+            left: 8px;
+            color: var(--primary);
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f1419 0%, #1a1d24 100%);
+        }
+
+        body.dark-mode .page-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .help-container {
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 24px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
+            .help-sections {
+                grid-template-columns: 1fr;
+            }
+
+            .help-nav {
+                position: static;
+                margin-bottom: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="help-container">
+        <!-- Page Header with Search -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">Help Center</h1>
+                <p class="page-subtitle">Find answers, learn features, and get support</p>
+                
+                <div class="search-section">
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="helpSearch" placeholder="Search for help articles, FAQs, or features...">
+                        <button class="search-button" onclick="searchHelp()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="quick-links">
+            <a href="#getting-started" class="quick-link-card" onclick="showSection('getting-started')">
+                <div class="quick-link-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div class="quick-link-title">Getting Started</div>
+                <div class="quick-link-description">New to FDX Trading? Start here with our quick guide</div>
+            </a>
+
+            <a href="#faqs" class="quick-link-card" onclick="showSection('faqs')">
+                <div class="quick-link-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="quick-link-title">FAQs</div>
+                <div class="quick-link-description">Find answers to commonly asked questions</div>
+            </a>
+
+            <a href="#shortcuts" class="quick-link-card" onclick="showSection('shortcuts')">
+                <div class="quick-link-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                </div>
+                <div class="quick-link-title">Keyboard Shortcuts</div>
+                <div class="quick-link-description">Learn shortcuts to work faster</div>
+            </a>
+
+            <a href="#support" class="quick-link-card" onclick="showSection('support')">
+                <div class="quick-link-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+                <div class="quick-link-title">Contact Support</div>
+                <div class="quick-link-description">Get help from our support team</div>
+            </a>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="help-sections">
+            <!-- Sidebar Navigation -->
+            <nav class="help-nav">
+                <a class="nav-item active" onclick="showSection('getting-started')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Getting Started
+                </a>
+                <a class="nav-item" onclick="showSection('features')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Features Guide
+                </a>
+                <a class="nav-item" onclick="showSection('faqs')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    FAQs
+                </a>
+                <a class="nav-item" onclick="showSection('shortcuts')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                    Keyboard Shortcuts
+                </a>
+                <a class="nav-item" onclick="showSection('api')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    API Documentation
+                </a>
+                <a class="nav-item" onclick="showSection('status')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    System Status
+                </a>
+                <a class="nav-item" onclick="showSection('support')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    Contact Support
+                </a>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="help-content">
+                <!-- Getting Started Section -->
+                <div id="getting-started" class="content-section active">
+                    <h2 class="section-title">Getting Started with FDX Trading</h2>
+                    
+                    <div style="margin-bottom: 32px;">
+                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Welcome to FDX Trading!</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+                            FDX Trading is your comprehensive procurement management platform. Follow these steps to get started quickly:
+                        </p>
+                        
+                        <ol style="color: var(--text-secondary); line-height: 1.8; padding-left: 20px;">
+                            <li><strong>Dashboard Overview</strong> - Start from your dashboard to see pending requests and quick actions</li>
+                            <li><strong>Create Your First Request</strong> - Click "Create Request" to begin a new procurement request</li>
+                            <li><strong>Browse Suppliers</strong> - Explore our verified supplier catalog</li>
+                            <li><strong>Manage Products</strong> - Add products to your catalog for easy reordering</li>
+                            <li><strong>Track Progress</strong> - Monitor your requests through the approval workflow</li>
+                            <li><strong>Generate Reports</strong> - Access analytics and insights about your procurement</li>
+                        </ol>
+                    </div>
+
+                    <div style="background: var(--bg-tertiary); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--primary);">
+                            <svg width="20" height="20" style="display: inline; vertical-align: middle; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Pro Tip
+                        </h4>
+                        <p style="color: var(--text-secondary);">
+                            Use the Command Palette (Ctrl+K or Cmd+K) to quickly navigate to any page or perform actions without using the mouse.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Features Guide Section -->
+                <div id="features" class="content-section">
+                    <h2 class="section-title">Features Guide</h2>
+                    
+                    <div style="display: grid; gap: 20px;">
+                        <div style="padding: 20px; background: var(--bg-tertiary); border-radius: 12px;">
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">Procurement Requests</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.6;">
+                                Create, manage, and track procurement requests through the entire approval workflow. Set priorities, add multiple items, and attach supporting documents.
+                            </p>
+                        </div>
+
+                        <div style="padding: 20px; background: var(--bg-tertiary); border-radius: 12px;">
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">Supplier Management</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.6;">
+                                Browse verified suppliers, view catalogs, compare prices, and manage your preferred supplier list. Contact suppliers directly through the platform.
+                            </p>
+                        </div>
+
+                        <div style="padding: 20px; background: var(--bg-tertiary); border-radius: 12px;">
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">Analytics & Reports</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.6;">
+                                Access real-time analytics, spending trends, and generate custom reports. Export data in multiple formats for further analysis.
+                            </p>
+                        </div>
+
+                        <div style="padding: 20px; background: var(--bg-tertiary); border-radius: 12px;">
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">User Management</h3>
+                            <p style="color: var(--text-secondary); line-height: 1.6;">
+                                Manage user accounts, set permissions, and configure approval workflows. Import users in bulk via CSV files.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQs Section -->
+                <div id="faqs" class="content-section">
+                    <h2 class="section-title">Frequently Asked Questions</h2>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How do I create a new procurement request?
+                            <svg class="faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            To create a new procurement request, click the "Create Request" button from the dashboard or navigate to the Requests page. Fill in the required information including title, description, priority, and add items. You can save as draft or submit for approval.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How can I track my request status?
+                            <svg class="faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            You can track your request status from the "My Work" page or the main Requests page. Each request shows its current status (Draft, Pending, Approved, Rejected) and you can click on any request to see detailed timeline and approval history.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I export my data?
+                            <svg class="faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! You can export data from most pages using the Export button. We support CSV, Excel, and PDF formats. For custom reports, visit the Reports page where you can create and schedule automated exports.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How do I enable dark mode?
+                            <svg class="faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            Dark mode is automatically enabled based on your system preferences. You can also manually toggle it from the Settings page under Appearance preferences.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What browsers are supported?
+                            <svg class="faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            FDX Trading supports all modern browsers including Chrome (90+), Firefox (88+), Safari (14+), and Edge (90+). For the best experience, we recommend using the latest version of Chrome or Edge.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keyboard Shortcuts Section -->
+                <div id="shortcuts" class="content-section">
+                    <h2 class="section-title">Keyboard Shortcuts</h2>
+                    
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                        Master these keyboard shortcuts to navigate and work faster in FDX Trading:
+                    </p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Windows/Linux</th>
+                                <th>Mac</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Open Command Palette</td>
+                                <td><span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">K</span></td>
+                                <td><span class="shortcut-key">⌘</span> + <span class="shortcut-key">K</span></td>
+                            </tr>
+                            <tr>
+                                <td>Save Form</td>
+                                <td><span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">S</span></td>
+                                <td><span class="shortcut-key">⌘</span> + <span class="shortcut-key">S</span></td>
+                            </tr>
+                            <tr>
+                                <td>Edit Mode</td>
+                                <td><span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">E</span></td>
+                                <td><span class="shortcut-key">⌘</span> + <span class="shortcut-key">E</span></td>
+                            </tr>
+                            <tr>
+                                <td>Cancel/Close</td>
+                                <td><span class="shortcut-key">ESC</span></td>
+                                <td><span class="shortcut-key">ESC</span></td>
+                            </tr>
+                            <tr>
+                                <td>Search</td>
+                                <td><span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">/</span></td>
+                                <td><span class="shortcut-key">⌘</span> + <span class="shortcut-key">/</span></td>
+                            </tr>
+                            <tr>
+                                <td>New Request</td>
+                                <td><span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">N</span></td>
+                                <td><span class="shortcut-key">⌘</span> + <span class="shortcut-key">N</span></td>
+                            </tr>
+                            <tr>
+                                <td>Go to Dashboard</td>
+                                <td><span class="shortcut-key">G</span> then <span class="shortcut-key">D</span></td>
+                                <td><span class="shortcut-key">G</span> then <span class="shortcut-key">D</span></td>
+                            </tr>
+                            <tr>
+                                <td>Go to Requests</td>
+                                <td><span class="shortcut-key">G</span> then <span class="shortcut-key">R</span></td>
+                                <td><span class="shortcut-key">G</span> then <span class="shortcut-key">R</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- API Documentation Section -->
+                <div id="api" class="content-section">
+                    <h2 class="section-title">API Documentation</h2>
+                    
+                    <div style="background: var(--bg-tertiary); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">Base URL</h3>
+                        <code style="background: var(--bg-secondary); padding: 8px 12px; border-radius: 6px; font-family: monospace;">
+                            https://api.fdxtrading.com/v1
+                        </code>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Authentication</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px;">
+                            All API requests require authentication using a Bearer token. Include your API key in the Authorization header:
+                        </p>
+                        <code style="display: block; background: var(--bg-tertiary); padding: 16px; border-radius: 8px; font-family: monospace; color: var(--text-primary);">
+                            Authorization: Bearer YOUR_API_KEY
+                        </code>
+                    </div>
+
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Common Endpoints</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 12px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 8px;">
+                                <strong>GET /requests</strong> - List all procurement requests
+                            </li>
+                            <li style="padding: 12px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 8px;">
+                                <strong>POST /requests</strong> - Create a new request
+                            </li>
+                            <li style="padding: 12px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 8px;">
+                                <strong>GET /suppliers</strong> - List all suppliers
+                            </li>
+                            <li style="padding: 12px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 8px;">
+                                <strong>GET /products</strong> - List products catalog
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- System Status Section -->
+                <div id="status" class="content-section">
+                    <h2 class="section-title">System Status</h2>
+                    
+                    <div class="status-cards">
+                        <div class="status-card status-operational">
+                            <svg width="24" height="24" style="margin-bottom: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div class="status-label">All Systems Operational</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Service Status</h3>
+                    
+                    <div style="background: var(--bg-tertiary); border-radius: 12px; padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-200);">
+                            <span>Web Application</span>
+                            <span style="color: var(--success); font-weight: 600;">Operational</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-200);">
+                            <span>API Services</span>
+                            <span style="color: var(--success); font-weight: 600;">Operational</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-200);">
+                            <span>Database</span>
+                            <span style="color: var(--success); font-weight: 600;">Operational</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                            <span>Email Services</span>
+                            <span style="color: var(--success); font-weight: 600;">Operational</span>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 20px; font-weight: 600; margin: 24px 0 16px; color: var(--text-primary);">Recent Updates</h3>
+                    
+                    <div class="release-item">
+                        <div class="release-header">
+                            <span class="release-version">Version 2.5.0</span>
+                            <span class="release-date">December 25, 2024</span>
+                        </div>
+                        <ul class="release-changes">
+                            <li>Added dark mode support across all pages</li>
+                            <li>Improved keyboard navigation and shortcuts</li>
+                            <li>Enhanced supplier search functionality</li>
+                            <li>Fixed various UI/UX issues</li>
+                        </ul>
+                    </div>
+
+                    <div class="release-item">
+                        <div class="release-header">
+                            <span class="release-version">Version 2.4.0</span>
+                            <span class="release-date">December 15, 2024</span>
+                        </div>
+                        <ul class="release-changes">
+                            <li>New analytics dashboard</li>
+                            <li>Bulk import/export features</li>
+                            <li>Performance improvements</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Support Section -->
+                <div id="support" class="content-section">
+                    <h2 class="section-title">Contact Support</h2>
+                    
+                    <p style="color: var(--text-secondary); margin-bottom: 32px;">
+                        Need help? Our support team is here to assist you. Fill out the form below and we'll get back to you as soon as possible.
+                    </p>
+                    
+                    <form class="support-form" onsubmit="submitSupport(event)">
+                        <div class="form-group">
+                            <label class="form-label" for="supportName">Your Name</label>
+                            <input type="text" class="form-control" id="supportName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="supportEmail">Email Address</label>
+                            <input type="email" class="form-control" id="supportEmail" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="supportCategory">Issue Category</label>
+                            <select class="form-control" id="supportCategory" required>
+                                <option value="">Select a category</option>
+                                <option value="technical">Technical Issue</option>
+                                <option value="account">Account & Billing</option>
+                                <option value="feature">Feature Request</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="supportMessage">Message</label>
+                            <textarea class="form-control" id="supportMessage" rows="5" required placeholder="Describe your issue in detail..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Send Message
+                        </button>
+                    </form>
+                    
+                    <div style="margin-top: 40px; padding: 20px; background: var(--bg-tertiary); border-radius: 12px;">
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Other Ways to Reach Us</h3>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                                <span>+1 (800) 123-4567</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span>support@fdxtrading.com</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Monday - Friday, 9 AM - 6 PM EST</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
+
+    <script>
+        // Show specific section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the corresponding nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.textContent.toLowerCase().includes(sectionId.replace('-', ' '))) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Toggle FAQ items
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            faqItem.classList.toggle('expanded');
+        }
+
+        // Search help articles
+        function searchHelp() {
+            const searchTerm = document.getElementById('helpSearch').value.toLowerCase();
+            console.log('Searching for:', searchTerm);
+            // Implement search functionality
+        }
+
+        // Submit support form
+        function submitSupport(event) {
+            event.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('supportName').value,
+                email: document.getElementById('supportEmail').value,
+                category: document.getElementById('supportCategory').value,
+                message: document.getElementById('supportMessage').value
+            };
+            
+            console.log('Support request submitted:', formData);
+            alert('Thank you for contacting support. We\'ll respond within 24 hours.');
+            
+            // Reset form
+            event.target.reset();
+        }
+
+        // Handle search on Enter key
+        document.getElementById('helpSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchHelp();
+            }
+        });
+    </script>
+    
+    <!-- Global Footer -->
+    <link rel="stylesheet" href="/css/global-footer-v2.css">
+    <script src="/js/global-footer-v2.js"></script>
+</body>
+</html>

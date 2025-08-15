@@ -60,14 +60,21 @@ dlldata.c
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
 
+<<<<<<< HEAD
 # .NET
+=======
+# .NET Core
+>>>>>>> a1007969842fd855731f53b72d1f0a0905d5916f
 project.lock.json
 project.fragment.lock.json
 artifacts/
 
+<<<<<<< HEAD
 # Tye
 .tye/
 
+=======
+>>>>>>> a1007969842fd855731f53b72d1f0a0905d5916f
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
@@ -138,6 +145,12 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
+<<<<<<< HEAD
+=======
+# JustCode is a .NET coding add-in
+.JustCode
+
+>>>>>>> a1007969842fd855731f53b72d1f0a0905d5916f
 # TeamCity is a build add-in
 _TeamCity*
 
@@ -148,11 +161,14 @@ _TeamCity*
 .axoCover/*
 !.axoCover/settings.json
 
+<<<<<<< HEAD
 # Coverlet is a free, cross platform Code Coverage Tool
 coverage*.json
 coverage*.xml
 coverage*.info
 
+=======
+>>>>>>> a1007969842fd855731f53b72d1f0a0905d5916f
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml
@@ -404,6 +420,7 @@ FodyWeavers.xsd
 *.sln.iml
 .idea/
 
+<<<<<<< HEAD
 ##
 ## Visual studio for Mac
 ##
@@ -482,3 +499,15 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+=======
+# Azure Functions local settings
+local.settings.json
+
+# Sensitive files - DO NOT COMMIT
+AZURE_CREDENTIALS.md
+appsettings.Production.json
+secrets.json
+*.key
+*.pem
+*.cert
+>>>>>>> a1007969842fd855731f53b72d1f0a0905d5916f

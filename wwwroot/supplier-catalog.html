@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers - FDX Trading Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #48bb78;
+            --accent: #ed8936;
+            --dark: #0f0f1e;
+            --dark-secondary: #1a1a2e;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(15, 15, 30, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin: 0 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            color: #ffffff !important;
+        }
+
+        .nav-link.active {
+            color: #667eea !important;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+        }
+
+        /* Search and Filters */
+        .search-section {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Filter Tags */
+        .filter-tags {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .filter-tag {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .filter-tag:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .filter-tag.active {
+            background: var(--gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        /* Stats Overview */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+        }
+
+        .stat-mini {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-mini-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-mini-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Supplier Grid */
+        .suppliers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+        }
+
+        .supplier-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .supplier-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .supplier-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .supplier-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .supplier-header {
+            display: flex;
+            align-items: start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .supplier-info {
+            flex: 1;
+        }
+
+        .supplier-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .supplier-country {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .supplier-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(72, 187, 120, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            color: #48bb78;
+            font-weight: 600;
+        }
+
+        .supplier-details {
+            margin: 1rem 0;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .supplier-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .supplier-tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 0.25rem 0.75rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .supplier-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-view {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .btn-view:hover {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-contact {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+
+        .btn-contact:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .suppliers-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .stats-overview {
+                grid-template-columns: 1fr 1fr;
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <a href="/" class="navbar-brand">
+                    <i class="fas fa-chart-line"></i> FDX Trading
+                </a>
+                <div class="nav-links d-flex">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/modern-dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="/intelligent-search.html" class="nav-link">AI Search</a>
+                    <a href="/supplier-catalog.html" class="nav-link active">Suppliers</a>
+                    <a href="/product-catalog.html" class="nav-link">Products</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Supplier Directory</h1>
+        <p class="subtitle">Connect with verified global suppliers</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" 
+                   id="searchInput" 
+                   class="search-input" 
+                   placeholder="Search suppliers by name, country, or product category..."
+                   onkeyup="filterSuppliers()">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+        <!-- Filter Tags -->
+        <div class="filter-tags">
+            <span class="filter-tag active" onclick="setFilter('all', this)">All Suppliers</span>
+            <span class="filter-tag" onclick="setFilter('verified', this)">✓ Verified</span>
+            <span class="filter-tag" onclick="setFilter('premium', this)">⭐ Premium</span>
+            <span class="filter-tag" onclick="setFilter('new', this)">🆕 New</span>
+            <span class="filter-tag" onclick="setFilter('top-rated', this)">🏆 Top Rated</span>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+        <div class="stat-mini">
+            <div class="stat-mini-value" id="totalSuppliers">51</div>
+            <div class="stat-mini-label">Active Suppliers</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">12</div>
+            <div class="stat-mini-label">Countries</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">280+</div>
+            <div class="stat-mini-label">Products</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">4.5</div>
+            <div class="stat-mini-label">Avg Rating</div>
+        </div>
+    </div>
+
+    <!-- Suppliers Grid -->
+    <div class="suppliers-grid" id="suppliersGrid">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 1rem; color: rgba(255, 255, 255, 0.6);">Loading suppliers...</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample supplier data
+        const suppliers = [
+            {
+                name: "Mueloliva Spain",
+                country: "Spain",
+                rating: 4.8,
+                products: 45,
+                categories: ["Olive Oil", "Organic"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Bergia Mediterranean Foods",
+                country: "Italy",
+                rating: 4.6,
+                products: 32,
+                categories: ["Pasta", "Sauces"],
+                verified: true,
+                premium: false
+            },
+            {
+                name: "Nutkao Italia",
+                country: "Italy",
+                rating: 4.7,
+                products: 28,
+                categories: ["Chocolate", "Spreads"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Ardo Belgium",
+                country: "Belgium",
+                rating: 4.5,
+                products: 15,
+                categories: ["Frozen Foods", "Vegetables"],
+                verified: true,
+                premium: false
+            },
+            {
+                name: "Matilde Vicenzi",
+                country: "Italy",
+                rating: 4.9,
+                products: 22,
+                categories: ["Bakery", "Cookies"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Coppenrath Feingebäck",
+                country: "Germany",
+                rating: 4.7,
+                products: 18,
+                categories: ["Bakery", "Premium"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Daelmans Stroopwafels",
+                country: "Netherlands",
+                rating: 4.8,
+                products: 12,
+                categories: ["Snacks", "Traditional"],
+                verified: true,
+                premium: false
+            },
+            {
+                name: "Kadooğlu Yağ",
+                country: "Turkey",
+                rating: 4.4,
+                products: 8,
+                categories: ["Oils", "Traditional"],
+                verified: false,
+                premium: false,
+                isNew: true
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        // Load suppliers on page load
+        window.onload = function() {
+            setTimeout(() => {
+                displaySuppliers(suppliers);
+            }, 1000);
+        };
+
+        function displaySuppliers(suppliersToShow) {
+            const grid = document.getElementById('suppliersGrid');
+            
+            if (suppliersToShow.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                        <i class="fas fa-search" style="font-size: 3rem; color: rgba(255, 255, 255, 0.3);"></i>
+                        <p style="margin-top: 1rem; color: rgba(255, 255, 255, 0.5);">No suppliers found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = suppliersToShow.map(supplier => `
+                <div class="supplier-card">
+                    <div class="supplier-header">
+                        <div class="supplier-info">
+                            <div class="supplier-name">${supplier.name}</div>
+                            <div class="supplier-country">
+                                <i class="fas fa-map-marker-alt"></i> ${supplier.country}
+                            </div>
+                        </div>
+                        <div class="supplier-rating">
+                            <i class="fas fa-star"></i> ${supplier.rating}
+                        </div>
+                    </div>
+                    
+                    <div class="supplier-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Products</span>
+                            <span class="detail-value">${supplier.products}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Categories</span>
+                            <span class="detail-value">${supplier.categories.length}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">
+                                ${supplier.verified ? '<i class="fas fa-check-circle" style="color: #48bb78;"></i> Verified' : 'Pending'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="supplier-tags">
+                        ${supplier.categories.map(cat => `<span class="supplier-tag">${cat}</span>`).join('')}
+                        ${supplier.premium ? '<span class="supplier-tag" style="background: rgba(237, 137, 54, 0.2); color: #ed8936;">Premium</span>' : ''}
+                        ${supplier.isNew ? '<span class="supplier-tag" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">New</span>' : ''}
+                    </div>
+                    
+                    <div class="supplier-actions">
+                        <button class="btn-action btn-view" onclick="viewSupplier('${supplier.name}')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        <button class="btn-action btn-contact" onclick="contactSupplier('${supplier.name}')">
+                            <i class="fas fa-envelope"></i> Contact
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update count
+            document.getElementById('totalSuppliers').textContent = suppliersToShow.length;
+        }
+
+        function filterSuppliers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = suppliers;
+            
+            // Apply category filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(supplier => {
+                    switch(currentFilter) {
+                        case 'verified': return supplier.verified;
+                        case 'premium': return supplier.premium;
+                        case 'new': return supplier.isNew;
+                        case 'top-rated': return supplier.rating >= 4.7;
+                        default: return true;
+                    }
+                });
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filtered = filtered.filter(supplier => 
+                    supplier.name.toLowerCase().includes(searchTerm) ||
+                    supplier.country.toLowerCase().includes(searchTerm) ||
+                    supplier.categories.some(cat => cat.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            displaySuppliers(filtered);
+        }
+
+        function setFilter(filter, element) {
+            currentFilter = filter;
+            
+            // Update active state
+            document.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Apply filter
+            filterSuppliers();
+        }
+
+        function viewSupplier(name) {
+            alert(`Viewing details for ${name}`);
+        }
+
+        function contactSupplier(name) {
+            alert(`Opening contact form for ${name}`);
+        }
+    </script>
+</body>
+</html>

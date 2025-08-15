@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FDX Trading API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .endpoint {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .endpoint h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .url {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.working {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.auth {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .api-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>FDX Trading API - Access Links</h1>
+    
+    <div class="api-info">
+        <h2>API Status</h2>
+        <p><strong>Base URL:</strong> http://127.0.0.1:55000</p>
+        <p><strong>Total Suppliers:</strong> 23,291</p>
+        <p><strong>Countries:</strong> 372</p>
+        <p><strong>Categories:</strong> 10,067</p>
+        <p><strong>Note:</strong> Use <code>127.0.0.1</code> instead of <code>localhost</code> if localhost doesn't work</p>
+    </div>
+
+    <h2>Interactive Documentation</h2>
+    <div class="endpoint">
+        <h3>Swagger UI <span class="status working">Working</span></h3>
+        <p>Interactive API documentation and testing interface</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/swagger" target="_blank">http://127.0.0.1:55000/swagger</a>
+        </div>
+    </div>
+
+    <h2>Public Endpoints (No Authentication Required)</h2>
+    
+    <div class="endpoint">
+        <h3>Supplier Statistics <span class="status working">Working</span></h3>
+        <p>Get overall statistics about suppliers</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/api/v2/suppliers/stats" target="_blank">http://127.0.0.1:55000/api/v2/suppliers/stats</a>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>List Suppliers (First 10) <span class="status working">Working</span></h3>
+        <p>Browse suppliers with pagination</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/api/v2/suppliers?pageSize=10" target="_blank">http://127.0.0.1:55000/api/v2/suppliers?pageSize=10</a>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Search Suppliers <span class="status working">Working</span></h3>
+        <p>Search for olive oil suppliers</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/api/v2/suppliers/search?q=olive%20oil&limit=10" target="_blank">http://127.0.0.1:55000/api/v2/suppliers/search?q=olive%20oil&limit=10</a>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Countries List <span class="status working">Working</span></h3>
+        <p>Get list of all supplier countries</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/api/v2/suppliers/countries" target="_blank">http://127.0.0.1:55000/api/v2/suppliers/countries</a>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Categories List <span class="status working">Working</span></h3>
+        <p>Get list of all supplier categories</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/api/v2/suppliers/categories" target="_blank">http://127.0.0.1:55000/api/v2/suppliers/categories</a>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Export to CSV <span class="status working">Working</span></h3>
+        <p>Export first 100 suppliers to CSV</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/api/v2/suppliers/export?pageSize=100" target="_blank">http://127.0.0.1:55000/api/v2/suppliers/export?pageSize=100</a>
+        </div>
+    </div>
+
+    <h2>AI Features (Local Processing)</h2>
+    
+    <div class="endpoint">
+        <h3>AI Insights for Supplier #1 <span class="status working">Working</span></h3>
+        <p>Get AI-generated insights for a specific supplier</p>
+        <div class="url">
+            <a href="http://127.0.0.1:55000/api/ai/suppliers/1/insights" target="_blank">http://127.0.0.1:55000/api/ai/suppliers/1/insights</a>
+        </div>
+    </div>
+
+    <h2>Authentication Test</h2>
+    
+    <div class="endpoint">
+        <h3>Login Endpoint <span class="status auth">Requires POST</span></h3>
+        <p>POST endpoint for authentication (use Swagger UI to test)</p>
+        <div class="url">
+            http://127.0.0.1:55000/api/auth/login
+        </div>
+        <p><strong>Test Credentials:</strong></p>
+        <ul>
+            <li>Username: admin, Password: Admin@123!</li>
+            <li>Username: user, Password: User@123!</li>
+        </ul>
+    </div>
+
+    <h2>Quick Test Commands</h2>
+    <div class="endpoint">
+        <h3>PowerShell Commands</h3>
+        <pre style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">
+# Test if API is running
+Invoke-RestMethod -Uri "http://127.0.0.1:55000/api/v2/suppliers/stats"
+
+# Get suppliers
+Invoke-RestMethod -Uri "http://127.0.0.1:55000/api/v2/suppliers?pageSize=5"
+
+# Search suppliers
+Invoke-RestMethod -Uri "http://127.0.0.1:55000/api/v2/suppliers/search?q=pasta&limit=5"
+        </pre>
+    </div>
+
+    <script>
+        // Test API connectivity
+        fetch('http://127.0.0.1:55000/api/v2/suppliers/stats')
+            .then(response => response.json())
+            .then(data => {
+                console.log('API is working!', data);
+            })
+            .catch(error => {
+                console.error('API connection error:', error);
+                alert('Note: If the API links don\'t work, make sure the API is running and try using 127.0.0.1 instead of localhost');
+            });
+    </script>
+</body>
+</html>

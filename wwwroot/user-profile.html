@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - FDX Trading</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Theme Initialization (must be first) -->
+    <script src="/js/theme-init.js"></script>
+    <!-- Modern UI System -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/smart-navigation.css?v=3">
+    <link rel="stylesheet" href="/css/modern-ui.css">
+    <style>
+        :root {
+            /* Modern Color Palette */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --secondary-light: #f472b6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Grays */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* Backgrounds */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            
+            /* Text colors */
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --text-on-primary: #ffffff;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Dashboard-style container */
+        .profile-container {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: var(--text-on-primary);
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        /* Main Layout */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        body.dark-mode .card {
+            background: #1e2028;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            text-align: center;
+        }
+
+        .avatar-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .avatar-edit {
+            background: var(--gray-700);
+        }
+
+        .avatar-edit:hover {
+            transform: scale(1.1);
+        }
+
+        .avatar-edit svg {
+            width: 16px;
+            height: 16px;
+            color: var(--primary);
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        body.dark-mode .profile-stats {
+            border-top-color: var(--gray-700);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Form Groups */
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .form-input {
+            background: var(--bg-secondary);
+            border-color: var(--gray-600);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-input:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .btn-secondary {
+            background: var(--gray-700);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: var(--gray-600);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Activity List */
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        body.dark-mode .activity-item {
+            border-bottom-color: var(--gray-800);
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .activity-icon.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        .activity-icon.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .activity-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Settings List */
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        body.dark-mode .setting-item {
+            border-bottom-color: var(--gray-800);
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: var(--gray-300);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+
+        /* Alert */
+        .alert {
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f1419 0%, #1a1d24 100%);
+        }
+
+        body.dark-mode .page-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 24px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    User Profile
+                </h1>
+                <p class="page-subtitle">Manage your account settings and preferences</p>
+            </div>
+        </div>
+
+        <!-- Alert Message -->
+        <div id="alertMessage" class="alert"></div>
+        
+        <!-- Modern Popup Notification -->
+        <div id="popupNotification" style="position: fixed; top: 20px; right: 20px; background: white; padding: 16px 20px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); display: none; z-index: 10001; min-width: 300px; max-width: 400px; animation: slideIn 0.3s ease;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div id="notificationIcon" style="width: 24px; height: 24px;"></div>
+                <div style="flex: 1;">
+                    <div id="notificationTitle" style="font-weight: 600; font-size: 14px; color: #1f2937; margin-bottom: 2px;"></div>
+                    <div id="notificationMessage" style="font-size: 13px; color: #6b7280;"></div>
+                </div>
+                <button onclick="closeNotification()" style="background: none; border: none; color: #9ca3af; cursor: pointer; padding: 0; font-size: 20px; line-height: 1;">&times;</button>
+            </div>
+            <div id="notificationProgress" style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #10b981; border-radius: 0 0 12px 12px; animation: progressBar 3s linear;"></div>
+        </div>
+        
+        <style>
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes progressBar {
+                from {
+                    width: 100%;
+                }
+                to {
+                    width: 0%;
+                }
+            }
+            
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+            
+            body.dark-mode #popupNotification {
+                background: #1e2028;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            }
+            
+            body.dark-mode #notificationTitle {
+                color: #f0f2f5;
+            }
+            
+            body.dark-mode #notificationMessage {
+                color: #94a3b8;
+            }
+            
+            /* Keyboard shortcut hint */
+            .keyboard-hint {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                display: none;
+                z-index: 1000;
+            }
+        </style>
+
+        <!-- Main Layout -->
+        <div class="profile-layout">
+            <!-- Left Sidebar -->
+            <aside>
+                <!-- Profile Card -->
+                <div class="card profile-card">
+                    <div class="avatar-container">
+                        <div class="avatar" id="userAvatar">
+                            <img id="avatarImage" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Profile">
+                            <span id="avatarInitials">JD</span>
+                        </div>
+                        <div class="avatar-edit" onclick="changeAvatar()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden file input for image upload -->
+                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                    <h2 class="profile-name" id="profileName">John Doe</h2>
+                    <p class="profile-role" id="profileRole">Administrator</p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-value" id="requestCount">24</div>
+                            <div class="stat-label">Requests</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="lastActive">2h</div>
+                            <div class="stat-label">Last Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Card -->
+                <div class="card" style="margin-top: 24px;">
+                    <h3 class="card-title">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Recent Activity
+                    </h3>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <div class="activity-icon success">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Profile updated</div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon info">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">New request created</div>
+                                <div class="activity-time">5 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon warning">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Password changed</div>
+                                <div class="activity-time">Yesterday</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main>
+                <!-- Personal Information -->
+                <div class="card">
+                    <h3 class="card-title">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Personal Information
+                    </h3>
+                    
+                    <form id="profileForm">
+                        <div class="form-section">
+                            <div class="section-title">Basic Information</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="title">Title</label>
+                                    <select id="title" class="form-input" onchange="updateDefaultAvatar()">
+                                        <option value="">Select Title</option>
+                                        <option value="Mr.">Mr.</option>
+                                        <option value="Mrs.">Mrs.</option>
+                                        <option value="Ms.">Ms.</option>
+                                        <option value="Dr.">Dr.</option>
+                                        <option value="Prof.">Prof.</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="firstName">First Name</label>
+                                    <input type="text" id="firstName" class="form-input" value="John">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" class="form-input" value="Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="email">Email Address</label>
+                                    <input type="email" id="email" class="form-input" value="john.doe@fdxtrading.com">
+                                </div>
+                                <div class="form-group" style="position: relative;">
+                                    <label class="form-label" for="country">Country</label>
+                                    <input type="text" id="country" class="form-input" placeholder="Start typing country name..." autocomplete="off" onkeyup="filterCountries(this.value)" onfocus="showCountryDropdown()" onblur="hideCountryDropdown(event)">
+                                    <div id="countryDropdown" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 200px; overflow-y: auto; display: none; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">Phone Number</label>
+                                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                        <input type="text" id="phoneCode" class="form-input" style="width: 100px; font-size: 14px; font-weight: 500;" value="+1" readonly>
+                                        <input type="tel" id="phone" class="form-input" style="flex: 1;" placeholder="234 567 8900">
+                                    </div>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        <select id="phoneType" class="form-input" style="flex: 1; min-width: 120px;">
+                                            <option value="mobile">Mobile</option>
+                                            <option value="landline">Landline</option>
+                                        </select>
+                                        <select id="phoneUsage" class="form-input" style="flex: 1; min-width: 120px;">
+                                            <option value="personal">Personal</option>
+                                            <option value="work">Work</option>
+                                        </select>
+                                        <select id="phoneCategory" class="form-input" style="flex: 1; min-width: 120px;" onchange="toggleExtensionDetails()">
+                                            <option value="main">Main</option>
+                                            <option value="extension">Extension</option>
+                                        </select>
+                                    </div>
+                                    <div id="extensionDetails" style="display: none; margin-top: 8px;">
+                                        <div style="display: flex; gap: 8px;">
+                                            <input type="tel" id="mainPhone" class="form-input" style="flex: 1;" placeholder="Main phone number">
+                                            <input type="text" id="extension" class="form-input" style="width: 100px;" placeholder="Ext">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label class="form-label" for="bio">Bio</label>
+                                    <textarea id="bio" class="form-input" rows="3" placeholder="Tell us about yourself..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-title">Work Information</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="department">Department</label>
+                                    <select id="department" class="form-input">
+                                        <option value="General" selected>General</option>
+                                        <option value="Operations">Operations</option>
+                                        <option value="Finance">Finance</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="Sales">Sales</option>
+                                        <option value="IT">IT</option>
+                                        <option value="HR">HR</option>
+                                        <option value="Quality Assurance">Quality Assurance</option>
+                                        <option value="Research and Development">Research and Development</option>
+                                        <option value="Commercial">Commercial</option>
+                                        <option value="Customer Service">Customer Service</option>
+                                        <option value="Logistics">Logistics</option>
+                                        <option value="Procurement">Procurement</option>
+                                        <option value="Legal">Legal</option>
+                                        <option value="Executive">Executive</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="role">Role</label>
+                                    <select id="role" class="form-input">
+                                        <option value="User">User</option>
+                                        <option value="Administrator">Administrator</option>
+                                        <option value="Buyer">Buyer</option>
+                                        <option value="Supplier">Supplier</option>
+                                        <option value="Expert">Expert</option>
+                                        <option value="Manager">Manager</option>
+                                        <option value="Analyst">Analyst</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="userId">User ID</label>
+                                    <input type="text" id="userId" class="form-input" value="" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="joinDate">Join Date</label>
+                                    <input type="date" id="joinDate" class="form-input" value="2022-01-15" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" onclick="saveProfile()" style="display: flex; flex-direction: column; align-items: center; padding: 12px 24px; min-width: 180px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                    <span style="font-weight: 600;">Save Changes</span>
+                                </div>
+                                <span style="font-size: 11px; opacity: 0.8; margin-top: 4px; font-weight: 400;">and go back to main page</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                    <path d="M21 3v5h-5"/>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                    <path d="M8 16H3v5"/>
+                                </svg>
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="card" style="margin-top: 24px;">
+                    <h3 class="card-title">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Security Settings
+                    </h3>
+
+                    <div class="settings-list">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Auto-Save Changes</div>
+                                <div class="setting-description">Automatically save your profile changes as you type</div>
+                            </div>
+                            <div class="toggle-switch" id="toggleAutoSave" onclick="toggleAutoSave(this)"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Two-Factor Authentication</div>
+                                <div class="setting-description">Add an extra layer of security to your account</div>
+                            </div>
+                            <div class="toggle-switch" id="toggle2FA" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Email Notifications</div>
+                                <div class="setting-description">Receive email alerts for important activities</div>
+                            </div>
+                            <div class="toggle-switch active" id="toggleEmail" onclick="toggleSetting(this)"></div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-label">Login Alerts</div>
+                                <div class="setting-description">Get notified when someone logs into your account</div>
+                            </div>
+                            <div class="toggle-switch" id="toggleLogin" onclick="toggleSetting(this)"></div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group" style="margin-top: 24px;">
+                        <button class="btn btn-secondary" onclick="changePassword()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            Change Password
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteAccount()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Image Upload Modal -->
+    <div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 16px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; padding: 24px; margin: auto; position: relative; top: 50%; transform: translateY(-50%);">
+            <h3 style="margin: 0 0 20px 0; font-size: 20px; font-weight: 700;">Change Profile Picture</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Superhero Avatar Options -->
+                <div style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 12px;">Choose a Superhero Avatar:</label>
+                    <div id="superheroAvatars" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px;">
+                        <!-- Superhero avatars will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Gradient Avatars -->
+                <div style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 12px;">Or choose a gradient avatar:</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px;">
+                        <div onclick="selectGradient('linear-gradient(135deg, #667eea 0%, #764ba2 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div onclick="selectGradient('linear-gradient(135deg, #f093fb 0%, #f5576c 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div onclick="selectGradient('linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div onclick="selectGradient('linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div onclick="selectGradient('linear-gradient(135deg, #fa709a 0%, #fee140 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div onclick="selectGradient('linear-gradient(135deg, #30cfd0 0%, #330867 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div onclick="selectGradient('linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div onclick="selectGradient('linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)')" style="width: 60px; height: 60px; background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%); border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></div>
+                    </div>
+                </div>
+                
+                <!-- Upload file option -->
+                <button onclick="document.getElementById('imageUpload').click()" style="padding: 12px; border: 2px dashed #d1d5db; background: #f9fafb; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 8px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <div style="font-weight: 600;">Upload Image</div>
+                    <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">JPG, PNG, GIF up to 5MB</div>
+                </button>
+                
+                <!-- URL input option -->
+                <div style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Or enter image URL:</label>
+                    <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                    <button onclick="loadImageFromUrl()" style="margin-top: 8px; padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Load Image</button>
+                </div>
+                
+                <!-- Preview area -->
+                <div id="imagePreview" style="display: none; text-align: center; padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 50%; margin: 0 auto;" alt="Preview">
+                    <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center;">
+                        <button onclick="saveProfileImage()" style="padding: 8px 20px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Save</button>
+                        <button onclick="cancelImagePreview()" style="padding: 8px 20px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="closeImageModal()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">&times;</button>
+            
+            <!-- Done button at bottom -->
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="closeImageModal()" style="padding: 10px 32px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
+
+    <script>
+        // Country data with phone codes
+        const countries = [
+            { name: 'United States', code: 'US', phoneCode: '+1' },
+            { name: 'United Kingdom', code: 'GB', phoneCode: '+44' },
+            { name: 'Canada', code: 'CA', phoneCode: '+1' },
+            { name: 'Australia', code: 'AU', phoneCode: '+61' },
+            { name: 'Germany', code: 'DE', phoneCode: '+49' },
+            { name: 'France', code: 'FR', phoneCode: '+33' },
+            { name: 'Italy', code: 'IT', phoneCode: '+39' },
+            { name: 'Spain', code: 'ES', phoneCode: '+34' },
+            { name: 'Netherlands', code: 'NL', phoneCode: '+31' },
+            { name: 'Belgium', code: 'BE', phoneCode: '+32' },
+            { name: 'Switzerland', code: 'CH', phoneCode: '+41' },
+            { name: 'Austria', code: 'AT', phoneCode: '+43' },
+            { name: 'Sweden', code: 'SE', phoneCode: '+46' },
+            { name: 'Norway', code: 'NO', phoneCode: '+47' },
+            { name: 'Denmark', code: 'DK', phoneCode: '+45' },
+            { name: 'Finland', code: 'FI', phoneCode: '+358' },
+            { name: 'Poland', code: 'PL', phoneCode: '+48' },
+            { name: 'Russia', code: 'RU', phoneCode: '+7' },
+            { name: 'China', code: 'CN', phoneCode: '+86' },
+            { name: 'Japan', code: 'JP', phoneCode: '+81' },
+            { name: 'South Korea', code: 'KR', phoneCode: '+82' },
+            { name: 'India', code: 'IN', phoneCode: '+91' },
+            { name: 'Brazil', code: 'BR', phoneCode: '+55' },
+            { name: 'Mexico', code: 'MX', phoneCode: '+52' },
+            { name: 'Argentina', code: 'AR', phoneCode: '+54' },
+            { name: 'South Africa', code: 'ZA', phoneCode: '+27' },
+            { name: 'Egypt', code: 'EG', phoneCode: '+20' },
+            { name: 'Turkey', code: 'TR', phoneCode: '+90' },
+            { name: 'Israel', code: 'IL', phoneCode: '+972' },
+            { name: 'United Arab Emirates', code: 'AE', phoneCode: '+971' },
+            { name: 'Saudi Arabia', code: 'SA', phoneCode: '+966' },
+            { name: 'Singapore', code: 'SG', phoneCode: '+65' },
+            { name: 'Malaysia', code: 'MY', phoneCode: '+60' },
+            { name: 'Thailand', code: 'TH', phoneCode: '+66' },
+            { name: 'Indonesia', code: 'ID', phoneCode: '+62' },
+            { name: 'Philippines', code: 'PH', phoneCode: '+63' },
+            { name: 'Vietnam', code: 'VN', phoneCode: '+84' },
+            { name: 'New Zealand', code: 'NZ', phoneCode: '+64' },
+            { name: 'Ireland', code: 'IE', phoneCode: '+353' },
+            { name: 'Portugal', code: 'PT', phoneCode: '+351' },
+            { name: 'Greece', code: 'GR', phoneCode: '+30' },
+            { name: 'Czech Republic', code: 'CZ', phoneCode: '+420' },
+            { name: 'Hungary', code: 'HU', phoneCode: '+36' },
+            { name: 'Romania', code: 'RO', phoneCode: '+40' },
+            { name: 'Ukraine', code: 'UA', phoneCode: '+380' },
+            { name: 'Chile', code: 'CL', phoneCode: '+56' },
+            { name: 'Colombia', code: 'CO', phoneCode: '+57' },
+            { name: 'Peru', code: 'PE', phoneCode: '+51' },
+            { name: 'Venezuela', code: 'VE', phoneCode: '+58' }
+        ];
+        
+        let dropdownTimeout;
+        
+        function showCountryDropdown() {
+            clearTimeout(dropdownTimeout);
+            const dropdown = document.getElementById('countryDropdown');
+            dropdown.style.display = 'block';
+            filterCountries(document.getElementById('country').value);
+        }
+        
+        function hideCountryDropdown(event) {
+            dropdownTimeout = setTimeout(() => {
+                const dropdown = document.getElementById('countryDropdown');
+                dropdown.style.display = 'none';
+            }, 200);
+        }
+        
+        function toggleExtensionDetails() {
+            const phoneCategory = document.getElementById('phoneCategory').value;
+            const extensionDetails = document.getElementById('extensionDetails');
+            if (phoneCategory === 'extension') {
+                extensionDetails.style.display = 'block';
+            } else {
+                extensionDetails.style.display = 'none';
+            }
+        }
+        
+        function filterCountries(searchTerm) {
+            const dropdown = document.getElementById('countryDropdown');
+            const filtered = searchTerm 
+                ? countries.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                : countries;
+            
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div style="padding: 8px 12px; color: #6b7280;">No countries found</div>';
+                return;
+            }
+            
+            dropdown.innerHTML = filtered.map(country => `
+                <div class="country-option" onmousedown="selectCountry('${country.name}', '${country.phoneCode}')" style="padding: 8px 12px; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">
+                    <span>${country.name}</span>
+                    <span style="color: #6b7280; margin-left: 8px; font-weight: 500; font-family: monospace;">${country.phoneCode}</span>
+                </div>
+            `).join('');
+        }
+        
+        function selectCountry(countryName, phoneCode) {
+            document.getElementById('country').value = countryName;
+            document.getElementById('phoneCode').value = phoneCode;
+            document.getElementById('countryDropdown').style.display = 'none';
+            
+            // Clear phone number when country changes to avoid confusion
+            const phoneInput = document.getElementById('phone');
+            phoneInput.placeholder = getPhonePlaceholder(countryName);
+        }
+        
+        function getPhonePlaceholder(countryName) {
+            const placeholders = {
+                'United States': '234 567 8900',
+                'United Kingdom': '20 7946 0958',
+                'Canada': '416 555 0123',
+                'Australia': '2 1234 5678',
+                'Germany': '30 12345678',
+                'France': '1 23 45 67 89',
+                'India': '98765 43210',
+                'Japan': '3-1234-5678',
+                'China': '138 0013 8000'
+            };
+            return placeholders[countryName] || '123 456 7890';
+        }
+        
+        // Initialize profile
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded fired');
+            loadUserProfile();
+            console.log('About to attach form handler');
+            attachFormSubmitHandler();
+            console.log('Form handler attached');
+            
+            // Load auto-save preference
+            const savedAutoSave = localStorage.getItem('autoSaveEnabled');
+            if (savedAutoSave === 'true') {
+                autoSaveEnabled = true;
+                const toggle = document.getElementById('toggleAutoSave');
+                if (toggle) {
+                    toggle.classList.add('active');
+                    setupAutoSave();
+                }
+            }
+            
+            // Add Ctrl+S shortcut to save form
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    // Show saving notification immediately
+                    showPopupNotification('Saving your profile...', 'info', 'Saving');
+                    // Submit form after brief delay for visual feedback
+                    setTimeout(() => {
+                        document.getElementById('profileForm').dispatchEvent(new Event('submit'));
+                    }, 100);
+                }
+            });
+        });
+
+        // Load user profile
+        async function loadUserProfile() {
+            // Get user ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+            
+            if (userId) {
+                // Set the user ID field
+                document.getElementById('userId').value = userId;
+                
+                try {
+                    // Fetch user data from API
+                    const response = await fetch(`/api/users/${userId}`);
+                    if (response.ok) {
+                        const user = await response.json();
+                        
+                        // Update profile display - API returns Pascal case
+                        document.getElementById('title').value = user.title || '';
+                        document.getElementById('firstName').value = user.firstName || '';
+                        document.getElementById('lastName').value = user.lastName || '';
+                        document.getElementById('email').value = user.email || '';
+                        document.getElementById('bio').value = user.bio || '';
+                        document.getElementById('department').value = user.department || '';
+                        document.getElementById('role').value = user.role || '';
+                        
+                        // Handle country and phone
+                        if (user.country) {
+                            document.getElementById('country').value = user.country;
+                            const countryData = countries.find(c => c.name === user.country);
+                            if (countryData) {
+                                document.getElementById('phoneCode').value = countryData.phoneCode;
+                            }
+                        }
+                        
+                        // Parse phone number to separate area code and phone number properly
+                        if (user.phoneNumber) {
+                            const phoneMatch = user.phoneNumber.match(/^(\+\d+)\s*(.*)$/);
+                            if (phoneMatch) {
+                                document.getElementById('phoneCode').value = phoneMatch[1];
+                                // Check if the remaining part has area code mixed in
+                                const phoneBody = phoneMatch[2];
+                                // If it starts with area code pattern (e.g., "123" or "(123)"), separate it
+                                const areaCodeMatch = phoneBody.match(/^\(?(\d{3})\)?[\s-]?(.*)$/);
+                                if (areaCodeMatch && document.getElementById('phoneCode').value === '+1') {
+                                    // For US/Canada numbers, properly format
+                                    document.getElementById('phone').value = `${areaCodeMatch[1]} ${areaCodeMatch[2]}`.trim();
+                                } else {
+                                    document.getElementById('phone').value = phoneBody;
+                                }
+                            } else {
+                                document.getElementById('phone').value = user.phoneNumber;
+                            }
+                        }
+                        
+                        // Load phone metadata if available
+                        if (user.phoneType) document.getElementById('phoneType').value = user.phoneType;
+                        if (user.phoneUsage) document.getElementById('phoneUsage').value = user.phoneUsage;
+                        if (user.phoneCategory) {
+                            document.getElementById('phoneCategory').value = user.phoneCategory;
+                            if (user.phoneCategory === 'extension') {
+                                document.getElementById('extensionDetails').style.display = 'block';
+                                if (user.mainPhone) document.getElementById('mainPhone').value = user.mainPhone;
+                                if (user.extension) document.getElementById('extension').value = user.extension;
+                            }
+                        }
+                        
+                        document.getElementById('profileName').textContent = user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User';
+                        document.getElementById('profileRole').textContent = getUserRole(user.type) || 'User';
+                        document.getElementById('role').value = getUserRole(user.type) || 'User';
+                        
+                        // Update department
+                        if (user.department) {
+                            document.getElementById('department').value = user.department;
+                        } else {
+                            // Default to General if no department set
+                            document.getElementById('department').value = 'General';
+                        }
+                        
+                        // Update join date if available
+                        if (user.createdAt) {
+                            const date = new Date(user.createdAt);
+                            document.getElementById('joinDate').value = date.toISOString().split('T')[0];
+                        }
+                        
+                        // Update avatar
+                        const avatarImg = document.getElementById('avatarImage');
+                        const avatarContainer = document.getElementById('userAvatar');
+                        const avatarInitials = document.getElementById('avatarInitials');
+                        
+                        if (user.profileImage) {
+                            // User has uploaded image
+                            avatarImg.src = user.profileImage;
+                            avatarImg.style.display = 'block';
+                            avatarInitials.style.display = 'none';
+                            avatarContainer.style.background = '';
+                        } else if (user.avatarType === 'emoji' || user.avatarType === 'superhero') {
+                            // User has emoji or superhero avatar
+                            avatarInitials.textContent = user.avatarValue;
+                            avatarInitials.style.fontSize = '48px';
+                            avatarInitials.style.display = 'flex';
+                            avatarImg.style.display = 'none';
+                            avatarContainer.style.background = '#f3f4f6';
+                        } else if (user.avatarType === 'gradient') {
+                            // User has gradient avatar
+                            avatarContainer.style.background = user.avatarValue;
+                            const initials = `${(user.firstName || 'U')[0]}${(user.lastName || '')[0] || ''}`.toUpperCase();
+                            avatarInitials.textContent = initials;
+                            avatarInitials.style.fontSize = '';
+                            avatarInitials.style.display = 'flex';
+                            avatarImg.style.display = 'none';
+                        } else {
+                            // No avatar set - use random default
+                            const title = user.title || document.getElementById('title').value;
+                            const randomAvatar = getRandomAvatar(title);
+                            
+                            if (randomAvatar.type === 'superhero' || randomAvatar.type === 'emoji') {
+                                avatarInitials.textContent = randomAvatar.value;
+                                avatarInitials.style.fontSize = '48px';
+                                avatarContainer.style.background = '#f3f4f6';
+                            } else {
+                                avatarContainer.style.background = randomAvatar.value;
+                                const initials = `${(user.firstName || 'U')[0]}${(user.lastName || '')[0] || ''}`.toUpperCase();
+                                avatarInitials.textContent = initials;
+                            }
+                            avatarInitials.style.display = 'flex';
+                            avatarImg.style.display = 'none';
+                            
+                            // Save this as the user's avatar
+                            user.avatarType = randomAvatar.type;
+                            user.avatarValue = randomAvatar.value;
+                        }
+                        
+                        // Store for later use
+                        window.currentUserData = user;
+                    } else {
+                        // Fall back to localStorage if API fails
+                        loadFromLocalStorage();
+                    }
+                } catch (error) {
+                    console.error('Error loading user profile:', error);
+                    loadFromLocalStorage();
+                }
+            } else {
+                // No ID in URL, load current user from localStorage
+                loadFromLocalStorage();
+            }
+        }
+        
+        function loadFromLocalStorage() {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    
+                    // Set user ID if available
+                    if (user.id) {
+                        document.getElementById('userId').value = user.id;
+                    }
+                    
+                    // Update profile display
+                    document.getElementById('title').value = user.title || '';
+                    document.getElementById('firstName').value = user.firstName || '';
+                    document.getElementById('lastName').value = user.lastName || '';
+                    document.getElementById('email').value = user.email || '';
+                    document.getElementById('country').value = user.country || '';
+                    document.getElementById('bio').value = user.bio || '';
+                    document.getElementById('department').value = user.department || 'General';
+                    
+                    // Update country first
+                    if (user.country) {
+                        document.getElementById('country').value = user.country;
+                    }
+                    
+                    // Update phone number - properly separate area code and phone
+                    if (user.phoneNumber) {
+                        const phoneMatch = user.phoneNumber.match(/^(\+\d+)\s*(.*)$/);
+                        if (phoneMatch) {
+                            document.getElementById('phoneCode').value = phoneMatch[1];
+                            // Check if the remaining part has area code mixed in
+                            const phoneBody = phoneMatch[2];
+                            // If it starts with area code pattern (e.g., "123" or "(123)"), separate it
+                            const areaCodeMatch = phoneBody.match(/^\(?(\d{3})\)?[\s-]?(.*)$/);
+                            if (areaCodeMatch && document.getElementById('phoneCode').value === '+1') {
+                                // For US/Canada numbers, properly format
+                                document.getElementById('phone').value = `${areaCodeMatch[1]} ${areaCodeMatch[2]}`.trim();
+                            } else {
+                                document.getElementById('phone').value = phoneBody;
+                            }
+                        } else {
+                            document.getElementById('phone').value = user.phoneNumber;
+                            // If no phone code in saved number, use country default
+                            if (user.country) {
+                                const countryData = countries.find(c => c.name === user.country);
+                                if (countryData) {
+                                    document.getElementById('phoneCode').value = countryData.phoneCode;
+                                }
+                            }
+                        }
+                    } else if (user.country) {
+                        // Only set default country code if no phone number is saved
+                        const countryData = countries.find(c => c.name === user.country);
+                        if (countryData) {
+                            document.getElementById('phoneCode').value = countryData.phoneCode;
+                        }
+                    }
+                    
+                    // Load phone metadata if available
+                    if (user.phoneType) document.getElementById('phoneType').value = user.phoneType;
+                    if (user.phoneUsage) document.getElementById('phoneUsage').value = user.phoneUsage;
+                    if (user.phoneCategory) {
+                        document.getElementById('phoneCategory').value = user.phoneCategory;
+                        if (user.phoneCategory === 'extension') {
+                            document.getElementById('extensionDetails').style.display = 'block';
+                            if (user.mainPhone) document.getElementById('mainPhone').value = user.mainPhone;
+                            if (user.extension) document.getElementById('extension').value = user.extension;
+                        }
+                    }
+                    
+                    document.getElementById('profileName').textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User';
+                    document.getElementById('profileRole').textContent = user.role || 'User';
+                    document.getElementById('role').value = user.role || 'User';
+                    
+                    // Update avatar
+                    const avatarImg = document.getElementById('avatarImage');
+                    const avatarContainer = document.getElementById('userAvatar');
+                    const avatarInitials = document.getElementById('avatarInitials');
+                    
+                    if (user.profileImage) {
+                        // User has uploaded image
+                        avatarImg.src = user.profileImage;
+                        avatarImg.style.display = 'block';
+                        avatarInitials.style.display = 'none';
+                        avatarContainer.style.background = '';
+                    } else if (user.avatarType === 'superhero' || user.avatarType === 'emoji') {
+                        // User has emoji/superhero avatar
+                        avatarInitials.textContent = user.avatarValue;
+                        avatarInitials.style.fontSize = '48px';
+                        avatarInitials.style.display = 'flex';
+                        avatarImg.style.display = 'none';
+                        avatarContainer.style.background = '#f3f4f6';
+                    } else if (user.avatarType === 'gradient') {
+                        // User has gradient avatar
+                        avatarContainer.style.background = user.avatarValue;
+                        const initials = `${(user.firstName || 'U')[0]}${(user.lastName || '')[0] || ''}`.toUpperCase();
+                        avatarInitials.textContent = initials;
+                        avatarInitials.style.fontSize = '';
+                        avatarInitials.style.display = 'flex';
+                        avatarImg.style.display = 'none';
+                    } else {
+                        // Default initials
+                        const initials = `${(user.firstName || 'U')[0]}${(user.lastName || '')[0] || ''}`.toUpperCase();
+                        avatarInitials.textContent = initials;
+                        avatarInitials.style.display = 'flex';
+                        avatarImg.style.display = 'none';
+                    }
+                    
+                    // Store for later use
+                    window.currentUserData = user;
+                } catch (error) {
+                    console.error('Error loading user profile:', error);
+                }
+            }
+        }
+        
+        // Simple direct save function
+        async function saveProfile() {
+            console.log('Save Profile called');
+            
+            // Get user ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+            
+            if (!userId) {
+                alert('No user ID found');
+                return;
+            }
+            
+            // Collect all form data
+            const data = {
+                title: document.getElementById('title').value || '',
+                firstName: document.getElementById('firstName').value || '',
+                lastName: document.getElementById('lastName').value || '',
+                email: document.getElementById('email').value || '',
+                country: document.getElementById('country').value || '',
+                phoneNumber: (document.getElementById('phoneCode').value || '') + ' ' + (document.getElementById('phone').value || ''),
+                phoneType: document.getElementById('phoneType').value || '',
+                phoneUsage: document.getElementById('phoneUsage').value || '',
+                phoneCategory: document.getElementById('phoneCategory').value || '',
+                bio: document.getElementById('bio').value || '',
+                department: document.getElementById('department').value || '',
+                role: document.getElementById('role').value || '',
+                type: 0, // Admin
+                isActive: true,
+                dataComplete: true,
+                requiresPasswordChange: false,
+                verification: 0
+            };
+            
+            console.log('Sending data:', data);
+            
+            try {
+                const response = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Save successful:', result);
+                    showAlert('Profile saved successfully! Redirecting to Users list...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/users.html';
+                    }, 1500);
+                } else {
+                    console.error('Save failed:', response.status);
+                    alert('Failed to save profile');
+                }
+            } catch (error) {
+                console.error('Error saving:', error);
+                alert('Error saving profile: ' + error.message);
+            }
+        }
+        
+        function getUserRole(type) {
+            switch(type) {
+                case 0: return 'Administrator';
+                case 1: return 'Buyer';
+                case 2: return 'Supplier';
+                case 3: return 'Expert';
+                default: return 'User';
+            }
+        }
+
+        // Handle form submission
+        function attachFormSubmitHandler() {
+            console.log('Inside attachFormSubmitHandler');
+            const form = document.getElementById('profileForm');
+            console.log('Form element:', form);
+            if (!form) {
+                console.error('Profile form not found!');
+                return;
+            }
+            
+            console.log('Adding submit event listener to form');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('Form submission triggered');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id') || document.getElementById('userId').value;
+            
+            const formData = {
+                title: document.getElementById('title').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                country: document.getElementById('country').value,
+                phoneNumber: document.getElementById('phoneCode').value + ' ' + document.getElementById('phone').value,
+                phoneType: document.getElementById('phoneType').value,
+                phoneUsage: document.getElementById('phoneUsage').value,
+                phoneCategory: document.getElementById('phoneCategory').value,
+                mainPhone: document.getElementById('phoneCategory').value === 'extension' ? document.getElementById('mainPhone').value : null,
+                extension: document.getElementById('phoneCategory').value === 'extension' ? document.getElementById('extension').value : null,
+                bio: document.getElementById('bio').value,
+                department: document.getElementById('department').value,
+                role: document.getElementById('role').value,
+                type: 0, // Default to Admin type, can be changed based on context
+                isActive: true,
+                dataComplete: true,
+                requiresPasswordChange: false,
+                verification: 0 // Verified status
+            };
+            
+            console.log('Form data to send:', formData);
+            
+            // Include avatar data - check for recently updated avatar first
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            if (currentUser.profileImage) {
+                formData.profileImage = currentUser.profileImage;
+                formData.avatarType = null;
+                formData.avatarValue = null;
+            } else if (currentUser.avatarType) {
+                formData.avatarType = currentUser.avatarType;
+                formData.avatarValue = currentUser.avatarValue;
+                formData.profileImage = null;
+            } else if (window.currentUserData) {
+                if (window.currentUserData.profileImage) {
+                    formData.profileImage = window.currentUserData.profileImage;
+                    formData.avatarType = null;
+                    formData.avatarValue = null;
+                } else if (window.currentUserData.avatarType) {
+                    formData.avatarType = window.currentUserData.avatarType;
+                    formData.avatarValue = window.currentUserData.avatarValue;
+                    formData.profileImage = null;
+                }
+            }
+            
+            if (userId) {
+                try {
+                    console.log('Making API call to:', `/api/users/${userId}`, 'with data:', formData);
+                    // Update via API
+                    const response = await fetch(`/api/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.ok) {
+                        // Update display
+                        await loadUserProfile();
+                        // Check if this is an auto-save
+                        if (window.autoSaveInProgress) {
+                            window.autoSaveInProgress = false;
+                            // Don't show alert or redirect for auto-save
+                        } else {
+                            showAlert('Profile updated successfully! Redirecting to Users list...', 'success');
+                            
+                            // Redirect to users page after a short delay
+                            setTimeout(() => {
+                                window.location.href = '/users.html';
+                            }, 1500);
+                        }
+                    } else {
+                        showAlert('Failed to update profile', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    showAlert('Error updating profile', 'error');
+                }
+            } else {
+                // Save to localStorage if no ID
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                const updatedUser = { ...currentUser, ...formData };
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                
+                // Update display
+                loadUserProfile();
+                
+                // Check if this is an auto-save
+                if (window.autoSaveInProgress) {
+                    window.autoSaveInProgress = false;
+                    // Don't show alert or redirect for auto-save
+                } else {
+                    // Show success message
+                    showAlert('Profile updated successfully! Redirecting to Users list...', 'success');
+                    
+                    // Redirect to users page after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/users.html';
+                    }, 1500);
+                }
+            }
+            });
+        }
+
+        // Auto-save functionality
+        let autoSaveEnabled = false;
+        let autoSaveTimeout = null;
+        
+        // Toggle auto-save setting
+        function toggleAutoSave(element) {
+            element.classList.toggle('active');
+            autoSaveEnabled = element.classList.contains('active');
+            
+            // Save preference to localStorage
+            localStorage.setItem('autoSaveEnabled', autoSaveEnabled);
+            
+            if (autoSaveEnabled) {
+                showPopupNotification('Auto-save enabled', 'success', 'Settings');
+                setupAutoSave();
+            } else {
+                showPopupNotification('Auto-save disabled', 'info', 'Settings');
+                removeAutoSave();
+            }
+        }
+        
+        // Setup auto-save listeners
+        function setupAutoSave() {
+            if (!autoSaveEnabled) return;
+            
+            const formInputs = document.querySelectorAll('#profileForm input:not([disabled]), #profileForm textarea, #profileForm select');
+            
+            formInputs.forEach(input => {
+                input.addEventListener('input', handleAutoSave);
+                input.addEventListener('change', handleAutoSave);
+            });
+        }
+        
+        // Remove auto-save listeners
+        function removeAutoSave() {
+            const formInputs = document.querySelectorAll('#profileForm input, #profileForm textarea, #profileForm select');
+            
+            formInputs.forEach(input => {
+                input.removeEventListener('input', handleAutoSave);
+                input.removeEventListener('change', handleAutoSave);
+            });
+            
+            // Clear any pending auto-save
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout);
+            }
+        }
+        
+        // Handle auto-save with debouncing
+        function handleAutoSave() {
+            if (!autoSaveEnabled) return;
+            
+            // Clear previous timeout
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout);
+            }
+            
+            // Show saving indicator
+            showAutoSaveIndicator('Saving...');
+            
+            // Debounce - wait 1.5 seconds after user stops typing
+            autoSaveTimeout = setTimeout(() => {
+                // Submit the form programmatically
+                const form = document.getElementById('profileForm');
+                const submitEvent = new Event('submit', { cancelable: true });
+                
+                // Temporarily suppress redirect for auto-save
+                window.autoSaveInProgress = true;
+                form.dispatchEvent(submitEvent);
+                
+                // Show saved indicator
+                setTimeout(() => {
+                    showAutoSaveIndicator('All changes saved');
+                    setTimeout(() => {
+                        hideAutoSaveIndicator();
+                    }, 2000);
+                }, 500);
+            }, 1500);
+        }
+        
+        // Show auto-save indicator
+        function showAutoSaveIndicator(message) {
+            let indicator = document.getElementById('autoSaveIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'autoSaveIndicator';
+                indicator.style.cssText = 'position: fixed; bottom: 70px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; z-index: 10000; display: flex; align-items: center; gap: 8px;';
+                document.body.appendChild(indicator);
+            }
+            
+            indicator.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                <span>${message}</span>
+            `;
+            indicator.style.display = 'flex';
+        }
+        
+        // Hide auto-save indicator
+        function hideAutoSaveIndicator() {
+            const indicator = document.getElementById('autoSaveIndicator');
+            if (indicator) {
+                indicator.style.display = 'none';
+            }
+        }
+        
+        // Toggle settings
+        function toggleSetting(element) {
+            element.classList.toggle('active');
+        }
+
+        // Reset form
+        function resetForm() {
+            loadUserProfile();
+            showAlert('Form reset to original values', 'success');
+        }
+
+        // Change password
+        function changePassword() {
+            // In real app, open password change modal
+            showAlert('Password change functionality coming soon', 'success');
+        }
+
+        // Delete account
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                showAlert('Account deletion requires admin approval', 'success');
+            }
+        }
+
+        // Superhero emoji avatars separated by gender
+        const maleSuperheroEmojis = ['🦸‍♂️', '🦹‍♂️', '🧙‍♂️', '🦸🏻‍♂️', '🦹🏻‍♂️', '🧙🏻‍♂️', '🦸🏽‍♂️', '🦹🏽‍♂️', '🧙🏽‍♂️'];
+        const femaleSuperheroEmojis = ['🦸‍♀️', '🦹‍♀️', '🧙‍♀️', '🦸🏻‍♀️', '🦹🏻‍♀️', '🧙🏻‍♀️', '🦸🏽‍♀️', '🦹🏽‍♀️', '🧙🏽‍♀️'];
+        const neutralSuperheroEmojis = ['🦸', '🦹', '🧙', '🦸🏻', '🦹🏻', '🧙🏻', '🦸🏽', '🦹🏽', '🧙🏽'];
+        const superheroEmojis = [...maleSuperheroEmojis, ...femaleSuperheroEmojis, ...neutralSuperheroEmojis];
+        
+        // Default avatars for random selection
+        const defaultAvatars = {
+            superheroes: superheroEmojis,
+            gradients: [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)'
+            ]
+        };
+        
+        // Get random default avatar based on title
+        function getRandomAvatar(title = null) {
+            const useSuperhero = Math.random() > 0.3; // 70% chance for superhero
+            if (useSuperhero) {
+                let superheroList;
+                if (title === 'Mr.' || title === 'Dr.' || title === 'Prof.') {
+                    // Use male superheroes for Mr., Dr., Prof.
+                    superheroList = maleSuperheroEmojis;
+                } else if (title === 'Mrs.' || title === 'Ms.') {
+                    // Use female superheroes for Mrs., Ms.
+                    superheroList = femaleSuperheroEmojis;
+                } else {
+                    // Use neutral or all superheroes when no title
+                    superheroList = neutralSuperheroEmojis;
+                }
+                const superhero = superheroList[Math.floor(Math.random() * superheroList.length)];
+                return { type: 'superhero', value: superhero };
+            } else {
+                const gradient = defaultAvatars.gradients[Math.floor(Math.random() * defaultAvatars.gradients.length)];
+                return { type: 'gradient', value: gradient };
+            }
+        }
+        
+        // Update avatar when title changes
+        function updateDefaultAvatar() {
+            const title = document.getElementById('title').value;
+            const avatarImg = document.getElementById('avatarImage');
+            const avatarContainer = document.getElementById('userAvatar');
+            const avatarInitials = document.getElementById('avatarInitials');
+            
+            // Only update if no custom avatar is set
+            if (!window.currentUserData || (!window.currentUserData.profileImage && !window.currentUserData.avatarValue)) {
+                const randomAvatar = getRandomAvatar(title);
+                
+                if (randomAvatar.type === 'superhero') {
+                    // Display superhero emoji
+                    avatarContainer.style.background = '#f3f4f6';
+                    avatarInitials.textContent = randomAvatar.value;
+                    avatarInitials.style.fontSize = '48px';
+                    avatarInitials.style.display = 'flex';
+                    avatarImg.style.display = 'none';
+                    
+                    // Save to user data
+                    if (!window.currentUserData) {
+                        window.currentUserData = {};
+                    }
+                    window.currentUserData.avatarType = 'superhero';
+                    window.currentUserData.avatarValue = randomAvatar.value;
+                } else {
+                    // Display gradient
+                    avatarContainer.style.background = randomAvatar.value;
+                    avatarInitials.style.display = 'flex';
+                    avatarImg.style.display = 'none';
+                    
+                    if (!window.currentUserData) {
+                        window.currentUserData = {};
+                    }
+                    window.currentUserData.avatarType = 'gradient';
+                    window.currentUserData.avatarValue = randomAvatar.value;
+                }
+            }
+        }
+        
+        // Set default avatar if none exists
+        function setDefaultAvatar() {
+            const avatarImg = document.getElementById('avatarImage');
+            const avatarContainer = document.getElementById('userAvatar');
+            const avatarInitials = document.getElementById('avatarInitials');
+            
+            // If no image is set, use random default
+            if (!avatarImg.src || avatarImg.style.display === 'none') {
+                const title = document.getElementById('title').value;
+                const randomAvatar = getRandomAvatar(title);
+                
+                if (randomAvatar.type === 'superhero') {
+                    // Display superhero emoji
+                    avatarContainer.style.background = '#f3f4f6';
+                    avatarInitials.textContent = randomAvatar.value;
+                    avatarInitials.style.fontSize = '48px';
+                    avatarInitials.style.display = 'flex';
+                    avatarImg.style.display = 'none';
+                } else if (randomAvatar.type === 'emoji') {
+                    // Legacy emoji support
+                    avatarInitials.textContent = randomAvatar.value;
+                    avatarInitials.style.fontSize = '48px';
+                    avatarInitials.style.display = 'flex';
+                    avatarImg.style.display = 'none';
+                } else {
+                    // Display gradient
+                    avatarContainer.style.background = randomAvatar.value;
+                    avatarInitials.style.display = 'flex';
+                    avatarImg.style.display = 'none';
+                }
+                
+                // Store the default avatar
+                if (window.currentUserData) {
+                    window.currentUserData.avatarType = randomAvatar.type;
+                    window.currentUserData.avatarValue = randomAvatar.value;
+                }
+            }
+        }
+        
+        // Select superhero avatar
+        function selectSuperhero(emoji) {
+            const avatarImg = document.getElementById('avatarImage');
+            const avatarContainer = document.getElementById('userAvatar');
+            const avatarInitials = document.getElementById('avatarInitials');
+            
+            // Clear any background gradient
+            avatarContainer.style.background = '#f3f4f6';
+            
+            // Set superhero emoji
+            avatarInitials.textContent = emoji;
+            avatarInitials.style.fontSize = '48px';
+            avatarInitials.style.display = 'flex';
+            avatarImg.style.display = 'none';
+            
+            // Save to user data
+            if (window.currentUserData) {
+                window.currentUserData.avatarType = 'superhero';
+                window.currentUserData.avatarValue = emoji;
+                window.currentUserData.profileImage = null;
+            }
+            
+            // Update via API if we have user ID
+            saveAvatarChoice('superhero', emoji);
+            
+            // Don't close modal - let user continue choosing
+            showAlert('Superhero avatar selected!', 'success');
+        }
+        
+        // Select gradient avatar
+        function selectGradient(gradient) {
+            const avatarImg = document.getElementById('avatarImage');
+            const avatarContainer = document.getElementById('userAvatar');
+            const avatarInitials = document.getElementById('avatarInitials');
+            
+            // Set gradient background
+            avatarContainer.style.background = gradient;
+            
+            // Show initials over gradient
+            avatarInitials.style.display = 'flex';
+            avatarInitials.style.fontSize = ''; // Reset to default
+            avatarImg.style.display = 'none';
+            
+            // Save to user data
+            if (window.currentUserData) {
+                window.currentUserData.avatarType = 'gradient';
+                window.currentUserData.avatarValue = gradient;
+                window.currentUserData.profileImage = null;
+            }
+            
+            // Update via API if we have user ID
+            saveAvatarChoice('gradient', gradient);
+            
+            // Don't close modal - let user continue choosing
+            showAlert('Gradient background selected!', 'success');
+        }
+        
+        // Save avatar choice to backend
+        async function saveAvatarChoice(type, value) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+            
+            if (userId) {
+                try {
+                    await fetch(`/api/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            avatarType: type,
+                            avatarValue: value,
+                            profileImage: null
+                        })
+                    });
+                } catch (error) {
+                    console.error('Error updating avatar:', error);
+                }
+            } else {
+                // Save to localStorage
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                currentUser.avatarType = type;
+                currentUser.avatarValue = value;
+                currentUser.profileImage = null;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            
+            // Trigger auto-save if enabled
+            if (autoSaveEnabled) {
+                handleAutoSave();
+            }
+        }
+        
+        // Change avatar
+        function changeAvatar() {
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+        
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+        
+        // Handle file upload
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Check file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    showAlert('File size must be less than 5MB', 'error');
+                    return;
+                }
+                
+                // Check file type
+                if (!file.type.startsWith('image/')) {
+                    showAlert('Please select an image file', 'error');
+                    return;
+                }
+                
+                // Read and preview the file
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    showImagePreview(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Load image from URL
+        function loadImageFromUrl() {
+            const url = document.getElementById('imageUrl').value.trim();
+            if (!url) {
+                showAlert('Please enter an image URL', 'error');
+                return;
+            }
+            
+            // Validate URL format
+            try {
+                new URL(url);
+            } catch (e) {
+                showAlert('Please enter a valid URL', 'error');
+                return;
+            }
+            
+            // Try to load the image
+            const img = new Image();
+            img.onload = function() {
+                showImagePreview(url);
+            };
+            img.onerror = function() {
+                showAlert('Failed to load image from URL', 'error');
+            };
+            img.src = url;
+        }
+        
+        // Show image preview
+        function showImagePreview(src) {
+            const previewDiv = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            previewImg.src = src;
+            previewDiv.style.display = 'block';
+            window.tempImageSrc = src; // Store temporarily
+        }
+        
+        // Cancel image preview
+        function cancelImagePreview() {
+            document.getElementById('imagePreview').style.display = 'none';
+            window.tempImageSrc = null;
+        }
+        
+        // Save profile image
+        async function saveProfileImage() {
+            if (!window.tempImageSrc) return;
+            
+            // Update avatar display
+            const avatarImg = document.getElementById('avatarImage');
+            const avatarInitials = document.getElementById('avatarInitials');
+            const avatarContainer = document.getElementById('userAvatar');
+            
+            avatarImg.src = window.tempImageSrc;
+            avatarImg.style.display = 'block';
+            avatarInitials.style.display = 'none';
+            avatarContainer.style.background = '';
+            
+            // Save to user data - clear any avatar settings when image is set
+            if (window.currentUserData) {
+                window.currentUserData.profileImage = window.tempImageSrc;
+                window.currentUserData.avatarType = null;
+                window.currentUserData.avatarValue = null;
+            }
+            
+            // If we have a user ID, update via API
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+            
+            if (userId) {
+                try {
+                    await fetch(`/api/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            profileImage: window.tempImageSrc,
+                            avatarType: null,
+                            avatarValue: null
+                        })
+                    });
+                } catch (error) {
+                    console.error('Error updating profile image:', error);
+                }
+            } else {
+                // Save to localStorage - clear avatar settings when image is set
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                currentUser.profileImage = window.tempImageSrc;
+                currentUser.avatarType = null;
+                currentUser.avatarValue = null;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            
+            // Close modal for uploaded images
+            closeImageModal();
+            showAlert('Profile picture updated successfully!', 'success');
+            
+            // Trigger auto-save if enabled
+            if (autoSaveEnabled) {
+                handleAutoSave();
+            }
+        }
+
+        // Show alert with modern popup notification
+        function showAlert(message, type, title = null) {
+            // Show popup notification
+            showPopupNotification(message, type, title);
+            
+            // Also show inline alert for backward compatibility
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Modern popup notification
+        function showPopupNotification(message, type, title = null) {
+            const notification = document.getElementById('popupNotification');
+            const iconEl = document.getElementById('notificationIcon');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const progressEl = document.getElementById('notificationProgress');
+            
+            // Set icon based on type
+            const icons = {
+                success: '<svg fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                error: '<svg fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                info: '<svg fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                warning: '<svg fill="none" stroke="#f59e0b" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>'
+            };
+            
+            // Set content
+            iconEl.innerHTML = icons[type] || icons.info;
+            titleEl.textContent = title || (type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Info');
+            messageEl.textContent = message;
+            
+            // Set progress bar color
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                info: '#3b82f6',
+                warning: '#f59e0b'
+            };
+            progressEl.style.background = colors[type] || colors.info;
+            
+            // Reset animation
+            notification.style.animation = 'none';
+            progressEl.style.animation = 'none';
+            
+            // Force reflow
+            notification.offsetHeight;
+            
+            // Start animation
+            notification.style.animation = 'slideIn 0.3s ease';
+            progressEl.style.animation = 'progressBar 3s linear';
+            notification.style.display = 'block';
+            
+            // Auto hide after 3 seconds
+            clearTimeout(window.notificationTimeout);
+            window.notificationTimeout = setTimeout(() => {
+                closeNotification();
+            }, 3000);
+        }
+        
+        function closeNotification() {
+            const notification = document.getElementById('popupNotification');
+            notification.style.display = 'none';
+            clearTimeout(window.notificationTimeout);
+        }
+        
+        // Show keyboard shortcut hint on form focus
+        document.addEventListener('DOMContentLoaded', function() {
+            const formInputs = document.querySelectorAll('.form-input');
+            let hintShown = localStorage.getItem('ctrlSHintShown');
+            
+            if (!hintShown) {
+                formInputs.forEach(input => {
+                    input.addEventListener('focus', function showHintOnce() {
+                        if (!localStorage.getItem('ctrlSHintShown')) {
+                            showPopupNotification('Press Ctrl+S to save your changes', 'info', 'Keyboard Shortcut');
+                            localStorage.setItem('ctrlSHintShown', 'true');
+                            // Remove listener after showing once
+                            formInputs.forEach(i => i.removeEventListener('focus', showHintOnce));
+                        }
+                    });
+                });
+            }
+            
+            // Populate superhero avatars
+            const superheroContainer = document.getElementById('superheroAvatars');
+            if (superheroContainer) {
+                superheroEmojis.forEach((emoji, index) => {
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.style.cssText = 'width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 2px solid #e5e7eb; border-radius: 50%; cursor: pointer; transition: all 0.2s; background: #f3f4f6;';
+                    avatarDiv.textContent = emoji;
+                    avatarDiv.onclick = () => selectSuperhero(emoji);
+                    avatarDiv.onmouseover = () => { avatarDiv.style.borderColor = '#6366f1'; avatarDiv.style.transform = 'scale(1.1)'; };
+                    avatarDiv.onmouseout = () => { avatarDiv.style.borderColor = '#e5e7eb'; avatarDiv.style.transform = 'scale(1)'; };
+                    superheroContainer.appendChild(avatarDiv);
+                });
+            }
+        });
+    </script>
+    
+    <!-- Global Footer -->
+    <link rel="stylesheet" href="/css/global-footer-v2.css">
+    <script src="/js/global-footer-v2.js"></script>
+</body>
+</html>

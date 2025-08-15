@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Title - FDX Trading</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/smart-navigation.css">
+    <style>
+        /* Page-specific styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .trend-down {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .quick-action {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #334155;
+        }
+
+        .quick-action:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .quick-action-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-section">
+            <div class="page-breadcrumb">
+                <a href="/dashboard.html" class="breadcrumb-link">Home</a>
+                <span>›</span>
+                <span>Current Page</span>
+            </div>
+            <h1 class="page-title">Page Title</h1>
+            <p class="page-subtitle">Brief description of what this page does</p>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary">
+                <span>🔄</span>
+                <span>Refresh</span>
+            </button>
+            <button class="btn btn-primary">
+                <span>➕</span>
+                <span>Primary Action</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-value">24</div>
+            <div class="stat-label">Active Items</div>
+            <span class="stat-trend trend-up">
+                <span>↑</span>
+                <span>12% vs last week</span>
+            </span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">156</div>
+            <div class="stat-label">Total Count</div>
+            <span class="stat-trend trend-up">
+                <span>↑</span>
+                <span>8% growth</span>
+            </span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">89%</div>
+            <div class="stat-label">Success Rate</div>
+            <span class="stat-trend trend-down">
+                <span>↓</span>
+                <span>2% from target</span>
+            </span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">$45.2K</div>
+            <div class="stat-label">Total Value</div>
+            <span class="stat-trend trend-up">
+                <span>↑</span>
+                <span>23% increase</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="content-card">
+        <div class="card-header">
+            <h2 class="card-title">Quick Actions</h2>
+        </div>
+        <div class="quick-actions-grid">
+            <a href="/request-create.html" class="quick-action">
+                <div class="quick-action-icon">📝</div>
+                <div class="quick-action-title">Create Request</div>
+            </a>
+            <a href="/console-list.html" class="quick-action">
+                <div class="quick-action-icon">🎛️</div>
+                <div class="quick-action-title">View Consoles</div>
+            </a>
+            <a href="/products.html" class="quick-action">
+                <div class="quick-action-icon">📦</div>
+                <div class="quick-action-title">Browse Products</div>
+            </a>
+            <a href="/university-dashboard.html" class="quick-action">
+                <div class="quick-action-icon">🎓</div>
+                <div class="quick-action-title">Learn</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="content-card">
+        <div class="card-header">
+            <h2 class="card-title">Main Content Area</h2>
+            <button class="btn btn-secondary">View All</button>
+        </div>
+        <div class="card-content">
+            <p>Your main content goes here. This template demonstrates:</p>
+            <ul style="margin: 20px 0; padding-left: 24px; color: #64748b;">
+                <li>Smart vertical navigation that adapts to user role</li>
+                <li>Clean, modern design with optimal spacing</li>
+                <li>Consistent header with breadcrumbs</li>
+                <li>Quick stats cards for key metrics</li>
+                <li>Action-oriented quick access buttons</li>
+                <li>Responsive layout that works on all devices</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Load Smart Navigation -->
+    <script src="/js/smart-navigation.js"></script>
+    <script>
+        // Page-specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded with smart navigation');
+            
+            // Add any page-specific functionality here
+        });
+    </script>
+    
+    <!-- Global Footer -->
+    <link rel="stylesheet" href="/css/global-footer-v2.css">
+    <script src="/js/global-footer-v2.js"></script>
+</body>
+</html>
