@@ -19,12 +19,12 @@ namespace FDX.Trading.Services
 
     public class EmailService : IEmailService
     {
-        private readonly EmailClient _emailClient;
+        private readonly EmailClient? _emailClient;
         private readonly IConfiguration _configuration;
         private readonly ILogger<EmailService> _logger;
         private readonly string _senderAddress;
 
-        public EmailService(EmailClient emailClient, IConfiguration configuration, ILogger<EmailService> logger)
+        public EmailService(EmailClient? emailClient, IConfiguration configuration, ILogger<EmailService> logger)
         {
             _emailClient = emailClient;
             _configuration = configuration;

@@ -84,9 +84,14 @@ builder.Services.AddHttpClient();
 
 // Add Azure Communication Services for email
 var acsConnectionString = builder.Configuration["AzureCommunicationServices:ConnectionString"];
-if (!string.IsNullOrEmpty(acsConnectionString))
+if (!string.IsNullOrEmpty(acsConnectionString) && acsConnectionString != "MOVED_TO_USER_SECRETS")
 {
     builder.Services.AddSingleton(new EmailClient(acsConnectionString));
+}
+else
+{
+    // Add a null email client for development without Azure Communication Services
+    builder.Services.AddSingleton<EmailClient>(provider => null);
 }
 
 // Add Application Insights
