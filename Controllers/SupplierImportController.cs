@@ -69,6 +69,141 @@ namespace FDX.Trading.Controllers
             }
         }
 
+        [HttpPost("import-excel-maximum")]
+        public async Task<IActionResult> ImportMaximumSuppliers([FromQuery] string filePath = @"C:\Users\fdxadmin\Downloads\Suppliers_Optimized.xlsx")
+        {
+            // First, clear existing suppliers for fresh import
+            var existingSuppliers = await _context.FdxUsers
+                .Where(u => u.Type == UserType.Supplier)
+                .ToListAsync();
+            
+            if (existingSuppliers.Any())
+            {
+                var supplierIds = existingSuppliers.Select(s => s.Id).ToList();
+                
+                // Delete all related data first
+                var allProducts = await _context.SupplierProductCatalogs.ToListAsync();
+                _context.SupplierProductCatalogs.RemoveRange(allProducts);
+                
+                // Delete brief suppliers
+                var briefSuppliers = await _context.BriefSuppliers
+                    .Where(bs => supplierIds.Contains(bs.SupplierId))
+                    .ToListAsync();
+                if (briefSuppliers.Any())
+                    _context.BriefSuppliers.RemoveRange(briefSuppliers);
+                
+                // Now delete suppliers
+                _context.FdxUsers.RemoveRange(existingSuppliers);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"Cleared {existingSuppliers.Count} existing suppliers and related data");
+            }
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return BadRequest($"File not found: {filePath}");
+            }
+
+            var report = new ImportReport { StartTime = DateTime.Now };
+            var uniqueNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var suppliersToAdd = new List<User>();
+            
+            try
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                using var package = new ExcelPackage(new FileInfo(filePath));
+                var worksheet = package.Workbook.Worksheets[0];
+                
+                if (worksheet == null)
+                    return BadRequest("No worksheet found");
+
+                var rowCount = worksheet.Dimension?.Rows ?? 0;
+                _logger.LogInformation($"Processing {rowCount} rows for maximum import");
+
+                // Process ALL rows (skip header)
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    try
+                    {
+                        var supplierName = worksheet.Cells[row, 1].Text?.Trim();
+                        if (string.IsNullOrEmpty(supplierName) || uniqueNames.Contains(supplierName))
+                            continue;
+
+                        // Extract data
+                        var website = worksheet.Cells[row, 4].Text?.Trim();
+                        var description = worksheet.Cells[row, 5].Text?.Trim();
+                        var category = worksheet.Cells[row, 6].Text?.Trim();
+                        var country = worksheet.Cells[row, 47].Text?.Trim();
+                        
+                        // Only skip VERY obvious non-food (minimal filtering)
+                        var skipKeywords = new[] { "software", "bank", "insurance", "consulting", "law firm", "accounting" };
+                        var nameCheck = supplierName.ToLower();
+                        if (skipKeywords.Any(k => nameCheck.Contains(k)))
+                            continue;
+
+                        var supplier = new User
+                        {
+                            CompanyName = TruncateString(supplierName, 200),
+                            Username = GenerateUniqueUsername(supplierName, uniqueNames),
+                            Password = "FDX2025!",
+                            Email = $"{GenerateUsername(supplierName)}@supplier.fdx",
+                            Type = UserType.Supplier,
+                            Country = TruncateString(country ?? "Unknown", 100),
+                            Website = NormalizeWebsite(website) ?? "",
+                            Category = TruncateString(category ?? "General Food", 100),
+                            FullDescription = TruncateString(description ?? "", 2000),
+                            IsActive = true,
+                            CreatedAt = DateTime.Now,
+                            DataComplete = !string.IsNullOrEmpty(website),
+                            ImportedAt = DateTime.Now,
+                            ImportNotes = "Maximum import from Excel"
+                        };
+
+                        // Auto-generate products based on category/description
+                        if (!string.IsNullOrEmpty(category) || !string.IsNullOrEmpty(description))
+                        {
+                            var products = GenerateProductsForSupplier(supplier.CompanyName, category, description);
+                            supplier.ExtractedProducts = products;
+                            report.ProductsFromDescriptions += products.Count;
+                        }
+
+                        suppliersToAdd.Add(supplier);
+                        uniqueNames.Add(supplierName);
+                        
+                        // Save in larger batches for speed
+                        if (suppliersToAdd.Count >= 100)
+                        {
+                            await SaveSuppliersBatch(suppliersToAdd, report);
+                            suppliersToAdd.Clear();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning($"Row {row} skipped: {ex.Message}");
+                    }
+                }
+
+                // Save remaining
+                if (suppliersToAdd.Any())
+                {
+                    await SaveSuppliersBatch(suppliersToAdd, report);
+                }
+
+                report.EndTime = DateTime.Now;
+                report.Success = true;
+                report.TotalRows = rowCount - 1;
+
+                _logger.LogInformation($"Maximum import completed: {report.ImportedCount} suppliers imported");
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Maximum import failed");
+                report.Success = false;
+                report.Errors.Add(ex.Message);
+                return StatusCode(500, report);
+            }
+        }
+        
         [HttpPost("import-excel")]
         public async Task<IActionResult> ImportSuppliersFromExcel([FromQuery] string filePath = @"C:\Users\fdxadmin\Downloads\Suppliers_Optimized.xlsx")
         {
@@ -485,6 +620,134 @@ namespace FDX.Trading.Controllers
                 return value;
             
             return value.Length <= maxLength ? value : value.Substring(0, maxLength);
+        }
+        
+        private string GenerateUniqueUsername(string companyName, HashSet<string> existingNames)
+        {
+            var baseUsername = GenerateUsername(companyName);
+            var username = baseUsername;
+            var counter = 1;
+            
+            while (existingNames.Contains(username))
+            {
+                username = $"{baseUsername}_{counter++}";
+            }
+            
+            existingNames.Add(username);
+            return username;
+        }
+        
+        private List<SupplierProductCatalog> GenerateProductsForSupplier(string companyName, string category, string description)
+        {
+            var products = new List<SupplierProductCatalog>();
+            var combined = $"{companyName} {category} {description}".ToLower();
+            
+            // Generate products based on keywords
+            var productMap = new Dictionary<string, string[]>
+            {
+                { "oil", new[] { "Sunflower Oil", "Olive Oil", "Vegetable Oil" } },
+                { "pasta", new[] { "Spaghetti", "Penne", "Fusilli" } },
+                { "chocolate", new[] { "Dark Chocolate", "Milk Chocolate", "White Chocolate" } },
+                { "cheese", new[] { "Mozzarella", "Cheddar", "Parmesan" } },
+                { "meat", new[] { "Beef", "Chicken", "Pork" } },
+                { "fish", new[] { "Salmon", "Tuna", "Cod" } },
+                { "fruit", new[] { "Apples", "Oranges", "Bananas" } },
+                { "vegetable", new[] { "Tomatoes", "Potatoes", "Onions" } },
+                { "bread", new[] { "White Bread", "Whole Wheat", "Rye Bread" } },
+                { "dairy", new[] { "Milk", "Yogurt", "Butter" } },
+                { "snack", new[] { "Chips", "Crackers", "Cookies" } },
+                { "beverage", new[] { "Juice", "Soda", "Water" } },
+                { "wine", new[] { "Red Wine", "White Wine", "Rosé" } },
+                { "coffee", new[] { "Ground Coffee", "Coffee Beans", "Instant Coffee" } },
+                { "sugar", new[] { "White Sugar", "Brown Sugar", "Powdered Sugar" } },
+                { "flour", new[] { "All-Purpose Flour", "Bread Flour", "Cake Flour" } },
+                { "rice", new[] { "Long Grain Rice", "Basmati Rice", "Jasmine Rice" } },
+                { "sauce", new[] { "Tomato Sauce", "Pasta Sauce", "Hot Sauce" } },
+                { "spice", new[] { "Black Pepper", "Salt", "Paprika" } },
+                { "frozen", new[] { "Frozen Vegetables", "Frozen Meals", "Ice Cream" } }
+            };
+            
+            foreach (var kvp in productMap)
+            {
+                if (combined.Contains(kvp.Key))
+                {
+                    foreach (var productName in kvp.Value.Take(2)) // Take 2 products per category
+                    {
+                        products.Add(new SupplierProductCatalog
+                        {
+                            ProductName = productName,
+                            Category = category ?? DetermineCategory(productName),
+                            Description = $"Premium quality {productName.ToLower()} from {companyName}",
+                            IsAvailable = true,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now,
+                            SearchTags = $"{productName.ToLower()} {kvp.Key}"
+                        });
+                    }
+                    
+                    if (products.Count >= 5) break; // Max 5 products per supplier
+                }
+            }
+            
+            // If no products matched, add generic products based on category
+            if (!products.Any() && !string.IsNullOrEmpty(category))
+            {
+                products.Add(new SupplierProductCatalog
+                {
+                    ProductName = $"{category} Product",
+                    Category = category,
+                    Description = $"Quality products from {companyName}",
+                    IsAvailable = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    SearchTags = category.ToLower()
+                });
+            }
+            
+            return products;
+        }
+        
+        private async Task SaveSuppliersBatch(List<User> suppliers, ImportReport report)
+        {
+            try
+            {
+                _context.FdxUsers.AddRange(suppliers);
+                await _context.SaveChangesAsync();
+                report.ImportedCount += suppliers.Count;
+                
+                // Save products
+                foreach (var supplier in suppliers)
+                {
+                    if (supplier.ExtractedProducts?.Any() == true)
+                    {
+                        foreach (var product in supplier.ExtractedProducts)
+                        {
+                            product.SupplierId = supplier.Id;
+                        }
+                        _context.SupplierProductCatalogs.AddRange(supplier.ExtractedProducts);
+                    }
+                }
+                await _context.SaveChangesAsync();
+                
+                _logger.LogInformation($"Saved batch of {suppliers.Count} suppliers. Total: {report.ImportedCount}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Batch save failed, trying individual saves");
+                foreach (var supplier in suppliers)
+                {
+                    try
+                    {
+                        _context.FdxUsers.Add(supplier);
+                        await _context.SaveChangesAsync();
+                        report.ImportedCount++;
+                    }
+                    catch
+                    {
+                        report.FailedRows++;
+                    }
+                }
+            }
         }
         
         private string GenerateUsername(string companyName)

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using FDX.Trading.Models;
+using FDX.Trading.Services;
 
 namespace FDX.Trading.Data;
 
@@ -12,6 +13,7 @@ public class FdxTradingContext : DbContext
 
     public DbSet<User> FdxUsers { get; set; }
     public DbSet<SupplierDetails> SupplierDetails { get; set; }
+    public DbSet<SupplierRating> SupplierRatings { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<SupplierProduct> SupplierProducts { get; set; }
     public DbSet<SupplierProductCatalog> SupplierProductCatalogs { get; set; }

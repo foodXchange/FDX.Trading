@@ -2,7 +2,25 @@
   "version": 3,
   "targets": {
     "net8.0": {
-      "Azure.Core/1.38.0": {
+      "Azure.AI.OpenAI/1.0.0-beta.17": {
+        "type": "package",
+        "dependencies": {
+          "Azure.Core": "1.39.0",
+          "System.ClientModel": "1.0.0",
+          "System.Text.Json": "4.7.2"
+        },
+        "compile": {
+          "lib/netstandard2.0/Azure.AI.OpenAI.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Azure.AI.OpenAI.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Azure.Core/1.39.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
@@ -43,6 +61,24 @@
         },
         "runtime": {
           "lib/netstandard2.0/Azure.Identity.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Azure.Search.Documents/11.5.1": {
+        "type": "package",
+        "dependencies": {
+          "Azure.Core": "1.36.0",
+          "System.Text.Json": "4.7.2",
+          "System.Threading.Channels": "4.7.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/Azure.Search.Documents.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Azure.Search.Documents.dll": {
             "related": ".xml"
           }
         }
@@ -2396,7 +2432,7 @@
       "System.Threading.Channels/7.0.0": {
         "type": "package",
         "compile": {
-          "lib/net7.0/_._": {
+          "lib/net7.0/System.Threading.Channels.dll": {
             "related": ".xml"
           }
         },
@@ -2443,16 +2479,32 @@
     }
   },
   "libraries": {
-    "Azure.Core/1.38.0": {
-      "sha512": "IuEgCoVA0ef7E4pQtpC3+TkPbzaoQfa77HlfJDmfuaJUCVJmn7fT0izamZiryW5sYUFKizsftIxMkXKbgIcPMQ==",
+    "Azure.AI.OpenAI/1.0.0-beta.17": {
+      "sha512": "cYTqSHxST4+xyXWa+J0TFid8r5/pX/qLxQ22jynSHY2ACe93rnZ5GPiNtZ06c4pWvm1TPX5aJntED6im6xnzCA==",
       "type": "package",
-      "path": "azure.core/1.38.0",
+      "path": "azure.ai.openai/1.0.0-beta.17",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "CHANGELOG.md",
         "README.md",
-        "azure.core.1.38.0.nupkg.sha512",
+        "azure.ai.openai.1.0.0-beta.17.nupkg.sha512",
+        "azure.ai.openai.nuspec",
+        "azureicon.png",
+        "lib/netstandard2.0/Azure.AI.OpenAI.dll",
+        "lib/netstandard2.0/Azure.AI.OpenAI.xml"
+      ]
+    },
+    "Azure.Core/1.39.0": {
+      "sha512": "9vaV4ZICtVQp+2wjOKrIAjEjMzBkUohaBbKGqqcTW993MRfHA0N4L1BszQjWynS7lRvlYQLxaFK4wh9ewNm4HQ==",
+      "type": "package",
+      "path": "azure.core/1.39.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "README.md",
+        "azure.core.1.39.0.nupkg.sha512",
         "azure.core.nuspec",
         "azureicon.png",
         "lib/net461/Azure.Core.dll",
@@ -2479,6 +2531,22 @@
         "azureicon.png",
         "lib/netstandard2.0/Azure.Identity.dll",
         "lib/netstandard2.0/Azure.Identity.xml"
+      ]
+    },
+    "Azure.Search.Documents/11.5.1": {
+      "sha512": "Vg+1mtM3LXVYwKQ+DDi7Wd/Rf2Ajo6rl5/7bFPfouUMBe/cNg71TIU62PY/eEtKfUI3Y7wdFXNcgGkpUG+OVnw==",
+      "type": "package",
+      "path": "azure.search.documents/11.5.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "README.md",
+        "azure.search.documents.11.5.1.nupkg.sha512",
+        "azure.search.documents.nuspec",
+        "azureicon.png",
+        "lib/netstandard2.0/Azure.Search.Documents.dll",
+        "lib/netstandard2.0/Azure.Search.Documents.xml"
       ]
     },
     "CsvHelper/30.0.1": {
@@ -6789,6 +6857,8 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Azure.AI.OpenAI >= 1.0.0-beta.17",
+      "Azure.Search.Documents >= 11.5.1",
       "CsvHelper >= 30.0.1",
       "EPPlus >= 7.0.0",
       "FluentValidation.AspNetCore >= 11.3.0",
@@ -6853,6 +6923,14 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "Azure.AI.OpenAI": {
+            "target": "Package",
+            "version": "[1.0.0-beta.17, )"
+          },
+          "Azure.Search.Documents": {
+            "target": "Package",
+            "version": "[11.5.1, )"
+          },
           "CsvHelper": {
             "target": "Package",
             "version": "[30.0.1, )"

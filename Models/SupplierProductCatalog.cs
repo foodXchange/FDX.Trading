@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace FDX.Trading.Models;
 
 // Represents products that suppliers can provide in their catalog
-public class SupplierProductCatalog
+public partial class SupplierProductCatalog
 {
     public int Id { get; set; }
     

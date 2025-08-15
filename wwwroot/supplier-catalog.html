@@ -3,848 +3,703 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supplier Catalogs - FDX Trading</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>Suppliers - FDX Trading Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #48bb78;
+            --accent: #ed8936;
+            --dark: #0f0f1e;
+            --dark-secondary: #1a1a2e;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: #ffffff;
             min-height: 100vh;
         }
-        
-        /* Navbar Styles - Match Dashboard */
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navigation */
         .navbar {
-            background: rgba(255, 255, 255, 0.98);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(15, 15, 30, 0.8);
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
-            padding: 0;
         }
-        
-        .navbar-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-        }
-        
+
         .navbar-brand {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
             font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-            transition: transform 0.3s;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
         }
-        
-        .navbar-brand:hover {
-            transform: scale(1.05);
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin: 0 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
-        
-        .navbar-logo {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
+
+        .nav-link:hover {
+            color: #ffffff !important;
+        }
+
+        .nav-link.active {
+            color: #667eea !important;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
             font-size: 1.2rem;
         }
-        
-        .navbar-nav {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        
-        .nav-link {
-            padding: 8px 16px;
-            color: #555;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .nav-link:hover {
-            background: #f0f0f0;
-            color: #667eea;
-        }
-        
-        .nav-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .navbar-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .welcome-message {
-            margin-right: 20px;
-            color: #667eea;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-        
-        .user-avatar-small {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .user-avatar-small:hover {
-            transform: scale(1.05);
-        }
-        
-        .logout-btn {
-            padding: 8px 16px;
-            background: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            margin-left: 15px;
-            transition: background 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background: #ff3333;
-        }
-        .container {
+
+        /* Search and Filters */
+        .search-section {
+            padding: 2rem;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
-        h1 {
+
+        .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
             color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
         }
-        .controls {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Filter Tags */
+        .filter-tags {
             display: flex;
-            gap: 15px;
+            gap: 1rem;
             flex-wrap: wrap;
-            align-items: center;
+            margin-bottom: 2rem;
         }
-        .controls button {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
+
+        .filter-tag {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
         }
-        .controls button:hover {
-            background: #5a67d8;
+
+        .filter-tag:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+            color: white;
         }
-        .controls select, .controls input {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+
+        .filter-tag.active {
+            background: var(--gradient);
+            border-color: transparent;
+            color: white;
         }
-        .stats {
+
+        /* Stats Overview */
+        .stats-overview {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 0 auto 2rem;
         }
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        .stat-mini {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
             text-align: center;
         }
-        .stat-card h3 {
-            margin: 0 0 10px 0;
-            color: #667eea;
-            font-size: 2em;
+
+        .stat-mini-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .stat-card p {
-            margin: 0;
-            color: #666;
+
+        .stat-mini-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
+
+        /* Supplier Grid */
         .suppliers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 1.5rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 0 auto 2rem;
         }
+
         .supplier-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
-        .supplier-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-        .supplier-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-        }
-        .supplier-header h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.2em;
-        }
-        .supplier-header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 0.9em;
-        }
-        .supplier-body {
-            padding: 15px;
-        }
-        .supplier-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .supplier-stat {
-            text-align: center;
-        }
-        .supplier-stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #667eea;
-        }
-        .supplier-stat-label {
-            font-size: 0.8em;
-            color: #666;
-        }
-        .badges {
-            display: flex;
-            gap: 5px;
-            margin-top: 10px;
-        }
-        .badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            background: #f0f0f0;
-        }
-        .badge.kosher {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-        .badge.organic {
-            background: #e8f5e9;
-            color: #388e3c;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .suppliers-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .controls button,
-            .controls select,
-            .controls input {
-                width: 100%;
-            }
-            
-            .modal-content {
-                margin: 20px;
-                width: calc(100% - 40px);
-                max-height: 90vh;
-            }
-            
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .supplier-card {
-                margin: 0 5px;
-            }
-            
-            .supplier-stats {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-        
-        .products-modal {
-            display: none;
-            position: fixed;
+
+        .supplier-card::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
+            width: 4px;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
+            background: var(--gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
         }
-        .modal-content {
-            background: white;
-            margin: 50px auto;
-            padding: 20px;
-            width: 90%;
-            max-width: 1200px;
-            max-height: 80vh;
-            overflow-y: auto;
-            border-radius: 10px;
+
+        .supplier-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
         }
-        .modal-header {
+
+        .supplier-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .supplier-header {
+            display: flex;
+            align-items: start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .supplier-info {
+            flex: 1;
+        }
+
+        .supplier-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .supplier-country {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .supplier-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(72, 187, 120, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            color: #48bb78;
+            font-weight: 600;
+        }
+
+        .supplier-details {
+            margin: 1rem 0;
+        }
+
+        .detail-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
         }
-        .close {
-            font-size: 28px;
-            font-weight: bold;
+
+        .detail-label {
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .supplier-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .supplier-tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 0.25rem 0.75rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .supplier-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
-            color: #999;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
         }
-        .close:hover {
-            color: #333;
+
+        .btn-view {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
         }
-        .products-table {
-            width: 100%;
-            border-collapse: collapse;
+
+        .btn-view:hover {
+            background: var(--gradient);
+            color: white;
         }
-        .products-table th {
-            background: #f5f5f5;
-            padding: 10px;
-            text-align: left;
-            border-bottom: 2px solid #ddd;
+
+        .btn-contact {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
         }
-        .products-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+
+        .btn-contact:hover {
+            background: var(--secondary);
+            color: white;
         }
-        .products-table tr:hover {
-            background: #f9f9f9;
-        }
-        .import-section {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .import-section h3 {
-            margin-top: 0;
-            color: #856404;
-        }
+
+        /* Loading State */
         .loading {
             text-align: center;
-            padding: 50px;
-            color: white;
-            font-size: 1.2em;
+            padding: 4rem;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .suppliers-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .stats-overview {
+                grid-template-columns: 1fr 1fr;
+                padding: 0 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar - Dashboard Style -->
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
     <nav class="navbar">
-        <div class="navbar-container">
-            <a href="/dashboard.html" class="navbar-brand">
-                <div class="navbar-logo">FDX</div>
-                <span>FDX Trading</span>
-            </a>
-            
-            <div class="navbar-nav">
-                <a href="/dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/requests.html" class="nav-link">Requests</a>
-                <a href="/products.html" class="nav-link">Products</a>
-                <a href="/supplier-catalog.html" class="nav-link active">Suppliers</a>
-                <a href="/price-management.html" class="nav-link">Pricing</a>
-                <a href="/users.html" class="nav-link">Users</a>
-            </div>
-            
-            <div class="navbar-user">
-                <a href="/user-profile.html" style="text-decoration: none; color: inherit;">
-                    <div class="user-info" style="cursor: pointer;">
-                        <div class="user-avatar-small" id="navUserAvatar">U</div>
-                    </div>
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <a href="/" class="navbar-brand">
+                    <i class="fas fa-chart-line"></i> FDX Trading
                 </a>
-                <button class="logout-btn" onclick="logout()">Logout</button>
+                <div class="nav-links d-flex">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/modern-dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="/intelligent-search.html" class="nav-link">AI Search</a>
+                    <a href="/supplier-catalog.html" class="nav-link active">Suppliers</a>
+                    <a href="/product-catalog.html" class="nav-link">Products</a>
+                </div>
             </div>
         </div>
     </nav>
-    
-    <div class="container">
-        <h1>🏭 Supplier Product Catalogs</h1>
-        
-        <div class="stats" id="stats">
-            <div class="stat-card">
-                <h3 id="totalSuppliers">0</h3>
-                <p>Total Suppliers</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="totalProducts">0</h3>
-                <p>Total Products</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="totalCategories">0</h3>
-                <p>Categories</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="activeSuppliers">0</h3>
-                <p>Active Suppliers</p>
-            </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Supplier Directory</h1>
+        <p class="subtitle">Connect with verified global suppliers</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" 
+                   id="searchInput" 
+                   class="search-input" 
+                   placeholder="Search suppliers by name, country, or product category..."
+                   onkeyup="filterSuppliers()">
+            <i class="fas fa-search search-icon"></i>
         </div>
 
-        <div class="controls">
-            <label for="searchInput" style="display: none;">Search suppliers</label>
-            <input type="text" id="searchInput" placeholder="Search by company name..." style="flex: 1;" aria-label="Search suppliers" title="Search suppliers">
-            <label for="countryFilter" style="display: none;">Filter by country</label>
-            <select id="countryFilter" aria-label="Filter by country" title="Filter by country">
-                <option value="">All Countries</option>
-            </select>
-            <label for="hasProductsFilter" style="display: none;">Has products filter</label>
-            <select id="hasProductsFilter" aria-label="Has products" title="Filter by product availability">
-                <option value="">All Suppliers</option>
-                <option value="true">With Products</option>
-                <option value="false">Without Products</option>
-            </select>
-            <button onclick="searchSuppliers()">🔍 Search</button>
-            <button onclick="resetSearch()">↻ Reset</button>
-            <button onclick="showImportDialog()">📥 Import CSV</button>
-        </div>
-
-        <div class="import-section" id="importSection" style="display: none;">
-            <h3>Import Products from CSV</h3>
-            <p>
-                <label for="csvPath">CSV File Path:</label>
-                <input type="text" id="csvPath" value="C:\Users\fdxadmin\Downloads\Products 9_8_2025.csv" style="width: 500px;" title="CSV file path" placeholder="Enter CSV file path">
-            </p>
-            <button onclick="importCSV()">Start Import</button>
-            <div id="importResult"></div>
-        </div>
-
-        <div id="suppliersGrid" class="suppliers-grid">
-            <div class="loading">Loading suppliers...</div>
+        <!-- Filter Tags -->
+        <div class="filter-tags">
+            <span class="filter-tag active" onclick="setFilter('all', this)">All Suppliers</span>
+            <span class="filter-tag" onclick="setFilter('verified', this)">✓ Verified</span>
+            <span class="filter-tag" onclick="setFilter('premium', this)">⭐ Premium</span>
+            <span class="filter-tag" onclick="setFilter('new', this)">🆕 New</span>
+            <span class="filter-tag" onclick="setFilter('top-rated', this)">🏆 Top Rated</span>
         </div>
     </div>
 
-    <!-- Products Modal -->
-    <div id="productsModal" class="products-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Supplier Products</h2>
-                <span class="close" onclick="closeModal()">&times;</span>
-            </div>
-            <div id="modalBody">
-                <!-- Products will be loaded here -->
-            </div>
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+        <div class="stat-mini">
+            <div class="stat-mini-value" id="totalSuppliers">51</div>
+            <div class="stat-mini-label">Active Suppliers</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">12</div>
+            <div class="stat-mini-label">Countries</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">280+</div>
+            <div class="stat-mini-label">Products</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">4.5</div>
+            <div class="stat-mini-label">Avg Rating</div>
+        </div>
+    </div>
+
+    <!-- Suppliers Grid -->
+    <div class="suppliers-grid" id="suppliersGrid">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 1rem; color: rgba(255, 255, 255, 0.6);">Loading suppliers...</p>
         </div>
     </div>
 
     <script>
-        let suppliers = [];
-        let products = [];
+        // Sample supplier data
+        const suppliers = [
+            {
+                name: "Mueloliva Spain",
+                country: "Spain",
+                rating: 4.8,
+                products: 45,
+                categories: ["Olive Oil", "Organic"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Bergia Mediterranean Foods",
+                country: "Italy",
+                rating: 4.6,
+                products: 32,
+                categories: ["Pasta", "Sauces"],
+                verified: true,
+                premium: false
+            },
+            {
+                name: "Nutkao Italia",
+                country: "Italy",
+                rating: 4.7,
+                products: 28,
+                categories: ["Chocolate", "Spreads"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Ardo Belgium",
+                country: "Belgium",
+                rating: 4.5,
+                products: 15,
+                categories: ["Frozen Foods", "Vegetables"],
+                verified: true,
+                premium: false
+            },
+            {
+                name: "Matilde Vicenzi",
+                country: "Italy",
+                rating: 4.9,
+                products: 22,
+                categories: ["Bakery", "Cookies"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Coppenrath Feingebäck",
+                country: "Germany",
+                rating: 4.7,
+                products: 18,
+                categories: ["Bakery", "Premium"],
+                verified: true,
+                premium: true
+            },
+            {
+                name: "Daelmans Stroopwafels",
+                country: "Netherlands",
+                rating: 4.8,
+                products: 12,
+                categories: ["Snacks", "Traditional"],
+                verified: true,
+                premium: false
+            },
+            {
+                name: "Kadooğlu Yağ",
+                country: "Turkey",
+                rating: 4.4,
+                products: 8,
+                categories: ["Oils", "Traditional"],
+                verified: false,
+                premium: false,
+                isNew: true
+            }
+        ];
 
-        async function loadSuppliers() {
-            try {
-                const response = await fetch('/api/users/suppliers/search');
-                suppliers = await response.json();
-                
+        let currentFilter = 'all';
+
+        // Load suppliers on page load
+        window.onload = function() {
+            setTimeout(() => {
                 displaySuppliers(suppliers);
-                updateStats();
-                await loadCountries();
-            } catch (error) {
-                console.error('Error loading suppliers:', error);
-                document.getElementById('suppliersGrid').innerHTML = '<div class="loading">Error loading suppliers</div>';
-            }
-        }
-        
-        async function loadCountries() {
-            try {
-                const response = await fetch('/api/users/suppliers/countries');
-                const countries = await response.json();
-                
-                const countryFilter = document.getElementById('countryFilter');
-                countryFilter.innerHTML = '<option value="">All Countries</option>';
-                countries.forEach(country => {
-                    const option = document.createElement('option');
-                    option.value = country;
-                    option.textContent = country;
-                    countryFilter.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error loading countries:', error);
-            }
-        }
-        
-        async function searchSuppliers() {
-            const searchTerm = document.getElementById('searchInput').value;
-            const country = document.getElementById('countryFilter').value;
-            const hasProducts = document.getElementById('hasProductsFilter').value;
-            
-            let url = '/api/users/suppliers/search?';
-            const params = [];
-            
-            if (searchTerm) params.push(`q=${encodeURIComponent(searchTerm)}`);
-            if (country) params.push(`country=${encodeURIComponent(country)}`);
-            if (hasProducts) params.push(`hasProducts=${hasProducts}`);
-            
-            url += params.join('&');
-            
-            try {
-                document.getElementById('suppliersGrid').innerHTML = '<div class="loading">Searching...</div>';
-                const response = await fetch(url);
-                suppliers = await response.json();
-                
-                displaySuppliers(suppliers);
-                updateStats();
-            } catch (error) {
-                console.error('Error searching suppliers:', error);
-                document.getElementById('suppliersGrid').innerHTML = '<div class="loading">Error searching suppliers</div>';
-            }
-        }
-        
-        function resetSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('countryFilter').value = '';
-            document.getElementById('hasProductsFilter').value = '';
-            loadSuppliers();
-        }
+            }, 1000);
+        };
 
         function displaySuppliers(suppliersToShow) {
             const grid = document.getElementById('suppliersGrid');
             
             if (suppliersToShow.length === 0) {
-                grid.innerHTML = '<div class="loading">No suppliers found</div>';
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                        <i class="fas fa-search" style="font-size: 3rem; color: rgba(255, 255, 255, 0.3);"></i>
+                        <p style="margin-top: 1rem; color: rgba(255, 255, 255, 0.5);">No suppliers found</p>
+                    </div>
+                `;
                 return;
             }
 
             grid.innerHTML = suppliersToShow.map(supplier => `
-                <div class="supplier-card" onclick="viewSupplierProducts(${supplier.id})" title="Click to view supplier profile">
+                <div class="supplier-card">
                     <div class="supplier-header">
-                        <h3>${supplier.companyName || 'Unknown Supplier'}</h3>
-                        <p>📍 ${supplier.country || 'Unknown'}</p>
+                        <div class="supplier-info">
+                            <div class="supplier-name">${supplier.name}</div>
+                            <div class="supplier-country">
+                                <i class="fas fa-map-marker-alt"></i> ${supplier.country}
+                            </div>
+                        </div>
+                        <div class="supplier-rating">
+                            <i class="fas fa-star"></i> ${supplier.rating}
+                        </div>
                     </div>
-                    <div class="supplier-body">
-                        <div class="supplier-stats">
-                            <div class="supplier-stat">
-                                <div class="supplier-stat-value">${supplier.productCount || 0}</div>
-                                <div class="supplier-stat-label">Products</div>
-                            </div>
-                            <div class="supplier-stat">
-                                <div class="supplier-stat-value">${supplier.isActive ? '✓' : '✗'}</div>
-                                <div class="supplier-stat-label">Active</div>
-                            </div>
-                            <div class="supplier-stat">
-                                <div class="supplier-stat-value">${supplier.verification === 1 ? '✓' : '○'}</div>
-                                <div class="supplier-stat-label">Verified</div>
-                            </div>
+                    
+                    <div class="supplier-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Products</span>
+                            <span class="detail-value">${supplier.products}</span>
                         </div>
-                        <div class="badges">
-                            ${supplier.productCount > 0 ? '<span class="badge kosher">Has Products</span>' : ''}
-                            ${supplier.website ? '<span class="badge organic">Website</span>' : ''}
+                        <div class="detail-item">
+                            <span class="detail-label">Categories</span>
+                            <span class="detail-value">${supplier.categories.length}</span>
                         </div>
-                        ${supplier.businessType ? `<p style="margin-top: 10px; font-size: 0.9em; color: #666;">Type: ${supplier.businessType}</p>` : ''}
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value">
+                                ${supplier.verified ? '<i class="fas fa-check-circle" style="color: #48bb78;"></i> Verified' : 'Pending'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="supplier-tags">
+                        ${supplier.categories.map(cat => `<span class="supplier-tag">${cat}</span>`).join('')}
+                        ${supplier.premium ? '<span class="supplier-tag" style="background: rgba(237, 137, 54, 0.2); color: #ed8936;">Premium</span>' : ''}
+                        ${supplier.isNew ? '<span class="supplier-tag" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">New</span>' : ''}
+                    </div>
+                    
+                    <div class="supplier-actions">
+                        <button class="btn-action btn-view" onclick="viewSupplier('${supplier.name}')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        <button class="btn-action btn-contact" onclick="contactSupplier('${supplier.name}')">
+                            <i class="fas fa-envelope"></i> Contact
+                        </button>
                     </div>
                 </div>
             `).join('');
+
+            // Update count
+            document.getElementById('totalSuppliers').textContent = suppliersToShow.length;
         }
 
-        async function viewSupplierProducts(supplierId) {
-            // Navigate to supplier view page
-            window.location.href = `/supplier-view.html?id=${supplierId}`;
-            return;
+        function filterSuppliers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
-            // Original modal code (kept for reference)
-            try {
-                const response = await fetch(`/api/products/supplier/${supplierId}`);
-                const data = await response.json();
-                
-                const modal = document.getElementById('productsModal');
-                const modalTitle = document.getElementById('modalTitle');
-                const modalBody = document.getElementById('modalBody');
-                
-                modalTitle.textContent = `${data.supplier.companyName} - Product Catalog (${data.productCount} products)`;
-                
-                if (data.products.length === 0) {
-                    modalBody.innerHTML = '<p>No products found for this supplier.</p>';
-                } else {
-                    modalBody.innerHTML = `
-                        <div style="margin-bottom: 15px;">
-                            <strong>Email:</strong> ${data.supplier.email || 'N/A'} | 
-                            <strong>Website:</strong> ${data.supplier.website || 'N/A'}
-                        </div>
-                        <table class="products-table">
-                            <thead>
-                                <tr>
-                                    <th>Product Code</th>
-                                    <th>Product Name</th>
-                                    <th>Category</th>
-                                    <th>Unit Price</th>
-                                    <th>MOQ</th>
-                                    <th>Incoterms</th>
-                                    <th>Certifications</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${data.products.map(product => `
-                                    <tr>
-                                        <td>${product.productCode}</td>
-                                        <td>${product.productName}</td>
-                                        <td>${product.category || '-'}</td>
-                                        <td>${product.currency || '$'}${product.unitPrice || '-'}</td>
-                                        <td>${product.moq || '-'}</td>
-                                        <td>${product.incoterms || '-'}</td>
-                                        <td>
-                                            ${product.isKosher ? '✅ Kosher' : ''}
-                                            ${product.isOrganic ? '🌿 Organic' : ''}
-                                        </td>
-                                        <td>${product.status}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                }
-                
-                modal.style.display = 'block';
-            } catch (error) {
-                console.error('Error loading supplier products:', error);
-                alert('Error loading products');
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('productsModal').style.display = 'none';
-        }
-
-        function updateStats() {
-            document.getElementById('totalSuppliers').textContent = suppliers.length;
-            document.getElementById('totalProducts').textContent = suppliers.reduce((sum, s) => sum + (s.productCount || 0), 0);
-            document.getElementById('totalCategories').textContent = new Set(suppliers.map(s => s.country).filter(c => c)).size;
-            document.getElementById('activeSuppliers').textContent = suppliers.filter(s => s.isActive).length;
-        }
-
-        function updateFilters() {
-            const countries = [...new Set(suppliers.map(s => s.country).filter(c => c))].sort();
-            const countryFilter = document.getElementById('countryFilter');
-            countryFilter.innerHTML = '<option value="">All Countries</option>' + 
-                countries.map(c => `<option value="${c}">${c}</option>`).join('');
-        }
-
-        function showImportDialog() {
-            const section = document.getElementById('importSection');
-            section.style.display = section.style.display === 'none' ? 'block' : 'none';
-        }
-
-        async function importCSV() {
-            const csvPath = document.getElementById('csvPath').value;
-            const resultDiv = document.getElementById('importResult');
+            let filtered = suppliers;
             
-            resultDiv.innerHTML = '<p>Importing... This may take a few minutes.</p>';
-            
-            try {
-                const response = await fetch('/api/products/import-csv', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ filePath: csvPath })
+            // Apply category filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(supplier => {
+                    switch(currentFilter) {
+                        case 'verified': return supplier.verified;
+                        case 'premium': return supplier.premium;
+                        case 'new': return supplier.isNew;
+                        case 'top-rated': return supplier.rating >= 4.7;
+                        default: return true;
+                    }
                 });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    resultDiv.innerHTML = `
-                        <div style="color: green;">
-                            <h4>Import Successful!</h4>
-                            <p>${result.message}</p>
-                            <ul>
-                                <li>Total Rows: ${result.totalRows}</li>
-                                <li>Products Created: ${result.productsCreated}</li>
-                                <li>Products Updated: ${result.productsUpdated}</li>
-                                <li>Suppliers Created: ${result.suppliersCreated}</li>
-                            </ul>
-                        </div>
-                    `;
-                    setTimeout(() => loadSuppliers(), 2000);
-                } else {
-                    resultDiv.innerHTML = `
-                        <div style="color: red;">
-                            <h4>Import Failed</h4>
-                            <p>${result.message || 'Unknown error'}</p>
-                            ${result.errors && result.errors.length > 0 ? 
-                                '<ul>' + result.errors.slice(0, 5).map(e => `<li>${e}</li>`).join('') + '</ul>' : ''}
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = `<div style="color: red;">Error: ${error.message}</div>`;
             }
-        }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const search = e.target.value.toLowerCase();
-            const filtered = suppliers.filter(s => 
-                s.companyName.toLowerCase().includes(search) ||
-                (s.latestProduct && s.latestProduct.toLowerCase().includes(search))
-            );
-            displaySuppliers(filtered);
-        });
-
-        // Country filter
-        document.getElementById('countryFilter').addEventListener('change', (e) => {
-            const country = e.target.value;
-            const filtered = country ? suppliers.filter(s => s.country === country) : suppliers;
-            displaySuppliers(filtered);
-        });
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('productsModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Load suppliers on page load
-        loadSuppliers();
-        
-        // Navbar functions
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = '/index.html';
-        }
-        
-        // Initialize user display in navbar
-        function initializeUserDisplay() {
-            const userData = localStorage.getItem('currentUser');
-            if (userData) {
-                try {
-                    const user = JSON.parse(userData);
-                    
-                    // Determine display name with fallbacks
-                    let displayName = 'User';
-                    if (user.firstName && user.lastName) {
-                        displayName = `${user.firstName} ${user.lastName}`;
-                    } else if (user.displayName) {
-                        displayName = user.displayName;
-                    } else if (user.username) {
-                        displayName = user.username;
-                    } else if (user.email) {
-                        displayName = user.email.split('@')[0];
-                    }
-                    
-                    // Determine role
-                    const role = user.role || user.typeName || 'User';
-                    
-                    // Update navbar elements
-                    // Create initials for avatar
-                    let initials = 'U';
-                    if (user.firstName && user.lastName) {
-                        initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-                    } else if (displayName && displayName !== 'User') {
-                        const nameParts = displayName.split(' ');
-                        if (nameParts.length >= 2) {
-                            initials = `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-                        } else {
-                            initials = displayName.substring(0, 2).toUpperCase();
-                        }
-                    }
-                    
-                    // Update navbar elements
-                    const firstNameElement = document.getElementById('navUserFirstName');
-                    const avatarElement = document.getElementById('navUserAvatar');
-                    
-                    if (firstNameElement) {
-                        const firstName = user.firstName || displayName.split(' ')[0] || 'User';
-                        firstNameElement.textContent = firstName;
-                    }
-                    if (avatarElement) avatarElement.textContent = initials;
-                } catch (error) {
-                    console.error('Error parsing user data:', error);
-                    setDefaultUser();
-                }
-            } else {
-                setDefaultUser();
-            }
-        }
-        
-        // Set default user display
-        function setDefaultUser() {
-            const firstNameElement = document.getElementById('navUserFirstName');
-            const avatarElement = document.getElementById('navUserAvatar');
             
-            if (firstNameElement) firstNameElement.textContent = 'Guest';
-            if (avatarElement) avatarElement.textContent = 'GU';
+            // Apply search filter
+            if (searchTerm) {
+                filtered = filtered.filter(supplier => 
+                    supplier.name.toLowerCase().includes(searchTerm) ||
+                    supplier.country.toLowerCase().includes(searchTerm) ||
+                    supplier.categories.some(cat => cat.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            displaySuppliers(filtered);
         }
-        
-        // Initialize user display on load
-        initializeUserDisplay();
+
+        function setFilter(filter, element) {
+            currentFilter = filter;
+            
+            // Update active state
+            document.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Apply filter
+            filterSuppliers();
+        }
+
+        function viewSupplier(name) {
+            alert(`Viewing details for ${name}`);
+        }
+
+        function contactSupplier(name) {
+            alert(`Opening contact form for ${name}`);
+        }
     </script>
-    
-    <!-- Global Keyboard Shortcuts -->
-    <script src="/js/keyboard-shortcuts.js"></script>
-    <script src="/js/universal-dark-mode-styles.js"></script>
-    
-    <!-- Global Footer -->
-    <link rel="stylesheet" href="/css/global-footer-v2.css">
-    <script src="/js/global-footer-v2.js"></script>
 </body>
 </html>

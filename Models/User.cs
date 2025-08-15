@@ -69,6 +69,9 @@ public class User
     // Temporary property for import process
     [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public List<SupplierProductCatalog>? ExtractedProducts { get; set; }
+    
+    // Navigation property for supplier details
+    public virtual SupplierDetails? SupplierDetails { get; set; }
 }
 
 public enum UserType

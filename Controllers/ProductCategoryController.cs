@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using FDX.Trading.Data;
 using FDX.Trading.Models;
+using FDX.Trading.Services;
 using CsvHelper;
 using System.Globalization;
 using CsvHelper.Configuration;
@@ -21,11 +22,16 @@ namespace FDX.Trading.Controllers
     {
         private readonly FdxTradingContext _context;
         private readonly ILogger<ProductCategoryController> _logger;
+        private readonly ImprovedCategoryMatchingService? _matchingService;
 
-        public ProductCategoryController(FdxTradingContext context, ILogger<ProductCategoryController> logger)
+        public ProductCategoryController(
+            FdxTradingContext context, 
+            ILogger<ProductCategoryController> logger,
+            ImprovedCategoryMatchingService? matchingService = null)
         {
             _context = context;
             _logger = logger;
+            _matchingService = matchingService;
         }
 
         // GET: api/ProductCategory/hierarchy
@@ -295,6 +301,27 @@ namespace FDX.Trading.Controllers
             {
                 _logger.LogError(ex, "Error linking products to categories");
                 return StatusCode(500, new { error = "Failed to link products", message = ex.Message });
+            }
+        }
+
+        // POST: api/ProductCategory/improved-match
+        [HttpPost("improved-match")]
+        public async Task<IActionResult> ImprovedCategoryMatch()
+        {
+            if (_matchingService == null)
+            {
+                return StatusCode(500, new { error = "Matching service not available" });
+            }
+
+            try
+            {
+                var result = await _matchingService.MatchAllProducts();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in improved category matching");
+                return StatusCode(500, new { error = "Failed to match categories", message = ex.Message });
             }
         }
 
