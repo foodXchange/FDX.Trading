@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "fgnO0cDWcxo=",
-  "success": false,
+  "dgSpecHash": "Tz6Jsj5miAc=",
+  "success": true,
   "projectFilePath": "C:\\FDX.Trading\\FDX.Trading.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.ai.openai\\1.0.0-beta.17\\azure.ai.openai.1.0.0-beta.17.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.communication.email\\1.0.1\\azure.communication.email.1.0.1.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.core\\1.39.0\\azure.core.1.39.0.nupkg.sha512",
-    "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.identity\\1.10.4\\azure.identity.1.10.4.nupkg.sha512",
+    "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.search.documents\\11.5.1\\azure.search.documents.11.5.1.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.security.keyvault.certificates\\4.1.0\\azure.security.keyvault.certificates.4.1.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\azure.security.keyvault.secrets\\4.5.0\\azure.security.keyvault.secrets.4.5.0.nupkg.sha512",
@@ -107,7 +107,7 @@
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.8\\microsoft.extensions.primitives.9.0.8.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.identity.abstractions\\9.3.0\\microsoft.identity.abstractions.9.3.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.identity.client\\4.61.3\\microsoft.identity.client.4.61.3.nupkg.sha512",
-    "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.identity.client.extensions.msal\\4.56.0\\microsoft.identity.client.extensions.msal.4.56.0.nupkg.sha512",
+    "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.identity.client.extensions.msal\\4.61.3\\microsoft.identity.client.extensions.msal.4.61.3.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.identity.web\\2.15.3\\microsoft.identity.web.2.15.3.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.identity.web.certificate\\2.15.3\\microsoft.identity.web.certificate.2.15.3.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\microsoft.identity.web.certificateless\\2.15.3\\microsoft.identity.web.certificateless.2.15.3.nupkg.sha512",
@@ -151,7 +151,7 @@
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.drawing.common\\7.0.0\\system.drawing.common.7.0.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.formats.asn1\\9.0.8\\system.formats.asn1.9.0.8.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.13.1\\system.identitymodel.tokens.jwt.8.13.1.nupkg.sha512",
-    "C:\\Users\\fdxadmin\\.nuget\\packages\\system.io.filesystem.accesscontrol\\5.0.0\\system.io.filesystem.accesscontrol.5.0.0.nupkg.sha512",
+    "C:\\Users\\fdxadmin\\.nuget\\packages\\system.io.filesystem.accesscontrol\\4.7.0\\system.io.filesystem.accesscontrol.4.7.0.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.io.pipelines\\9.0.8\\system.io.pipelines.9.0.8.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.memory.data\\1.0.2\\system.memory.data.1.0.2.nupkg.sha512",
@@ -174,52 +174,5 @@
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\fdxadmin\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package Microsoft.AspNetCore.RateLimiting with version (>= 8.0.0)\r\n  - Found 6 version(s) in nuget.org [ Nearest version: 7.0.0-rc.2.22476.2 ]\r\n  - Found 0 version(s) in Microsoft Visual Studio Offline Packages",
-      "projectPath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "filePath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "libraryId": "Microsoft.AspNetCore.RateLimiting",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1902",
-      "level": "Warning",
-      "message": "Package 'Azure.Identity' 1.10.4 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-m5vv-6r4h-3vj9",
-      "projectPath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "libraryId": "Azure.Identity",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1902",
-      "level": "Warning",
-      "message": "Package 'Azure.Identity' 1.10.4 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-wvxc-855f-jvrv",
-      "projectPath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "libraryId": "Azure.Identity",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1605",
-      "level": "Error",
-      "message": "Warning As Error: Detected package downgrade: Azure.Identity from 1.11.4 to 1.10.4. Reference the package directly from the project to select a different version. \r\n FDX.Trading -> Microsoft.EntityFrameworkCore.SqlServer 9.0.8 -> Microsoft.Data.SqlClient 5.1.6 -> Azure.Identity (>= 1.11.4) \r\n FDX.Trading -> Azure.Identity (>= 1.10.4)",
-      "projectPath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "filePath": "C:\\FDX.Trading\\FDX.Trading.csproj",
-      "libraryId": "Azure.Identity",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }

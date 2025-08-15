@@ -7,6 +7,8 @@ using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using Azure.Communication.Email;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;

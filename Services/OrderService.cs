@@ -430,8 +430,7 @@ public class OrderService : IOrderService
         var query = _context.CommissionRates
             .Where(r => r.IsActive && r.EffectiveFrom <= DateTime.UtcNow);
 
-        if (r.EffectiveTo.HasValue)
-            query = query.Where(r => r.EffectiveTo >= DateTime.UtcNow);
+        query = query.Where(r => !r.EffectiveTo.HasValue || r.EffectiveTo >= DateTime.UtcNow);
 
         // Apply filters with wildcards
         var rates = await query.ToListAsync();

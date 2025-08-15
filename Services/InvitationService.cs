@@ -46,7 +46,7 @@ namespace FDX.Trading.Services
             }
 
             // Check if user already exists
-            var existingUser = await _context.Users
+            var existingUser = await _context.FdxUsers
                 .FirstOrDefaultAsync(u => u.Email == email);
 
             if (existingUser != null)
@@ -110,23 +110,27 @@ namespace FDX.Trading.Services
             invitation.AcceptedByUserId = Guid.Parse(userId);
 
             // Create or update user
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == invitation.Email);
+            var user = await _context.FdxUsers.FirstOrDefaultAsync(u => u.Email == invitation.Email);
             if (user == null)
             {
+                // Generate a new ID based on existing users
+                var maxId = await _context.FdxUsers.MaxAsync(u => (int?)u.Id) ?? 0;
                 user = new User
                 {
-                    UserId = Guid.Parse(userId),
+                    Id = maxId + 1,
                     Email = invitation.Email,
-                    Name = invitation.Name,
-                    Role = invitation.Role,
+                    Username = invitation.Email, // Use email as username
+                    Password = "TempPassword123!", // Temporary, will be set by user
+                    DisplayName = invitation.Name,
+                    Type = GetUserType(invitation.Role),
                     IsActive = true,
-                    CreatedAt = DateTimeOffset.UtcNow
+                    CreatedAt = DateTime.UtcNow
                 };
-                _context.Users.Add(user);
+                _context.FdxUsers.Add(user);
             }
             else
             {
-                user.Role = invitation.Role;
+                user.Type = GetUserType(invitation.Role);
                 user.IsActive = true;
             }
 
@@ -237,6 +241,18 @@ namespace FDX.Trading.Services
                 .Replace("+", "-")
                 .Replace("/", "_")
                 .Replace("=", "");
+        }
+
+        private UserType GetUserType(string role)
+        {
+            return role?.ToLower() switch
+            {
+                "admin" => UserType.Admin,
+                "buyer" => UserType.Buyer,
+                "supplier" => UserType.Supplier,
+                "expert" => UserType.Expert,
+                _ => UserType.Buyer
+            };
         }
     }
 }

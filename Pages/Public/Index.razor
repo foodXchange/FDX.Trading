@@ -6,30 +6,7 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
-<PageTitle>FDX.trading - Food Sourcing, Compliance & Trade Platform</PageTitle>
-
-<HeadContent>
-    <meta name="description" content="Streamline your food trading with FDX - from RFQ to delivery. Built-in Kosher certification, QA compliance, smart logistics, and automated finance." />
-    <meta property="og:title" content="FDX.trading - Unified Food Trade Platform" />
-    <meta property="og:description" content="From RFQ to delivery - one unified workflow for food sourcing and trade." />
-    <meta property="og:image" content="/img/og-image.jpg" />
-    <meta property="og:url" content="https://fdx.trading" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@type": "Organization",
-        "name": "FDX.trading",
-        "url": "https://fdx.trading",
-        "logo": "https://fdx.trading/img/fdx-logo.png",
-        "contactPoint": {
-            "@@type": "ContactPoint",
-            "email": "info@foodz-x.com",
-            "contactType": "sales"
-        }
-    }
-    </script>
-</HeadContent>
+<!-- Page Title: FDX.trading - Food Sourcing, Compliance & Trade Platform -->
 
 <!-- Hero Section -->
 <section class="py-5" style="background: linear-gradient(135deg, #f8f7f4 0%, #e8f5f3 100%);">
@@ -204,31 +181,31 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Full name *</label>
-                                    <InputText class="form-control form-control-lg" @bind-Value="lead.Name" placeholder="John Smith" />
+                                    <InputText class="form-control form-control-lg" @bind-Value="@lead.Name" placeholder="John Smith" />
                                     <ValidationMessage For="@(() => lead.Name)" />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Work email *</label>
-                                    <InputText class="form-control form-control-lg" @bind-Value="lead.Email" placeholder="john@company.com" />
+                                    <InputText class="form-control form-control-lg" @bind-Value="@lead.Email" placeholder="john@company.com" />
                                     <ValidationMessage For="@(() => lead.Email)" />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Company *</label>
-                                    <InputText class="form-control form-control-lg" @bind-Value="lead.Company" placeholder="Your company" />
+                                    <InputText class="form-control form-control-lg" @bind-Value="@lead.Company" placeholder="Your company" />
                                     <ValidationMessage For="@(() => lead.Company)" />
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Phone</label>
-                                    <InputText class="form-control form-control-lg" @bind-Value="lead.Phone" placeholder="+1 234 567 8900" />
+                                    <InputText class="form-control form-control-lg" @bind-Value="@lead.Phone" placeholder="+1 234 567 8900" />
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">What are you looking to source?</label>
-                                    <InputTextArea class="form-control form-control-lg" @bind-Value="lead.Message" rows="3" 
+                                    <InputTextArea class="form-control form-control-lg" @bind-Value="@lead.Message" rows="3" 
                                                    placeholder="Tell us about your sourcing needs..." />
                                 </div>
                                 <!-- Honeypot field for bot protection -->
                                 <div style="display: none;">
-                                    <InputText @bind-Value="lead.Website" />
+                                    <InputText @bind-Value="@lead.Website" />
                                 </div>
                             </div>
                             <div class="mt-4">

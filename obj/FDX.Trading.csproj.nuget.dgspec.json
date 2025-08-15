@@ -60,7 +60,7 @@
             },
             "Azure.Identity": {
               "target": "Package",
-              "version": "[1.10.4, )"
+              "version": "[1.11.4, )"
             },
             "Azure.Search.Documents": {
               "target": "Package",
@@ -101,10 +101,6 @@
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.11, )"
-            },
-            "Microsoft.AspNetCore.RateLimiting": {
-              "target": "Package",
-              "version": "[8.0.0, )"
             },
             "Microsoft.AspNetCore.SignalR.Client": {
               "target": "Package",

@@ -199,7 +199,7 @@ public class CsvImporter : ICsvImporter
             var row = dataTable.NewRow();
             foreach (var kvp in dict)
             {
-                row[kvp.Key] = kvp.Value?.ToString() ?? DBNull.Value;
+                row[kvp.Key] = kvp.Value?.ToString() ?? (object)DBNull.Value;
             }
             dataTable.Rows.Add(row);
             recordCount++;
