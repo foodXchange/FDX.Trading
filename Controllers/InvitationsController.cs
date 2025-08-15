@@ -67,11 +67,11 @@ namespace FDX.Trading.Controllers
             try
             {
                 // Get user ID from authenticated user or generate new one
-                var userId = User.Identity.IsAuthenticated 
+                var userId = User.Identity?.IsAuthenticated == true 
                     ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
                     : Guid.NewGuid().ToString();
 
-                var success = await _invitationService.AcceptInvitationAsync(request.Token, userId);
+                var success = await _invitationService.AcceptInvitationAsync(request.Token, userId ?? Guid.NewGuid().ToString());
 
                 if (success)
                 {
@@ -222,14 +222,14 @@ namespace FDX.Trading.Controllers
 
     public class CreateInvitationRequest
     {
-        public string Email { get; set; }
-        public string Name { get; set; }
-        public string Role { get; set; }
-        public string Notes { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public string? Notes { get; set; }
     }
 
     public class AcceptInvitationRequest
     {
-        public string Token { get; set; }
+        public string Token { get; set; } = string.Empty;
     }
 }

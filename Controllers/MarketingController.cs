@@ -258,7 +258,7 @@ public class MarketingController : ControllerBase
         return Math.Round((double)qualified / total * 100, 2);
     }
 
-    private async Task SendLeadNotificationEmail(MarketingLead lead)
+    private Task SendLeadNotificationEmail(MarketingLead lead)
     {
         try
         {
@@ -268,7 +268,7 @@ public class MarketingController : ControllerBase
             if (string.IsNullOrEmpty(smtpHost))
             {
                 _logger.LogWarning("SMTP not configured, skipping lead notification email");
-                return;
+                return Task.CompletedTask;
             }
 
             var subject = $"New Demo Request - {lead.Company ?? "Unknown"}";
@@ -295,6 +295,8 @@ public class MarketingController : ControllerBase
         {
             _logger.LogError(ex, "Error sending lead notification email");
         }
+        
+        return Task.CompletedTask;
     }
 }
 

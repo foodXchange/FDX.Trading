@@ -14,7 +14,7 @@ namespace FDX.Trading.Services
         Task<bool> SendWelcomeEmailAsync(string recipientEmail, string recipientName);
         Task<bool> SendOrderConfirmationAsync(string recipientEmail, string orderNumber, decimal totalAmount);
         Task<bool> SendComplianceApprovedAsync(string recipientEmail, string contractNumber, string supplierName);
-        Task<bool> SendCustomEmailAsync(string recipientEmail, string subject, string htmlContent, string plainTextContent = null);
+        Task<bool> SendCustomEmailAsync(string recipientEmail, string subject, string htmlContent, string? plainTextContent = null);
     }
 
     public class EmailService : IEmailService
@@ -298,7 +298,7 @@ The FDX Trading Team
             return await SendCustomEmailAsync(recipientEmail, subject, htmlContent, plainTextContent);
         }
 
-        public async Task<bool> SendCustomEmailAsync(string recipientEmail, string subject, string htmlContent, string plainTextContent = null)
+        public async Task<bool> SendCustomEmailAsync(string recipientEmail, string subject, string htmlContent, string? plainTextContent = null)
         {
             try
             {

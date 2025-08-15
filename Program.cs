@@ -151,11 +151,11 @@ app.UseStaticFiles(new StaticFileOptions
     OnPrepareResponse = ctx =>
     {
         // Add security headers
-        ctx.Context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        ctx.Context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
         
         // Add cache headers for better performance
         const int durationInSeconds = 60 * 60 * 24 * 7; // 7 days
-        ctx.Context.Response.Headers.Add("Cache-Control", $"public, max-age={durationInSeconds}");
+        ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={durationInSeconds}");
     }
 });
 

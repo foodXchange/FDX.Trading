@@ -618,7 +618,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize form validators
     document.querySelectorAll('form').forEach(form => {
-        new FormValidator(`#${form.id}`);
+        if (form.id) {
+            new FormValidator(`#${form.id}`);
+        }
     });
 });
 
