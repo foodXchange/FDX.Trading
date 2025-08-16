@@ -91,7 +91,7 @@ if (!string.IsNullOrEmpty(acsConnectionString) && acsConnectionString != "MOVED_
 else
 {
     // Add a null email client for development without Azure Communication Services
-    builder.Services.AddSingleton<EmailClient>(provider => null);
+    // EmailClient service will be null, EmailService will handle this gracefully
 }
 
 // Add Application Insights

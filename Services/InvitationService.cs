@@ -12,7 +12,7 @@ namespace FDX.Trading.Services
     public interface IInvitationService
     {
         Task<Invitation> CreateInvitationAsync(string email, string name, string role, string invitedByUserId, string invitedByName);
-        Task<Invitation> GetInvitationByTokenAsync(string token);
+        Task<Invitation?> GetInvitationByTokenAsync(string token);
         Task<bool> AcceptInvitationAsync(string token, string userId);
         Task<bool> ResendInvitationAsync(Guid invitationId);
         Task<bool> CancelInvitationAsync(Guid invitationId);
@@ -80,7 +80,7 @@ namespace FDX.Trading.Services
             return invitation;
         }
 
-        public async Task<Invitation> GetInvitationByTokenAsync(string token)
+        public async Task<Invitation?> GetInvitationByTokenAsync(string token)
         {
             return await _context.Invitations
                 .FirstOrDefaultAsync(i => i.Token == token && i.Status == "pending");
@@ -165,7 +165,7 @@ namespace FDX.Trading.Services
                 invitation.Email, 
                 invitation.Name, 
                 invitation.Role, 
-                invitation.InvitedByName, 
+                invitation.InvitedByName ?? "System", 
                 invitationLink
             );
 
