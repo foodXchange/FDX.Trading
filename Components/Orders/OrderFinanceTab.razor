@@ -1,5 +1,6 @@
 @using FDX.Trading.Models.Orders
 @using System.Net.Http.Json
+@using System.Linq
 @inject HttpClient Http
 @inject ILogger<OrderFinanceTab> Logger
 
@@ -194,7 +195,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var line in selectedInvoice!.Lines!)
+                                @foreach (var line in selectedInvoice?.Lines ?? Enumerable.Empty<InvoiceLine>())
                                 {
                                     <tr>
                                         <td>@line.Description</td>
@@ -234,7 +235,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var payment in selectedInvoice!.Payments!)
+                                @foreach (var payment in selectedInvoice?.Payments ?? Enumerable.Empty<Payment>())
                                 {
                                     <tr>
                                         <td>@payment.PaidAt.ToString("MMM dd, yyyy")</td>

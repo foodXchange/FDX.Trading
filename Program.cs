@@ -78,8 +78,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IComplianceService, ComplianceService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICsvImporter, CsvImporter>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IInvitationService, InvitationService>();
 builder.Services.AddHttpClient();
 
 // Add Azure Communication Services for email
@@ -87,12 +85,20 @@ var acsConnectionString = builder.Configuration["AzureCommunicationServices:Conn
 if (!string.IsNullOrEmpty(acsConnectionString) && acsConnectionString != "MOVED_TO_USER_SECRETS")
 {
     builder.Services.AddSingleton(new EmailClient(acsConnectionString));
+    builder.Services.AddScoped<IEmailService, EmailService>();
 }
 else
 {
-    // Add a null email client for development without Azure Communication Services
-    // EmailClient service will be null, EmailService will handle this gracefully
+    // For development without Azure Communication Services, use a mock email service
+    builder.Services.AddScoped<IEmailService>(provider => 
+    {
+        var config = provider.GetRequiredService<IConfiguration>();
+        var logger = provider.GetRequiredService<ILogger<EmailService>>();
+        return new EmailService(null, config, logger);
+    });
 }
+
+builder.Services.AddScoped<IInvitationService, InvitationService>();
 
 // Add Application Insights
 builder.Services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
